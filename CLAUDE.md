@@ -3,6 +3,9 @@
 > This file is the permanent context for the project. Claude Code reads it
 > automatically each session. Keep it short, factual, and current. Detailed
 > task specs live in separate files (e.g. `V1_TASK.md`).
+>
+> **Read `CLAUDE_NOTES.md` too** — it holds the current state + recent work and
+> corrects places where this brief has drifted (e.g. there IS now a backend).
 
 ## Vision
 
