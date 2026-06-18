@@ -1,0 +1,300 @@
+/* ===========================================================
+   Theme: the dark palette is the default (in tokens.css + the design CSS,
+   whose vars are scoped to .sn). This file adds:
+     1) the floating theme switch styling
+     2) LIGHT-mode overrides, keyed off <html data-theme="light">
+   Overrides use higher specificity ([data-theme=light] .x) so they win
+   regardless of stylesheet order.
+   =========================================================== */
+
+/* ---- the switch (uses global tokens, lives outside .sn) ---- */
+.theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 200;
+  width: 58px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--surface);
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+}
+.theme-toggle-knob {
+  width: 24px;
+  height: 24px;
+  margin-left: 3px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--accent-hi, var(--accent)), var(--accent));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+}
+:root[data-theme="light"] .theme-toggle-knob {
+  transform: translateX(28px);
+}
+.theme-toggle:active .theme-toggle-knob {
+  transform: scale(0.92);
+}
+:root[data-theme="light"] .theme-toggle:active .theme-toggle-knob {
+  transform: translateX(28px) scale(0.92);
+}
+
+/* ---- "are you sure? it's very ugly" confirm modal + toast ---- */
+.tt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(6, 10, 18, 0.6);
+  backdrop-filter: blur(3px);
+  animation: tt-fade 0.18s ease-out;
+}
+.tt-modal {
+  width: min(360px, 100%);
+  padding: 26px 24px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--card-border);
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+  text-align: center;
+  animation: tt-pop 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.tt-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.tt-modal-text {
+  margin: 8px 0 20px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.tt-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.tt-cancel,
+.tt-yes {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--card-border);
+  transition:
+    transform 0.15s cubic-bezier(0.23, 1, 0.32, 1),
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.tt-cancel {
+  background: transparent;
+  color: var(--text);
+}
+.tt-cancel:hover {
+  border-color: var(--accent);
+}
+.tt-yes {
+  background: linear-gradient(180deg, var(--accent-hi, var(--accent)), var(--accent));
+  color: #fff;
+  border-color: transparent;
+}
+.tt-cancel:active,
+.tt-yes:active {
+  transform: scale(0.97);
+}
+.tt-toast {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  padding: 11px 22px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-2);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  animation: tt-pop 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes tt-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes tt-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(6px);
+  }
+}
+.tt-toast {
+  animation: tt-toast-in 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes tt-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tt-overlay,
+  .tt-modal,
+  .tt-toast {
+    animation: none;
+  }
+}
+
+/* =====================================================================
+   LIGHT MODE
+   ===================================================================== */
+
+/* 1) board / shared tokens (tokens.css :root) */
+:root[data-theme="light"] {
+  --bg: #eef1f6;
+  --surface: #ffffff;
+  --surface-2: #e9edf5;
+  --zone-bg: #f1f4f9;
+  --zone-outline: #c7cfdd;
+  --card-back: #dde3ee;
+  --card-border: #c4ccda;
+  --accent-soft: #f6cdd2;
+  --text: #1a2230;
+  --text-muted: #57637a;
+  --shadow-1: 0 1px 2px rgba(20, 30, 50, 0.1);
+  --shadow-2: 0 18px 50px -12px rgba(20, 30, 50, 0.2);
+  --glow-accent: 0 10px 30px -8px rgba(226, 59, 78, 0.4);
+}
+
+/* 2) design palette (scoped to .sn) */
+[data-theme="light"] .sn {
+  --bg: #eef1f6;
+  --bg2: #e3e8f0;
+  --acc2: #a9781a; /* gold darker for contrast on light */
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass2: rgba(255, 255, 255, 0.92);
+  --edge: rgba(20, 30, 45, 0.1);
+  --edge2: rgba(20, 30, 45, 0.16);
+  --txt: #16202e;
+  --muted: #56627a;
+}
+
+/* 3) page backgrounds (override the hardcoded dark gradients) */
+[data-theme="light"] .sn,
+[data-theme="light"] .snp {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(120, 160, 220, 0.18), transparent 60%),
+    linear-gradient(180deg, #f6f8fc, #e7edf5 72%);
+}
+[data-theme="light"] .sn::before,
+[data-theme="light"] .snp::before {
+  opacity: 0.04;
+}
+[data-theme="light"] .snp-head {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* 4) dark input/field surfaces -> light */
+[data-theme="light"] .dr-input,
+[data-theme="light"] .dr-select select,
+[data-theme="light"] .snp-select select,
+[data-theme="light"] .mp-bio-box,
+[data-theme="light"] .rec-search {
+  background: rgba(255, 255, 255, 0.86);
+}
+[data-theme="light"] .dr-select option,
+[data-theme="light"] .snp-select option {
+  background: #ffffff;
+  color: var(--txt);
+}
+
+/* 5) explicit dark card gradients / fills -> light */
+[data-theme="light"] .sn-tile {
+  background: linear-gradient(155deg, #ffffff, #eef2f8);
+}
+[data-theme="light"] .sn-tile.danger {
+  background: linear-gradient(155deg, #fdeceb, #f7dad7);
+}
+[data-theme="light"] .dr-duel {
+  background: rgba(20, 30, 45, 0.04);
+}
+[data-theme="light"] .dr-radio,
+[data-theme="light"] .dr-check {
+  background: rgba(255, 255, 255, 0.6);
+}
+[data-theme="light"] .dr-ghost-sm {
+  background: rgba(20, 30, 45, 0.05);
+}
+
+/* 6) white-alpha hovers/zebra (invisible on light) -> dark-alpha */
+[data-theme="light"] .rec-row:hover,
+[data-theme="light"] .dr-duel:hover,
+[data-theme="light"] .sn-btn-ghost:hover,
+[data-theme="light"] .dr-open-arrows button:hover {
+  background: rgba(20, 30, 45, 0.06);
+}
+[data-theme="light"] .pv-srow:nth-child(even) {
+  background: rgba(20, 30, 45, 0.03);
+}
+[data-theme="light"] .sn-btn-ghost {
+  background: rgba(20, 30, 45, 0.04);
+}
+[data-theme="light"] .rk-wr-bar {
+  background: rgba(20, 30, 45, 0.1);
+}
+
+/* 7) social + extra surfaces in light mode */
+[data-theme="light"] .msg-input {
+  background: rgba(255, 255, 255, 0.86);
+}
+[data-theme="light"] .msg-bubble.them {
+  background: rgba(20, 30, 45, 0.06);
+  border-color: var(--edge2);
+}
+[data-theme="light"] .msg-conv:hover,
+[data-theme="light"] .fr-row:hover {
+  background: rgba(20, 30, 45, 0.05);
+}
+[data-theme="light"] .fr-btn {
+  background: rgba(20, 30, 45, 0.05);
+}
+[data-theme="light"] .st-bar,
+[data-theme="light"] .rk-wr-bar {
+  background: rgba(20, 30, 45, 0.1);
+}
+[data-theme="light"] .st-row,
+[data-theme="light"] .msg-conv,
+[data-theme="light"] .fr-row {
+  border-color: rgba(20, 30, 45, 0.07);
+}
+
+/* ---- keep page top-right header content clear of the fixed theme toggle ---- */
+.snp-head-r,
+.sn-hero-head-r,
+.dr-head-r {
+  margin-right: 58px;
+}
+@media (max-width: 480px) {
+  .snp-head-r,
+  .sn-hero-head-r,
+  .dr-head-r {
+    margin-right: 46px;
+  }
+}

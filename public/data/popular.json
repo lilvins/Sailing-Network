@@ -1,0 +1,5326 @@
+{
+  "generatedAt": "2026-06-15T02:00:32.750Z",
+  "artBase": "https://deckbuilder.egmanevents.com/card_images/optcg/",
+  "regionals": [
+    {
+      "slug": "sangsang-merida-top-16",
+      "name": "[OP15] SangSang’s Merida One Piece Card Game Regional",
+      "date": "May 17th",
+      "players": 524,
+      "leaders": [
+        {
+          "count": 7,
+          "id": "OP15-058",
+          "name": "Enel"
+        },
+        {
+          "count": 4,
+          "id": "OP11-041",
+          "name": "Nami"
+        },
+        {
+          "count": 1,
+          "id": "OP07-019",
+          "name": "Jewelry Bonney"
+        },
+        {
+          "count": 1,
+          "id": "OP15-098",
+          "name": "Monkey.D.Luffy"
+        },
+        {
+          "count": 1,
+          "id": "OP13-002",
+          "name": "Portgas.D.Ace"
+        },
+        {
+          "count": 1,
+          "id": "OP14-020",
+          "name": "Dracule Mihawk"
+        },
+        {
+          "count": 1,
+          "id": "OP15-002",
+          "name": "Lucy"
+        }
+      ],
+      "decks": [
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP14-102",
+              "count": 3
+            },
+            {
+              "id": "OP14-104",
+              "count": 3
+            },
+            {
+              "id": "OP14-110",
+              "count": 3
+            },
+            {
+              "id": "OP14-111",
+              "count": 3
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 4
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "OP11-106",
+              "count": 2
+            },
+            {
+              "id": "OP03-048",
+              "count": 2
+            },
+            {
+              "id": "OP06-106",
+              "count": 2
+            },
+            {
+              "id": "PRB02-008",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            },
+            {
+              "id": "OP07-064",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP07-019",
+          "leaderName": "Jewelry Bonney",
+          "cards": [
+            {
+              "id": "OP13-031",
+              "count": 2
+            },
+            {
+              "id": "OP13-040",
+              "count": 4
+            },
+            {
+              "id": "ST24-002",
+              "count": 2
+            },
+            {
+              "id": "OP12-118",
+              "count": 4
+            },
+            {
+              "id": "OP10-030",
+              "count": 2
+            },
+            {
+              "id": "OP15-035",
+              "count": 4
+            },
+            {
+              "id": "OP07-026",
+              "count": 1
+            },
+            {
+              "id": "ST02-007",
+              "count": 4
+            },
+            {
+              "id": "EB03-017",
+              "count": 2
+            },
+            {
+              "id": "OP08-023",
+              "count": 4
+            },
+            {
+              "id": "EB01-015",
+              "count": 4
+            },
+            {
+              "id": "EB01-012",
+              "count": 3
+            },
+            {
+              "id": "ST24-005",
+              "count": 2
+            },
+            {
+              "id": "EB03-061",
+              "count": 1
+            },
+            {
+              "id": "OP14-027",
+              "count": 1
+            },
+            {
+              "id": "OP05-029",
+              "count": 1
+            },
+            {
+              "id": "OP06-035",
+              "count": 1
+            },
+            {
+              "id": "OP12-030",
+              "count": 4
+            },
+            {
+              "id": "ST16-004",
+              "count": 3
+            },
+            {
+              "id": "OP06-118",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP07-064",
+              "count": 3
+            },
+            {
+              "id": "OP15-060",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-002",
+          "leaderName": "Portgas.D.Ace",
+          "cards": [
+            {
+              "id": "OP13-043",
+              "count": 4
+            },
+            {
+              "id": "ST22-002",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "PRB02-008",
+              "count": 4
+            },
+            {
+              "id": "OP08-040",
+              "count": 2
+            },
+            {
+              "id": "OP13-054",
+              "count": 4
+            },
+            {
+              "id": "ST23-001",
+              "count": 4
+            },
+            {
+              "id": "OP08-047",
+              "count": 4
+            },
+            {
+              "id": "ST22-015",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            },
+            {
+              "id": "EB04-007",
+              "count": 3
+            },
+            {
+              "id": "ST15-004",
+              "count": 1
+            },
+            {
+              "id": "OP07-051",
+              "count": 3
+            },
+            {
+              "id": "P-097",
+              "count": 2
+            },
+            {
+              "id": "OP08-043",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-098",
+          "leaderName": "Monkey.D.Luffy",
+          "cards": [
+            {
+              "id": "OP15-102",
+              "count": 2
+            },
+            {
+              "id": "OP15-108",
+              "count": 4
+            },
+            {
+              "id": "OP15-109",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 4
+            },
+            {
+              "id": "OP15-114",
+              "count": 4
+            },
+            {
+              "id": "OP15-116",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 4
+            },
+            {
+              "id": "OP12-099",
+              "count": 4
+            },
+            {
+              "id": "EB02-052",
+              "count": 2
+            },
+            {
+              "id": "OP05-114",
+              "count": 1
+            },
+            {
+              "id": "OP05-106",
+              "count": 4
+            },
+            {
+              "id": "ST29-009",
+              "count": 4
+            },
+            {
+              "id": "ST29-016",
+              "count": 1
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP15-119",
+              "count": 1
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 4
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-071",
+              "count": 3
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 3
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 3
+            },
+            {
+              "id": "OP12-112",
+              "count": 3
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 2
+            },
+            {
+              "id": "OP11-106",
+              "count": 3
+            },
+            {
+              "id": "PRB02-008",
+              "count": 2
+            },
+            {
+              "id": "OP14-108",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 2
+            },
+            {
+              "id": "OP15-113",
+              "count": 3
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 3
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "401-games-toronto-regional-op15",
+      "name": "[ENG OP15.5] 401 Games’ Toronto Regionals",
+      "date": "May 16th",
+      "players": 1024,
+      "leaders": [
+        {
+          "count": 15,
+          "id": "OP15-058",
+          "name": "Enel"
+        },
+        {
+          "count": 8,
+          "id": "OP11-041",
+          "name": "Nami"
+        },
+        {
+          "count": 2,
+          "id": "OP14-079",
+          "name": "Crocodile"
+        },
+        {
+          "count": 2,
+          "id": "OP14-020",
+          "name": "Dracule Mihawk"
+        },
+        {
+          "count": 2,
+          "id": "OP15-002",
+          "name": "Lucy"
+        },
+        {
+          "count": 2,
+          "id": "OP13-002",
+          "name": "Portgas.D.Ace"
+        },
+        {
+          "count": 1,
+          "id": "OP15-098",
+          "name": "Monkey.D.Luffy"
+        }
+      ],
+      "decks": [
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP14-079",
+          "leaderName": "Crocodile",
+          "cards": [
+            {
+              "id": "OP14-084",
+              "count": 4
+            },
+            {
+              "id": "OP14-083",
+              "count": 4
+            },
+            {
+              "id": "OP14-085",
+              "count": 2
+            },
+            {
+              "id": "OP14-088",
+              "count": 4
+            },
+            {
+              "id": "OP14-090",
+              "count": 4
+            },
+            {
+              "id": "OP14-091",
+              "count": 4
+            },
+            {
+              "id": "OP14-093",
+              "count": 2
+            },
+            {
+              "id": "OP14-094",
+              "count": 3
+            },
+            {
+              "id": "OP14-096",
+              "count": 4
+            },
+            {
+              "id": "OP14-099",
+              "count": 4
+            },
+            {
+              "id": "OP14-120",
+              "count": 4
+            },
+            {
+              "id": "OP14-087",
+              "count": 4
+            },
+            {
+              "id": "OP05-094",
+              "count": 4
+            },
+            {
+              "id": "OP15-092",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP07-064",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 4
+            },
+            {
+              "id": "OP10-049",
+              "count": 2
+            },
+            {
+              "id": "OP15-113",
+              "count": 3
+            },
+            {
+              "id": "PRB02-008",
+              "count": 2
+            },
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 4
+            },
+            {
+              "id": "OP14-108",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP10-112",
+              "count": 3
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP14-020",
+          "leaderName": "Dracule Mihawk",
+          "cards": [
+            {
+              "id": "OP12-034",
+              "count": 4
+            },
+            {
+              "id": "ST02-007",
+              "count": 2
+            },
+            {
+              "id": "ST24-002",
+              "count": 4
+            },
+            {
+              "id": "EB01-015",
+              "count": 4
+            },
+            {
+              "id": "PRB02-006",
+              "count": 1
+            },
+            {
+              "id": "OP15-035",
+              "count": 2
+            },
+            {
+              "id": "OP12-118",
+              "count": 4
+            },
+            {
+              "id": "OP07-026",
+              "count": 4
+            },
+            {
+              "id": "OP14-033",
+              "count": 2
+            },
+            {
+              "id": "OP12-031",
+              "count": 2
+            },
+            {
+              "id": "OP13-031",
+              "count": 4
+            },
+            {
+              "id": "OP14-119",
+              "count": 3
+            },
+            {
+              "id": "ST24-004",
+              "count": 3
+            },
+            {
+              "id": "OP13-040",
+              "count": 4
+            },
+            {
+              "id": "OP06-038",
+              "count": 3
+            },
+            {
+              "id": "OP08-036",
+              "count": 2
+            },
+            {
+              "id": "OP12-037",
+              "count": 1
+            },
+            {
+              "id": "OP14-039",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP15-071",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "OP14-110",
+              "count": 4
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP14-108",
+              "count": 2
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP09-077",
+              "count": 1
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 2
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            },
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-098",
+          "leaderName": "Monkey.D.Luffy",
+          "cards": [
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-108",
+              "count": 4
+            },
+            {
+              "id": "OP15-109",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 4
+            },
+            {
+              "id": "OP15-114",
+              "count": 4
+            },
+            {
+              "id": "OP15-116",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 4
+            },
+            {
+              "id": "OP12-099",
+              "count": 4
+            },
+            {
+              "id": "OP05-106",
+              "count": 4
+            },
+            {
+              "id": "ST29-009",
+              "count": 3
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "EB02-052",
+              "count": 3
+            },
+            {
+              "id": "OP15-102",
+              "count": 3
+            },
+            {
+              "id": "OP15-107",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "OP15-116",
+              "count": 2
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 2
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 1
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 3
+            },
+            {
+              "id": "PRB02-008",
+              "count": 2
+            },
+            {
+              "id": "OP06-104",
+              "count": 2
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 2
+            },
+            {
+              "id": "OP14-108",
+              "count": 2
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 3
+            },
+            {
+              "id": "P-096",
+              "count": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "victory-road-barcelona-regionals",
+      "name": "[ENG OP15.5] Victory Road Barcelona Regionals",
+      "date": "May 9th",
+      "players": 1024,
+      "leaders": [
+        {
+          "count": 15,
+          "id": "OP15-058",
+          "name": "Enel"
+        },
+        {
+          "count": 6,
+          "id": "OP11-041",
+          "name": "Nami"
+        },
+        {
+          "count": 4,
+          "id": "OP13-002",
+          "name": "Portgas.D.Ace"
+        },
+        {
+          "count": 2,
+          "id": "OP14-020",
+          "name": "Dracule Mihawk"
+        },
+        {
+          "count": 1,
+          "id": "OP15-002",
+          "name": "Lucy"
+        },
+        {
+          "count": 1,
+          "id": "OP14-079",
+          "name": "Crocodile"
+        },
+        {
+          "count": 1,
+          "id": "OP14-040",
+          "name": "Jinbe"
+        },
+        {
+          "count": 1,
+          "id": "OP07-019",
+          "name": "Jewelry Bonney"
+        }
+      ],
+      "decks": [
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 2
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP14-079",
+          "leaderName": "Crocodile\n250 - Other",
+          "cards": [
+            {
+              "id": "OP14-120",
+              "count": 4
+            },
+            {
+              "id": "OP05-094",
+              "count": 4
+            },
+            {
+              "id": "OP15-092",
+              "count": 3
+            },
+            {
+              "id": "OP14-083",
+              "count": 4
+            },
+            {
+              "id": "OP14-084",
+              "count": 4
+            },
+            {
+              "id": "OP14-085",
+              "count": 2
+            },
+            {
+              "id": "OP14-087",
+              "count": 4
+            },
+            {
+              "id": "OP14-088",
+              "count": 4
+            },
+            {
+              "id": "OP14-090",
+              "count": 4
+            },
+            {
+              "id": "OP14-091",
+              "count": 4
+            },
+            {
+              "id": "OP14-093",
+              "count": 2
+            },
+            {
+              "id": "OP14-094",
+              "count": 3
+            },
+            {
+              "id": "OP14-096",
+              "count": 4
+            },
+            {
+              "id": "OP14-099",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP15-071",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-002",
+          "leaderName": "Lucy",
+          "cards": [
+            {
+              "id": "OP15-040",
+              "count": 4
+            },
+            {
+              "id": "OP15-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 4
+            },
+            {
+              "id": "OP15-046",
+              "count": 4
+            },
+            {
+              "id": "OP15-056",
+              "count": 2
+            },
+            {
+              "id": "OP15-055",
+              "count": 4
+            },
+            {
+              "id": "OP15-054",
+              "count": 3
+            },
+            {
+              "id": "OP15-021",
+              "count": 4
+            },
+            {
+              "id": "OP15-020",
+              "count": 3
+            },
+            {
+              "id": "OP15-057",
+              "count": 2
+            },
+            {
+              "id": "OP05-019",
+              "count": 2
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            },
+            {
+              "id": "OP15-014",
+              "count": 4
+            },
+            {
+              "id": "OP10-059",
+              "count": 3
+            },
+            {
+              "id": "OP15-019",
+              "count": 3
+            },
+            {
+              "id": "OP10-060",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 3
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP15-071",
+              "count": 2
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-002",
+          "leaderName": "Portgas.D.Ace",
+          "cards": [
+            {
+              "id": "ST22-002",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "OP13-043",
+              "count": 4
+            },
+            {
+              "id": "OP08-040",
+              "count": 2
+            },
+            {
+              "id": "PRB02-008",
+              "count": 4
+            },
+            {
+              "id": "OP13-054",
+              "count": 4
+            },
+            {
+              "id": "OP08-047",
+              "count": 4
+            },
+            {
+              "id": "OP07-051",
+              "count": 3
+            },
+            {
+              "id": "ST23-001",
+              "count": 2
+            },
+            {
+              "id": "EB04-007",
+              "count": 3
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP09-118",
+              "count": 2
+            },
+            {
+              "id": "ST22-015",
+              "count": 4
+            },
+            {
+              "id": "OP08-043",
+              "count": 2
+            },
+            {
+              "id": "OP11-018",
+              "count": 1
+            },
+            {
+              "id": "ST22-010",
+              "count": 1
+            },
+            {
+              "id": "ST15-004",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP15-071",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 3
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 1
+            },
+            {
+              "id": "OP14-108",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-002",
+          "leaderName": "Portgas.D.Ace",
+          "cards": [
+            {
+              "id": "ST22-002",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "OP13-043",
+              "count": 4
+            },
+            {
+              "id": "OP08-040",
+              "count": 2
+            },
+            {
+              "id": "PRB02-008",
+              "count": 4
+            },
+            {
+              "id": "OP13-054",
+              "count": 4
+            },
+            {
+              "id": "OP08-047",
+              "count": 4
+            },
+            {
+              "id": "OP07-051",
+              "count": 3
+            },
+            {
+              "id": "ST23-001",
+              "count": 3
+            },
+            {
+              "id": "EB04-007",
+              "count": 3
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP09-118",
+              "count": 2
+            },
+            {
+              "id": "ST22-015",
+              "count": 4
+            },
+            {
+              "id": "OP05-019",
+              "count": 2
+            },
+            {
+              "id": "ST15-004",
+              "count": 2
+            },
+            {
+              "id": "OP08-043",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "tak-games-brisbane-regionals",
+      "name": "[ENG OP15.5] TAK Games’ Brisbane Regionals",
+      "date": "May 9th",
+      "players": 503,
+      "leaders": [
+        {
+          "count": 5,
+          "id": "OP15-058",
+          "name": "Enel"
+        },
+        {
+          "count": 3,
+          "id": "OP11-041",
+          "name": "Nami"
+        },
+        {
+          "count": 2,
+          "id": "OP15-098",
+          "name": "Monkey.D.Luffy"
+        },
+        {
+          "count": 2,
+          "id": "OP15-002",
+          "name": "Lucy"
+        },
+        {
+          "count": 2,
+          "id": "OP13-002",
+          "name": "Portgas.D.Ace"
+        },
+        {
+          "count": 1,
+          "id": "OP14-020",
+          "name": "Dracule Mihawk"
+        },
+        {
+          "count": 1,
+          "id": "OP12-020",
+          "name": "Roronoa Zoro"
+        }
+      ],
+      "decks": [
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-066",
+              "count": 4
+            },
+            {
+              "id": "OP15-071",
+              "count": 3
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            },
+            {
+              "id": "OP07-064",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-060",
+              "count": 3
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-071",
+              "count": 3
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 3
+            },
+            {
+              "id": "OP07-064",
+              "count": 3
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-098",
+          "leaderName": "Monkey.D.Luffy",
+          "cards": [
+            {
+              "id": "OP15-108",
+              "count": 4
+            },
+            {
+              "id": "OP05-106",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "EB03-056",
+              "count": 4
+            },
+            {
+              "id": "OP15-107",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 4
+            },
+            {
+              "id": "OP12-103",
+              "count": 2
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP05-102",
+              "count": 4
+            },
+            {
+              "id": "OP15-114",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 4
+            },
+            {
+              "id": "EB04-061",
+              "count": 3
+            },
+            {
+              "id": "OP15-109",
+              "count": 4
+            },
+            {
+              "id": "OP15-116",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-002",
+          "leaderName": "Lucy",
+          "cards": [
+            {
+              "id": "OP15-040",
+              "count": 4
+            },
+            {
+              "id": "OP15-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 3
+            },
+            {
+              "id": "OP15-046",
+              "count": 4
+            },
+            {
+              "id": "OP10-045",
+              "count": 4
+            },
+            {
+              "id": "OP15-056",
+              "count": 2
+            },
+            {
+              "id": "OP15-054",
+              "count": 4
+            },
+            {
+              "id": "OP15-021",
+              "count": 4
+            },
+            {
+              "id": "OP15-020",
+              "count": 4
+            },
+            {
+              "id": "OP15-057",
+              "count": 2
+            },
+            {
+              "id": "OP10-060",
+              "count": 3
+            },
+            {
+              "id": "OP05-019",
+              "count": 2
+            },
+            {
+              "id": "OP13-042",
+              "count": 1
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            },
+            {
+              "id": "OP05-015",
+              "count": 2
+            },
+            {
+              "id": "OP07-051",
+              "count": 2
+            },
+            {
+              "id": "OP06-058",
+              "count": 1
+            },
+            {
+              "id": "OP15-006",
+              "count": 1
+            },
+            {
+              "id": "OP12-060",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP14-020",
+          "leaderName": "Dracule Mihawk",
+          "cards": [
+            {
+              "id": "OP14-119",
+              "count": 2
+            },
+            {
+              "id": "OP12-034",
+              "count": 4
+            },
+            {
+              "id": "ST02-007",
+              "count": 2
+            },
+            {
+              "id": "OP15-035",
+              "count": 4
+            },
+            {
+              "id": "ST24-002",
+              "count": 4
+            },
+            {
+              "id": "PRB02-006",
+              "count": 2
+            },
+            {
+              "id": "OP14-039",
+              "count": 2
+            },
+            {
+              "id": "OP07-026",
+              "count": 3
+            },
+            {
+              "id": "OP12-118",
+              "count": 3
+            },
+            {
+              "id": "OP10-030",
+              "count": 2
+            },
+            {
+              "id": "OP13-031",
+              "count": 4
+            },
+            {
+              "id": "ST24-004",
+              "count": 4
+            },
+            {
+              "id": "OP13-040",
+              "count": 4
+            },
+            {
+              "id": "OP12-037",
+              "count": 1
+            },
+            {
+              "id": "OP06-038",
+              "count": 2
+            },
+            {
+              "id": "OP14-033",
+              "count": 2
+            },
+            {
+              "id": "EB01-015",
+              "count": 3
+            },
+            {
+              "id": "OP07-035",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "OP15-047",
+              "count": 2
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-116",
+              "count": 1
+            },
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "PRB02-008",
+              "count": 2
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 3
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP06-106",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "OP14-108",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP09-072",
+              "count": 1
+            },
+            {
+              "id": "OP15-071",
+              "count": 2
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP12-020",
+          "leaderName": "Roronoa Zoro",
+          "cards": [
+            {
+              "id": "OP13-037",
+              "count": 4
+            },
+            {
+              "id": "OP12-026",
+              "count": 2
+            },
+            {
+              "id": "OP12-027",
+              "count": 2
+            },
+            {
+              "id": "OP12-031",
+              "count": 4
+            },
+            {
+              "id": "OP12-039",
+              "count": 4
+            },
+            {
+              "id": "OP12-028",
+              "count": 4
+            },
+            {
+              "id": "OP12-034",
+              "count": 4
+            },
+            {
+              "id": "OP14-033",
+              "count": 1
+            },
+            {
+              "id": "EB01-012",
+              "count": 4
+            },
+            {
+              "id": "ST12-003",
+              "count": 4
+            },
+            {
+              "id": "OP14-026",
+              "count": 3
+            },
+            {
+              "id": "OP13-031",
+              "count": 4
+            },
+            {
+              "id": "OP15-023",
+              "count": 2
+            },
+            {
+              "id": "OP12-029",
+              "count": 4
+            },
+            {
+              "id": "OP08-036",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP15-071",
+              "count": 1
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "ST10-010",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-002",
+          "leaderName": "Portgas.D.Ace",
+          "cards": [
+            {
+              "id": "ST22-002",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "OP13-043",
+              "count": 4
+            },
+            {
+              "id": "OP08-040",
+              "count": 2
+            },
+            {
+              "id": "PRB02-008",
+              "count": 4
+            },
+            {
+              "id": "OP13-054",
+              "count": 4
+            },
+            {
+              "id": "OP08-047",
+              "count": 4
+            },
+            {
+              "id": "OP07-051",
+              "count": 3
+            },
+            {
+              "id": "ST23-001",
+              "count": 3
+            },
+            {
+              "id": "EB04-007",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP09-118",
+              "count": 2
+            },
+            {
+              "id": "ST22-015",
+              "count": 4
+            },
+            {
+              "id": "ST15-004",
+              "count": 2
+            },
+            {
+              "id": "OP10-045",
+              "count": 1
+            },
+            {
+              "id": "OP08-043",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-002",
+          "leaderName": "Portgas.D.Ace",
+          "cards": [
+            {
+              "id": "ST22-002",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "OP13-043",
+              "count": 4
+            },
+            {
+              "id": "OP08-044",
+              "count": 1
+            },
+            {
+              "id": "OP08-040",
+              "count": 2
+            },
+            {
+              "id": "PRB02-008",
+              "count": 4
+            },
+            {
+              "id": "OP13-054",
+              "count": 4
+            },
+            {
+              "id": "OP08-047",
+              "count": 4
+            },
+            {
+              "id": "OP07-051",
+              "count": 3
+            },
+            {
+              "id": "ST23-001",
+              "count": 2
+            },
+            {
+              "id": "EB04-007",
+              "count": 3
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP09-118",
+              "count": 2
+            },
+            {
+              "id": "ST22-015",
+              "count": 4
+            },
+            {
+              "id": "EB04-008",
+              "count": 2
+            },
+            {
+              "id": "OP10-045",
+              "count": 1
+            },
+            {
+              "id": "ST15-004",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-002",
+          "leaderName": "Lucy",
+          "cards": [
+            {
+              "id": "OP15-040",
+              "count": 4
+            },
+            {
+              "id": "OP15-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 4
+            },
+            {
+              "id": "OP15-046",
+              "count": 4
+            },
+            {
+              "id": "OP15-014",
+              "count": 3
+            },
+            {
+              "id": "OP10-045",
+              "count": 3
+            },
+            {
+              "id": "OP15-056",
+              "count": 2
+            },
+            {
+              "id": "OP15-055",
+              "count": 4
+            },
+            {
+              "id": "OP15-054",
+              "count": 4
+            },
+            {
+              "id": "OP15-021",
+              "count": 4
+            },
+            {
+              "id": "OP15-020",
+              "count": 4
+            },
+            {
+              "id": "OP15-057",
+              "count": 2
+            },
+            {
+              "id": "OP10-060",
+              "count": 4
+            },
+            {
+              "id": "OP05-019",
+              "count": 2
+            },
+            {
+              "id": "OP13-042",
+              "count": 1
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "noheroes-warsaw-regionals",
+      "name": "[ENG OP15.5] noHeroes Warsaw Regionals",
+      "date": "May 2",
+      "players": 512,
+      "leaders": [
+        {
+          "count": 5,
+          "id": "OP15-058",
+          "name": "Enel"
+        },
+        {
+          "count": 3,
+          "id": "OP15-002",
+          "name": "Lucy"
+        },
+        {
+          "count": 3,
+          "id": "OP11-041",
+          "name": "Nami"
+        },
+        {
+          "count": 2,
+          "id": "OP13-001",
+          "name": "Monkey.D.Luffy"
+        },
+        {
+          "count": 1,
+          "id": "OP14-020",
+          "name": "Dracule Mihawk"
+        },
+        {
+          "count": 1,
+          "id": "OP15-098",
+          "name": "Monkey.D.Luffy"
+        },
+        {
+          "count": 1,
+          "id": "OP05-098",
+          "name": "Enel"
+        }
+      ],
+      "decks": [
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "P-045",
+              "count": 2
+            },
+            {
+              "id": "OP15-118",
+              "count": 3
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP10-067",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-002",
+          "leaderName": "Lucy",
+          "cards": [
+            {
+              "id": "OP15-021",
+              "count": 4
+            },
+            {
+              "id": "OP15-020",
+              "count": 4
+            },
+            {
+              "id": "OP15-040",
+              "count": 4
+            },
+            {
+              "id": "OP15-046",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 4
+            },
+            {
+              "id": "OP15-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-054",
+              "count": 4
+            },
+            {
+              "id": "OP15-056",
+              "count": 4
+            },
+            {
+              "id": "OP15-057",
+              "count": 3
+            },
+            {
+              "id": "OP05-019",
+              "count": 2
+            },
+            {
+              "id": "OP10-060",
+              "count": 4
+            },
+            {
+              "id": "OP05-015",
+              "count": 3
+            },
+            {
+              "id": "OP10-045",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 1
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP14-020",
+          "leaderName": "Dracule Mihawk",
+          "cards": [
+            {
+              "id": "OP15-035",
+              "count": 4
+            },
+            {
+              "id": "OP14-033",
+              "count": 4
+            },
+            {
+              "id": "OP14-119",
+              "count": 3
+            },
+            {
+              "id": "OP10-030",
+              "count": 2
+            },
+            {
+              "id": "OP13-031",
+              "count": 4
+            },
+            {
+              "id": "OP13-040",
+              "count": 4
+            },
+            {
+              "id": "OP12-034",
+              "count": 4
+            },
+            {
+              "id": "OP12-037",
+              "count": 2
+            },
+            {
+              "id": "OP12-118",
+              "count": 3
+            },
+            {
+              "id": "OP08-036",
+              "count": 2
+            },
+            {
+              "id": "OP07-026",
+              "count": 3
+            },
+            {
+              "id": "OP07-035",
+              "count": 2
+            },
+            {
+              "id": "OP06-038",
+              "count": 1
+            },
+            {
+              "id": "ST24-002",
+              "count": 4
+            },
+            {
+              "id": "ST24-004",
+              "count": 3
+            },
+            {
+              "id": "EB01-015",
+              "count": 3
+            },
+            {
+              "id": "ST02-007",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 4
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "OP14-108",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-001",
+          "leaderName": "Monkey.D.Luffy",
+          "cards": [
+            {
+              "id": "EB04-002",
+              "count": 4
+            },
+            {
+              "id": "OP15-032",
+              "count": 3
+            },
+            {
+              "id": "OP14-022",
+              "count": 4
+            },
+            {
+              "id": "OP13-027",
+              "count": 4
+            },
+            {
+              "id": "ST21-003",
+              "count": 2
+            },
+            {
+              "id": "OP01-016",
+              "count": 2
+            },
+            {
+              "id": "OP13-118",
+              "count": 4
+            },
+            {
+              "id": "EB04-007",
+              "count": 4
+            },
+            {
+              "id": "OP15-035",
+              "count": 4
+            },
+            {
+              "id": "OP14-031",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "OP05-038",
+              "count": 4
+            },
+            {
+              "id": "OP08-036",
+              "count": 4
+            },
+            {
+              "id": "OP13-040",
+              "count": 1
+            },
+            {
+              "id": "EB02-017",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP07-064",
+              "count": 2
+            },
+            {
+              "id": "OP15-060",
+              "count": 2
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP14-108",
+              "count": 3
+            },
+            {
+              "id": "P-096",
+              "count": 3
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 2
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 3
+            },
+            {
+              "id": "OP15-052",
+              "count": 3
+            },
+            {
+              "id": "OP15-119",
+              "count": 3
+            },
+            {
+              "id": "OP10-112",
+              "count": 1
+            },
+            {
+              "id": "OP15-116",
+              "count": 1
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "EB04-061",
+              "count": 1
+            },
+            {
+              "id": "OP15-109",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-098",
+          "leaderName": "Monkey.D.Luffy",
+          "cards": [
+            {
+              "id": "OP15-108",
+              "count": 4
+            },
+            {
+              "id": "OP15-109",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 4
+            },
+            {
+              "id": "OP15-114",
+              "count": 4
+            },
+            {
+              "id": "OP15-116",
+              "count": 4
+            },
+            {
+              "id": "OP15-119",
+              "count": 4
+            },
+            {
+              "id": "OP12-099",
+              "count": 3
+            },
+            {
+              "id": "OP05-106",
+              "count": 4
+            },
+            {
+              "id": "EB02-052",
+              "count": 3
+            },
+            {
+              "id": "EB03-056",
+              "count": 3
+            },
+            {
+              "id": "OP11-106",
+              "count": 3
+            },
+            {
+              "id": "ST29-009",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP05-102",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-002",
+          "leaderName": "Lucy",
+          "cards": [
+            {
+              "id": "OP15-040",
+              "count": 4
+            },
+            {
+              "id": "OP15-046",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 4
+            },
+            {
+              "id": "OP15-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-054",
+              "count": 4
+            },
+            {
+              "id": "OP15-055",
+              "count": 4
+            },
+            {
+              "id": "OP15-056",
+              "count": 3
+            },
+            {
+              "id": "OP15-057",
+              "count": 2
+            },
+            {
+              "id": "OP15-021",
+              "count": 4
+            },
+            {
+              "id": "OP15-020",
+              "count": 4
+            },
+            {
+              "id": "OP15-014",
+              "count": 3
+            },
+            {
+              "id": "OP10-045",
+              "count": 3
+            },
+            {
+              "id": "OP05-019",
+              "count": 2
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            },
+            {
+              "id": "OP10-060",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP05-098",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "EB02-052",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "EB01-056",
+              "count": 4
+            },
+            {
+              "id": "OP15-113",
+              "count": 4
+            },
+            {
+              "id": "EB01-059",
+              "count": 4
+            },
+            {
+              "id": "OP07-119",
+              "count": 1
+            },
+            {
+              "id": "OP12-100",
+              "count": 2
+            },
+            {
+              "id": "OP15-117",
+              "count": 4
+            },
+            {
+              "id": "OP12-119",
+              "count": 3
+            },
+            {
+              "id": "EB04-053",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-002",
+          "leaderName": "Lucy",
+          "cards": [
+            {
+              "id": "OP15-057",
+              "count": 2
+            },
+            {
+              "id": "OP15-053",
+              "count": 4
+            },
+            {
+              "id": "OP15-054",
+              "count": 4
+            },
+            {
+              "id": "OP15-040",
+              "count": 4
+            },
+            {
+              "id": "OP15-052",
+              "count": 4
+            },
+            {
+              "id": "OP10-045",
+              "count": 4
+            },
+            {
+              "id": "OP15-046",
+              "count": 4
+            },
+            {
+              "id": "OP10-060",
+              "count": 4
+            },
+            {
+              "id": "OP15-056",
+              "count": 1
+            },
+            {
+              "id": "OP15-020",
+              "count": 4
+            },
+            {
+              "id": "OP05-019",
+              "count": 3
+            },
+            {
+              "id": "OP15-021",
+              "count": 3
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            },
+            {
+              "id": "OP15-014",
+              "count": 2
+            },
+            {
+              "id": "OP15-006",
+              "count": 2
+            },
+            {
+              "id": "OP15-055",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ccg-sao-paulo-regional",
+      "name": "[ENG OP15.5] CCG Eventos One Piece Card Game São Paulo Regional",
+      "date": "May 2",
+      "players": 768,
+      "leaders": [
+        {
+          "count": 15,
+          "id": "OP15-058",
+          "name": "Enel"
+        },
+        {
+          "count": 6,
+          "id": "OP11-041",
+          "name": "Nami"
+        },
+        {
+          "count": 3,
+          "id": "OP15-002",
+          "name": "Lucy"
+        },
+        {
+          "count": 3,
+          "id": "OP13-002",
+          "name": "Portgas.D.Ace"
+        },
+        {
+          "count": 2,
+          "id": "OP14-020",
+          "name": "Dracule Mihawk"
+        },
+        {
+          "count": 1,
+          "id": "OP13-001",
+          "name": "Monkey.D.Luffy"
+        },
+        {
+          "count": 1,
+          "id": "OP08-098",
+          "name": "Kalgara"
+        },
+        {
+          "count": 1,
+          "id": "EB02-010",
+          "name": "Monkey.D.Luffy"
+        }
+      ],
+      "decks": [
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 4
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 3
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "OP14-108",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP15-119",
+              "count": 2
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 3
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 3
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 2
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            },
+            {
+              "id": "EB03-060",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP12-070",
+              "count": 1
+            },
+            {
+              "id": "OP07-064",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 1
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-074",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-071",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP11-041",
+          "leaderName": "Nami",
+          "cards": [
+            {
+              "id": "EB03-053",
+              "count": 4
+            },
+            {
+              "id": "EB04-058",
+              "count": 4
+            },
+            {
+              "id": "OP15-047",
+              "count": 1
+            },
+            {
+              "id": "OP15-113",
+              "count": 2
+            },
+            {
+              "id": "OP15-119",
+              "count": 1
+            },
+            {
+              "id": "OP14-102",
+              "count": 4
+            },
+            {
+              "id": "OP14-104",
+              "count": 4
+            },
+            {
+              "id": "OP14-110",
+              "count": 4
+            },
+            {
+              "id": "OP14-111",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP12-112",
+              "count": 2
+            },
+            {
+              "id": "P-096",
+              "count": 4
+            },
+            {
+              "id": "EB03-055",
+              "count": 4
+            },
+            {
+              "id": "OP06-104",
+              "count": 4
+            },
+            {
+              "id": "OP11-106",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 2
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 1
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            },
+            {
+              "id": "OP07-064",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 2
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP07-064",
+              "count": 1
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-074",
+              "count": 2
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-060",
+              "count": 1
+            },
+            {
+              "id": "ST10-010",
+              "count": 2
+            },
+            {
+              "id": "OP07-064",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 1
+            },
+            {
+              "id": "OP15-067",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 4
+            },
+            {
+              "id": "OP09-072",
+              "count": 1
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 2
+            },
+            {
+              "id": "OP15-074",
+              "count": 4
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-071",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP15-058",
+          "leaderName": "Enel",
+          "cards": [
+            {
+              "id": "OP15-061",
+              "count": 4
+            },
+            {
+              "id": "OP15-066",
+              "count": 4
+            },
+            {
+              "id": "OP15-077",
+              "count": 4
+            },
+            {
+              "id": "OP15-076",
+              "count": 4
+            },
+            {
+              "id": "OP15-075",
+              "count": 4
+            },
+            {
+              "id": "OP15-078",
+              "count": 4
+            },
+            {
+              "id": "OP15-118",
+              "count": 4
+            },
+            {
+              "id": "OP12-071",
+              "count": 4
+            },
+            {
+              "id": "OP12-063",
+              "count": 3
+            },
+            {
+              "id": "OP09-072",
+              "count": 3
+            },
+            {
+              "id": "OP05-077",
+              "count": 3
+            },
+            {
+              "id": "OP10-067",
+              "count": 3
+            },
+            {
+              "id": "OP13-076",
+              "count": 1
+            },
+            {
+              "id": "OP15-071",
+              "count": 3
+            },
+            {
+              "id": "OP07-064",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "leaderId": "OP13-002",
+          "leaderName": "Portgas.D.Ace",
+          "cards": [
+            {
+              "id": "OP13-043",
+              "count": 4
+            },
+            {
+              "id": "ST22-002",
+              "count": 4
+            },
+            {
+              "id": "OP13-016",
+              "count": 4
+            },
+            {
+              "id": "PRB02-008",
+              "count": 4
+            },
+            {
+              "id": "OP08-040",
+              "count": 2
+            },
+            {
+              "id": "OP13-054",
+              "count": 4
+            },
+            {
+              "id": "ST23-001",
+              "count": 4
+            },
+            {
+              "id": "OP08-047",
+              "count": 4
+            },
+            {
+              "id": "ST22-015",
+              "count": 4
+            },
+            {
+              "id": "OP13-042",
+              "count": 4
+            },
+            {
+              "id": "OP09-118",
+              "count": 1
+            },
+            {
+              "id": "EB04-007",
+              "count": 3
+            },
+            {
+              "id": "EB04-008",
+              "count": 2
+            },
+            {
+              "id": "ST15-004",
+              "count": 2
+            },
+            {
+              "id": "OP07-051",
+              "count": 2
+            },
+            {
+              "id": "P-097",
+              "count": 1
+            },
+            {
+              "id": "OP13-046",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "leaderId": "OP14-020",
+          "leaderName": "Dracule Mihawk",
+          "cards": [
+            {
+              "id": "OP14-119",
+              "count": 2
+            },
+            {
+              "id": "OP14-033",
+              "count": 3
+            },
+            {
+              "id": "OP12-034",
+              "count": 4
+            },
+            {
+              "id": "OP13-031",
+              "count": 3
+            },
+            {
+              "id": "OP13-040",
+              "count": 3
+            },
+            {
+              "id": "ST24-002",
+              "count": 4
+            },
+            {
+              "id": "OP14-039",
+              "count": 4
+            },
+            {
+              "id": "OP12-037",
+              "count": 2
+            },
+            {
+              "id": "OP12-118",
+              "count": 2
+            },
+            {
+              "id": "OP10-030",
+              "count": 2
+            },
+            {
+              "id": "OP15-035",
+              "count": 4
+            },
+            {
+              "id": "OP07-026",
+              "count": 3
+            },
+            {
+              "id": "OP06-038",
+              "count": 3
+            },
+            {
+              "id": "OP08-036",
+              "count": 4
+            },
+            {
+              "id": "ST24-004",
+              "count": 3
+            },
+            {
+              "id": "PRB02-006",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

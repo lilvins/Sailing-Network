@@ -1,0 +1,1192 @@
+
+> sailing-network@0.1.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v6.4.2[39m  [2mready in [0m[1m852[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.4:[1m5173[22m/[39m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/Duel Records.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/Duel Room.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/Home.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/My Profile.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/One Piece TCG Sim.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/Profile Viewer.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/Sailing Network.html[22m
+[2m01:58:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mUIs Sailing network/Rankings.html[22m
+[2m01:58:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:28:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mskills-lock.json[22m
+[2m02:28:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:31:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpackage.json[22m
+[2m02:31:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:32:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/main.tsx[22m
+[2m02:32:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:34:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m02:34:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m02:35:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/app/components/NavBar.tsx, /src/features/home/HomePage.tsx, /src/features/deck-loader/DecksPage.tsx, /src/features/about/AboutPage.tsx[22m
+[2m02:35:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m02:36:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:37:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/components/NavBar.tsx, /src/index.css[22m
+[2m02:37:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/deck-loader/DecksPage.tsx, /src/index.css[22m
+[2m02:37:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/about/AboutPage.tsx, /src/index.css[22m
+[2m02:37:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:37:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m02:37:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:37:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m02:37:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:40:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m02:40:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:48:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m02:48:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m02:48:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m02:48:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m02:48:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m02:52:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:45:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m13:45:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:45:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m13:45:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m13:45:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m13:45:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/Artboard.tsx, /src/index.css[22m
+[2m13:45:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:45:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m13:45:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:45:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m13:45:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:45:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m13:45:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m16:44:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m16:44:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m16:44:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m16:44:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m16:53:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m16:53:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m16:53:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m16:53:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m17:17:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/home.css, /src/index.css[22m
+[2m17:17:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m17:17:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/duel-room/duelroom.css[22m
+[2m17:37:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m17:37:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m17:37:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m17:37:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m17:40:19[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m17:40:19[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m17:40:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m17:40:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m18:09:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx[22m
+[2m18:09:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m18:10:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m18:10:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m18:11:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m18:11:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m18:11:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mskills-lock.json[22m
+[2m18:11:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m18:32:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m19:03:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m19:03:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m19:03:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m19:03:57[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:08:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx[22m
+[2m13:08:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx[22m
+[2m13:08:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m13:08:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m13:09:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m13:09:11[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:09:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m13:09:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:09:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m13:09:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m13:10:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/login/login.css[22m
+[2m13:10:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m22:26:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:26:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:29:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\login\LoginPage.tsx[22m
+[2m22:29:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m22:29:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m22:30:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /src/index.css[22m
+[2m22:30:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m22:30:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /src/index.css[22m
+[2m22:30:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m22:30:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m22:30:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m22:30:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m22:30:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:02:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m23:02:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:02:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:02:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m23:02:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:02:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m23:02:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m23:05:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m23:05:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m23:05:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m23:05:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m23:05:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m23:05:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m23:05:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:05:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m23:05:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:52:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m23:52:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:53:16[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m23:53:17[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:53:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m23:53:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:53:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m23:53:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:54:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m23:54:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:58:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m23:58:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:59:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m23:59:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:59:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m23:59:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:59:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\login\LoginPage.tsx, /src/index.css[22m
+[2m23:59:36[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:59:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m23:59:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m23:59:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m23:59:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:04:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:04:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:04:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:04:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:05:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:05:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:05:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:05:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:05:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 176 |[31m       [33m<[31m[33mDock[31m [33m/[31m[33m>[31m
+[31m[1m>[22m[31m[90m 177 |[31m     [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m           [31m[1m^[22m[31m
+ [90m 178 |[31m   )[33m;[31m
+ [90m 179 |[31m }
+ [90m 180 |[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxReadToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4460:20)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4786:12)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10004:11)
+      at TypeScriptParserMixin.nextToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5799:10)
+      at TypeScriptParserMixin.next (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5709:10)
+      at TypeScriptParserMixin.eat (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5713:12)
+      at TypeScriptParserMixin.expect (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6915:15)
+      at TypeScriptParserMixin.jsxParseClosingElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4692:10)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4707:37)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12764:17)
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 176 |[31m       [33m<[31m[33mDock[31m [33m/[31m[33m>[31m
+[31m[1m>[22m[31m[90m 177 |[31m     [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m           [31m[1m^[22m[31m
+ [90m 178 |[31m   )[33m;[31m
+ [90m 179 |[31m }
+ [90m 180 |[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxReadToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4460:20)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4786:12)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10004:11)
+      at TypeScriptParserMixin.nextToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5799:10)
+      at TypeScriptParserMixin.next (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5709:10)
+      at TypeScriptParserMixin.eat (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5713:12)
+      at TypeScriptParserMixin.expect (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6915:15)
+      at TypeScriptParserMixin.jsxParseClosingElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4692:10)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4707:37)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12764:17)
+[2m00:05:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 176 |[31m       [33m<[31m[33mDock[31m [33m/[31m[33m>[31m
+[31m[1m>[22m[31m[90m 177 |[31m     [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m           [31m[1m^[22m[31m
+ [90m 178 |[31m   )[33m;[31m
+ [90m 179 |[31m }
+ [90m 180 |[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxReadToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4460:20)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4786:12)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10004:11)
+      at TypeScriptParserMixin.nextToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5799:10)
+      at TypeScriptParserMixin.next (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5709:10)
+      at TypeScriptParserMixin.eat (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5713:12)
+      at TypeScriptParserMixin.expect (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6915:15)
+      at TypeScriptParserMixin.jsxParseClosingElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4692:10)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4707:37)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12764:17)
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[39m       [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 176 |[39m       [33m<[39m[33mDock[39m [33m/[39m[33m>[39m
+[31m[1m>[22m[39m[90m 177 |[39m     [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m     |[39m           [31m[1m^[22m[39m
+ [90m 178 |[39m   )[33m;[39m
+ [90m 179 |[39m }
+ [90m 180 |[39m[0m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 176 |[31m       [33m<[31m[33mDock[31m [33m/[31m[33m>[31m
+[31m[1m>[22m[31m[90m 177 |[31m     [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m           [31m[1m^[22m[31m
+ [90m 178 |[31m   )[33m;[31m
+ [90m 179 |[31m }
+ [90m 180 |[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxReadToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4460:20)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4786:12)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10004:11)
+      at TypeScriptParserMixin.nextToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5799:10)
+      at TypeScriptParserMixin.next (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5709:10)
+      at TypeScriptParserMixin.eat (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5713:12)
+      at TypeScriptParserMixin.expect (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6915:15)
+      at TypeScriptParserMixin.jsxParseClosingElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4692:10)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4707:37)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12764:17)
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 176 |[31m       [33m<[31m[33mDock[31m [33m/[31m[33m>[31m
+[31m[1m>[22m[31m[90m 177 |[31m     [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m           [31m[1m^[22m[31m
+ [90m 178 |[31m   )[33m;[31m
+ [90m 179 |[31m }
+ [90m 180 |[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxReadToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4460:20)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4786:12)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10004:11)
+      at TypeScriptParserMixin.nextToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5799:10)
+      at TypeScriptParserMixin.next (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5709:10)
+      at TypeScriptParserMixin.eat (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5713:12)
+      at TypeScriptParserMixin.expect (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6915:15)
+      at TypeScriptParserMixin.jsxParseClosingElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4692:10)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4707:37)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12764:17)
+[2m00:05:21[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Unterminated JSX contents. (177:10)
+
+[0m [90m 175 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 176 |[31m       [33m<[31m[33mDock[31m [33m/[31m[33m>[31m
+[31m[1m>[22m[31m[90m 177 |[31m     [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m           [31m[1m^[22m[31m
+ [90m 178 |[31m   )[33m;[31m
+ [90m 179 |[31m }
+ [90m 180 |[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:177:10
+[33m  175|        </div>
+  176|        <Dock />
+  177|      </div>
+     |            ^
+  178|    );
+  179|  }[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxReadToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4460:20)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4786:12)
+      at TypeScriptParserMixin.getTokenFromCode (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10004:11)
+      at TypeScriptParserMixin.nextToken (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5799:10)
+      at TypeScriptParserMixin.next (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5709:10)
+      at TypeScriptParserMixin.eat (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:5713:12)
+      at TypeScriptParserMixin.expect (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6915:15)
+      at TypeScriptParserMixin.jsxParseClosingElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4692:10)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4707:37)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12764:17)
+[2m00:06:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:06:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:06:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m00:06:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:06:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m00:06:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:08:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:08:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:10:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m00:10:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:10:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m00:10:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:28:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:28:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:29:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:29:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:29:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:29:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:29:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:29:34[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:30:06[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[31m                 )}
+ [90m 204 |[31m               [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[31m[1m>[22m[31m[90m 205 |[31m             [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 206 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 207 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 208 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10908:30)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+[2m00:30:06[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[31m                 )}
+ [90m 204 |[31m               [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[31m[1m>[22m[31m[90m 205 |[31m             [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 206 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 207 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 208 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10908:30)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+[2m00:30:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:06[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[31m                 )}
+ [90m 204 |[31m               [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[31m[1m>[22m[31m[90m 205 |[31m             [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 206 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 207 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 208 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10908:30)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+[2m00:30:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:07[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[39m                 )}
+ [90m 204 |[39m               [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+[31m[1m>[22m[39m[90m 205 |[39m             [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m     |[39m             [31m[1m^[22m[39m
+ [90m 206 |[39m           [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 207 |[39m         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 208 |[39m       [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m[0m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+[2m00:30:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:07[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[31m                 )}
+ [90m 204 |[31m               [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[31m[1m>[22m[31m[90m 205 |[31m             [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 206 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 207 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 208 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10908:30)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+[2m00:30:07[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[31m                 )}
+ [90m 204 |[31m               [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[31m[1m>[22m[31m[90m 205 |[31m             [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 206 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 207 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 208 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10908:30)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+[2m00:30:07[22m [31m[1m[vite][22m[39m [31mInternal server error: C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (205:12)
+
+[0m [90m 203 |[31m                 )}
+ [90m 204 |[31m               [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+[31m[1m>[22m[31m[90m 205 |[31m             [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 206 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 207 |[31m         [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 208 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mC:/Users/vinci/Music/Sailing Network/src/features/social/StatisticsPage.tsx[39m:205:12
+[33m  203|                  )}
+  204|                </div>
+  205|              </div>
+     |              ^
+  206|            </div>
+  207|          </div>[39m
+      at constructor (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9792:18)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12510:17)
+      at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11692:28)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11348:23)
+      at TypeScriptParserMixin.parseExprAtom (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4776:20)
+      at TypeScriptParserMixin.parseExprSubscripts (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10817:17)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10908:30)
+      at TypeScriptParserMixin.parseConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10801:23)
+      at C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (C:\Users\vinci\Music\Sailing Network\node_modules\@babel\parser\lib\index.js:4710:32)
+[2m00:30:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:30:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m00:30:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:30:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m00:30:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:34:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m00:34:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:34:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m00:34:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:37:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:37:10[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:37:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:37:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:38:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:38:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:38:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:38:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:38:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m00:38:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:38:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m00:38:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:40:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:40:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:41:08[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:41:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:49:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/social/social.css[22m
+[2m00:49:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:49:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /src/index.css[22m
+[2m00:49:21[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:52:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m00:52:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m00:52:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m00:52:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:05:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\login\LoginPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx[22m
+[2m01:05:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:05:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx[22m Could not Fast Refresh ("HUE" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m01:05:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app/App.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\MessagesPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx[22m
+[2m01:05:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:05:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\login\LoginPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx[22m
+[2m01:05:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:05:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx[22m Could not Fast Refresh ("HUE" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m01:05:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app/App.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\MessagesPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx[22m
+[2m01:05:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:05:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\login\LoginPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx[22m
+[2m01:05:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:05:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx[22m Could not Fast Refresh ("HUE" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m01:05:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app/App.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\MessagesPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx[22m
+[2m01:05:52[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:06:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m01:06:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:06:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m01:06:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:08:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m01:08:05[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:08:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m01:08:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:08:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:08:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:08:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:08:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:09:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m01:09:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:09:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m01:09:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:14:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/popular/popular.css[22m
+[2m01:14:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:15:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\popular\PopularDecklistsPage.tsx, /src/index.css[22m
+[2m01:15:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:16:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m01:16:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:16:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m01:16:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:24:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpackage.json[22m
+[2m01:24:18[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:26:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpackage.json[22m
+[2m01:26:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:27:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/popular/popular.css[22m
+[2m01:27:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:29:15[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\popular\PopularDecklistsPage.tsx, /src/index.css[22m
+[2m01:29:15[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:29:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/features/popular/popular.css[22m
+[2m01:29:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:29:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m01:29:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:30:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m01:30:00[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:39:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpublic/data/popular.json[22m
+[2m01:39:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:41:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdeckbuilder-export/Deck Constructor.html[22m
+[2m01:41:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mdeckbuilder-export/My Decks.html[22m
+[2m01:41:42[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:45:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mscripts/scrape-daily.cmd[22m
+[2m01:45:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:47:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mpublic/data/popular.json[22m
+[2m01:47:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:57:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:57:04[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:58:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:33[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:58:40[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx, /src/index.css[22m
+[2m01:59:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:39[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:53[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m01:59:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/features/deck-builder/MyDecksPage.tsx[22m
+[2m01:59:55[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:00:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css, /src/features/home/HomePage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\duel-room\DuelRoomPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\login\LoginPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\deck-builder\DeckBuilderPage.tsx[22m
+[2m02:00:22[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:00:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\features\profiles\ProfilePages.tsx[22m Could not Fast Refresh ("HUE" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m02:00:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css, /src/app/App.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\FriendsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\StatisticsPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\social\MessagesPage.tsx, /@fs/C:\Users\vinci\Music\Sailing Network\src\features\popular\PopularDecklistsPage.tsx[22m
+[2m02:00:23[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:00:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m02:00:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:00:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/index.css[22m
+[2m02:00:26[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:00:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/features/home/HomePage.tsx, /src/index.css[22m
+[2m02:00:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:03:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m02:03:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:03:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m02:03:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:14:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/@fs/C:\Users\vinci\Music\Sailing Network\src\app\ThemeToggle.tsx, /src/index.css[22m
+[2m02:14:06[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:14:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m02:14:20[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:14:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.app.tsbuildinfo[22m
+[2m02:14:29[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m
+[2m02:14:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2mtsconfig.node.tsbuildinfo[22m
+[2m02:14:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2m.devlog.txt[22m

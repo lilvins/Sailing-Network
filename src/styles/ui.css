@@ -1,0 +1,406 @@
+/*
+ * Reusable visual treatments (glass panels, buttons, gradients, zones).
+ * Layout stays in components via Tailwind utilities; these classes hold the
+ * "look" so JSX stays readable and the theme lives in one place.
+ * All colors come from tokens.css — no hardcoded hex here either.
+ */
+
+/* App background: layered radial glows over the near-black base. */
+.app-bg {
+  background:
+    radial-gradient(
+      1200px 620px at 72% -12%,
+      rgba(226, 59, 78, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 520px at 8% 4%,
+      rgba(61, 110, 224, 0.1),
+      transparent 55%
+    ),
+    var(--bg);
+}
+
+/* Frosted panel. */
+.glass {
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-2);
+}
+
+/* Hero / headline gradient text. */
+.text-gradient {
+  background: linear-gradient(180deg, #ffffff, #cdd3e1 55%, #8b93a7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Small uppercase eyebrow label. */
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Buttons -------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease,
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+  color: #fff;
+  box-shadow: var(--glow-accent);
+}
+.btn-primary:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  border-color: var(--card-border);
+  color: var(--text);
+}
+.btn-ghost:hover {
+  border-color: var(--zone-outline-active);
+  transform: translateY(-1px);
+}
+
+/* Nav ------------------------------------------------------------------ */
+.nav-link {
+  position: relative;
+  padding: 0.35rem 0.2rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+.nav-link:hover {
+  color: var(--text);
+}
+.nav-link[data-active="true"] {
+  color: var(--text);
+}
+.nav-link[data-active="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.55rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* Feature card --------------------------------------------------------- */
+.feature {
+  border: 1px solid var(--card-border);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  border-radius: var(--radius);
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+.feature:hover {
+  transform: translateY(-3px);
+  border-color: var(--zone-outline-active);
+}
+
+/* Cards ---------------------------------------------------------------- */
+.card-back {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  background:
+    linear-gradient(135deg, var(--surface-2), var(--card-back)),
+    var(--card-back);
+  box-shadow: var(--shadow-1);
+}
+.card-leader {
+  border-color: var(--accent);
+  box-shadow: var(--glow-accent);
+}
+
+/* ===================================================================== */
+/* Playmat                                                                */
+/* ===================================================================== */
+
+.mat {
+  --card-w: clamp(2.6rem, min(6vw, 8vh), 5.2rem);
+  --card-h: calc(var(--card-w) * 1.4);
+  background:
+    radial-gradient(130% 70% at 50% 50%, rgba(61, 110, 224, 0.06), transparent 62%),
+    linear-gradient(180deg, var(--surface), var(--bg));
+}
+
+/* Bordered playmat holding both halves; the hands sit OUTSIDE it, like the
+   real table. */
+.mat-frame {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 80%, transparent),
+    var(--bg)
+  );
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
+
+/* Each half is a size container, so card sizes (cqh) fit its exact height. */
+.half {
+  position: relative;
+  overflow: hidden;
+  container-type: size;
+}
+.half-self {
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 11%, transparent)
+  );
+}
+.half-opp {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--info) 11%, transparent),
+    transparent
+  );
+}
+.mat-passive {
+  opacity: 0.6;
+}
+
+/* The 3×3 grid mirroring the official mat:
+     row1: Character Area (full width, by the center line)
+     row2: Life · Leader/Stage · Deck
+     row3: DON!! deck · Cost Area · Trash   (Cost Area centered under Leader)
+   Card size scales to the half's HEIGHT so all rows always fit — no clip. */
+.half-grid {
+  --card-w: clamp(2rem, min(15cqh, 12cqw), 5.4rem);
+  --card-h: calc(var(--card-w) * 1.4);
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "chars   chars  chars"
+    "life    leader deck"
+    "dondeck cost   trash";
+  justify-items: center;
+  align-items: center;
+  align-content: space-between;
+  gap: 0.4rem 0.5rem;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem 0.7rem;
+}
+.half-grid.mirror {
+  grid-template-areas:
+    "trash cost   dondeck"
+    "deck  leader life"
+    "chars chars  chars";
+}
+
+.area-chars {
+  grid-area: chars;
+  justify-self: stretch;
+}
+.area-life {
+  grid-area: life;
+  justify-self: end;
+}
+.area-leader {
+  grid-area: leader;
+}
+.area-deck {
+  grid-area: deck;
+  justify-self: end;
+}
+.area-dondeck {
+  grid-area: dondeck;
+  justify-self: start;
+}
+.area-cost {
+  grid-area: cost;
+  justify-self: stretch;
+}
+.area-trash {
+  grid-area: trash;
+  justify-self: end;
+}
+
+/* Mirrored half: side-hugging / corner alignments flip horizontally. */
+.half-grid.mirror .area-life {
+  justify-self: start;
+}
+.half-grid.mirror .area-deck {
+  justify-self: start;
+}
+.half-grid.mirror .area-dondeck {
+  justify-self: end;
+}
+.half-grid.mirror .area-trash {
+  justify-self: start;
+}
+
+/* A defined zone rectangle with a faint centered label behind its cards —
+   like the labeled solid zones on the official playmat. */
+.zone-rect {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.3rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--zone-outline);
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
+  min-width: calc(var(--card-w) + 0.6rem);
+  min-height: calc(var(--card-h) + 0.6rem);
+}
+.zone-wide {
+  width: 100%;
+}
+.zone-wm {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 0.25rem;
+  font-size: clamp(0.5rem, 2.1cqh, 0.74rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: color-mix(in srgb, var(--text-muted) 50%, transparent);
+  pointer-events: none;
+}
+.zone-cards {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 0.4rem;
+  width: 100%;
+  height: 100%;
+}
+
+/* An empty character placeholder inside the wide Character Area bar. */
+.slot {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: var(--card-radius);
+  border: 1px dashed color-mix(in srgb, var(--zone-outline) 70%, transparent);
+  flex: 0 0 auto;
+}
+
+/* DON!! cards / empty cost slots: a touch smaller than normal cards, and
+   allowed to shrink so all 10 always fit the Cost Area width (capped on the
+   large end so they never get bigger than a real DON card). */
+.don-card,
+.don-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: calc(var(--card-w) * 0.78);
+  aspect-ratio: 5 / 7;
+  border-radius: var(--card-radius);
+}
+.don-card {
+  border: 1px solid color-mix(in srgb, var(--info) 55%, var(--card-border));
+  background: linear-gradient(135deg, var(--surface-2), var(--card-back));
+  box-shadow: var(--shadow-1);
+}
+.don-slot {
+  border: 1px dashed color-mix(in srgb, var(--zone-outline) 70%, transparent);
+}
+
+/* Life: landscape cards stacked VERTICALLY, overlapping with a small offset so
+   each card's edge stays visible (countable) — like a real life stack. */
+.life-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.life-card {
+  width: calc(var(--card-w) * 1.28);
+  height: calc(var(--card-w) * 0.8);
+  border-radius: 0.3rem;
+  border: 1px solid var(--card-border);
+  background: linear-gradient(135deg, var(--surface-2), var(--card-back));
+  box-shadow: var(--shadow-1);
+}
+.life-stack .life-card:not(:first-child) {
+  margin-top: calc(var(--card-w) * -0.52); /* vertical overlap, sliver showing */
+}
+
+/* Glowing center line where the two character areas meet. */
+.mat-divider {
+  height: 2px;
+  margin: 0 1.5rem;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.5;
+}
+
+/* Hand: always-visible bar with the largest, most readable cards. */
+.hand-bar {
+  --card-w: clamp(3rem, min(6.4vw, 9vh), 5.8rem);
+  --card-h: calc(var(--card-w) * 1.4);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border-top: 1px solid var(--card-border);
+  backdrop-filter: blur(8px);
+}
+
+/* Opponent's face-down hand: same readable scale as mine, a touch smaller. */
+.opp-hand {
+  --card-w: clamp(2.6rem, min(5.4vw, 7vh), 4.8rem);
+  --card-h: calc(var(--card-w) * 1.4);
+}
+.hand-card:not(:first-child) {
+  margin-left: calc(var(--card-w) * -0.28); /* gentle fan/overlap */
+}
+.hand-card {
+  transition: transform 0.12s ease;
+}
+.hand-card:hover {
+  transform: translateY(-0.5rem);
+  z-index: 2;
+}
+
+/* Scaled artboard ===================================================== */
+/* Renders a fixed 1280×820 Claude-design canvas centered + scaled to fit the
+   viewport (pixel-faithful to the design). Pages go fully fluid later. */
+.artboard-host {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #080b10;
+}
+.artboard-scale {
+  transform-origin: center center;
+  flex: none;
+}

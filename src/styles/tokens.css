@@ -1,0 +1,54 @@
+/*
+ * Theme tokens — the single source of truth for the dark playmat palette.
+ * Everything visual references these custom properties (zone colors, spacing,
+ * radii, type scale). Tailwind utilities read them via arbitrary values, e.g.
+ * `bg-[var(--zone-bg)]`, so we never hardcode hex in components.
+ */
+:root {
+  /* Surfaces */
+  --bg: #0b0d12; /* app background, near-black */
+  --surface: #141821; /* panels / raised areas */
+  --surface-2: #1c212e; /* nested surfaces */
+
+  /* Zones */
+  --zone-bg: #11141c; /* empty zone fill */
+  --zone-outline: #2a3142; /* zone border (idle) */
+  --zone-outline-active: #3d6ee0; /* zone border when a drag hovers it */
+
+  /* Cards */
+  --card-back: #232a3a; /* face-down card fill */
+  --card-border: #39425a;
+  --card-radius: 0.5rem;
+  --card-w: clamp(3.25rem, 7vw, 5.5rem);
+  --card-h: calc(var(--card-w) * 1.4);
+
+  /* Accent / brand */
+  --accent: #e23b4e; /* One Piece red */
+  --accent-hi: #f04a5d;
+  --accent-soft: #7a1f29;
+  --info: #3d6ee0;
+
+  /* Text */
+  --text: #e6e9f0;
+  --text-muted: #8b93a7;
+
+  /* Spacing scale used by the board layout */
+  --gap: 0.5rem;
+  --pad: 0.75rem;
+
+  /* Radii */
+  --radius: 0.75rem;
+  --radius-lg: 1.25rem;
+
+  /* Elevation */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 18px 50px -12px rgba(0, 0, 0, 0.7);
+  --glow-accent: 0 10px 30px -8px rgba(226, 59, 78, 0.55);
+
+  /* Layout */
+  --maxw: 72rem;
+
+  /* Type scale (responsive) */
+  --fs-hero: clamp(2.5rem, 6vw, 4.75rem);
+  --fs-h2: clamp(1.25rem, 2.5vw, 1.85rem);
+}

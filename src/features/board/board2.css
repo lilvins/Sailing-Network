@@ -1,0 +1,452 @@
+/* =============================================================================
+   BOARD v2 — OPTCGSim look (modeled on a real screenshot):
+   wood desk background · centered vertical playmat (opp half rotated 180°,
+   purple tint; mine teal/leader tint) · zone bands with big white labels ·
+   hands in the LEFT corners · chat+system log in one parchment box ·
+   parchment buttons on the right with giant Mulligan / End Turn.
+   Reuses gb-card / gb-back / gb-quick / modals from board.css.
+   ========================================================================== */
+
+.b2-root {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(300px, 32vw) minmax(0, 1fr) clamp(170px, 16vw, 240px);
+  gap: 10px;
+  padding: 34px 12px 10px;
+  overflow: hidden;
+  font-family: var(--font, "Manrope", sans-serif);
+  color: #2b1c10;
+  /* warm wood desk */
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 235, 200, 0.25), transparent 60%),
+    repeating-linear-gradient(92deg, rgba(90, 45, 14, 0.10) 0 3px, transparent 3px 9px, rgba(120, 64, 22, 0.08) 9px 14px, transparent 14px 26px),
+    linear-gradient(180deg, #c0763d, #a35a26 45%, #8e4c1e);
+  --cw: clamp(46px, min(5.2vw, 9.2vh), 110px);
+}
+
+/* top-center: opponent name + clock */
+.b2-topname {
+  position: fixed;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  font: 800 clamp(15px, 1.6vw, 24px) var(--display, var(--font));
+  color: #1d1208;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+  white-space: nowrap;
+}
+.b2-clock { font: 700 clamp(14px, 1.5vw, 22px) var(--display, var(--font)); color: #241608; }
+
+/* =============================== LEFT COLUMN =============================== */
+.b2-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+/* opponent hand — flat row of backs, top-left */
+.b2-opphand {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 2px;
+}
+.b2-opphand-card {
+  width: var(--cw);
+  aspect-ratio: 100 / 140;
+  position: relative;
+  border-radius: 6px;
+  box-shadow: 0 3px 8px rgba(40, 18, 4, 0.45);
+}
+
+/* chat + system log box (parchment, like the sim) */
+.b2-chatbox {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  background: rgba(214, 168, 116, 0.55);
+  border: 1px solid rgba(94, 56, 22, 0.55);
+  box-shadow: inset 0 0 18px rgba(80, 42, 12, 0.25), 0 3px 10px rgba(50, 24, 6, 0.3);
+  overflow: hidden;
+}
+.b2-chat-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.b2-sysline { font: 500 12.5px var(--font); color: #3a2412; line-height: 1.35; }
+.b2-chatline { font: 600 12.5px var(--font); color: #241608; line-height: 1.35; word-break: break-word; }
+.b2-chatline b { color: #5e3110; }
+.b2-chatline b.me { color: #8a2b14; }
+.b2-chat-input {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+  padding: 7px;
+  border-top: 1px solid rgba(94, 56, 22, 0.4);
+}
+.b2-chat-input input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid rgba(94, 56, 22, 0.6);
+  border-radius: 5px;
+  background: rgba(240, 214, 168, 0.85);
+  padding: 7px 10px;
+  font: 500 12.5px var(--font);
+  font-style: italic;
+  color: #2b1c10;
+  outline: none;
+}
+.b2-chat-input input:focus { border-color: #5e3110; }
+.b2-chat-input button {
+  flex: 0 0 auto;
+  padding: 0 16px;
+  border-radius: 5px;
+  border: 1px solid rgba(94, 56, 22, 0.7);
+  background: linear-gradient(180deg, #efe0bd, #d9bf8d);
+  color: #241608;
+  font: 700 13px var(--font);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(50, 24, 6, 0.3);
+}
+.b2-chat-input button:hover:not(:disabled) { filter: brightness(1.05); }
+.b2-chat-input button:disabled { opacity: 0.45; cursor: default; }
+
+/* my hand — flat face-up row, bottom-left (big, like the sim) */
+.b2-hand {
+  flex: 0 0 auto;
+  padding: 6px 2px 2px;
+  border-radius: 8px;
+  transition: background 0.15s, box-shadow 0.15s;
+  /* hand cards run bigger than mat cards */
+  --cw: clamp(84px, min(7.6vw, 13.2vh), 152px);
+}
+.b2-hand.gb-over { background: rgba(255, 244, 214, 0.25); box-shadow: inset 0 0 0 2px rgba(240, 214, 150, 0.8); }
+.b2-hand-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: nowrap; /* never wrap: cards compress instead (margin set inline) */
+  min-height: calc(var(--cw) * 1.45);
+}
+.b2-hand-card {
+  position: relative;
+  transition: margin 0.18s ease;
+}
+.b2-hand-card .gb-card { box-shadow: 0 4px 12px rgba(40, 18, 4, 0.5); }
+.b2-hand-empty { font: 600 12px var(--font); color: rgba(60, 32, 12, 0.6); padding: 10px; }
+
+/* =============================== CENTER MAT ================================ */
+.b2-matcol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.b2-mat {
+  position: relative;
+  width: min(100%, 780px);
+  border-radius: 10px;
+  padding: 8px 8px 8px calc(var(--cw) * 1.0 + 14px); /* room for the sideways life on the left */
+  box-shadow: 0 8px 26px rgba(40, 18, 4, 0.45), inset 0 0 40px rgba(0, 0, 0, 0.18);
+}
+/* my mat — teal, tinted by the leader color */
+.b2-mat-mine {
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgba(255, 255, 255, 0.16), transparent 55%),
+    linear-gradient(160deg, color-mix(in srgb, var(--lc, #1f8a5b) 55%, #cfe7e2), color-mix(in srgb, var(--lc, #1f8a5b) 30%, #9fc9c0) 60%, #cfdedd);
+}
+/* opponent mat — purple/magenta */
+.b2-mat-opp {
+  background:
+    radial-gradient(120% 90% at 70% 80%, rgba(255, 255, 255, 0.16), transparent 55%),
+    linear-gradient(340deg, #b78ab4, #9a6797 55%, #d6bdd5);
+  opacity: 0.95;
+  pointer-events: none;
+}
+.b2-rot180 { transform: rotate(180deg); }
+
+.b2-mat-rows { display: flex; flex-direction: column; gap: 7px; }
+
+/* zone shells on the mat (override the gb glass look) */
+.b2-mat .gb-zone {
+  background: rgba(34, 22, 40, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 6px;
+}
+.b2-mat-mine .gb-zone { background: rgba(14, 36, 32, 0.40); }
+.b2-mat .gb-slot { border-color: rgba(255, 255, 255, 0.3); background: rgba(0, 0, 0, 0.18); }
+
+/* wide bands with BIG centered white labels (Character/Cost area) */
+.b2-band { position: relative; min-height: calc(var(--cw) * 1.4 + 12px); }
+.b2-band > .gb-zlabel {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: none;
+  font: 800 clamp(13px, 1.5vw, 21px) var(--display, var(--font));
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+.b2-band .gb-card, .b2-band .gb-slot { z-index: 1; }
+.b2-chars-row {
+  display: flex;
+  gap: clamp(6px, 0.9vw, 14px);
+  justify-content: center;
+  width: 100%;
+  min-height: calc(var(--cw) * 1.4);
+  align-items: center;
+  overflow: visible;
+  position: relative;
+}
+.b2-cost-row {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  justify-content: flex-start; /* fill from the left */
+  flex-wrap: nowrap;
+  min-height: calc(var(--cw) * 1.45);
+  position: relative;
+  padding: 0 4px;
+  width: 100%;
+  z-index: 1;
+}
+/* each DON is a full card-sized cell at a FIXED stride (uniform size, slight
+   overlap) so all 10 fit and new ones add to the right without shifting. */
+.b2-doncell {
+  flex: 0 0 auto;
+  width: var(--cw);
+  margin-right: calc(var(--cw) * -0.5);
+  position: relative;
+  transition: margin 0.15s ease;
+}
+.b2-doncell:last-child { margin-right: 0; }
+.b2-cost-row .gb-card { width: 100%; max-width: none; }
+
+/* HOVER BEHAVIOUR — board2 only.
+   A hovered card/DON must NOT lift or jump above its neighbours: with the
+   overlapping hands and DON row that causes a hover/flicker loop. Instead the
+   card stays put (just a highlight ring); the big preview shows in the side
+   overlay (.b2-hoverzoom) and the action menu (.gb-quick) floats above the row.
+   The card keeps z-index:auto so it never creates a stacking context — that lets
+   .gb-quick (z-index:46) surface above adjacent cards without lifting the card. */
+/* Hover lift uses `top`, NOT `transform`. With heavily-overlapping cards (the DON
+   row, the hand), a transform creates a stacking context whose paint order flips
+   under the cursor when the card lifts → the card swaps topmost with its neighbour
+   → :hover toggles → flicker loop. `top` (the card is position:relative) moves the
+   card on the Y axis WITHOUT a stacking context, so DOM paint order is preserved:
+   the hovered card stays topmost at the cursor, hover is stable, and with no z-index
+   change it never paints over its neighbours — it just peeks up. */
+.b2-root .gb-card { transition: top 0.14s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.16s; top: 0; }
+.b2-root .gb-card:hover {
+  top: -12px;
+  z-index: auto;
+  box-shadow: 0 0 0 2px rgba(227, 178, 76, 0.7), 0 10px 22px rgba(0, 0, 0, 0.5);
+}
+/* Band cards (DON row, characters) sit at z-index:1 (above the band's giant label).
+   On hover KEEP that 1 — do NOT drop to auto, or the hovered card sinks below its
+   z-index:1 neighbours, the cursor lands on the neighbour, and the two swap hover
+   every frame (flicker). Equal z-index → DOM order decides → the hovered card stays
+   above its left neighbour (stable) and below its right one (never paints over it). */
+.b2-root .b2-band .gb-card:hover { z-index: 1; }
+.b2-root .gb-rested { transform: rotate(90deg) !important; }
+.b2-root .gb-rested:hover { top: -12px; transform: rotate(90deg) !important; }
+
+/* small slot zones (leader / stage / deck / don / trash) */
+.b2-slotzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--cw) + 14px);
+}
+.b2-slotzone > .gb-zlabel {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: 800 11px var(--display, var(--font));
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  max-width: none;
+}
+.b2-slotzone .gb-card, .b2-slotzone .gb-slot, .b2-slotzone .gb-pile { z-index: 1; }
+
+.b2-row2, .b2-row3 {
+  display: flex;
+  gap: 7px;
+  align-items: stretch;
+}
+.b2-row2 .b2-slotzone:nth-child(2) { /* leader gets a hair more presence */ }
+.b2-row3 .b2-cost { flex: 1 1 auto; }
+.b2-row2 .b2-logo { flex: 1 1 auto; }
+
+/* mat logo */
+.b2-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  user-select: none;
+  min-width: 90px;
+}
+.b2-logo span {
+  font: 900 clamp(13px, 1.5vw, 22px) var(--display, var(--font));
+  letter-spacing: 1px;
+  color: rgba(20, 14, 8, 0.82);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.b2-logo small { font: 700 8px var(--font); letter-spacing: 3px; color: rgba(20, 14, 8, 0.6); }
+
+/* life — sideways stack pinned to the mat's LEFT edge */
+.b2-life {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+.b2-life-stack { position: relative; display: flex; flex-direction: column; align-items: center; }
+.b2-side-card, .b2-side-slot {
+  width: calc(var(--cw) * 1.35);
+  height: calc(var(--cw) * 0.96);
+  position: relative;
+}
+.b2-side-slot { border: 1.5px dashed rgba(255, 255, 255, 0.4); border-radius: 8px; background: rgba(0, 0, 0, 0.15); }
+.b2-side-card .gb-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+  width: calc(var(--cw) * 0.96);
+}
+.b2-side-card .gb-card:hover { transform: translate(-50%, -54%) rotate(90deg); }
+.b2-side-card + .b2-side-card { margin-top: calc(var(--cw) * -0.62); }
+.b2-life-count { right: auto; left: -8px; bottom: -6px; }
+.b2-life-static { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); }
+
+/* shared middle strip — play area */
+.b2-playstrip {
+  width: min(100%, 780px);
+  min-height: calc(var(--cw) * 0.7);
+  border: 1.5px dashed rgba(70, 36, 12, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 240, 210, 0.14);
+  display: flex;
+  align-items: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.b2-playstrip.gb-over { border-color: #f0d696; background: rgba(255, 244, 214, 0.3); }
+.b2-play-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 3px;
+}
+.b2-play-row .gb-card { width: calc(var(--cw) * 0.9); }
+.b2-play-hint { font: 700 10px var(--display, var(--font)); letter-spacing: 3px; text-transform: uppercase; color: rgba(70, 36, 12, 0.55); }
+
+/* =============================== RIGHT COLUMN ============================== */
+.b2-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding-top: 28px;
+}
+.b2-utils { display: flex; flex-direction: column; gap: 7px; }
+.b2-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+
+/* parchment buttons (like the sim) */
+.b2-pbtn {
+  padding: 11px 10px;
+  border-radius: 6px;
+  border: 1px solid #6b4a22;
+  background: linear-gradient(180deg, #f2e4c2, #ddc290);
+  color: #241608;
+  font: 700 14px var(--font);
+  cursor: pointer;
+  box-shadow: 0 3px 7px rgba(50, 24, 6, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: filter 0.12s, transform 0.1s;
+  white-space: nowrap;
+}
+.b2-pbtn:hover:not(:disabled) { filter: brightness(1.06); }
+.b2-pbtn:active:not(:disabled) { transform: scale(0.97); }
+.b2-pbtn:disabled { opacity: 0.45; cursor: default; }
+.b2-pbtn.sm { padding: 8px 10px; font-size: 12.5px; }
+.b2-pbtn.med { font-size: 13.5px; }
+
+/* giant bottom actions (Mulligan / End Turn) */
+.b2-bigbtn {
+  padding: clamp(14px, 2.4vh, 26px) 10px;
+  border-radius: 8px;
+  border: 1px solid #6b4a22;
+  background: linear-gradient(180deg, #f4e7c6, #dcc190);
+  color: #1d1208;
+  font: 800 clamp(20px, 2.2vw, 32px) var(--display, var(--font));
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(50, 24, 6, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transition: filter 0.12s, transform 0.1s;
+}
+.b2-bigbtn:hover { filter: brightness(1.06); }
+.b2-bigbtn:active { transform: scale(0.98); }
+
+/* hover zoom (floats over the left column) */
+.b2-hoverzoom {
+  position: fixed;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  width: clamp(200px, 19vw, 300px);
+  pointer-events: none;
+  background: rgba(24, 16, 8, 0.92);
+  border: 1px solid rgba(240, 214, 150, 0.5);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 18px 50px rgba(20, 8, 0, 0.65);
+  animation: gb-pop 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.b2-hoverzoom img { width: 100%; border-radius: 8px; -webkit-user-drag: none; }
+.b2-hz-don { position: relative; width: 100%; aspect-ratio: 100 / 140; border-radius: 8px; overflow: hidden; }
+.b2-hz-name { margin-top: 7px; font: 800 14px var(--display, var(--font)); color: #f4e7c6; }
+.b2-hz-fx { font: 500 11.5px var(--font); color: #d9c9ae; line-height: 1.45; max-height: 130px; overflow-y: auto; white-space: pre-wrap; }
+
+/* quick-menu/count contrast on the warm surfaces */
+.b2-root .gb-count { border-color: rgba(255, 255, 255, 0.6); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1200px) {
+  .b2-root { grid-template-columns: minmax(240px, 28vw) minmax(0, 1fr) 170px; }
+}
+@media (max-height: 780px) {
+  .b2-root { --cw: clamp(40px, min(4.6vw, 7.6vh), 84px); padding-top: 28px; }
+  .b2-opphand { display: none; }
+}
