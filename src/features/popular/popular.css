@@ -399,9 +399,27 @@
 .pd-modal-foot {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
   padding: 14px 20px;
   border-top: 1px solid var(--edge);
+}
+/* import status text — pushed to the left of the button row */
+.pd-import-msg {
+  margin-right: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8af0b4;
+}
+.pd-import-msg.err {
+  color: #f0908a;
+}
+.pd-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.pd-btn:disabled:active {
+  transform: none;
 }
 
 /* ---- widen to full width + kill the regionals inner scrollbar ---- */

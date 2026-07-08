@@ -14,7 +14,13 @@ recent work. Read this alongside `CLAUDE.md`. Last updated 2026-06-18.
   **Do not weaken or revert auth/bans.**
 - Run everything with **`npm run dev`** — `concurrently` starts `node server/index.mjs`
   + `vite`. Dev UI = http://localhost:5173, API = http://localhost:8787.
-- Card art is loaded from external **egmanevents `.webp` URLs**, not `public/cards/`.
+- Card art is loaded from external **dotgg `.webp` URLs**
+  (`https://static.dotgg.gg/onepiece/card/<ID>.webp`), not `public/cards/`.
+  (Was egmanevents, but its `deckbuilder.egmanevents.com/card_images/optcg/`
+  path stopped serving art — it now returns the deckbuilder SPA HTML, so every
+  image 404'd-as-HTML. Base lives in `scripts/build-cards.mjs` → `cards.json`
+  `image` field, and `scripts/scrape-egman.mjs` `ART_BASE` → `popular.json`
+  `artBase`. Both regenerated data files were also patched in place.)
 
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to
@@ -33,7 +39,18 @@ entry in `src/state/types.ts`. No functions/Maps/class instances in state.
 - Both chosen from `src/features/home/HomePage.tsx`, routed in `src/app/App.tsx`
   (uiStore view `"board"` / `"board2"`).
 
-## Recent work (this session)
+## Popular Decklists — refresh + import
+- Data lives in `public/data/popular.json`, refreshed by **`npm run scrape`**
+  (`scripts/scrape-egman.mjs`, OP15 regionals). The scraper uses **Playwright**;
+  on a fresh clone you must first run **`npx playwright install chromium`** (the
+  browser binaries are not in `node_modules`). Current data: 6 regionals × 12
+  lists = 72 decks.
+- **Import to My Decks**: the decklist popup in `PopularDecklistsPage.tsx` has an
+  "Import to My Decks" button → `api.createDeck` (leader + main deck map 1:1 onto
+  the createDeck payload). Gated on login (routes to `"login"` if signed out);
+  after success the button becomes "View in My Decks" (→ `"my-decks"`).
+
+## Recent work (earlier session)
 - **DON!! card art**: faithful SVG recreation — `DonArt` in `BoardPage.tsx`
   (manga focus-line burst, "ドン!!", "Your Turn +1000"). The SVG has
   `pointer-events:none` so the solid `.gb-card` div owns hit-testing.

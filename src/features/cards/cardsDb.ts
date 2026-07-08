@@ -37,7 +37,7 @@ export interface Card {
   rarity: string;
   /** Set code derived from the id prefix, e.g. "OP01", "ST23", "EB04", "PRB02", "P". */
   set: string;
-  /** Card art URL (egmanevents .webp — hotlink-friendly, used app-wide). */
+  /** Card art URL (dotgg.gg .webp — hotlink-friendly, used app-wide). */
   image: string;
   /** Official onepiece-cardgame.com image (reference; blocks hotlinking). */
   imageOfficial: string;
