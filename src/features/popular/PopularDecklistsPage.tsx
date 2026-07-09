@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Header, Dock, Ico } from "../profiles/ProfilePages";
+import { api } from "../../lib/api";
+import { useAuthStore } from "../../app/authStore";
+import { useUiStore } from "../../app/uiStore";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./popular.css";
@@ -49,6 +52,11 @@ export function PopularDecklistsPage() {
   const [selIdx, setSelIdx] = useState(0);
   const [open, setOpen] = useState<{ deck: Deck; rank: number; regional: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [importState, setImportState] = useState<"idle" | "saving" | "done" | "error">("idle");
+  const [importMsg, setImportMsg] = useState("");
+
+  const user = useAuthStore((s) => s.user);
+  const setView = useUiStore((s) => s.setView);
 
   useEffect(() => {
     fetch("/data/popular.json")
@@ -56,6 +64,12 @@ export function PopularDecklistsPage() {
       .then((d: PopularData) => setData(d))
       .catch(() => setFailed(true));
   }, []);
+
+  // Reset the import button whenever a different decklist popup is opened.
+  useEffect(() => {
+    setImportState("idle");
+    setImportMsg("");
+  }, [open]);
 
   const regional = data?.regionals[selIdx] ?? null;
   // Art comes from our self-hosted webp (public/cards/), not popular.json's egman
@@ -75,6 +89,34 @@ export function PopularDecklistsPage() {
     a.download = `${d.leaderName.replace(/\W+/g, "-")}-decklist.txt`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Import a popular decklist straight into the logged-in captain's account.
+  // The popular-deck shape ({leaderId, leaderName, cards:[{id,count}]}) maps 1:1
+  // onto the createDeck payload — the scraper already excludes the leader from
+  // `cards`, so it lands as leader + main deck exactly like a hand-built deck.
+  const importDeck = async (d: Deck) => {
+    if (!user) {
+      setView("login");
+      return;
+    }
+    if (importState === "saving") return;
+    setImportState("saving");
+    setImportMsg("");
+    try {
+      await api.createDeck({
+        name: d.leaderName.slice(0, 60),
+        leaderId: d.leaderId,
+        leaderName: d.leaderName.slice(0, 80),
+        cards: d.cards.map((c) => ({ id: c.id, count: Math.min(99, Math.max(1, c.count)) })),
+        fav: false,
+      });
+      setImportState("done");
+      setImportMsg("Added to My Decks");
+    } catch (e) {
+      setImportState("error");
+      setImportMsg((e as Error)?.message || "Import failed");
+    }
   };
 
   if (!data) {
@@ -183,12 +225,35 @@ export function PopularDecklistsPage() {
             </div>
 
             <div className="pd-modal-foot">
+              {importMsg && (
+                <span className={"pd-import-msg" + (importState === "error" ? " err" : "")}>{importMsg}</span>
+              )}
               <button className={"pd-btn" + (copied ? " done" : "")} onClick={() => copyList(open.deck)}>
                 <Ico n={copied ? "check" : "save"} size={15} />
                 {copied ? "Copied" : "Copy"}
               </button>
-              <button className="pd-btn primary" onClick={() => exportList(open.deck)}>
+              <button className="pd-btn" onClick={() => exportList(open.deck)}>
                 <Ico n="play" size={15} /> Export
+              </button>
+              <button
+                className={"pd-btn primary" + (importState === "done" ? " done" : "")}
+                disabled={importState === "saving"}
+                onClick={() => {
+                  if (!user) return setView("login");
+                  if (importState === "done") return setView("my-decks");
+                  importDeck(open.deck);
+                }}
+              >
+                <Ico n={importState === "done" ? "check" : "save"} size={15} />
+                {!user
+                  ? "Log in to import"
+                  : importState === "saving"
+                    ? "Importing…"
+                    : importState === "done"
+                      ? "View in My Decks"
+                      : importState === "error"
+                        ? "Retry import"
+                        : "Import to My Decks"}
               </button>
             </div>
           </div>

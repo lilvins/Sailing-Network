@@ -40,13 +40,13 @@ export interface Card {
   /**
    * Card art URL, used app-wide. Points at our self-hosted webp
    * (`/cards/<id>.webp`), served statically from public/cards/ — NOT a
-   * third-party CDN. (egmanevents Cloudflare-blocks hotlinks; the official site
-   * is the source, downloaded once by `npm run art`.) Rewritten at load time, so
-   * whatever the API returns here is overridden — the helper below is the single
-   * source of truth for art paths.
+   * third-party CDN. Images are downloaded once by `npm run art` from dotgg.gg
+   * (clean, no "SAMPLE" watermark; egmanevents' CDN is Cloudflare-blocked).
+   * Rewritten at load time, so whatever the API returns here is overridden —
+   * `cardArtUrl` below is the single source of truth for art paths.
    */
   image: string;
-  /** Official onepiece-cardgame.com image (reference / download source). */
+  /** Official onepiece-cardgame.com image (reference; unused for display). */
   imageOfficial: string;
 }
 

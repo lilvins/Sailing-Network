@@ -18,7 +18,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = resolve(ROOT, "public/data/popular.json");
 const BASE = "https://egmanevents.com";
 const LIST_URL = `${BASE}/one-piece-op15-tournaments`;
-const ART_BASE = "https://deckbuilder.egmanevents.com/card_images/optcg/";
+const ART_BASE = "https://static.dotgg.gg/onepiece/card/";
 const MAX_REGIONALS = 6;
 const MAX_DECKS = 12;
 

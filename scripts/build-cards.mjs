@@ -95,10 +95,11 @@ function build() {
       trigger: cleanEffect(raw.trigger) || null,
       rarity: raw.rarity ?? "",
       set,
-      // egmanevents serves hotlink-friendly card art (same source used in Popular
-      // Decklists). The official onepiece-cardgame.com URL blocks hotlinking, so we
-      // keep it only as a reference fallback.
-      image: `https://deckbuilder.egmanevents.com/card_images/optcg/${id}.webp`,
+      // dotgg.gg serves hotlink-friendly .webp card art for every set (same source
+      // used in Popular Decklists). The official onepiece-cardgame.com URL is kept
+      // only as a reference fallback. (Was egmanevents, whose CDN path stopped
+      // serving images and now returns the deckbuilder SPA HTML.)
+      image: `https://static.dotgg.gg/onepiece/card/${id}.webp`,
       imageOfficial: raw.img_full_url ?? "",
     });
   }

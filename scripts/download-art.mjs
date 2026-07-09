@@ -1,11 +1,14 @@
 // download-art.mjs — self-host every card image.
 //
-// Downloads each card's art from the official source
-// (en.onepiece-cardgame.com/images/cardlist/card/<id>.png), transcodes it to a
-// light webp with sharp, and writes it to public/cards/<id>.webp. Vite serves
-// that statically at /cards/<id>.webp, so at runtime the app depends on NObody
-// else's CDN — the art is ours. (egmanevents' hotlinks are Cloudflare-blocked;
-// this is what replaces them.)
+// Downloads each card's art from dotgg.gg
+// (https://static.dotgg.gg/onepiece/card/<id>.webp) and writes it to
+// public/cards/<id>.webp. Vite serves that statically at /cards/<id>.webp, so at
+// runtime the app depends on NObody else's CDN — the art is ours.
+//
+// Why dotgg: it serves clean .webp (no "SAMPLE" watermark, unlike the official
+// Bandai cardlist images), with the correct image/webp content-type (so no
+// ERR_BLOCKED_BY_ORB). egmanevents' old hotlinks are Cloudflare-blocked now.
+// Source is already webp → we save the bytes as-is (no re-encode).
 //
 // Run:  npm run art
 //
@@ -19,34 +22,34 @@
 import { mkdir, readFile, writeFile, access } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const CARDS_JSON = join(ROOT, "public", "data", "cards.json");
 const OUT_DIR = join(ROOT, "public", "cards");
 
-const SOURCE = (id) => `https://en.onepiece-cardgame.com/images/cardlist/card/${id}.png`;
+const SOURCE = (id) => `https://static.dotgg.gg/onepiece/card/${id}.webp`;
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148 Safari/537.36";
 const CONCURRENCY = 10;
-const WEBP_QUALITY = 82;
 
 const exists = (p) => access(p).then(() => true).catch(() => false);
-const isPng = (buf) =>
-  buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47;
+// RIFF....WEBP magic: 'RIFF' at 0-3, 'WEBP' at 8-11.
+const isWebp = (b) =>
+  b.length > 12 &&
+  b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
+  b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50;
 
 async function fetchOne(id) {
   const out = join(OUT_DIR, `${id}.webp`);
   if (await exists(out)) return "skip";
   const res = await fetch(SOURCE(id), {
-    headers: { "User-Agent": UA, Referer: "https://en.onepiece-cardgame.com/cardlist/" },
+    headers: { "User-Agent": UA, Referer: "https://onepiece.dotgg.gg/" },
   });
   if (!res.ok) return `miss(${res.status})`;
   const buf = Buffer.from(await res.arrayBuffer());
-  if (!isPng(buf)) return "miss(notpng)";
-  const webp = await sharp(buf).webp({ quality: WEBP_QUALITY }).toBuffer();
-  await writeFile(out, webp);
+  if (!isWebp(buf)) return "miss(notwebp)";
+  await writeFile(out, buf);
   return "ok";
 }
 
@@ -55,11 +58,10 @@ async function main() {
   const ids = cards.map((c) => c.id);
   await mkdir(OUT_DIR, { recursive: true });
 
-  console.log(`Downloading art for ${ids.length} cards → public/cards/ (webp q${WEBP_QUALITY})…`);
+  console.log(`Downloading art for ${ids.length} cards → public/cards/ (dotgg webp)…`);
   let ok = 0, skip = 0, done = 0;
   const failed = [];
 
-  // simple fixed-size worker pool over the id list
   let cursor = 0;
   async function worker() {
     while (cursor < ids.length) {
