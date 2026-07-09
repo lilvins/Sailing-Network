@@ -37,22 +37,39 @@ export interface Card {
   rarity: string;
   /** Set code derived from the id prefix, e.g. "OP01", "ST23", "EB04", "PRB02", "P". */
   set: string;
-  /** Card art URL (egmanevents .webp — hotlink-friendly, used app-wide). */
+  /**
+   * Card art URL, used app-wide. Points at our self-hosted webp
+   * (`/cards/<id>.webp`), served statically from public/cards/ — NOT a
+   * third-party CDN. (egmanevents Cloudflare-blocks hotlinks; the official site
+   * is the source, downloaded once by `npm run art`.) Rewritten at load time, so
+   * whatever the API returns here is overridden — the helper below is the single
+   * source of truth for art paths.
+   */
   image: string;
-  /** Official onepiece-cardgame.com image (reference; blocks hotlinking). */
+  /** Official onepiece-cardgame.com image (reference / download source). */
   imageOfficial: string;
 }
 
-const DATA_URL = "/data/cards.json";
+// Our own card catalog API (SQLite-backed; see server/index.mjs `/api/cards`).
+const DATA_URL = "/api/cards";
+
+/** Self-hosted art path for a card (public/cards/<id>.webp, served by Vite). */
+export function cardArtUrl(id: string): string {
+  return `/cards/${id}.webp`;
+}
 
 let cache: Promise<Card[]> | null = null;
 
 /** Fetch the full catalog once; subsequent calls reuse the in-flight/resolved promise. */
 export function loadCards(): Promise<Card[]> {
   if (!cache) {
-    cache = fetch(DATA_URL).then((r) => {
+    cache = fetch(DATA_URL).then(async (r) => {
       if (!r.ok) throw new Error(`Failed to load card database (${r.status})`);
-      return r.json() as Promise<Card[]>;
+      const body = (await r.json()) as { cards: Card[] };
+      const cards = body.cards;
+      // Single source of truth for art paths (see field doc).
+      for (const c of cards) c.image = cardArtUrl(c.id);
+      return cards;
     });
   }
   return cache;

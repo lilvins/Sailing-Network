@@ -8,6 +8,7 @@ import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import { z } from "zod";
 import { initDb, all, run, get } from "./db.mjs";
+import { registerCardArt } from "./card-art.mjs";
 import {
   hashPassword, verifyPassword, createUser, getUserById, getUserByEmail,
   getUserByUsername, getUserByLogin, createSession, getSessionUser,
@@ -576,6 +577,47 @@ app.get("/api/stats", async () => {
 });
 
 app.get("/api/health", async () => ({ ok: true }));
+
+// ---- card art proxy (same-origin, disk-cached; see card-art.mjs) ----
+registerCardArt(app);
+
+// ---- card catalog (our own DB; seeded by server/seed-cards.mjs) ----
+// Maps a `cards` row to the frontend Card shape (parse JSON cols, set_code->set).
+const cardRowToClient = (r) => ({
+  id: r.id,
+  name: r.name,
+  category: r.category,
+  colors: JSON.parse(r.colors || "[]"),
+  cost: r.cost,
+  power: r.power,
+  counter: r.counter,
+  types: JSON.parse(r.types || "[]"),
+  attributes: JSON.parse(r.attributes || "[]"),
+  effect: r.effect,
+  trigger: r.trigger,
+  rarity: r.rarity,
+  set: r.set_code,
+  image: r.image,
+  imageOfficial: r.image_official,
+});
+
+app.get("/api/cards", async (req, reply) => {
+  const rows = await all(`SELECT * FROM cards`);
+  // Sort by set, then by the numeric part of the id (matches build-cards.mjs).
+  rows.sort((a, b) =>
+    a.set_code !== b.set_code
+      ? a.set_code < b.set_code ? -1 : 1
+      : Number(a.id.split("-")[1]) - Number(b.id.split("-")[1])
+  );
+  reply.header("Cache-Control", "public, max-age=3600");
+  return reply.send({ cards: rows.map(cardRowToClient) });
+});
+
+app.get("/api/cards/:id", async (req, reply) => {
+  const row = await get(`SELECT * FROM cards WHERE id=?`, [req.params.id]);
+  if (!row) return reply.code(404).send({ error: "Card not found" });
+  return reply.send({ card: cardRowToClient(row) });
+});
 
 // ---- match system (v3) ----
 app.post("/api/me/match-sessions/create", async (req, reply) => {

@@ -57,9 +57,10 @@ export function PopularDecklistsPage() {
       .catch(() => setFailed(true));
   }, []);
 
-  const art = data?.artBase ?? "";
   const regional = data?.regionals[selIdx] ?? null;
-  const imgUrl = useMemo(() => (id: string) => `${art}${id}.webp`, [art]);
+  // Art comes from our self-hosted webp (public/cards/), not popular.json's egman
+  // artBase (that CDN is Cloudflare-blocked now). See scripts/download-art.mjs.
+  const imgUrl = useMemo(() => (id: string) => `/cards/${id}.webp`, []);
 
   const copyList = (d: Deck) => {
     navigator.clipboard?.writeText(listText(d));

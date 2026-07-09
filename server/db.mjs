@@ -189,6 +189,31 @@ export async function initDb() {
     );
     CREATE INDEX IF NOT EXISTS idx_bans_user ON bans(user_id);
     CREATE INDEX IF NOT EXISTS idx_bans_exp  ON bans(expires_at);
+
+    -- Static card catalog (the One Piece TCG card database). Read-only at runtime;
+    -- populated by server/seed-cards.mjs from public/data/cards.json (which is built
+    -- from the punk-records community dataset via scripts/build-cards.mjs). This is
+    -- NOT game state — matches reference cards by id. JSON-array columns are stored
+    -- as TEXT and parsed on read. 'set' is a SQL keyword, hence set_code.
+    CREATE TABLE IF NOT EXISTS cards (
+      id             TEXT PRIMARY KEY,
+      name           TEXT NOT NULL DEFAULT '',
+      category       TEXT NOT NULL DEFAULT '',     -- Leader | Character | Event | Stage
+      colors         TEXT NOT NULL DEFAULT '[]',   -- JSON array of color names
+      cost           INTEGER,                      -- Life for Leaders (source quirk)
+      power          INTEGER,
+      counter        INTEGER,
+      types          TEXT NOT NULL DEFAULT '[]',   -- JSON array of tribes/subtypes
+      attributes     TEXT NOT NULL DEFAULT '[]',   -- JSON array
+      effect         TEXT NOT NULL DEFAULT '',
+      trigger        TEXT,
+      rarity         TEXT NOT NULL DEFAULT '',
+      set_code       TEXT NOT NULL DEFAULT '',     -- e.g. OP01, ST23, EB04, PRB02, P
+      image          TEXT NOT NULL DEFAULT '',     -- app art path (self-hosted webp)
+      image_official TEXT NOT NULL DEFAULT ''      -- official onepiece-cardgame.com url
+    );
+    CREATE INDEX IF NOT EXISTS idx_cards_set ON cards(set_code);
+    CREATE INDEX IF NOT EXISTS idx_cards_cat ON cards(category);
   `);
 
   await runMigrations();

@@ -26,3 +26,12 @@ dist-ssr
 server/*.db
 server/*.db-wal
 server/*.db-shm
+
+# Card art proxy cache (downloaded on demand from the official source)
+server/.art-cache/
+
+# Self-hosted card images — rebuildable asset cache (npm run art), too big for git
+public/cards/
+
+# Local screenshots / scratch from dev tooling
+scripts/.shots/
