@@ -60,6 +60,8 @@ export interface PlayerState {
 
 export interface GameState {
   players: Record<string, PlayerState>;
+  /** Seating order — turn passing rotates through this. 1 entry = solo practice. */
+  playerOrder: string[];
   turnPlayerId: string;
   turn: number;
   /** Log of applied actions — the seed for replays / multiplayer later. */
@@ -138,5 +140,5 @@ export type GameAction =
       instanceId: InstanceId;
       delta: number;
     }
-  | { type: "nextTurn"; turn: number }
+  | { type: "nextTurn"; turn: number; turnPlayerId?: string }
   | { type: "mulligan"; playerId: string };

@@ -22,6 +22,17 @@ recent work. Read this alongside `CLAUDE.md`. Last updated 2026-06-18.
   `image` field, and `scripts/scrape-egman.mjs` `ART_BASE` → `popular.json`
   `artBase`. Both regenerated data files were also patched in place.)
 
+## Direction (stated 2026-07-24)
+The sim will become **automatic** (rules-engine-assisted) eventually — the
+"manual only" scope in CLAUDE.md is superseded as a long-term goal. For NOW the
+board stays manual/semi-automatic (auto turn phases + event animation only);
+don't start building a rules engine until asked.
+**2026-07-30: the full plan for the automatic board exists — `AUTOSIM_PLAN.md`**
+(architecture, effect IR taxonomy, AI card-compilation pipeline, milestones
+M0-M6, execution prompt in §10). Official comprehensive rules v1.2.0 extracted
+to `docs/rules/op_comprehensive_rules_v1.2.0.txt`. Execution starts only when
+the user launches the §10 prompt with a milestone.
+
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to
 `actionLog` in `src/state/gameStore.ts`. Every store action mirrors a `GameAction`
@@ -29,13 +40,40 @@ entry in `src/state/types.ts`. No functions/Maps/class instances in state.
 
 ## Board layouts — there are TWO, sharing one gameStore
 - **Layout 1 · "Play — Board"** → `src/features/board/BoardPage.tsx` + `board.css`
-  (`gb-*` classes). The main/working layout. Exports shared components
-  (`CardArt`, `DonArt`, `DCard`, `DropZone`, `Pile`, `LogsModal`, `CtxMenu`,
-  `fmtAction`, …) reused by layout 2.
+  (shared `gb-*` chrome) + **`boarddb.css`** (`db-*` structure). The main layout is
+  now a **DuelingBook-faithful duel screen** — geometry measured from
+  duelingbook.com's replay viewer (canvas 1152×720): left rail = card preview
+  (art + white effect box) over Turn pill + flat light-gray utility buttons
+  (End Turn = the one emphasized yellow button; **no Coin Flip**); center = the
+  field (NO phase bar — removed so the halves get the vertical room and the hand
+  never covers the DON row) + flat hands top/bottom; right rail = LIFE bar →
+  opponent avatar → **white duel log+chat box** → my avatar → LIFE bar;
+  near-black circuit-board background. OP zones per half: LIFE over DON deck in
+  the left corner, char row → leader/stage center, TRASH over DECK in the right
+  corner; opponent half rotated 180°. Field cards scale via
+  `--dbcw: clamp(44px, min(6.2vw, 11vh), 120px)` (≈79px @720p, +41% vs the
+  first DB cut). CSS-cascade gotcha fixed once already: `.db-root .db-field
+  .gb-card { width: var(--dbcw) }` is equal-specificity with row-specific
+  width rules — any cell-sized card rule (DON cells, life stack) must come
+  AFTER it in boarddb.css or it loses the cascade (this was the oversized-DON
+  glitch). No overflow:hidden on .db-donrow (it clips the .gb-quick hover
+  menu). In test mode the revealed opponent hand strip is hover-previewable
+  (left panel). **No Play Area on this layout**: the
+  "Event" quick action resolves via `playEventCard` — the card moves hand→trash
+  immediately (one undoable logged action) while a big centered copy plays a
+  ~1.3s glow animation + synthesized chime (`playEventSound`, WebAudio, no
+  assets), then flies toward the trash corner. CtxMenu got `hidePlayArea` (L1
+  passes it; L2 keeps its play strip). The pre-DB components
+  (`MyHalf`, `OppHalf`, `MyHand`, `OppHand`, `OppHandLive`, `OppHalfLive`) are
+  kept **exported but unused** (legacy) — safe to delete later.
+  Exports shared components (`CardArt`, `DonArt`, `DCard`, `DropZone`, `Pile`,
+  `LogsModal`, `CtxMenu`, `fmtAction`, …) reused by layout 2. NOTE: `GameChat`
+  now takes `{ log: GameAction[] }`; `Pile` takes optional `onView`.
 - **Layout 2 · "Play 2 — Layout Lab"** → `src/features/board/BoardPage2.tsx` +
-  `board2.css` (`b2-*` classes). Faithful **OPTCGSim** table: warm wood bg,
-  vertical central mat, opponent half rotated 180°, hands in the left corners,
-  parchment side buttons, giant Mulligan / End Turn, name + clock top-center.
+  `board2.css` (`b2-*` classes). OPTCGSim table arrangement with a **minimal
+  editorial** identity: flat ivory canvas, white central mat (opponent half
+  warm-gray, rotated 180°), hairline borders, ink text, ONE red accent
+  (hover ring / drag-over / End Turn), leader-color top edge on my mat.
 - Both chosen from `src/features/home/HomePage.tsx`, routed in `src/app/App.tsx`
   (uiStore view `"board"` / `"board2"`).
 

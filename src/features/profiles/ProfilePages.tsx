@@ -40,7 +40,9 @@ export function Ico({ n, size = 20, sw = 1.9 }: { n: IconName; size?: number; sw
   );
 }
 
-export const HUE: Record<string, string> = { R: "#c0392b", G: "#1f8a5b", B: "#2a6fdb", P: "#7a3fa0", K: "#2c3138", Y: "#caa023" };
+// Keep in sync with COLOR_HEX in features/cards/cardsDb.ts (hue-separated,
+// dark-readable leader colors). K (Black) is a visible slate, not near-black.
+export const HUE: Record<string, string> = { R: "#ec4d4d", G: "#29b56f", B: "#4a8ef0", P: "#b06ae6", K: "#939bad", Y: "#e6b93f" };
 export type Leader = [string, string];
 export const LEADERS: Leader[] = [
   ["Shanks", "R"], ["Luffy", "P"], ["Luffy", "K"], ["Uta", "G"], ["Doflamingo", "B"], ["Katakuri", "Y"],
