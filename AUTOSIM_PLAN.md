@@ -337,6 +337,29 @@ src/autosim/ir/schema.json e i golden examples; valida con i 3 livelli del
 §6; le carte sotto soglia vanno in classification "unsupported" con nota.
 ```
 
+## Decisioni prese in corso d'opera
+
+**M0 (2026-07-31) — completata.** Scelte fatte dove il piano lasciava margine:
+1. La battle machine vive dentro `engine.ts` (declareAttack / openCounterWindow /
+   resolveDamageStep) invece che in `battle.ts`: per M0 il flusso è coeso con
+   l'intent handling; si estrae in M1 quando blocker/trigger la faranno crescere.
+2. **DON come contatori** (`don: {deck, active, rested, given}`) e non istanze:
+   sono 10 carte identiche; i "given" mappano iid→count (né attivi né rested,
+   4-4-2). Più semplice e ugualmente serializzabile.
+3. Golden set M0 = **sintetico** (`TEST-*`, marcato nelle notes): fissare testi
+   di carte reali a memoria rischiava golden sbagliati; il set reale (~30 carte)
+   si costruisce in M2 leggendo il DB live.
+4. `pendingChoice` e `rngUses` sono bookkeeping del motore, NON derivati dagli
+   eventi: il replay li riallinea esplicitamente (documentato nel test). Se in
+   futuro serviranno nel replay puro, si promuovono a eventi.
+5. `lib/rng.ts` esteso con `seededRng`/`shuffleWith` (mulberry32+FNV-1a); la
+   `shuffle` non seedata del sim manuale resta intatta.
+6. Il rimpiazzo del 6° personaggio (3-7-6-1) è parte dell'intent
+   (`playCard.replaceIid`) invece di una ChoiceRequest dedicata.
+7. Le carte Event in M0 si possono giocare (costo pagato, trash) con effetto
+   no-op loggato (`eventCardUsed`) — l'esecuzione arriva con M2.
+8. `resolveJsonModule` aggiunto a tsconfig.app.json (import dei golden JSON).
+
 ## Fonti
 
 - Comprehensive Rules v1.2.0 ufficiali (PDF Bandai, estratto in

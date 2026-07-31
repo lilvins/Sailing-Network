@@ -30,8 +30,17 @@ don't start building a rules engine until asked.
 **2026-07-30: the full plan for the automatic board exists — `AUTOSIM_PLAN.md`**
 (architecture, effect IR taxonomy, AI card-compilation pipeline, milestones
 M0-M6, execution prompt in §10). Official comprehensive rules v1.2.0 extracted
-to `docs/rules/op_comprehensive_rules_v1.2.0.txt`. Execution starts only when
-the user launches the §10 prompt with a milestone.
+to `docs/rules/op_comprehensive_rules_v1.2.0.txt`.
+**2026-07-31: M0 DONE** — `src/autosim/`: Effect IR (ir/types.ts + schema.json
++ validate.ts + synthetic golden), pure event-sourced engine (engine/state.ts,
+events.ts reducer, intents.ts, engine.ts, legality.ts): setup/mulligan/turn
+phases/DON costs/structure limits/defeat + full 5-step battle with counter
+values, deterministic seeded shuffles (lib/rng seededRng/shuffleWith), replay
+via applyEvent fold. 17 tests incl. a full scripted vanilla game to GameOver
+and replay determinism (57/57 green overall). Every rule cites its section
+number. See AUTOSIM_PLAN.md "Decisioni prese in corso d'opera". Next: M1
+(keywords, [Blocker] window, [Trigger] flow, trigger queue ordering 8-6) —
+launch with the §10 prompt.
 
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to

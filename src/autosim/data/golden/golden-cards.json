@@ -1,0 +1,68 @@
+[
+  {
+    "cardId": "TEST-001",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "onPlay",
+        "optional": false,
+        "actions": [
+          { "kind": "koTarget",
+            "sel": { "owner": "opponent", "zone": "characterArea",
+                     "filter": { "costAtMost": 3 }, "count": 1, "upTo": true,
+                     "chooser": "controller" } }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M0): '[On Play] K.O. up to 1 of your opponent's Characters with a cost of 3 or less.' Real golden set is built in M2 from the live card DB."
+  },
+  {
+    "cardId": "TEST-002",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": ["Blocker"],
+    "counterValue": 2000,
+    "effects": [
+      {
+        "timing": "activateMain",
+        "oncePerTurn": true,
+        "cost": [ { "kind": "restDon", "count": 1 }, { "kind": "restSelf" } ],
+        "actions": [
+          { "kind": "draw", "count": 1 },
+          { "kind": "discard", "who": "self",
+            "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "controller" } }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M0): '[Blocker] / [Activate: Main] [Once Per Turn] ① Rest this card: Draw 1 card, then trash 1 card from your hand.'"
+  },
+  {
+    "cardId": "TEST-003",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "counter",
+        "actions": [
+          { "kind": "powerMod",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "chooser": "controller" },
+            "amount": 4000, "duration": "thisBattle" }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          { "kind": "draw", "count": 1 }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M0): Event — '[Counter] Give up to 1 of your Leader or Characters +4000 power during this battle. / [Trigger] Draw 1 card.'"
+  }
+]
