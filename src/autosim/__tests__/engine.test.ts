@@ -15,28 +15,36 @@ import { validateCompiledCard } from "../ir/validate";
 
 // ─── synthetic card DB ───────────────────────────────────────────────────────
 
+// Construction-LEGAL fixtures (5-1-2): ≤4 copies per card number, deck colors
+// on the leader. Distinct card numbers share stats per cost tier; bob's leader
+// is Blue/Red multicolor so the all-Red deck is legal for both (2-3-5).
 const CARDS: Record<string, EngineCard> = {
   "TL01-001": { id: "TL01-001", category: "Leader", cost: 4, power: 5000, counter: null, colors: ["Red"], types: ["Test"] }, // cost = Life 4
-  "TL01-002": { id: "TL01-002", category: "Leader", cost: 5, power: 5000, counter: null, colors: ["Blue"], types: ["Test"] },
-  "TC01-001": { id: "TC01-001", category: "Character", cost: 1, power: 2000, counter: 1000, colors: ["Red"], types: ["Test"] },
-  "TC01-002": { id: "TC01-002", category: "Character", cost: 2, power: 3000, counter: 2000, colors: ["Red"], types: ["Test"] },
-  "TC01-003": { id: "TC01-003", category: "Character", cost: 4, power: 6000, counter: null, colors: ["Red"], types: ["Test"] },
+  "TL01-002": { id: "TL01-002", category: "Leader", cost: 5, power: 5000, counter: null, colors: ["Blue", "Red"], types: ["Test"] },
   "TE01-001": { id: "TE01-001", category: "Event", cost: 1, power: null, counter: null, colors: ["Red"], types: ["Test"] },
   "TS01-001": { id: "TS01-001", category: "Stage", cost: 1, power: null, counter: null, colors: ["Red"], types: ["Test"] },
 };
+const addChars = (prefix: string, n: number, cost: number, power: number, counter: number | null) => {
+  for (let i = 1; i <= n; i++) {
+    const id = `${prefix}-${String(i).padStart(2, "0")}`;
+    CARDS[id] = { id, category: "Character", cost, power, counter, colors: ["Red"], types: ["Test"] };
+  }
+};
+addChars("TC1", 6, 1, 2000, 1000); // 6 card numbers × 4 copies = 24 one-cost
+addChars("TC2", 4, 2, 3000, 2000); // 16 two-cost
+addChars("TC4", 2, 4, 6000, null); // 8 four-cost
+
 const db: CardDb = (id) => {
   const c = CARDS[id];
   if (!c) throw new Error(`unknown card ${id}`);
   return c;
 };
 
-/** 50-card deck: 20× 1-cost, 15× 2-cost, 10× 4-cost char, 3× event, 2× stage. */
+/** Legal 50-card deck: 48 characters (4 copies each of 12 numbers) + 1 event + 1 stage. */
 const DECK: string[] = [
-  ...Array(20).fill("TC01-001"),
-  ...Array(15).fill("TC01-002"),
-  ...Array(10).fill("TC01-003"),
-  ...Array(3).fill("TE01-001"),
-  ...Array(2).fill("TS01-001"),
+  ...Object.keys(CARDS).filter((id) => CARDS[id].category === "Character").flatMap((id) => Array<string>(4).fill(id)),
+  "TE01-001",
+  "TS01-001",
 ];
 
 const CONFIG: GameConfig = {
@@ -70,9 +78,17 @@ function newGame() {
   return { s, log };
 }
 
-// find a hand card of a given cardId
-const inHand = (s: AutoGameState, pid: string, cardId: string) =>
-  s.players[pid].zones.hand.find((iid) => s.players[pid].instances[iid].cardId === cardId);
+// hand finders (cost-based — card numbers within a cost tier share stats)
+const handChar = (s: AutoGameState, pid: string, cost: number) =>
+  s.players[pid].zones.hand.find((iid) => {
+    const c = db(s.players[pid].instances[iid].cardId);
+    return c.category === "Character" && c.cost === cost;
+  });
+const handCounterCard = (s: AutoGameState, pid: string) =>
+  s.players[pid].zones.hand.find((iid) => {
+    const c = db(s.players[pid].instances[iid].cardId);
+    return c.category === "Character" && (c.counter ?? 0) > 0;
+  });
 
 // ─── setup (5) ───────────────────────────────────────────────────────────────
 
@@ -110,8 +126,49 @@ describe("setup (5-2)", () => {
 
   it("rejects decks that are not exactly 50 cards (5-1-2)", () => {
     expect(() =>
-      createGame(db, { ...CONFIG, players: [{ id: "a", leader: "TL01-001", deck: DECK.slice(1) }, CONFIG.players[1]] }),
+      createGame(db, { ...CONFIG, players: [{ id: "alice", leader: "TL01-001", deck: DECK.slice(1) }, CONFIG.players[1]] }),
     ).toThrow(EngineError);
+  });
+
+  it("rejects more than 4 copies of a card number (5-1-2-3)", () => {
+    const fiveCopies = [...DECK.slice(0, 45), ...Array<string>(5).fill("TC1-01")];
+    expect(() =>
+      createGame(db, { ...CONFIG, players: [{ id: "alice", leader: "TL01-001", deck: fiveCopies }, CONFIG.players[1]] }),
+    ).toThrow(/max 4/);
+  });
+
+  it("rejects deck cards whose colors are not on the leader (5-1-2-2)", () => {
+    CARDS["TCX-BLU"] = { id: "TCX-BLU", category: "Character", cost: 1, power: 2000, counter: 1000, colors: ["Blue"], types: ["Test"] };
+    const withBlue = [...DECK.slice(0, 49), "TCX-BLU"];
+    // alice's leader is mono-Red → Blue card illegal
+    expect(() =>
+      createGame(db, { ...CONFIG, players: [{ id: "alice", leader: "TL01-001", deck: withBlue }, CONFIG.players[1]] }),
+    ).toThrow(/5-1-2-2/);
+    // bob's leader is Blue/Red → same deck is legal for him
+    expect(() =>
+      createGame(db, { ...CONFIG, players: [CONFIG.players[0], { id: "bob", leader: "TL01-002", deck: withBlue }] }),
+    ).not.toThrow();
+    delete CARDS["TCX-BLU"];
+  });
+
+  it("deck-out defeat lands the moment the last card is drawn (1-2-1-1-2, 9-1-2)", () => {
+    let { s, log } = newGame();
+    // nobody plays anything: alternate endTurn until a draw empties a deck.
+    // bob (Life 5) has 40 deck cards and draws from turn 2 → he empties first.
+    let guard = 0;
+    while (s.phase !== "over" && guard++ < 250) {
+      s = run(s, log, [{ type: "endTurn", player: s.turnPlayer }]);
+    }
+    expect(s.phase).toBe("over");
+    expect(s.winReason).toBe("deckOut");
+    expect(s.winner).toBe("alice");
+    // defeat fired IMMEDIATELY on the emptying draw: bob's deck is 0 and the
+    // game did not wait for his next draw attempt
+    expect(s.players.bob.zones.deck).toHaveLength(0);
+    const gameEnd = log[log.length - 1];
+    const lastDraw = log[log.length - 2];
+    expect(gameEnd.type).toBe("gameEnded");
+    expect(lastDraw.type).toBe("cardsDrawn");
   });
 });
 
@@ -121,11 +178,11 @@ describe("playing cards and DON (6-5)", () => {
   it("pays costs by resting DON and refuses without enough active DON", () => {
     let { s, log } = newGame();
     // alice turn 1: 1 active DON. TC01-002 costs 2 → illegal.
-    const twoCost = inHand(s, "alice", "TC01-002");
+    const twoCost = handChar(s, "alice", 2);
     if (twoCost) {
       expect(() => applyIntent(db, s, { type: "playCard", player: "alice", iid: twoCost })).toThrow(/active DON/);
     }
-    const oneCost = inHand(s, "alice", "TC01-001")!;
+    const oneCost = handChar(s, "alice", 1)!;
     s = run(s, log, [{ type: "playCard", player: "alice", iid: oneCost }]);
     expect(s.players.alice.zones.characterArea).toContain(oneCost);
     expect(s.players.alice.don.active).toBe(0);
@@ -191,7 +248,7 @@ describe("battle (7-1)", () => {
   /** Game advanced so alice has a character on board and it's her turn 3. */
   function battleReady() {
     let { s, log } = newGame();
-    const c = inHand(s, "alice", "TC01-001")!;
+    const c = handChar(s, "alice", 1)!;
     s = run(s, log, [
       { type: "playCard", player: "alice", iid: c },   // turn 1, cost 1
       { type: "endTurn", player: "alice" },
@@ -205,14 +262,14 @@ describe("battle (7-1)", () => {
     const bobLeader = s.players.bob.leaderIid;
     expect(() => applyIntent(db, s, { type: "attack", player: "alice", attackerIid: s.players.alice.leaderIid, targetIid: bobLeader }))
       .toThrow(/first turn/);
-    const c = inHand(s, "alice", "TC01-001")!;
+    const c = handChar(s, "alice", 1)!;
     s = run(s, log, [
       { type: "playCard", player: "alice", iid: c },
       { type: "endTurn", player: "alice" },
       { type: "endTurn", player: "bob" },
     ]);
     // turn 3: the character played turn 1 can attack; play a NEW one → sick
-    const fresh = inHand(s, "alice", "TC01-001") ?? inHand(s, "alice", "TC01-002");
+    const fresh = handChar(s, "alice", 1) ?? handChar(s, "alice", 2);
     if (fresh) {
       s = run(s, log, [{ type: "playCard", player: "alice", iid: fresh }]);
       expect(() => applyIntent(db, s, { type: "attack", player: "alice", attackerIid: fresh, targetIid: s.players.bob.leaderIid }))
@@ -237,7 +294,7 @@ describe("battle (7-1)", () => {
   it("counter values from hand can flip the outcome (7-1-3-2-1)", () => {
     let { s, log } = battleReady();
     const bob = s.players.bob;
-    const counterCard = inHand(s, "bob", "TC01-001") ?? inHand(s, "bob", "TC01-002");
+    const counterCard = handCounterCard(s, "bob");
     expect(counterCard).toBeTruthy();
     const lifeBefore = bob.zones.life.length;
     s = run(s, log, [
@@ -255,7 +312,7 @@ describe("battle (7-1)", () => {
     let { s, log } = battleReady();
     // bob: play a character on his turn 4 and rest it by attacking alice's leader? Simpler:
     // bob plays a char turn 4; alice attacks it on turn 5 while it is rested via bob attacking.
-    const bobChar = inHand(s, "bob", "TC01-001")!;
+    const bobChar = handChar(s, "bob", 1)!;
     s = run(s, log, [
       { type: "endTurn", player: "alice" },                       // → bob turn 4
       { type: "playCard", player: "bob", iid: bobChar },

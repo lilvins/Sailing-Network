@@ -360,6 +360,24 @@ src/autosim/ir/schema.json e i golden examples; valida con i 3 livelli del
    no-op loggato (`eventCardUsed`) — l'esecuzione arriva con M2.
 8. `resolveJsonModule` aggiunto a tsconfig.app.json (import dei golden JSON).
 
+**Post-M0 (2026-07-31) — esito dei check multi-agente** (coerenza piano/regole,
+fluidità partita, estensibilità carte). Fix applicati:
+9. **Deck-out immediato** (finding major confermato): pescare l'ultima carta fa
+   perdere sul colpo (1-2-1-1-2 + 9-1-2), non al tentativo di pesca successivo.
+   Test dedicato che verifica anche l'ordine esatto degli eventi.
+10. **Costruzione mazzo completa** (finding minor confermato): oltre alle 50
+    carte ora si valida max 4 copie per numero (5-1-2-3), colori inclusi nel
+    leader (5-1-2-2, multicolor ok) e niente Leader nel mazzo (5-1-2-1).
+    Le fixture di test sono state rese construction-legal.
+11. **Fuzz suite permanente** (`__tests__/fuzz.test.ts`, iniziata dall'agente
+    smoothness e completata a mano): 32 partite casuali seedate + 8 run di
+    probe illegali; invarianti dopo OGNI intent (conservazione carte e DON,
+    pile mai rested, caps zone, coerenza pendingChoice/battle, purezza di
+    applyIntent, terminazione, JSON round-trip throttled). Il fuzz ha scovato
+    due buchi reali, entrambi fixati: intent di tipo sconosciuto accettati in
+    silenzio (ora default case → EngineError) e `concede` da un giocatore
+    inesistente che assegnava la vittoria (ora requirePlayer).
+
 ## Fonti
 
 - Comprehensive Rules v1.2.0 ufficiali (PDF Bandai, estratto in

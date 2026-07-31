@@ -53,12 +53,20 @@ function shuffleDeck(state: AutoGameState, log: GameEvent[], player: PID): void 
 function drawCards(state: AutoGameState, log: GameEvent[], player: PID, count: number): void {
   const p = state.players[player];
   for (let i = 0; i < count; i++) {
-    // 9-2-1-2: 0 cards in deck = defeat, checked the moment it occurs
+    // defensive: an empty deck can't normally be reached (the game ends the
+    // moment it empties, below) but a draw against it is still a defeat
     if (p.zones.deck.length === 0) {
       emit(state, log, { type: "gameEnded", winner: opponentOf(state, player), reason: "deckOut" });
       return;
     }
     emit(state, log, { type: "cardsDrawn", player, iids: [p.zones.deck[0]] });
+    // 1-2-1-1-2 + 9-1-2: 0 cards in deck is a defeat condition and rule
+    // processing resolves IMMEDIATELY — drawing your last card loses on the
+    // spot, not on the next draw attempt.
+    if (p.zones.deck.length === 0) {
+      emit(state, log, { type: "gameEnded", winner: opponentOf(state, player), reason: "deckOut" });
+      return;
+    }
   }
 }
 
@@ -97,8 +105,24 @@ export function createGame(db: CardDb, config: GameConfig): EngineResult {
     config.firstPlayer === a.id ? [a.id, b.id] : [b.id, a.id];
 
   const mkPlayer = (pc: { id: PID; leader: string; deck: string[] }, seat: string): AutoPlayerState => {
+    // deck construction rules (5-1-2, checked at presentation per 5-2-1-1)
     if (pc.deck.length !== 50) throw new EngineError(`${pc.id}: deck must have exactly 50 cards (5-1-2)`);
-    if (db(pc.leader).category !== "Leader") throw new EngineError(`${pc.id}: leader card is not a Leader`);
+    const leaderCard = db(pc.leader);
+    if (leaderCard.category !== "Leader") throw new EngineError(`${pc.id}: leader card is not a Leader`);
+    const leaderColors = new Set(leaderCard.colors);
+    const copies = new Map<string, number>();
+    for (const cardId of pc.deck) copies.set(cardId, (copies.get(cardId) ?? 0) + 1);
+    for (const [cardId, n] of copies) {
+      // 5-1-2-3 / 2-14-2: no more than 4 cards with the same card number
+      if (n > 4) throw new EngineError(`${pc.id}: ${n} copies of ${cardId} (max 4, 5-1-2-3)`);
+      const card = db(cardId);
+      // 5-1-2-1: main deck holds Character/Event/Stage cards only
+      if (card.category === "Leader") throw new EngineError(`${pc.id}: ${cardId} is a Leader — not a deck card (5-1-2-1)`);
+      // 5-1-2-2: only colors included on the Leader card
+      if (!card.colors.some((c) => leaderColors.has(c))) {
+        throw new EngineError(`${pc.id}: ${cardId} colors [${card.colors.join(",")}] not on the leader (5-1-2-2)`);
+      }
+    }
     const p: AutoPlayerState = {
       id: pc.id,
       leaderIid: `${seat}#L`,
@@ -325,9 +349,17 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
 
     case "concede": {
       requireGameRunning(state);
+      requirePlayer(state, intent.player);
       // 1-2-3: a player may concede at any point
       emit(state, log, { type: "gameEnded", winner: opponentOf(state, intent.player), reason: "concession" });
       break;
+    }
+
+    default: {
+      // runtime guard for malformed input (network/UI); `never` keeps the
+      // switch exhaustive at compile time
+      const exhaustive: never = intent;
+      throw new EngineError(`unknown intent type: ${(exhaustive as { type?: string }).type}`);
     }
   }
 
