@@ -189,10 +189,10 @@
   --bg2: #e3e8f0;
   --elev: #ffffff;
   --elev2: #e9edf5;
-  --acc2: #9a6f1c; /* brass darkened for contrast on light */
-  --brass: #9a6f1c;
-  --brass-hi: #7c5a13;
-  --brass-dim: rgba(154, 111, 28, 0.4);
+  --acc2: #2b4a8b; /* sea blue for contrast on light */
+  --brass: #2b4a8b;
+  --brass-hi: #1d3f7d;
+  --brass-dim: rgba(43, 74, 139, 0.45);
   --glass: #ffffff;
   --glass2: #ffffff;
   --edge: rgba(20, 30, 45, 0.1);

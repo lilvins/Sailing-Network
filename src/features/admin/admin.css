@@ -64,7 +64,7 @@
   background: var(--glass2);
 }
 .adm-row.self {
-  background: rgba(227, 178, 76, 0.06);
+  background: rgba(191,227,232, 0.06);
 }
 
 .adm-user {
@@ -108,9 +108,9 @@
   font: 700 9.5px var(--font);
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--acc2, #caa023);
-  background: rgba(227, 178, 76, 0.14);
-  border: 1px solid rgba(227, 178, 76, 0.35);
+  color: var(--acc2, #8fd0da);
+  background: rgba(191,227,232, 0.14);
+  border: 1px solid rgba(191,227,232, 0.35);
   border-radius:0;
   padding: 1px 5px;
 }
@@ -136,8 +136,8 @@
 }
 .adm-role.admin {
   color: #ffd98a;
-  background: rgba(227, 178, 76, 0.16);
-  border: 1px solid rgba(227, 178, 76, 0.4);
+  background: rgba(191,227,232, 0.16);
+  border: 1px solid rgba(191,227,232, 0.4);
 }
 .adm-role.user {
   color: var(--muted);
@@ -162,8 +162,8 @@
   transform: scale(0.96);
 }
 .adm-btn.promote:hover {
-  border-color: rgba(227, 178, 76, 0.5);
-  background: rgba(227, 178, 76, 0.12);
+  border-color: rgba(191,227,232, 0.5);
+  background: rgba(191,227,232, 0.12);
   color: #ffd98a;
 }
 .adm-btn.demote:hover {

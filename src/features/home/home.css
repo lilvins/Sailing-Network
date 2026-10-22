@@ -7,16 +7,16 @@
    page is a tool, not a landing.
    =========================================================== */
 .sn{
-  /* elevations (navy, darkest → raised) — solid blocks only */
-  --bg:var(--night-0,#060a12); --bg2:var(--night-1,#0a1120);
-  --elev:var(--night-2,#0d1526); --elev2:var(--night-3,#121c30);
-  --ocean-a:#040a14; --ocean-b:#081527; --ocean-c:#0c2033;
-  --glass:#0c1322; --glass2:#090f1b; /* legacy names — now SOLID panels */
-  --edge:rgba(236,230,216,0.10); --edge2:rgba(236,230,216,0.18);
-  --brass:#c9973b; --brass-hi:#e8bd62; --brass-dim:rgba(201,151,59,0.45);
+  /* elevations (night-sea blues, sampled from the pixel art) */
+  --bg:var(--night-0,#0a0f1e); --bg2:var(--night-1,#10172b);
+  --elev:var(--night-2,#131c33); --elev2:var(--night-3,#1c2947);
+  --ocean-a:#0a0f1e; --ocean-b:#121c38; --ocean-c:#1c2f52;
+  --glass:#121a30; --glass2:#0d1326; /* legacy names — SOLID panels */
+  --edge:rgba(148,172,220,0.14); --edge2:rgba(148,172,220,0.26);
+  --brass:#2b4a8b; --brass-hi:#bfe3e8; --brass-dim:rgba(91,130,204,0.55);
   --acc:#e23b32;            /* signal red — primary actions / danger only */
-  --acc2:#d9a84a;           /* brass accent (legacy var name, used site-wide) */
-  --txt:#ece6d8; --muted:#a5a090;
+  --acc2:#bfe3e8;           /* MOONLIGHT accent (legacy var name, used site-wide) */
+  --txt:#f0f3f7; --muted:#93a1bd;
   --font:'Manrope',system-ui,sans-serif;
   --display:'Sora',system-ui,sans-serif;
   --serif:'Sora',system-ui,sans-serif; /* legacy alias: titles are bold sans */
@@ -62,7 +62,23 @@
 /* =================================================================
    HOME — the hub. Play · social rail · live data · index.
    ================================================================= */
-.sn-hub{display:flex;flex-direction:column;gap:14px;padding:clamp(12px,2vw,22px) clamp(14px,2.6vw,30px);min-height:100dvh;width:100%;max-width:1480px;margin:0 auto;}
+.sn-hub{--pad-y:clamp(12px,2vw,22px);--pad-x:clamp(14px,2.6vw,30px);display:flex;flex-direction:column;gap:14px;padding:0 var(--pad-x) var(--pad-y);min-height:100dvh;width:100%;max-width:1480px;margin:0 auto;}
+
+/* hero band: REAL card art (public/assets/bg/card-collage-wide.png) behind
+   header + Play. The photo is the signature; a flat scrim keeps text legible. */
+.hu-hero{position:relative;isolation:isolate;margin:0 calc(-1*var(--pad-x));padding:var(--pad-y) var(--pad-x) 16px;display:flex;flex-direction:column;gap:14px;background:#070b16 url("/assets/bg/card-collage-wide.png") center 28%/cover no-repeat;border-bottom:2px solid var(--brass);}
+.hu-hero::before{content:'';position:absolute;inset:0;background:rgba(7,11,22,0.56);z-index:-1;}
+/* hero sits on the same dark photo in BOTH themes: force light text there */
+.hu-hero,
+.hu-hero .sn-logo-name,
+.hu-hero .hu-me-name,
+.hu-hero .hu-sec h2{color:#f0f3f7;}
+.hu-hero .hu-me-sub{color:#b9c6d8;}
+.hu-hero .sn-logo-tag{color:#bfe3e8;}
+.hu-hero .hu-sec-link{color:#bfe3e8;}
+.hu-hero .sn-pill{background:rgba(16,23,43,0.9);color:#b9c6d8;border-color:rgba(148,172,220,0.3);}
+.hu-hero .hu-me:hover{background:rgba(16,23,43,0.7);border-color:rgba(148,172,220,0.3);}
+.hu-hero .sn-rule{background:rgba(148,172,220,0.35);}
 
 /* header */
 .hu-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
@@ -87,18 +103,18 @@
 
 /* ---- Play band ---- */
 .hu-play{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.hu-mode{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:14px 16px 13px;border:1px solid var(--edge2);border-top:3px solid var(--brass);background:var(--elev);color:var(--txt);cursor:pointer;transition:background .1s,border-color .1s;}
-.hu-mode:hover{background:var(--elev2);border-color:var(--brass-dim);border-top-color:var(--brass-hi);}
-.hu-mode:active{background:var(--bg2);}
+.hu-mode{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:14px 16px 13px;border:1px solid var(--edge2);border-top:3px solid var(--brass);background:rgba(16,23,43,0.92);color:var(--txt);cursor:pointer;transition:background .1s,border-color .1s;}
+.hu-mode:hover{background:rgba(28,41,71,0.95);border-color:var(--brass-dim);border-top-color:var(--brass-hi);}
+.hu-mode:active{background:rgba(10,15,30,0.95);}
 .hu-mode-badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);border:1px solid var(--edge2);padding:3px 8px;}
 .hu-mode-name{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.2px;text-transform:uppercase;}
 .hu-mode-sub{font-size:12px;line-height:1.4;color:var(--muted);}
 .hu-mode-go{margin-top:auto;padding-top:6px;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--acc2);display:inline-flex;align-items:center;gap:6px;}
 /* the multiplayer mode carries the signal red — the page's one red card */
-.hu-mode.duel{background:#1a0d0e;border-color:rgba(226,59,50,0.5);border-top-color:var(--acc);}
-.hu-mode.duel:hover{background:#241114;border-top-color:#f0554b;}
+.hu-mode.duel{background:rgba(31,13,16,0.93);border-color:rgba(226,59,50,0.5);border-top-color:var(--acc);}
+.hu-mode.duel:hover{background:rgba(44,18,22,0.95);border-top-color:#f0554b;}
 .hu-mode.duel .hu-mode-go{color:#ff9a93;}
-.hu-mode.auto .hu-mode-badge{color:#141006;background:var(--brass-hi);border-color:var(--brass);font-weight:800;}
+.hu-mode.auto .hu-mode-badge{color:#0a0f1e;background:#bfe3e8;border-color:#2b4a8b;font-weight:800;}
 
 /* ---- gauges: live network counters (flat strip, mono) ---- */
 .hu-gauges{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--edge2);background:var(--elev);}

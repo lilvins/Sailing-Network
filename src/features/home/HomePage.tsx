@@ -65,12 +65,12 @@ function Logo() {
   return (
     <div className="sn-logo">
       <svg className="sn-logo-icon" style={{ width: 42, height: 42 }} viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="22" stroke="rgba(201,151,59,0.55)" strokeWidth="1.5" />
+        <circle cx="24" cy="24" r="22" stroke="rgba(191,227,232,0.55)" strokeWidth="1.5" />
         <path d="M24 5 L27 21 L24 19 L21 21 Z" fill="#e23b32" />
-        <path d="M24 43 L21 27 L24 29 L27 27 Z" fill="#ece6d8" opacity=".7" />
-        <path d="M5 24 L21 21 L19 24 L21 27 Z" fill="#ece6d8" opacity=".7" />
-        <path d="M43 24 L27 27 L29 24 L27 21 Z" fill="#ece6d8" opacity=".7" />
-        <circle cx="24" cy="24" r="3.5" fill="#d9a84a" />
+        <path d="M24 43 L21 27 L24 29 L27 27 Z" fill="#f0f3f7" opacity=".7" />
+        <path d="M5 24 L21 21 L19 24 L21 27 Z" fill="#f0f3f7" opacity=".7" />
+        <path d="M43 24 L27 27 L29 24 L27 21 Z" fill="#f0f3f7" opacity=".7" />
+        <circle cx="24" cy="24" r="3.5" fill="#bfe3e8" />
       </svg>
       <div className="sn-logo-text">
         <span className="sn-logo-name" style={{ fontSize: 19 }}>
@@ -252,49 +252,51 @@ export function HomePage() {
 
   return (
     <div className="sn sn-hub">
-      <header className="hu-head">
-        <Logo />
-        <div className="hu-head-r">
-          {stats && (
-            <div className="sn-pill">
-              <span className="sn-livedot" /> {fmt(stats.captains)} captains aboard
-            </div>
-          )}
-          <button className="hu-me" title="Your profile" onClick={() => openProfile(null)}>
-            <LeaderAvatar
-              name={user?.displayName || "?"}
-              color={myAvatar.color}
-              image={myAvatar.image}
-              size={38}
-            />
-            <span>
-              <span className="hu-me-name">{user?.displayName || "Captain"}</span>
-              <span className="hu-me-sub">@{user?.username || ""}</span>
-            </span>
-          </button>
+      {/* hero band — real card art behind header + Play */}
+      <div className="hu-hero">
+        <header className="hu-head">
+          <Logo />
+          <div className="hu-head-r">
+            {stats && (
+              <div className="sn-pill">
+                <span className="sn-livedot" /> {fmt(stats.captains)} captains aboard
+              </div>
+            )}
+            <button className="hu-me" title="Your profile" onClick={() => openProfile(null)}>
+              <LeaderAvatar
+                name={user?.displayName || "?"}
+                color={myAvatar.color}
+                image={myAvatar.image}
+                size={38}
+              />
+              <span>
+                <span className="hu-me-name">{user?.displayName || "Captain"}</span>
+                <span className="hu-me-sub">@{user?.username || ""}</span>
+              </span>
+            </button>
+          </div>
+        </header>
+
+        <div className="hu-sec">
+          <h2>Play</h2>
+          <div className="sn-rule" />
         </div>
-      </header>
+        <section className="hu-play">
+          {MODES.map((m) => (
+            <button key={m.id} className={"hu-mode" + (m.cls ? ` ${m.cls}` : "")} onClick={() => setView(m.view)}>
+              <span className="hu-mode-badge">{m.badge}</span>
+              <span className="hu-mode-name">{m.name}</span>
+              <span className="hu-mode-sub">{m.sub}</span>
+              <span className="hu-mode-go">
+                {m.go} <Icon name="arrow" size={13} sw={2.2} />
+              </span>
+            </button>
+          ))}
+        </section>
+      </div>
 
       <div className="hu-grid">
         <main className="hu-main">
-          {/* ---- Play ---- */}
-          <div className="hu-sec">
-            <h2>Play</h2>
-            <div className="sn-rule" />
-          </div>
-          <section className="hu-play">
-            {MODES.map((m) => (
-              <button key={m.id} className={"hu-mode" + (m.cls ? ` ${m.cls}` : "")} onClick={() => setView(m.view)}>
-                <span className="hu-mode-badge">{m.badge}</span>
-                <span className="hu-mode-name">{m.name}</span>
-                <span className="hu-mode-sub">{m.sub}</span>
-                <span className="hu-mode-go">
-                  {m.go} <Icon name="arrow" size={13} sw={2.2} />
-                </span>
-              </button>
-            ))}
-          </section>
-
           {/* ---- live gauges ---- */}
           <section className="hu-gauges">
             <div className="hu-gauge">

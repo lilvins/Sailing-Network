@@ -5,28 +5,20 @@ import { api, type SiteStats } from "../../lib/api";
 import "../home/home.css"; // for the shared .sn vars/atoms
 import "./login.css";
 
-/* The landing/login — night harbor, static and fast (no canvas, no
-   particles). Wired to the real backend: login + signup against /api/auth/*. */
+/* The landing/login — the right side is the REAL "Moon and Sea" pixel art
+   (public/assets/bg/night-sea, CraftPix via OpenGameArt, OGA-BY 3.0),
+   layered PNGs with slow functional drift. Wired to the real backend. */
 
-/** A fixed scatter of faint stars as plain SVG — zero runtime cost. */
-function Stars() {
-  const pts: [number, number, number][] = [
-    [8, 6, 1.2], [16, 14, 0.9], [24, 4, 1.1], [31, 18, 0.8], [38, 9, 1.3],
-    [46, 5, 0.9], [53, 15, 1.1], [61, 8, 0.8], [68, 19, 1.2], [75, 6, 0.9],
-    [83, 12, 1.2], [90, 4, 0.8], [95, 16, 1.0], [12, 26, 0.8], [43, 27, 1.0],
-    [71, 30, 0.9], [88, 26, 1.1], [27, 34, 0.9], [58, 36, 0.8],
-  ];
+/** Layered pixel-art scene: base sky+sea, moon, drifting clouds, shimmering
+    moon reflections. All real PNGs — nothing drawn in markup. */
+function NightSea() {
   return (
-    <svg
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      {pts.map(([x, y, r], i) => (
-        <circle key={i} cx={x} cy={y} r={r * 0.22} fill="#ece6d8" opacity={0.5} />
-      ))}
-    </svg>
+    <div className="nsea" aria-hidden="true">
+      <div className="nsea-layer nsea-base" />
+      <div className="nsea-layer nsea-moon" />
+      <div className="nsea-layer nsea-clouds" />
+      <div className="nsea-layer nsea-refl" />
+    </div>
   );
 }
 
@@ -217,11 +209,9 @@ export function LoginPage() {
         </div>
       </aside>
 
-      {/* RIGHT — static night scene */}
+      {/* RIGHT — the real pixel-art night sea */}
       <main className="snlogin-scene">
-        <Stars />
-
-        <div className="snlogin-grand">GRAND LINE</div>
+        <NightSea />
 
         <div className="snlogin-scene-label">
           <span className="snlogin-livedot" />
@@ -232,67 +222,10 @@ export function LoginPage() {
           <span className="val">{stats ? stats.captains.toLocaleString() : "—"}</span>
           <span className="lbl">Registered captains</span>
         </div>
-        <div className="snlogin-stat" style={{ top: 132, right: 52, animationDelay: "-2s" }}>
+        <div className="snlogin-stat" style={{ top: 132, right: 52 }}>
           <span className="val">{stats ? stats.matches.toLocaleString() : "—"}</span>
           <span className="lbl">Matches logged</span>
         </div>
-
-        <div className="snlogin-hero-frame">
-          <div className="snlogin-hero-ph">Your Captain</div>
-        </div>
-
-        <div className="snlogin-ship">
-          <svg width="260" height="100" viewBox="0 0 260 100" fill="none">
-            <path d="M10 72 Q130 95 250 72 L240 82 Q130 106 20 82 Z" fill="#0e1826" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-            <path d="M18 76 Q130 92 242 76" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-            <line x1="130" y1="12" x2="130" y2="72" stroke="#1c2c3e" strokeWidth="4" />
-            <line x1="80" y1="28" x2="80" y2="72" stroke="#1c2c3e" strokeWidth="3" />
-            <path d="M132 14 L166 42 L132 70 Z" fill="rgba(232,237,244,0.88)" />
-            <path d="M128 14 L94 42 L128 70 Z" fill="rgba(232,237,244,0.72)" />
-            <path d="M82 30 L106 48 L82 66 Z" fill="rgba(232,237,244,0.65)" />
-            <path d="M78 30 L54 48 L78 66 Z" fill="rgba(232,237,244,0.5)" />
-            <path d="M80 30 Q50 40 20 72 L80 72 Z" fill="rgba(232,237,244,0.30)" />
-            <path d="M130 12 L152 4 L130 -4 Z" fill="#e23b32" />
-            <circle cx="70" cy="82" r="4" fill="rgba(227,178,76,0.5)" />
-            <circle cx="100" cy="86" r="4" fill="rgba(227,178,76,0.5)" />
-            <circle cx="130" cy="88" r="4" fill="rgba(227,178,76,0.5)" />
-            <circle cx="160" cy="86" r="4" fill="rgba(227,178,76,0.5)" />
-            <circle cx="190" cy="82" r="4" fill="rgba(227,178,76,0.5)" />
-          </svg>
-        </div>
-
-        <div className="snlogin-waves">
-          <svg className="snlogin-wave snlogin-wave-1" viewBox="0 0 1440 120" preserveAspectRatio="none" height="120">
-            <path d="M0 60 C120 20 240 100 360 60 C480 20 600 100 720 60 C840 20 960 100 1080 60 C1200 20 1320 100 1440 60 L1440 120 L0 120 Z" fill="#0c2035" />
-            <path d="M1440 60 C1560 20 1680 100 1800 60 C1920 20 2040 100 2160 60 C2280 20 2400 100 2520 60 C2640 20 2760 100 2880 60 L2880 120 L1440 120 Z" fill="#0c2035" />
-          </svg>
-          <svg className="snlogin-wave snlogin-wave-2" viewBox="0 0 1440 100" preserveAspectRatio="none" height="100">
-            <path d="M0 50 C180 10 360 90 540 50 C720 10 900 90 1080 50 C1260 10 1440 90 1440 50 L1440 100 L0 100 Z" fill="#091826" opacity="0.9" />
-            <path d="M1440 50 C1620 10 1800 90 1980 50 C2160 10 2340 90 2520 50 C2700 10 2880 90 2880 50 L2880 100 L1440 100 Z" fill="#091826" opacity="0.9" />
-          </svg>
-          <svg className="snlogin-wave snlogin-wave-3" viewBox="0 0 1440 80" preserveAspectRatio="none" height="80">
-            <path d="M0 40 C240 5 480 75 720 40 C960 5 1200 75 1440 40 L1440 80 L0 80 Z" fill="#08131f" />
-            <path d="M1440 40 C1680 5 1920 75 2160 40 C2400 5 2640 75 2880 40 L2880 80 L1440 80 Z" fill="#08131f" />
-          </svg>
-        </div>
-
-        <svg className="snlogin-compass" viewBox="0 0 90 90" fill="none">
-          <circle cx="45" cy="45" r="42" stroke="rgba(227,178,76,0.30)" strokeWidth="1.5" />
-          <circle cx="45" cy="45" r="32" stroke="rgba(227,178,76,0.16)" strokeWidth="1" />
-          <g stroke="rgba(227,178,76,0.5)" strokeWidth="1.5">
-            <line x1="45" y1="5" x2="45" y2="15" />
-            <line x1="45" y1="75" x2="45" y2="85" />
-            <line x1="5" y1="45" x2="15" y2="45" />
-            <line x1="75" y1="45" x2="85" y2="45" />
-          </g>
-          <path d="M45 14 L49 42 L45 38 L41 42 Z" fill="#e23b32" />
-          <path d="M45 76 L41 48 L45 52 L49 48 Z" fill="rgba(232,237,244,0.55)" />
-          <path d="M76 45 L48 41 L52 45 L48 49 Z" fill="rgba(232,237,244,0.55)" />
-          <path d="M14 45 L42 49 L38 45 L42 41 Z" fill="rgba(232,237,244,0.55)" />
-          <circle cx="45" cy="45" r="4" fill="#e3b24c" />
-          <circle cx="45" cy="45" r="2" fill="#fff" />
-        </svg>
-
       </main>
     </div>
   );

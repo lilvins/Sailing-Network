@@ -58,17 +58,19 @@
      warm ivory text. The .sn design scope (home.css) maps its own
      vars onto these; they live here so any page can reach them.
      --------------------------------------------------------------- */
-  --night-0: #060a12; /* abyss — page floor */
-  --night-1: #0a1120; /* hull — page wash */
-  --night-2: #0d1526; /* deck — raised panel */
-  --night-3: #121c30; /* console — nested surface */
-  --brass: #c9973b; /* instrument metal (borders, rules, ticks) */
-  --brass-hi: #e8bd62; /* lit brass (small text, icons, numbers) */
-  --brass-dim: rgba(201, 151, 59, 0.34); /* brass hairline */
+  /* Sampled from the real pixel art (public/assets/bg/night-sea) —
+     night sky #0a0f1e→#1c2f52, sea blue #2b4a8b, moonlight #bfe3e8. */
+  --night-0: #0a0f1e; /* sky floor */
+  --night-1: #10172b; /* hull wash */
+  --night-2: #131c33; /* raised panel */
+  --night-3: #1c2947; /* nested surface */
+  --brass: #2b4a8b; /* legacy name — now SEA BLUE (borders, rules) */
+  --brass-hi: #bfe3e8; /* legacy name — now MOONLIGHT (text, numbers) */
+  --brass-dim: rgba(91, 130, 204, 0.5); /* blue hairline */
   --signal: #e23b32; /* signal red — primary actions / danger ONLY */
   --signal-hi: #f0554b;
-  --ivory: #ece6d8; /* warm ivory text */
-  --ivory-muted: #a29b8a;
+  --ivory: #f0f3f7; /* full white-ish text */
+  --ivory-muted: #93a1bd;
 
   /* Type families. Titles are bold compact sans (no display serif: the site
      reads utilitarian, DuelingBook-style — --serif stays as a legacy alias). */

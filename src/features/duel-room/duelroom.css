@@ -32,7 +32,7 @@
 .dr-pool-btn:hover{filter:brightness(1.1);}
 .dr-pool-btn.active{background:#2a3442;}
 .dr-pool-status{display:flex;align-items:center;gap:9px;margin:12px 16px 0;font-size:12px;color:var(--acc2);font-weight:600;}
-.dr-spinner{width:14px;height:14px;border-radius:0;border:2px solid rgba(227,178,76,0.3);border-top-color:var(--acc2);animation:dr-spin .8s linear infinite;}
+.dr-spinner{width:14px;height:14px;border-radius:0;border:2px solid rgba(191,227,232,0.3);border-top-color:var(--acc2);animation:dr-spin .8s linear infinite;}
 @keyframes dr-spin{to{transform:rotate(360deg);}}
 
 /* open duels */
