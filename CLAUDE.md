@@ -1,4 +1,4 @@
-# One Piece TCG — Manual Simulator · Project Brief
+# One Piece TCG — Sailing Network · Project Brief
 
 > This file is the permanent context for the project. Claude Code reads it
 > automatically each session. Keep it short, factual, and current. Detailed
@@ -9,14 +9,21 @@
 
 ## Vision
 
-A **manual-assisted** simulator for the One Piece Card Game, in the spirit of
-DuelingBook: players perform every action by hand.
+A simulator + social platform for the One Piece Card Game. Two ways to play:
+**manual boards** in the spirit of DuelingBook (players perform every action by
+hand — the original scope, still true for `board`/`board2`), and since 2026-10
+the **automatic board** `board-auto`, driven by the event-sourced AUTOSIM rules
+engine in `src/autosim/` (see `AUTOSIM_PLAN.md`). The 2026-10 drift corrections:
+there IS a backend (`server/`), there IS a rules engine (AUTOSIM — but the
+manual boards stay engine-free), and the visual identity is the "plancia di
+notte" described in CLAUDE_NOTES (real-image backgrounds, flat/angular, no AI
+slop; see the user's taste rules there).
 
-**Explicitly NOT:**
+**Explicitly NOT (on the MANUAL boards only):**
 - no rules engine
 - no move/attack validation
 - no automatic chain/effect resolution
-- no flashy animations
+- no flashy animations (this one holds everywhere)
 
 **One-line goal:** "DuelingBook for One Piece, but cleaner, modern, responsive,
 and cross-platform from a single codebase (desktop + mobile browser)."
@@ -40,7 +47,8 @@ transitions). Never chase visual effects over input latency.
 | Drag & drop    | dnd-kit           | Pointer + touch + mouse with one API; HTML5 native DnD breaks on mobile |
 | Styling        | Tailwind CSS + CSS custom properties | Fast iteration + theme tokens |
 
-No backend, no networking, no native apps. Browser only.
+No native apps; browser only. (Outdated: "no backend, no networking" — there
+is now a Fastify+SQLite backend in `server/` with real auth; see CLAUDE_NOTES.)
 
 ## THE non-negotiable rule (read this twice)
 
@@ -148,7 +156,8 @@ public/
 
 ## DO NOT (scope discipline)
 
-- Do not build a rules engine, move validation, or auto-resolution.
+- Do not add rules logic, move validation, or auto-resolution to the MANUAL
+  boards (the AUTOSIM engine lives apart in `src/autosim` + `board-auto` only).
 - Do not start networking, lobby, or accounts yet.
 - Do not build the deck builder before the board works.
 - Do not add a heavy animation library.
