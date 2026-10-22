@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Card } from "../cards/cardsDb";
-import { deriveCompiled, innateKeywords, makeCardDb } from "./compile";
+import { getCompiledCard } from "../../autosim/data/compiled";
+import { compiledFor, deriveCompiled, innateKeywords, makeCardDb } from "./compile";
 
 /** Minimal catalog card factory. */
 function card(partial: Partial<Card> & { id: string }): Card {
@@ -90,7 +91,42 @@ describe("deriveCompiled", () => {
   });
 });
 
+describe("official M2 batch takes precedence over the fallback", () => {
+  it("an ST01/OP01 id resolves to the batch IR, not the heuristic", () => {
+    // ST01-006 is [Blocker]-only in the batch; give the catalog card a text
+    // the heuristic would mis-read to prove the batch wins.
+    const c = card({ id: "ST01-006", effect: "[Blocker] (…)", trigger: "Draw 1 card." });
+    const ir = compiledFor(c)!;
+    expect(ir).toBe(getCompiledCard("ST01-006"));
+    expect(ir.notes ?? "").not.toMatch(/FALLBACK/);
+    // batch compiles the leader's [Activate: Main] for real (not manual)
+    const leader = compiledFor(card({ id: "ST01-001", category: "Leader" }))!;
+    expect(leader.classification).toBe("compiled");
+    expect(leader.effects.some((fx) => fx.actions.some((a) => a.kind === "manual"))).toBe(false);
+  });
+
+  it("a non-batched id still uses the heuristic fallback, marked as such", () => {
+    const ir = compiledFor(card({ id: "ZZ99-001", trigger: "Draw 1 card." }))!;
+    expect(getCompiledCard("ZZ99-001")).toBeUndefined();
+    expect(ir.notes).toMatch(/FALLBACK/);
+    expect(ir.classification).toBe("unsupported");
+  });
+
+  it("the batch covers all of ST01", () => {
+    for (let i = 1; i <= 17; i++) {
+      const id = `ST01-${String(i).padStart(3, "0")}`;
+      expect(getCompiledCard(id), id).toBeDefined();
+    }
+  });
+});
+
 describe("makeCardDb", () => {
+  it("uses the batch for covered ids", () => {
+    const map = new Map<string, Card>([["ST01-014", card({ id: "ST01-014", category: "Event", effect: "[Counter] …" })]]);
+    const db = makeCardDb(map);
+    expect(db("ST01-014").compiled).toBe(getCompiledCard("ST01-014"));
+  });
+
   it("maps catalog fields and caches compilation", () => {
     const map = new Map<string, Card>([
       ["L-01", card({ id: "L-01", category: "Leader", cost: 4, power: 5000 })],

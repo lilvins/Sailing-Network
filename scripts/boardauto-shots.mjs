@@ -67,9 +67,11 @@ await page.locator(".hu-mode", { hasText: "Play Auto" }).click();
 await page.waitForSelector(".ba-root", { timeout: 15000 });
 await page.waitForSelector("[data-deck-key]", { timeout: 15000 });
 
-// pick the first demo deck for both seats
-await page.locator('[data-seat="0"][data-deck-key^="demo:"]').first().click();
-await page.locator('[data-seat="1"][data-deck-key^="demo:"]').nth(1).click();
+// seat A = ST01 demo, seat B = an OP01 demo (both M2 batch-compiled sets)
+await page.locator('[data-seat="0"][data-deck-key="demo:ST01-001"]').first().click();
+const op01 = page.locator('[data-seat="1"][data-deck-key^="demo:OP01-"]');
+if (await op01.count()) await op01.first().click();
+else await page.locator('[data-seat="1"][data-deck-key^="demo:"]').nth(1).click();
 await shot("pick");
 await clickAct("start");
 

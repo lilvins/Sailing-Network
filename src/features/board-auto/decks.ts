@@ -21,8 +21,13 @@ export interface DeckChoice {
   source: "demo" | "mine";
 }
 
-/** Leaders the demo generator tries, in order (skips missing ones). */
-const DEMO_LEADERS = ["ST01-001", "ST02-001", "ST03-001", "ST04-001", "ST05-001", "ST06-001"];
+/** Leaders the demo generator tries, in order (skips missing/non-leader ids).
+ *  ST01 + OP01 first: those sets are batch-compiled (M2), so their effects
+ *  run for real on the engine. */
+const DEMO_LEADERS = [
+  "ST01-001", "OP01-001", "OP01-002", "OP01-003", "OP01-060", "OP01-091",
+  "ST02-001", "ST03-001", "ST04-001", "ST05-001", "ST06-001",
+];
 
 function hasLineTag(text: string | null | undefined, tag: string): boolean {
   if (!text) return false;

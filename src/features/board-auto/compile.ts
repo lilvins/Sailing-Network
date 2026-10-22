@@ -1,9 +1,12 @@
 /**
- * board-auto heuristic card compiler — catalog Card → engine CardDb.
+ * board-auto card compiler — catalog Card → engine CardDb.
  *
- * The real AI compilation pipeline (AUTOSIM_PLAN.md §6, milestone M2) is not
- * built yet, so this module derives a CONSERVATIVE CompiledCard from the card
- * text, enough to make real decks playable on the engine today:
+ * Source of truth, in order:
+ *  1. The OFFICIAL M2 compilation batch (`src/autosim/data/compiled`,
+ *     getCompiledCard) — ST01 + OP01 today, more sets as M3+ lands.
+ *  2. For ids NOT covered by a batch: a CONSERVATIVE heuristic FALLBACK
+ *     derived from the card text (below). It never invents semantics — when
+ *     in doubt it degrades to `unsupported`/manual (plan §1.3):
  *
  *  · innate keywords ([Blocker], [Rush], …) — only when the tag opens a line
  *    of the effect text (official layout). "gains [Rush]" mid-sentence is NOT
@@ -16,13 +19,14 @@
  *  · Event [Counter]   → a `manual` counter effect: usable in the Counter
  *    Step, card cost paid by the engine (7-1-3-2-2), resolved by hand.
  *
- * Everything else (On Play, Activate: Main, …) stays uncompiled = vanilla,
- * by design (plan §1.3 graceful degradation) until M2 compiles it for real.
+ * In the fallback, everything else (On Play, Activate: Main, …) stays
+ * uncompiled = vanilla, by design, until its set is batch-compiled.
  * NO rules logic lives here — this is card data preparation only.
  */
 import type { Card } from "../cards/cardsDb";
 import type { CompiledCard, Effect, Keyword } from "../../autosim/ir/types";
 import type { CardDb, EngineCard } from "../../autosim/engine/state";
+import { getCompiledCard } from "../../autosim/data/compiled";
 
 /** Keyword tags in match order ([Rush: Character] before [Rush]). */
 const KEYWORD_TAGS: [string, Keyword][] = [
@@ -71,7 +75,8 @@ function hasLineTag(text: string | null | undefined, tag: string): boolean {
   return text.split("\n").some((l) => l.trim().startsWith(tag));
 }
 
-/** Derive the conservative CompiledCard for a catalog card (or null = vanilla). */
+/** FALLBACK ONLY (uncompiled sets): derive the conservative CompiledCard for
+ *  a catalog card (or null = vanilla). Batch-covered ids never reach this. */
 export function deriveCompiled(card: Card): CompiledCard | null {
   const keywords = innateKeywords(card.effect);
   const effects: Effect[] = [];
@@ -100,8 +105,13 @@ export function deriveCompiled(card: Card): CompiledCard | null {
     keywords,
     counterValue: card.counter ?? undefined,
     effects,
-    notes: "derived by the board-auto heuristic compiler (pre-M2)",
+    notes: "FALLBACK — derived by the board-auto heuristic compiler (set not batch-compiled yet)",
   };
+}
+
+/** The IR for a card: official batch first, heuristic fallback otherwise. */
+export function compiledFor(card: Card): CompiledCard | undefined {
+  return getCompiledCard(card.id) ?? deriveCompiled(card) ?? undefined;
 }
 
 /** Build the engine CardDb over the loaded catalog. Compilation is cached. */
@@ -121,7 +131,7 @@ export function makeCardDb(cardsById: Map<string, Card>): CardDb {
       colors: card.colors,
       types: card.types,
       name: card.name,
-      compiled: deriveCompiled(card) ?? undefined,
+      compiled: compiledFor(card),
     };
     cache.set(cardId, engineCard);
     return engineCard;

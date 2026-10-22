@@ -118,10 +118,13 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   keyword chips, per-seat count-up clocks, human-readable event log,
   per-seat concede, game-over overlay with rematch) · `autoStore.ts`
   (zustand: serializable game state + GameEvent log + banner; catalog/CardDb
-  kept module-level) · `compile.ts` (pre-M2 heuristic text→CompiledCard:
-  line-start innate keywords; [Trigger]/[Main]/[Counter] → `manual` actions;
-  rest vanilla) · `decks.ts` (demo decks generated from the catalog with
-  blockers+triggers+[Counter] events guaranteed, plus My Decks) · `log.ts`
+  kept module-level) · `compile.ts` (card IR source: the OFFICIAL M2 batch
+  first — `src/autosim/data/compiled` getCompiledCard, ST01+OP01 — then a
+  heuristic text→CompiledCard FALLBACK for uncompiled sets only: line-start
+  innate keywords; [Trigger]/[Main]/[Counter] → `manual` actions; rest
+  vanilla) · `decks.ts` (demo decks generated from the catalog with
+  blockers+triggers+[Counter] events guaranteed — ST01/OP01 leaders first
+  since their effects run for real — plus My Decks) · `log.ts`
   (GameEvent → referee-style lines) · `boardauto.css` (ba-* — "plancia di
   notte": night/brass/signal tokens, radius 0, flat 1-2px borders, ≤150ms
   transitions, no glow; reuses `gb-card`/CardArt/DonArt from BoardPage,

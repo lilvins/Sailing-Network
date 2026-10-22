@@ -450,8 +450,11 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     in alto, entrambe le mani visibili e leggibili (user-friendliness >
     fedeltà DuelingBook; la board manuale resta ruotata). Metà tinte col
     colore del leader via `--lc` + color-mix.
-24. **Compilatore euristico pre-M2** in `features/board-auto/compile.ts`
-    (volutamente FUORI da `src/autosim`, verrà sostituito dalla pipeline M2):
+24. **Compilazione carte in `features/board-auto/compile.ts`** (volutamente
+    FUORI da `src/autosim`): dal completamento di M2 la fonte primaria è il
+    batch ufficiale (`src/autosim/data/compiled` · `getCompiledCard`, oggi
+    ST01+OP01); l'euristica sotto resta SOLO come fallback per i set non
+    ancora compilati, marcata "FALLBACK" nelle notes:
     keyword innate solo se il tag apre una riga del testo ("gains [Rush]" non
     conta); `card.trigger` → effetto `trigger` con azione `manual`; Event
     `[Main]`/`[Counter]` → effetto `main`/`counter` con azione `manual`; tutto
