@@ -442,6 +442,38 @@ endOfYourTurn/endOfOpponentsTurn/endOfBattle (il cablaggio della coda c'è,
 manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
 `draw upTo`, restriction M4, cannotBeKOd su koTarget.
 
+**UI §7 — BoardAutoPage (2026-10-22) — completata** (view `board-auto`,
+`src/features/board-auto/`). Scelte fatte dove il piano lasciava margine:
+23. **Hotseat senza rotazione** della metà avversaria: seat A in basso, seat B
+    in alto, entrambe le mani visibili e leggibili (user-friendliness >
+    fedeltà DuelingBook; la board manuale resta ruotata). Metà tinte col
+    colore del leader via `--lc` + color-mix.
+24. **Compilatore euristico pre-M2** in `features/board-auto/compile.ts`
+    (volutamente FUORI da `src/autosim`, verrà sostituito dalla pipeline M2):
+    keyword innate solo se il tag apre una riga del testo ("gains [Rush]" non
+    conta); `card.trigger` → effetto `trigger` con azione `manual`; Event
+    `[Main]`/`[Counter]` → effetto `main`/`counter` con azione `manual`; tutto
+    il resto resta vanilla (plan §1.3). Così blocker/trigger/counter-event
+    REALI aprono le finestre giuste già oggi. Nessuna logica di regole in UI.
+25. **Demo deck generati dal catalogo** (2 blocker ×4 + 2 [Counter] event ×4 +
+    3 trigger char ×4 + riempitivo stesso set, 50 carte legali 5-1-2) così
+    ogni finestra di battaglia è esercitabile; i mazzi di My Decks sono
+    selezionabili e la legalità la verifica `createGame` (errore → banner
+    spiegato, si torna alla scelta mazzi).
+26. **Starting roll fuori dal motore** (come previsto: `GameConfig.firstPlayer`
+    è "decided outside"): dadi UI, il vincitore sceglie first/second.
+27. **Counter value a un tap**: applicato al target corrente della battaglia
+    (counterare una carta fuori battaglia è legale ma inutile; meno tap).
+28. **manualResolve = ack + testo carta**: niente "mosse libere" perché M1 non
+    ha l'intent `manualAction` (il pannello lo dichiara e il log registra).
+    Limite noto: un [Trigger] reale "play this card" degrada a manual+trash.
+29. Il bottone contestuale unico (Don't block / End counters / Confirm) vive
+    IN FLUSSO tra campo e mano (mai sopra DON o counter da tappare).
+30. Dev hook `window.__auto` (solo `import.meta.env.DEV`) espone stato+legal
+    per il driver Playwright `scripts/boardauto-shots.mjs`, che gioca una
+    partita vera via UI e verifica ogni finestra (screenshot in
+    `scripts/.shots/boardauto-*.png`).
+
 ## Fonti
 
 - Comprehensive Rules v1.2.0 ufficiali (PDF Bandai, estratto in

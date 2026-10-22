@@ -20,6 +20,7 @@ import { PopularDecklistsPage } from "../features/popular/PopularDecklistsPage";
 import { AdminPage } from "../features/admin/AdminPage";
 import { BoardPage } from "../features/board/BoardPage";
 import { BoardPage2 } from "../features/board/BoardPage2";
+import { BoardAutoPage } from "../features/board-auto/BoardAutoPage";
 
 /**
  * App shell. Each ported page is full-screen (its own chrome), so there is no
@@ -121,6 +122,8 @@ function CurrentView({ view }: { view: View }) {
       return <BoardPage />;
     case "board2":
       return <BoardPage2 />;
+    case "board-auto":
+      return <BoardAutoPage />;
     default:
       return <ComingSoon view={view} />;
   }

@@ -78,6 +78,44 @@ new windows + invariants (one blocker per battle, step↔choice↔exec coherence
 modifier hygiene, [Trigger]-limbo card conservation). Decisions #12-22 + M2
 debts in AUTOSIM_PLAN.md. Next: M2 (AI compile pipeline ST01+OP01,
 [Activate: Main] intent, ChoiceRequest UI) — launch with the §10 prompt.
+**2026-10-22: BoardAutoPage DONE (plan §7)** — see "Board Auto" section below.
+
+## Board Auto — "Play Auto · Full Rules" (view `board-auto`)
+`src/features/board-auto/` (+ the `board-auto` case in `src/app/App.tsx`).
+Hotseat UI over the AUTOSIM engine: every move is a PlayerIntent through
+`autoStore.dispatch` → `applyIntent`; affordances come ONLY from
+`legality.ts` / the pending ChoiceRequest; illegal intents become an
+explained red banner (EngineError message + actionable hint), never a flat no.
+- **Files**: `BoardAutoPage.tsx` (pick → roll → game screens; tap-first
+  oplay-style grammar: 1-tap play with auto-paid costs, DON quantity dial,
+  attacker→target with dashed leader-colored SVG arrow, ONE contextual
+  bottom button, prompts for mulligan/block/counter/triggerDecision/
+  selectTargets/mayActivate/manualResolve, live power chips "8000 (+3000)",
+  keyword chips, per-seat count-up clocks, human-readable event log,
+  per-seat concede, game-over overlay with rematch) · `autoStore.ts`
+  (zustand: serializable game state + GameEvent log + banner; catalog/CardDb
+  kept module-level) · `compile.ts` (pre-M2 heuristic text→CompiledCard:
+  line-start innate keywords; [Trigger]/[Main]/[Counter] → `manual` actions;
+  rest vanilla) · `decks.ts` (demo decks generated from the catalog with
+  blockers+triggers+[Counter] events guaranteed, plus My Decks) · `log.ts`
+  (GameEvent → referee-style lines) · `boardauto.css` (ba-* — "plancia di
+  notte": night/brass/signal tokens, radius 0, flat 1-2px borders, ≤150ms
+  transitions, no glow; reuses `gb-card`/CardArt/DonArt from BoardPage,
+  re-squared). Seat A bottom / seat B top, NOT rotated (hotseat readability).
+- **Engine untouched** (`src/autosim/**` import-only), no store sharing with
+  the manual boards. 12 new vitest in `compile.test.ts` (142 total green).
+- **Verification**: `scripts/boardauto-shots.mjs` (dev server up + logged-out
+  flow via "Enter as Test Captain") plays REAL games by driving the UI with
+  Playwright, reading state through the DEV-only `window.__auto` hook; it
+  exercised mulligan, plays, DON dial, attacks, block, counter value +
+  [Counter] event (manual resolve), [Trigger] activate AND decline
+  (BA_DECLINE=1), down to leaderDamageAtZeroLife wins for either seat, zero
+  console errors. Screenshots: `scripts/.shots/boardauto-*.png`.
+- **Known limits (M2 debts)**: non-compiled effects (On Play, Activate: Main,
+  …) silently do nothing (text readable in the preview panel); manualResolve
+  is an acknowledged no-op (no free-move intents in M1); a real [Trigger]
+  "play this card" degrades to manual+trash; no undo (replayable event log
+  makes it feasible later). Decisions #23-30 in AUTOSIM_PLAN.md.
 
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to
