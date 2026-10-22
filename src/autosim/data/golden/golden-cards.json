@@ -52,7 +52,7 @@
         "timing": "counter",
         "actions": [
           { "kind": "powerMod",
-            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "chooser": "controller" },
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" },
             "amount": 4000, "duration": "thisBattle" }
         ]
       },
@@ -64,5 +64,187 @@
       }
     ],
     "notes": "SYNTHETIC golden (M0): Event — '[Counter] Give up to 1 of your Leader or Characters +4000 power during this battle. / [Trigger] Draw 1 card.'"
+  },
+  {
+    "cardId": "TEST-004",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": ["Rush"],
+    "counterValue": 1000,
+    "effects": [],
+    "notes": "SYNTHETIC golden (M1): '[Rush]' — may attack the turn it is played (10-1-1)."
+  },
+  {
+    "cardId": "TEST-005",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": ["DoubleAttack"],
+    "effects": [],
+    "notes": "SYNTHETIC golden (M1): '[Double Attack]' — deals 2 damage to the Leader (10-1-2)."
+  },
+  {
+    "cardId": "TEST-006",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": ["Banish"],
+    "effects": [],
+    "notes": "SYNTHETIC golden (M1): '[Banish]' — damage trashes the Life card; no [Trigger] (10-1-3)."
+  },
+  {
+    "cardId": "TEST-007",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": ["Unblockable"],
+    "effects": [],
+    "notes": "SYNTHETIC golden (M1): '[Unblockable]' — the opponent cannot activate [Blocker] (10-1-7)."
+  },
+  {
+    "cardId": "TEST-008",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": ["RushCharacter"],
+    "counterValue": 1000,
+    "effects": [],
+    "notes": "SYNTHETIC golden (M1): '[Rush: Character]' — may attack Characters the turn it is played (10-1-6)."
+  },
+  {
+    "cardId": "TEST-009",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": ["Blocker"],
+    "counterValue": 2000,
+    "effects": [],
+    "notes": "SYNTHETIC golden (M1): plain '[Blocker]' (10-1-4)."
+  },
+  {
+    "cardId": "TEST-010",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "counter",
+        "actions": [
+          { "kind": "powerMod",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" },
+            "amount": 2000, "duration": "thisBattle" }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): Event — '[Counter] Give up to 1 of your Leader or Characters +2000 power during this battle.' (7-1-3-2-2)"
+  },
+  {
+    "cardId": "TEST-011",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): Character — '[Trigger] Play this card.' (10-1-5-3: it moves instead of being trashed)"
+  },
+  {
+    "cardId": "TEST-012",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "actions": [
+          { "kind": "powerMod",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" },
+            "amount": 2000, "duration": "thisBattle" }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): '[When Attacking] This card gains +2000 power during this battle.' (10-2-5)"
+  },
+  {
+    "cardId": "TEST-013",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "onYourOpponentsAttack",
+        "actions": [
+          { "kind": "powerMod",
+            "sel": { "owner": "self", "zone": "leader", "count": 1, "chooser": "controller" },
+            "amount": 1000, "duration": "thisBattle" }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): '[On Your Opponent's Attack] Give your Leader +1000 power during this battle.' (10-2-16)"
+  },
+  {
+    "cardId": "TEST-014",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "onKO",
+        "actions": [
+          { "kind": "draw", "count": 1 }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): '[On K.O.] Draw 1 card.' — resolves from the trash, after damage processing (10-2-17, 8-6-2)."
+  },
+  {
+    "cardId": "TEST-015",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "onPlay",
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "Rush", "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): '[On Play] This card gains [Rush] during this turn.'"
+  },
+  {
+    "cardId": "TEST-016",
+    "version": 1,
+    "confidence": 1,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "onPlay",
+        "actions": [
+          { "kind": "restriction", "what": "cannotAttack", "duration": "untilEndOfOpponentsNextTurn",
+            "sel": { "owner": "opponent", "zone": "characterArea", "count": 1, "upTo": true, "chooser": "controller" } }
+        ]
+      }
+    ],
+    "notes": "SYNTHETIC golden (M1): '[On Play] Up to 1 of your opponent's Characters cannot attack until the end of your opponent's next turn.'"
   }
 ]

@@ -5,9 +5,12 @@
  * `applyEvent` reproduces the exact final state (tested in M0).
  *
  * Every event carries the full outcome (e.g. shuffles carry the resulting
- * order) so the reducer is pure and RNG-free.
+ * order) so the reducer is pure and RNG-free. Duration expiry (thisBattle,
+ * thisTurn, untilStartOfYourNextTurn) is deterministic and happens inside the
+ * reducer at the exact rule points — no dedicated expiry events needed.
  */
-import type { AutoGameState, Iid, PID } from "./state";
+import type { Timing } from "../ir/types";
+import type { AutoGameState, Iid, Modifier, PID } from "./state";
 
 export type GameEvent =
   // setup (5-2)
@@ -25,20 +28,46 @@ export type GameEvent =
   // main phase actions (6-5)
   | { type: "cardPlayed"; player: PID; iid: Iid; donRested: number; zone: "characterArea" | "stage" } // 6-5-3, 2-7-2/4
   | { type: "characterTrashedByRule"; player: PID; iid: Iid }        // 3-7-6-1 / 3-8-5-1
-  | { type: "eventCardUsed"; player: PID; iid: Iid; donRested: number } // 2-7-3 (M0: effect skipped)
+  | { type: "eventCardUsed"; player: PID; iid: Iid; donRested: number } // 2-7-3 / 7-1-3-2-2
   | { type: "donGiven"; player: PID; targetIid: Iid }                // 6-5-5
   // battle (7)
   | { type: "attackDeclared"; attackerOwner: PID; attackerIid: Iid; defenderOwner: PID; targetIid: Iid } // 7-1-1
-  | { type: "blockWindowResolved"; blockerIid: Iid | null }          // 7-1-2
+  | { type: "attackStepEnded" }                                      // 7-1-1-4 → Block Step
+  | { type: "blockWindowResolved"; blockerIid: Iid | null }          // 7-1-2 / 10-1-4-1
   | { type: "counterApplied"; player: PID; cardIid: Iid; targetIid: Iid; amount: number } // 7-1-3-2-1
   | { type: "counterWindowClosed"; player: PID }
   | { type: "battleWon"; attackerIid: Iid; targetIid: Iid }          // 7-1-4-1
-  | { type: "battleLost"; attackerIid: Iid; targetIid: Iid }         // 7-1-4-2
+  | { type: "battleLost"; attackerIid: Iid; targetIid: Iid }          // 7-1-4-2
   | { type: "lifeCardToHand"; player: PID; iid: Iid }                // 7-1-4-1-1-2
-  | { type: "characterKOd"; player: PID; iid: Iid; donReturned: number } // 7-1-4-1-2, 6-5-5-4
+  | { type: "lifeCardTrashed"; player: PID; iid: Iid }               // 10-1-3-1 [Banish]
+  | { type: "characterKOd"; player: PID; iid: Iid; donReturned: number } // 7-1-4-1-2 / 10-2-1, 6-5-5-4
   | { type: "battleEnded" }                                          // 7-1-5
+  // effects (8, M1)
+  | { type: "effectActivated"; player: PID; sourceIid: Iid; sourceCardId: string;
+      effectIndex: number; timing: Timing; oncePerTurn: boolean }    // 8-4-1-4 (+10-2-13-3 marking)
+  | { type: "effectDeclined"; player: PID; sourceIid: Iid; effectIndex: number } // 8-1-2 "may"
+  | { type: "costPaid"; player: PID; restDon: number; returnDon: number }        // 8-3-1-5 / 8-3-1-6
+  | { type: "modifierAdded"; modifier: Modifier }                    // powerMod/grantKeyword/restriction
+  | { type: "cardRested"; player: PID; iid: Iid }                    // restTarget
+  | { type: "cardStood"; player: PID; iid: Iid }                     // standTarget
+  | { type: "cardsDiscarded"; player: PID; iids: Iid[] }             // 10-2-14 (hand → trash)
+  | { type: "manualResolved"; player: PID; sourceIid: Iid; text: string } // plan §1.3 fallback ack
+  // [Trigger] lifecycle (10-1-5)
+  | { type: "triggerActivated"; player: PID; iid: Iid; cardId: string } // 10-1-5-1 (revealed; leaves Life)
+  | { type: "triggerCardTrashed"; player: PID; iid: Iid }            // 10-1-5-3
+  | { type: "triggerCardPlayed"; player: PID; iid: Iid }             // trigger "play this card"
   // game end (1-2, 9-2)
   | { type: "gameEnded"; winner: PID; reason: string };
+
+/** Drop modifiers targeting a card that left the field (3-1-6: a card that
+ *  changes area is a NEW card — effects applied to the old one end) and its
+ *  [Once Per Turn] bookkeeping (10-2-13-4). */
+function cardLeftField(state: AutoGameState, owner: PID, iid: Iid): void {
+  state.modifiers = state.modifiers.filter((m) => !(m.targetOwner === owner && m.targetIid === iid));
+  for (const key of Object.keys(state.oncePerTurnUsed)) {
+    if (key.startsWith(`${owner}:${iid}:`)) delete state.oncePerTurnUsed[key];
+  }
+}
 
 /** Pure reducer. Mutates `state` in place (callers own the draft). */
 export function applyEvent(state: AutoGameState, e: GameEvent): void {
@@ -84,6 +113,11 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       state.turn = e.turn;
       state.turnPlayer = e.player;
       state.phase = "main";
+      // 6-2-1 (Refresh): effects lasting "until the start of your next turn"
+      // expire at the start of the anchored player's next turn.
+      state.modifiers = state.modifiers.filter(
+        (m) => !(m.duration === "untilStartOfYourNextTurn" && m.anchor === e.player && e.turn > m.createdTurn),
+      );
       break;
 
     case "givenDonReturned": {
@@ -110,7 +144,16 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
     }
 
     case "turnEnded":
-      break; // next turnStarted carries the new turn/player
+      // 6-6-1-3/4: "during this turn" effects expire at the End Phase (turn
+      // player's first, then non-turn player's — removal order is
+      // unobservable here, so a single filter suffices).
+      state.modifiers = state.modifiers.filter((m) => m.duration !== "thisTurn");
+      // "until the end of your opponent's next turn": expires at the end of
+      // the first opposing turn AFTER the one it was created on.
+      state.modifiers = state.modifiers.filter(
+        (m) => !(m.duration === "untilEndOfOpponentsNextTurn" && e.player !== m.anchor && state.turn > m.createdTurn),
+      );
+      break;
 
     case "cardPlayed": {
       const p = state.players[e.player];
@@ -133,6 +176,7 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; }
       p.zones.trash.push(e.iid);
       p.instances[e.iid].rested = false; // cards in piles are never rested
+      cardLeftField(state, e.player, e.iid);
       break;
     }
 
@@ -141,7 +185,7 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       p.don.active -= e.donRested;
       p.don.rested += e.donRested;
       p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
-      p.zones.trash.push(e.iid); // 2-7-3: trash to activate
+      p.zones.trash.push(e.iid); // 2-7-3 / 8-4-2: trash to activate
       break;
     }
 
@@ -160,15 +204,26 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
         attackerIid: e.attackerIid,
         defenderOwner: e.defenderOwner,
         targetIid: e.targetIid,
-        step: "block",
-        mods: [],
+        step: "attack",     // 7-1-1-3: attack-step effects resolve first
+        blockerUsed: false,
+        pendingDamage: 0,
       };
       break;
     }
 
+    case "attackStepEnded":
+      if (state.battle) state.battle.step = "block"; // 7-1-2
+      break;
+
     case "blockWindowResolved": {
       if (!state.battle) break;
-      if (e.blockerIid) state.battle.targetIid = e.blockerIid; // 10-1-4-1 (M1)
+      if (e.blockerIid) {
+        // 10-1-4-1: activate [Blocker] by RESTING the card; it takes the
+        // place of the card being attacked. 7-1-2-1: once per battle.
+        state.players[state.battle.defenderOwner].instances[e.blockerIid].rested = true;
+        state.battle.targetIid = e.blockerIid;
+        state.battle.blockerUsed = true;
+      }
       state.battle.step = "counter";
       break;
     }
@@ -177,7 +232,12 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       const p = state.players[e.player];
       p.zones.hand = p.zones.hand.filter((x) => x !== e.cardIid);
       p.zones.trash.push(e.cardIid); // 7-1-3-2-1: trash to activate
-      state.battle?.mods.push({ iid: e.targetIid, amount: e.amount });
+      // counter value = a thisBattle powerMod (expires 7-1-5-3/4)
+      state.modifiers.push({
+        source: e.cardIid, controller: e.player, kind: "powerMod",
+        targetOwner: e.player, targetIid: e.targetIid, amount: e.amount,
+        duration: "thisBattle", anchor: e.player, createdTurn: state.turn,
+      });
       break;
     }
 
@@ -196,6 +256,14 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       break;
     }
 
+    case "lifeCardTrashed": {
+      // 10-1-3-1 [Banish]: the Life card is trashed instead of added to hand
+      const p = state.players[e.player];
+      p.zones.life = p.zones.life.filter((x) => x !== e.iid);
+      p.zones.trash.push(e.iid);
+      break;
+    }
+
     case "characterKOd": {
       const p = state.players[e.player];
       p.zones.characterArea = p.zones.characterArea.filter((x) => x !== e.iid);
@@ -203,12 +271,80 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; } // 6-5-5-4
       p.zones.trash.push(e.iid);
       p.instances[e.iid].rested = false;
+      cardLeftField(state, e.player, e.iid);
       break;
     }
 
     case "battleEnded":
-      state.battle = null; // thisBattle mods die with it (7-1-5-3/4)
+      // 7-1-5-3/4: "during this battle" effects become invalid (turn player's
+      // first, then non-turn player's — removal order unobservable).
+      state.modifiers = state.modifiers.filter((m) => m.duration !== "thisBattle");
+      state.battle = null;
       break;
+
+    case "effectActivated":
+      // 10-2-13-3: a resolved [Once Per Turn] effect cannot activate again
+      if (e.oncePerTurn) {
+        state.oncePerTurnUsed[`${e.player}:${e.sourceIid}:${e.effectIndex}`] = state.turn;
+      }
+      break;
+
+    case "effectDeclined":
+      break; // log-only (8-1-2: player chose not to activate)
+
+    case "costPaid": {
+      const don = state.players[e.player].don;
+      don.active -= e.restDon;   // 8-3-1-5 ①: rest active DON
+      don.rested += e.restDon;
+      don.active -= e.returnDon; // 8-3-1-6 DON!!−X (M1: from the cost area)
+      don.deck += e.returnDon;
+      break;
+    }
+
+    case "modifierAdded":
+      state.modifiers.push(structuredClone(e.modifier));
+      break;
+
+    case "cardRested":
+      state.players[e.player].instances[e.iid].rested = true;
+      break;
+
+    case "cardStood":
+      state.players[e.player].instances[e.iid].rested = false;
+      break;
+
+    case "cardsDiscarded": {
+      const p = state.players[e.player];
+      for (const iid of e.iids) {
+        p.zones.hand = p.zones.hand.filter((x) => x !== iid);
+        p.zones.trash.push(iid);
+      }
+      break;
+    }
+
+    case "manualResolved":
+      break; // log-only acknowledgement
+
+    case "triggerActivated": {
+      // 10-1-5-3: while the [Trigger] resolves, the card belongs to NO area —
+      // it leaves Life here and lands via triggerCardTrashed/triggerCardPlayed.
+      const p = state.players[e.player];
+      p.zones.life = p.zones.life.filter((x) => x !== e.iid);
+      break;
+    }
+
+    case "triggerCardTrashed":
+      state.players[e.player].zones.trash.push(e.iid);
+      break;
+
+    case "triggerCardPlayed": {
+      const p = state.players[e.player];
+      p.zones.characterArea.push(e.iid);
+      const inst = p.instances[e.iid];
+      inst.rested = false;
+      inst.playedOnTurn = state.turn; // 3-7-4 summoning sickness applies
+      break;
+    }
 
     case "gameEnded":
       state.phase = "over";
@@ -216,8 +352,15 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       state.winReason = e.reason;
       state.pendingChoice = null;
       state.battle = null;
+      state.exec = null;
       break;
   }
+}
+
+/** Apply + append: the engine's single way of changing state. */
+export function emit(state: AutoGameState, log: GameEvent[], e: GameEvent): void {
+  applyEvent(state, e);
+  log.push(e);
 }
 
 /** Replay a log from a fresh skeleton (createGame builds the skeleton). */

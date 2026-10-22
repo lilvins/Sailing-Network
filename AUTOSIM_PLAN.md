@@ -279,11 +279,11 @@ Golden examples (da compilare A MANO come primi test):
 
 ## 8. Milestones
 
-- **M0 — Fondamenta** · IR types+schema+linter, engine skeleton: setup/
+- ✅ **M0 — Fondamenta** (2026-07-31) · IR types+schema+linter, engine skeleton: setup/
   mulligan/fasi/DON/play con costi/limiti struttura/defeat, battaglia
   completa SENZA effetti (solo power+counter values), event log + reducer +
   test. *Exit: partita vanilla completa hotseat via test scriptato.*
-- **M1 — Keywords & finestre** · Rush/Blocker/DoubleAttack/Banish/
+- ✅ **M1 — Keywords & finestre** (2026-10-22) · Rush/Blocker/DoubleAttack/Banish/
   Unblockable/RushCharacter, Counter Step completo (counter values + eventi
   [Counter] tier-1), [Trigger] flow, trigger queue con ordering 8-6.
   *Exit: starter vs starter giocabile con keyword corrette.*
@@ -377,6 +377,70 @@ fluidità partita, estensibilità carte). Fix applicati:
     due buchi reali, entrambi fixati: intent di tipo sconosciuto accettati in
     silenzio (ora default case → EngineError) e `concede` da un giocatore
     inesistente che assegnava la vittoria (ora requirePlayer).
+
+**M1 (2026-10-22) — completata.** Keywords 10-1, Counter Step completo,
+[Trigger] flow, coda auto-effects 8-6 e nucleo dell'esecutore tier-1.
+Scelte fatte dove il piano lasciava margine:
+12. **Battle machine estratta in `battle.ts`** (come previsto dalla decisione
+    M0 #1) insieme al "pump": lo scheduler unico della risoluzione effetti —
+    avanza l'effetto corrente azione per azione (1-3-7), drena la coda con
+    l'ordering 8-6, sospende la coda finché il damage processing è in corso
+    (8-6-2), si ferma sulle ChoiceRequest e infine riprende il flusso
+    interrotto (block step / counter window / damage / main). `effects.ts` =
+    esecutore tier-1 + selettori/filtri/condizioni/costi; `triggers.ts` =
+    coda pura (generazioni monotone, turn-player-first a parità → modella
+    8-6-1 e 8-6-1-1 senza casi speciali).
+13. **`EngineCard.compiled?: CompiledCard`**: keyword ed effetti arrivano dal
+    CardDb — nessun metadato carta entra nello stato (coerente con M0).
+14. **Modifiers unificati in `state.modifiers`** (anche i counter values;
+    `battle.mods` eliminato): `{source, controller, kind: powerMod|
+    keywordGrant|restriction, target, duration, anchor, createdTurn}`,
+    ricalcolati sui valori base. Le scadenze sono deterministiche e vivono nel
+    reducer (battleEnded → thisBattle 7-1-5-3/4; turnEnded → thisTurn 6-6-1-3
+    e untilEndOfOpponentsNextTurn; turnStarted → untilStartOfYourNextTurn
+    6-2-1): niente eventi di expiry dedicati. I modifier che puntano a una
+    carta che lascia il campo cadono con lei (3-1-6).
+15. **`state.exec`** (coda + effetto running + flow di ripresa) è bookkeeping
+    del motore come `pendingChoice`, NON event-derived: il replay lo riallinea
+    esplicitamente (stessa regola della decisione M0 #4).
+16. **Scelte forzate auto-risolte** (8-4-4-1): `selectTargets` viene emessa
+    solo quando esiste una scelta reale (upTo, o candidati > count); con
+    candidati ≤ count obbligatori il motore seleziona da sé.
+17. **[Trigger]**: la `triggerDecision` è offerta solo se l'effetto è
+    davvero attivabile (condizioni 8-4-1-1 + costo pagabile 8-3-1-3);
+    una Life senza trigger va in mano senza pausa né reveal (10-1-5-2: la
+    carta declinata non si rivela — un evento di reveal avrebbe leakato
+    informazione nel log). Durante la risoluzione la carta è "in limbo"
+    (10-1-5-3): esce da Life con `triggerActivated` e atterra con
+    `triggerCardTrashed` o `triggerCardPlayed`; `playFromZone self` con area
+    piena o carta non-Character degrada a trash ("to the extent possible",
+    8-1-2).
+18. **Eventi [Main] eseguiti** con lo stesso percorso dei [Counter]
+    (`eventCardUsed` + effetto): non richiesto da M1 ma elimina il no-op
+    incoerente di M0; un Event con effetti compilati ma senza timing `main`
+    non è giocabile in Main Phase (10-2-3/10-2-4).
+19. **Costi di attivazione M1**: `restDon` (①), `returnDonToDeck` (solo dal
+    cost area attivo — il DON!!−X da leader/characters arriva in M2/M3) e
+    `restSelf`. Costi che richiedono scelta di carte (trashFromHand, …) → M2:
+    gli effetti che li portano non vengono offerti (8-3-1-3).
+20. **Degradazione**: azioni fuori tier-1 → ChoiceRequest `manualResolve`
+    (ack loggato come `manualResolved`); restriction oltre
+    cannotAttack/cannotBlock memorizzate ma non applicate (M4); `draw upTo`
+    pesca sempre il massimo (la scelta arriva in M2).
+21. **[Once Per Turn]**: `oncePerTurnUsed["pid:iid:effectIndex"] = turn`,
+    azzerato quando la carta lascia il campo (3-1-6, 10-2-13-4). Usato dalla
+    coda; l'intent [Activate: Main] arriva in M2.
+22. **Fuzz esteso** (non solo mantenuto verde): driver con
+    block/trigger/counter-event/target/may; nuove invarianti — max UN blocker
+    per battaglia (7-1-2-1, verificata sull'event log), coerenza
+    battle.step↔pendingChoice↔exec, modifiers solo su carte in campo e
+    thisBattle mai fuori battaglia, conservazione carte che tiene conto del
+    limbo [Trigger]. Nuove sonde illegali per tutti i nuovi intent.
+
+Debiti dichiarati per M2+: [Activate: Main] come intent, effetti
+endOfYourTurn/endOfOpponentsTurn/endOfBattle (il cablaggio della coda c'è,
+manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
+`draw upTo`, restriction M4, cannotBeKOd su koTarget.
 
 ## Fonti
 
