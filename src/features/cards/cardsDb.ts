@@ -98,13 +98,17 @@ export async function loadCardsBySet(): Promise<Record<string, Card[]>> {
 }
 
 /** Short hue used across the UI for a card's primary color. */
+// Leader/card colors, tuned for hue separation so they stay distinguishable on
+// the dark UI even at low brightness (the old palette was muted and Black was
+// near-invisible on the near-black background). Kept in sync with `HUE` in
+// features/profiles/ProfilePages.tsx.
 export const COLOR_HEX: Record<CardColor, string> = {
-  Red: "#c0392b",
-  Green: "#1f8a5b",
-  Blue: "#2a6fdb",
-  Purple: "#7a3fa0",
-  Black: "#2c3138",
-  Yellow: "#caa023",
+  Red: "#ec4d4d",
+  Green: "#29b56f",
+  Blue: "#4a8ef0",
+  Purple: "#b06ae6",
+  Black: "#939bad", // visible cool slate — not a near-black that vanishes on dark
+  Yellow: "#e6b93f",
 };
 
 /** Primary color hex for a card (first color), with a neutral fallback. */

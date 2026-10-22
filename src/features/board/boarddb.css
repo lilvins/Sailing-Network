@@ -1,0 +1,564 @@
+/* =============================================================================
+   BOARD v1 — DuelingBook-faithful duel screen.
+   Geometry measured from duelingbook.com's replay viewer (canvas 1152×720):
+   · LEFT rail ~230px: big card preview (art on top, effect text box below),
+     flat light-gray utility buttons underneath (DB's 240,240,240 buttons)
+   · CENTER: the field — two mirrored halves; the PHASE BAR sits ON the field's
+     midline as a row of circular buttons (DB: DP SP M1 BP M2 EP @63px, step 66;
+     ours: RF DR DON MN EN); my hand is a flat face-up row at the bottom,
+     the opponent's hand a flat row of backs at the top
+   · RIGHT rail ~210px: opponent LIFE bar (y≈0) → opponent avatar (204×173) →
+     WHITE duel log + chat box (204×259) → my avatar → my LIFE bar (bottom)
+   · background: near-black circuit board with faint green traces
+   Cards / quick menus / context menus / modals reuse gb-* from board.css.
+   ========================================================================== */
+
+.db-root {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  /* Slim rails — every horizontal px saved goes to the field */
+  grid-template-columns: clamp(158px, 14.5vw, 196px) minmax(0, 1fr) clamp(150px, 13.5vw, 184px);
+  gap: 6px;
+  padding: 6px;
+  overflow: hidden;
+  font-family: Arial, Helvetica, var(--font, sans-serif);
+  color: #e8ecf4;
+  /* DB circuit board: near-black with faint green traces + vignette */
+  background:
+    radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55)),
+    repeating-linear-gradient(0deg, transparent 0 34px, rgba(46, 204, 113, 0.045) 34px 35px),
+    repeating-linear-gradient(90deg, transparent 0 34px, rgba(46, 204, 113, 0.045) 34px 35px),
+    repeating-linear-gradient(0deg, transparent 0 136px, rgba(46, 204, 113, 0.07) 136px 137px),
+    repeating-linear-gradient(90deg, transparent 0 136px, rgba(46, 204, 113, 0.07) 136px 137px),
+    #07090c;
+  /* Field card scale. Vertical budget (per half: char row + leader/stage/cost
+     row = cw×2.8+33; two halves + chrome ≈ cw×5.6+80; plus compact opp strip
+     ~40px and the hand ~cw_hand×1.45) solves to ≈11vh at any height; 6.2vw
+     caps it on narrow windows so 5 char slots + corner piles always fit. */
+  --dbcw: clamp(44px, min(6.2vw, 11vh), 120px);
+}
+
+/* =============================== LEFT RAIL ================================= */
+.db-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+/* card preview — DB puts the art at (3,~20) 190px wide and the effect text
+   in a scrollable box right under it (190×127 @ y300). */
+.db-preview {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.db-preview-art {
+  width: 100%;
+  aspect-ratio: 100 / 140;
+  max-height: 29vh;
+  margin: 0 auto;
+  border: 1px solid rgba(190, 205, 230, 0.35);
+  border-radius: 4px;
+  background: #0d1117;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  position: relative;
+}
+.db-preview-art img { width: 100%; height: 100%; object-fit: cover; -webkit-user-drag: none; }
+.db-preview-art .db-prev-don { position: absolute; inset: 0; }
+.db-preview-empty { font: 400 11px Arial; color: #6d7890; padding: 12px; text-align: center; }
+.db-preview-name { font: 700 12.5px Arial; color: #fff; line-height: 1.2; }
+.db-preview-line { font: 700 10.5px Arial; color: #9fb0cc; }
+/* DB's effect box is a WHITE textarea with black text */
+.db-preview-fx {
+  flex: 1 1 auto;
+  min-height: 48px;
+  max-height: 18vh;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #111;
+  border: 1px solid #7a8699;
+  border-radius: 3px;
+  padding: 5px 7px;
+  font: 400 11px Arial;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+.db-preview-fx b { font-weight: 700; }
+
+/* utility buttons — DB's flat light-gray system buttons (rgb 240) */
+.db-tools {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.db-btn {
+  appearance: none;
+  padding: 6px 6px;
+  border: 1px solid #6f7787;
+  border-radius: 3px;
+  background: #f0f0f0;
+  color: #111;
+  font: 700 11px Arial;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s, transform 0.08s;
+}
+.db-btn:hover:not(:disabled) { background: #ffffff; }
+.db-btn:active:not(:disabled) { transform: scale(0.97); }
+.db-btn:disabled { opacity: 0.45; cursor: default; }
+.db-btn.danger { background: #e8c9c9; }
+.db-btn.danger:hover:not(:disabled) { background: #f4d6d6; }
+.db-btn.wide { grid-column: 1 / -1; }
+.db-btn-n { font-weight: 400; color: #333; }
+
+/* =============================== CENTER ==================================== */
+.db-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  min-height: 0;
+  gap: 4px;
+}
+
+/* opponent hand — a COMPACT overlapped strip (like DB's small backs), so it
+   costs the field almost no vertical space */
+.db-opphand {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  padding: 1px;
+  max-width: 100%;
+}
+.db-opphand .db-ohcard {
+  width: clamp(26px, 4.6vh, 42px);
+  aspect-ratio: 100 / 140;
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  flex: 0 1 auto;
+  min-width: 14px;
+  margin: 0 -3px;
+}
+.db-opphand .gb-back { border-radius: 3px; }
+/* test mode: revealed faces run a touch bigger and are hover-readable */
+.db-opphand.reveal .db-ohcard { width: clamp(32px, 5.4vh, 52px); }
+.db-opphand.reveal .db-ohcard:hover { transform: translateY(2px) scale(1.12); z-index: 5; transition: transform 0.12s; }
+.db-opphand-empty { font: 400 11px Arial; color: #6d7890; padding: 4px; }
+
+/* the FIELD — bordered frame like DB's field area; no width cap: it takes the
+   whole center column (the card scale itself keeps rows from overflowing) */
+.db-field {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(190, 205, 230, 0.28);
+  border-radius: 6px;
+  background:
+    radial-gradient(90% 70% at 50% 50%, rgba(46, 120, 180, 0.10), transparent 65%),
+    rgba(13, 17, 23, 0.72);
+  padding: 5px 8px;
+}
+
+/* one half of the field (mine bottom, opp top — opp rotated like DB) */
+.db-half {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: stretch;
+}
+.db-half-opp { transform: rotate(180deg); opacity: 0.92; }
+.db-half-opp.db-static { pointer-events: none; }
+/* live opponent (test mode): hover allowed for preview, still not draggable */
+.db-half-live { pointer-events: auto; }
+
+/* side columns of a half: piles stacked like DB corners
+   (deck bottom-right w/ trash above it; DON deck bottom-left, life above) */
+.db-sidecol {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 5px;
+}
+.db-sidecol .gb-zone { min-width: calc(var(--dbcw) + 12px); }
+
+/* half center rows */
+.db-halfmain {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.db-charrow-wrap { flex: 1 1 auto; }
+.db-charrow {
+  display: flex;
+  gap: clamp(4px, 0.7vw, 10px);
+  justify-content: center;
+  align-items: center;
+  min-height: calc(var(--dbcw) * 1.4);
+}
+.db-lsrow {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: stretch;
+}
+/* the Cost Area shares the leader/stage row and soaks up the remaining width */
+.db-lsrow .db-costzone { flex: 1 1 auto; min-width: 0; }
+/* DON cost row — full-size DON that USE the whole area: a grid whose column
+   count comes from React (--doncount). Columns cap at card width + gap, so a
+   few DON sit side by side from the left; when the zone gets tight the columns
+   compress evenly and the (fixed-size) cards overlap — never shrink.
+   NO overflow:hidden here: it would clip the hover quick-menu (.gb-quick).
+   The right padding reserves room for the last card overflowing its column. */
+.db-donrow {
+  display: grid;
+  grid-template-columns: repeat(var(--doncount, 1), minmax(12px, calc(var(--dbcw) + 8px)));
+  justify-content: start;
+  align-items: center;
+  min-height: calc(var(--dbcw) * 1.4);
+  padding: 2px calc(var(--dbcw) * 0.55) 2px 6px;
+}
+.db-donrow .db-doncell {
+  width: var(--dbcw);
+  position: relative;
+}
+
+/* zone shells inside the field — DB slots: thin light outline on dark */
+.db-root .db-field .gb-zone {
+  background: rgba(190, 205, 230, 0.045);
+  border: 1px solid rgba(190, 205, 230, 0.30);
+  border-radius: 4px;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 8px 4px 4px;
+}
+.db-root .db-field .gb-zone.gb-over {
+  border-color: #ffd54a;
+  background: rgba(255, 213, 74, 0.10);
+  box-shadow: none;
+}
+.db-root .db-field .gb-zlabel {
+  font: 700 7.5px Arial;
+  letter-spacing: 1.2px;
+  color: rgba(190, 205, 230, 0.55);
+  top: 2px;
+  left: 6px;
+}
+.db-root .db-field .gb-slot {
+  width: var(--dbcw);
+  border: 1px dashed rgba(190, 205, 230, 0.22);
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 4px;
+}
+.db-root .db-field .gb-slot-hint { color: rgba(190, 205, 230, 0.4); font: 600 9px Arial; }
+.db-root .db-field .gb-card { width: var(--dbcw); }
+.db-root .db-field .gb-pile .gb-card { width: var(--dbcw); }
+/* DON in the cost strip stay cell-sized — MUST come after the generic width
+   above (equal-specificity cascade order decides; this was the oversized-DON
+   glitch: 79px cards crammed into 49px cells). */
+.db-root .db-field .db-doncell .gb-card { width: 100%; }
+
+/* life — vertical stack on the half's left edge (sideways cards). Compressed
+   hard (-0.46 overlap) so a 5-6 life stack never grows taller than the char
+   row and the side column never becomes the half's height constraint. */
+.db-lifezone { display: flex; align-items: center; }
+.db-lifestack { position: relative; display: flex; flex-direction: column; align-items: center; }
+.db-lifestack .db-lifecard { position: relative; width: calc(var(--dbcw) * 1.05); height: calc(var(--dbcw) * 0.62); }
+.db-lifestack .db-lifecard .gb-card {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(var(--dbcw) * 0.74);
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.db-lifestack .db-lifecard .gb-card:hover { transform: translate(-50%, -58%) rotate(90deg); }
+.db-lifestack .db-lifecard + .db-lifecard { margin-top: calc(var(--dbcw) * -0.46); }
+
+/* ── Turn indicator (left rail, above the tools) ──────────────────────────── */
+.db-turnrow {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 2px 1px;
+}
+.db-turnpill {
+  padding: 4px 10px;
+  border: 1px solid #7a8699;
+  border-radius: 999px;
+  background: #12161f;
+  font: 700 11px Arial;
+  color: #cdd6e6;
+  white-space: nowrap;
+}
+.db-turnpill b { color: #ffd54a; }
+.db-seatpill { font: 700 10px Arial; color: #9fb0cc; }
+.db-seatpill b { color: #ffe98a; }
+
+/* End Turn — the one emphasized button (flat light-yellow, still DB-flavored) */
+.db-btn.primary {
+  background: #ffd54a;
+  border-color: #a8892b;
+  font-size: 12.5px;
+  padding: 9px 6px;
+}
+.db-btn.primary:hover:not(:disabled) { background: #ffe27a; }
+
+/* ── Event resolve FX — big centered card + pulse, then off to the trash ──── */
+.db-eventfx {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  background: rgba(4, 6, 9, 0.45);
+  animation: db-evt-dim 0.18s ease;
+}
+.db-eventfx-card {
+  width: clamp(180px, 24vh, 300px);
+  aspect-ratio: 100 / 140;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 3px #ffd54a, 0 0 40px rgba(255, 213, 74, 0.55), 0 24px 70px rgba(0, 0, 0, 0.8);
+  animation: db-evt-in 0.32s cubic-bezier(0.2, 1.4, 0.4, 1), db-evt-pulse 0.9s ease 0.32s;
+  transition: transform 0.42s cubic-bezier(0.5, 0, 0.8, 0.4), opacity 0.42s ease;
+}
+.db-eventfx-card img { width: 100%; height: 100%; object-fit: cover; }
+.db-eventfx-tag {
+  font: 800 15px Arial;
+  letter-spacing: 1px;
+  color: #ffe98a;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  transition: opacity 0.3s;
+}
+/* leave phase: shrink + fly toward the bottom-right (the trash corner) */
+.db-eventfx.out { background: transparent; transition: background 0.4s; }
+.db-eventfx.out .db-eventfx-card {
+  transform: translate(26vw, 30vh) scale(0.2) rotate(10deg);
+  opacity: 0;
+}
+.db-eventfx.out .db-eventfx-tag { opacity: 0; }
+@keyframes db-evt-dim { from { background: transparent; } }
+@keyframes db-evt-in {
+  from { transform: scale(0.45) rotate(-6deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes db-evt-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px #ffd54a, 0 0 40px rgba(255, 213, 74, 0.55), 0 24px 70px rgba(0, 0, 0, 0.8); }
+  50%      { box-shadow: 0 0 0 5px #ffe98a, 0 0 70px rgba(255, 213, 74, 0.85), 0 24px 70px rgba(0, 0, 0, 0.8); }
+}
+
+/* my hand — flat face-up row at the bottom (DB style, no fan) */
+.db-hand {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 3px 6px 1px;
+  border-radius: 6px;
+  min-height: calc(var(--cw) * 1.42);
+  transition: background 0.15s, box-shadow 0.15s;
+  --cw: clamp(54px, min(6vw, 9.6vh), 104px);
+}
+.db-hand.gb-over { background: rgba(255, 213, 74, 0.07); box-shadow: inset 0 0 0 1px rgba(255, 213, 74, 0.5); }
+.db-hand .db-handcard { position: relative; transition: margin 0.15s ease; }
+.db-hand .gb-card { width: var(--cw); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6); }
+.db-hand-empty { font: 400 11px Arial; color: #6d7890; padding: 10px; }
+
+/* hover lift for hand cards — plain, small (DB cards just highlight) */
+.db-root .db-hand .gb-card { transition: top 0.12s ease, box-shadow 0.14s; top: 0; }
+.db-root .db-hand .gb-card:hover { top: -8px; }
+
+/* =============================== RIGHT RAIL ================================ */
+.db-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+/* LIFE bar — DB's lifepoints strip: dark bar, name + big yellow number */
+.db-lifebar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 8px;
+  border: 1px solid #7a8699;
+  border-radius: 4px;
+  background: #0d1117;
+}
+.db-lifebar .k { font: 700 9.5px Arial; letter-spacing: 1.5px; color: #9fb0cc; }
+.db-lifebar .v { font: 800 clamp(14px, 1.5vw, 19px) Arial; color: #ffd54a; text-shadow: 0 0 8px rgba(255, 213, 74, 0.35); font-variant-numeric: tabular-nums; }
+
+/* avatar box — DB: square image w/ light frame, name bar under it */
+.db-avatar {
+  flex: 0 0 auto;
+  border: 1px solid #7a8699;
+  border-radius: 4px;
+  background: #0d1117;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.db-avatar-img {
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 10.5vh;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #131a24;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.db-avatar-img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; -webkit-user-drag: none; }
+.db-avatar-img .ph { font: 800 30px Arial; color: #3a4658; }
+.db-avatar-name {
+  font: 700 11px Arial;
+  color: #e8ecf4;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.db-avatar.active { border-color: #ffd54a; box-shadow: 0 0 8px rgba(255, 213, 74, 0.25); }
+
+/* duel log + chat — DB's WHITE box with black text, input at the bottom */
+.db-duellog {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #7a8699;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.db-duellog-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.db-sysline { font: 400 11px Arial; color: #555; line-height: 1.35; }
+.db-sysline.turn { font-weight: 700; color: #111; margin-top: 2px; }
+.db-chatline { font: 400 11.5px Arial; color: #111; line-height: 1.35; word-break: break-word; }
+.db-chatline b { color: #1a56a8; }
+.db-chatline b.me { color: #a8321a; }
+.db-duellog-input {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border-top: 1px solid #c9ced8;
+  background: #f0f0f0;
+}
+.db-duellog-input input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #9aa2b1;
+  border-radius: 3px;
+  background: #fff;
+  padding: 5px 7px;
+  font: 400 11.5px Arial;
+  color: #111;
+  outline: none;
+}
+.db-duellog-input input:focus { border-color: #1a56a8; }
+.db-duellog-input button {
+  flex: 0 0 auto;
+  padding: 0 12px;
+  border: 1px solid #6f7787;
+  border-radius: 3px;
+  background: #f0f0f0;
+  color: #111;
+  font: 700 11px Arial;
+  cursor: pointer;
+}
+.db-duellog-input button:hover:not(:disabled) { background: #fff; }
+.db-duellog-input button:disabled { opacity: 0.45; cursor: default; }
+
+/* DON selection bar (kept from the old board, restyled flat) */
+.db-donbar {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border: 1px solid #7a8699;
+  border-radius: 6px;
+  background: #0d1117;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  font: 700 12px Arial;
+  color: #ffe98a;
+}
+.db-donbar-hint { font: 400 11px Arial; color: #9fb0cc; }
+.db-donbar button {
+  padding: 5px 12px;
+  border: 1px solid #6f7787;
+  border-radius: 3px;
+  background: #f0f0f0;
+  color: #111;
+  font: 700 11px Arial;
+  cursor: pointer;
+}
+.db-donbar button:hover { background: #fff; }
+
+/* roll toast reuse */
+.db-rolltoast {
+  position: fixed;
+  left: 50%;
+  top: 16%;
+  transform: translateX(-50%);
+  z-index: 70;
+  padding: 10px 22px;
+  border: 1px solid #ffd54a;
+  border-radius: 6px;
+  background: rgba(13, 17, 23, 0.95);
+  font: 800 18px Arial;
+  color: #ffe98a;
+  letter-spacing: 1px;
+  animation: gb-pop 0.15s ease;
+}
+
+/* selection ring reuse for DON click-select on the dark field */
+.db-root .gb-selected { box-shadow: 0 0 0 2px #ffd54a, 0 0 14px rgba(255, 213, 74, 0.5); }
+
+/* ---------- responsive ----------
+   The --dbcw formula is vh/vw-driven, so short screens shrink the field on
+   their own — no height media query needed. Narrow screens just get slimmer
+   rails so the field keeps its share. */
+@media (max-width: 1150px) {
+  .db-root { grid-template-columns: clamp(140px, 13.5vw, 170px) minmax(0, 1fr) clamp(132px, 12.5vw, 160px); }
+  .db-tools { grid-template-columns: 1fr; }
+}

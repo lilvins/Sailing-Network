@@ -25,15 +25,14 @@ import "./board.css";
 import "./board2.css";
 
 /* =============================================================================
-   BOARD v2 — "Play 2" layout lab, modeled on a real OPTCGSim screenshot:
-   · warm WOOD table background; parchment buttons
-   · vertical playmat in the center — opponent's half rotated 180° (purple
-     tint), mine teal/leader-tinted; zone bands with big white labels
-   · my mat rows: CHARACTER AREA band → [logo|LEADER|STAGE|DECK] →
+   BOARD v2 — "Play 2", OPTCGSim arrangement with a MINIMAL EDITORIAL identity:
+   · flat ivory canvas; white central mat (opponent half warm-gray, rotated
+     180°); hairline borders; ink text; ONE red accent (see board2.css)
+   · my mat rows: CHARACTER AREA band → [wordmark|LEADER|STAGE|DECK] →
      [DON deck|COST AREA band|TRASH]; life = sideways stack on the mat's left
    · hands in the LEFT corners: opponent's backs top-left, mine bottom-left
-   · chat + system log in ONE parchment box, left middle (like the sim)
-   · right rail: parchment utility buttons top, giant MULLIGAN/END TURN bottom
+   · chat + system log in ONE box, left middle (like the sim)
+   · right rail: utility buttons top, giant MULLIGAN/END TURN bottom
    · opponent name + match clock top-center
    Logic = the same gameStore; presentation only.
    ========================================================================== */

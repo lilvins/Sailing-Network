@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sailing-network/autosim/compiled-card.v1",
+  "title": "CompiledCard",
+  "description": "AUTOSIM Effect IR (AUTOSIM_PLAN.md §5). Output format of the AI card-compilation pipeline. Mirrors src/autosim/ir/types.ts — types.ts + validate.ts are the source of truth; this schema is used as pipeline prompt material and for external validation.",
+  "type": "object",
+  "required": ["cardId", "version", "confidence", "classification", "keywords", "effects"],
+  "additionalProperties": false,
+  "properties": {
+    "cardId": { "type": "string", "pattern": "^[A-Z0-9]+-\\d+$" },
+    "version": { "const": 1 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "classification": { "enum": ["vanilla", "keyword-only", "compiled", "partial", "unsupported"] },
+    "keywords": { "type": "array", "items": { "$ref": "#/definitions/keyword" } },
+    "counterValue": { "type": "number" },
+    "effects": { "type": "array", "items": { "$ref": "#/definitions/effect" } },
+    "notes": { "type": "string" }
+  },
+  "definitions": {
+    "keyword": { "enum": ["Rush", "DoubleAttack", "Banish", "Blocker", "RushCharacter", "Unblockable"] },
+    "timing": { "enum": ["onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger", "activateMain", "main", "endOfYourTurn", "endOfOpponentsTurn", "startOfYourTurn", "startOfOpponentsTurn", "onYourOpponentsAttack", "whenAttacked", "endOfBattle", "static"] },
+    "duration": { "enum": ["instant", "thisBattle", "thisTurn", "untilStartOfYourNextTurn", "untilEndOfOpponentsNextTurn", "permanentWhileInPlay"] },
+    "who": { "enum": ["self", "opponent", "both"] },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "typeIncludes": { "type": "array", "items": { "type": "string" } },
+        "nameIncludes": { "type": "array", "items": { "type": "string" } },
+        "colors": { "type": "array", "items": { "type": "string" } },
+        "category": { "type": "array", "items": { "enum": ["Leader", "Character", "Event", "Stage"] } },
+        "costAtMost": { "type": "number" },
+        "costAtLeast": { "type": "number" },
+        "powerAtMost": { "type": "number" },
+        "powerAtLeast": { "type": "number" },
+        "rested": { "type": "boolean" },
+        "hasKeyword": { "$ref": "#/definitions/keyword" },
+        "excludeSelf": { "type": "boolean" }
+      }
+    },
+    "selector": {
+      "type": "object",
+      "required": ["owner", "zone", "count", "chooser"],
+      "additionalProperties": false,
+      "properties": {
+        "owner": { "enum": ["self", "opponent", "any"] },
+        "zone": { "enum": ["characterArea", "leader", "leaderOrCharacter", "stage", "hand", "trash", "deckTop", "costArea", "life"] },
+        "filter": { "$ref": "#/definitions/filter" },
+        "count": { "type": "integer", "minimum": 0 },
+        "upTo": { "type": "boolean" },
+        "self": { "type": "boolean" },
+        "chooser": { "enum": ["controller", "opponent"] }
+      }
+    },
+    "costItem": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": { "kind": { "enum": ["restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf", "trashFromLife"] } }
+    },
+    "condition": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": { "kind": { "enum": ["donAttached", "yourTurn", "opponentsTurn", "leaderIs", "countInZone", "lifeAtMost", "lifeAtLeast", "handAtMost", "handAtLeast"] } }
+    },
+    "action": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard", "grantKeyword", "restriction", "returnToHand", "playFromZone", "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife", "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck", "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle", "ifThen", "chooseOne", "manual"] }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "required": ["timing", "actions"],
+      "additionalProperties": false,
+      "properties": {
+        "timing": { "$ref": "#/definitions/timing" },
+        "oncePerTurn": { "type": "boolean" },
+        "optional": { "type": "boolean" },
+        "conditions": { "type": "array", "items": { "$ref": "#/definitions/condition" } },
+        "cost": { "type": "array", "items": { "$ref": "#/definitions/costItem" } },
+        "actions": { "type": "array", "items": { "$ref": "#/definitions/action" }, "minItems": 1 }
+      }
+    }
+  }
+}

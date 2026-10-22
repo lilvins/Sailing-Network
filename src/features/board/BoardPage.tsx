@@ -20,16 +20,22 @@ import { api, type Deck } from "../../lib/api";
 import { useAuthStore } from "../../app/authStore";
 import { useUiStore } from "../../app/uiStore";
 import "./board.css";
+import "./boarddb.css";
 
 /* =============================================================================
    BOARD UI — presentation only. All game logic lives in gameStore (serializable
-   actions + actionLog, per CLAUDE.md). Layout follows the official OP playmat:
+   actions + actionLog, per CLAUDE.md).
 
-     [ Life | Characters ......... | Deck  ]
-     [ Life | Leader  +  Stage    | Trash ]
-     [ DON!! deck | Cost Area ............ ]
+   The screen is a DuelingBook-faithful duel layout (geometry measured from
+   duelingbook.com's replay viewer — see boarddb.css for the numbers):
+   left rail = card preview + flat utility buttons; center = the field with the
+   circular PHASE BAR on its midline (RF DR DON MN EN) and flat hands top/bottom;
+   right rail = LIFE bars + avatars + the white duel log/chat box.
+   Zones follow the official OP playmat inside each half:
 
-   Opponent half mirrored on top (static in practice mode). Hand fanned bottom.
+     [ Life+DON deck | Characters ....... | Trash+Deck ]
+     [               | Leader  +  Stage  |            ]
+     [               | Cost Area ....... |            ]
    ========================================================================== */
 
 // ─── Context-menu state ───────────────────────────────────────────────────────
@@ -39,6 +45,34 @@ export interface CtxState {
   zone: ZoneId;
   x: number;
   y: number;
+}
+
+// ─── Event-card resolve sound (synthesized — no audio assets) ────────────────
+
+let audioCtx: AudioContext | null = null;
+/** Short two-note chime that reads as "card activated". Fails silently if the
+ *  browser blocks audio (the animation still carries the meaning). */
+function playEventSound() {
+  try {
+    audioCtx ??= new AudioContext();
+    const ctx = audioCtx;
+    const t = ctx.currentTime;
+    const note = (type: OscillatorType, f0: number, f1: number, start: number, dur: number, peak: number) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(f0, t + start);
+      o.frequency.exponentialRampToValueAtTime(f1, t + start + dur * 0.5);
+      g.gain.setValueAtTime(0.0001, t + start);
+      g.gain.exponentialRampToValueAtTime(peak, t + start + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + start + dur);
+      o.connect(g).connect(ctx.destination);
+      o.start(t + start);
+      o.stop(t + start + dur + 0.05);
+    };
+    note("triangle", 523, 1046, 0, 0.5, 0.22); // C5 → C6 sweep
+    note("sine", 1568, 1568, 0.12, 0.5, 0.15); // G6 sparkle on top
+  } catch { /* audio unavailable — ignore */ }
 }
 
 // ─── DON!! card art (faithful manga-burst recreation) ─────────────────────────
@@ -206,27 +240,36 @@ export function DropZone({ id, label, className = "", children }: {
   );
 }
 
-/** A deck-like pile with depth + count badge. */
-export function Pile({ top, count, cardMap, onCtx, onHover, empty }: {
+/** A deck-like pile with depth + count badge. `onView` (deck/trash) makes the
+ *  pile open its zone viewer on a plain left-click — the discoverable way in. */
+export function Pile({ top, count, cardMap, onCtx, onHover, empty, onView }: {
   top?: CardInstance;
   count: number;
   cardMap: Map<string, Card>;
   onCtx: (id: InstanceId, x: number, y: number) => void;
   onHover?: (card: Card | null) => void;
   empty?: string;
+  onView?: () => void;
 }) {
-  if (!top) return <div className="gb-slot">{empty && <span className="gb-slot-hint">{empty}</span>}</div>;
+  if (!top) {
+    return (
+      <div className={`gb-slot${onView ? " gb-slot-view" : ""}`} onClick={onView}>
+        {empty && <span className="gb-slot-hint">{empty}</span>}
+      </div>
+    );
+  }
   return (
-    <div className={`gb-pile${count > 1 ? " gb-pile-deep" : ""}`}>
-      <DCard instanceId={top.instanceId} inst={top} card={cardMap.get(top.cardId)} onCtx={onCtx} onHover={onHover} />
+    <div className={`gb-pile${count > 1 ? " gb-pile-deep" : ""}${onView ? " gb-pile-view" : ""}`}>
+      <DCard instanceId={top.instanceId} inst={top} card={cardMap.get(top.cardId)} onCtx={onCtx} onHover={onHover} onSelect={onView} />
       <span className="gb-count">{count}</span>
+      {onView && <button className="gb-pile-viewbtn" title="View cards" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); onView(); }}>⤢</button>}
     </div>
   );
 }
 
 // ─── My half — official playmat layout ───────────────────────────────────────
 
-function MyHalf({ player, cardMap, onCtx, onHover, onDetachDon, quickFor, leaderColor, selectedDon, onToggleDon, onAssignDon }: {
+export function MyHalf({ player, cardMap, onCtx, onHover, onDetachDon, quickFor, leaderColor, selectedDon, onToggleDon, onAssignDon, onViewZone }: {
   player: PlayerState;
   cardMap: Map<string, Card>;
   onCtx: (id: InstanceId, x: number, y: number) => void;
@@ -238,6 +281,8 @@ function MyHalf({ player, cardMap, onCtx, onHover, onDetachDon, quickFor, leader
   selectedDon: Set<InstanceId>;
   onToggleDon: (id: InstanceId) => void;
   onAssignDon: (targetId: InstanceId) => void;
+  /** Open the deck-search / trash viewer for a pile. */
+  onViewZone: (z: ViewerZone) => void;
 }) {
   const selecting = selectedDon.size > 0;
   const inst = (iid: InstanceId) => player.instances[iid];
@@ -327,10 +372,10 @@ function MyHalf({ player, cardMap, onCtx, onHover, onDetachDon, quickFor, leader
       {/* RIGHT — Deck / Trash */}
       <div className="gb-rightcol">
         <DropZone id="deck" label="Deck" className="gb-deckzone">
-          <Pile top={deck[0]} count={deck.length} cardMap={cardMap} onCtx={onCtx} empty="—" />
+          <Pile top={deck[0]} count={deck.length} cardMap={cardMap} onCtx={onCtx} empty="—" onView={() => onViewZone("deck")} />
         </DropZone>
         <DropZone id="trash" label="Trash" className="gb-trashzone">
-          <Pile top={trash[trash.length - 1]} count={trash.length} cardMap={cardMap} onCtx={onCtx} onHover={onHover} empty="—" />
+          <Pile top={trash[trash.length - 1]} count={trash.length} cardMap={cardMap} onCtx={onCtx} onHover={onHover} empty="Trash" onView={() => onViewZone("trash")} />
         </DropZone>
       </div>
     </div>
@@ -339,7 +384,7 @@ function MyHalf({ player, cardMap, onCtx, onHover, onDetachDon, quickFor, leader
 
 // ─── Opponent half (mirrored, static in practice) ────────────────────────────
 
-function OppHalf() {
+export function OppHalf() {
   return (
     <div className="gb-half gb-half-opp">
       {/* mirrored: deck/trash on MY left, life on MY right */}
@@ -376,7 +421,7 @@ function OppHalf() {
 
 // ─── Hands ────────────────────────────────────────────────────────────────────
 
-function MyHand({ insts, cardMap, onCtx, onHover, quickFor }: {
+export function MyHand({ insts, cardMap, onCtx, onHover, quickFor }: {
   insts: CardInstance[];
   cardMap: Map<string, Card>;
   onCtx: (id: InstanceId, x: number, y: number) => void;
@@ -398,8 +443,8 @@ function MyHand({ insts, cardMap, onCtx, onHover, quickFor }: {
             key={inst.instanceId}
             className="gb-hand-card"
             style={{
-              ["--rot" as string]: `${off * Math.min(3.5, 18 / Math.max(1, n))}deg`,
-              ["--lift" as string]: `${Math.abs(off) * Math.abs(off) * Math.min(3, 14 / Math.max(1, n))}px`,
+              ["--rot" as string]: `${off * Math.min(1.6, 8 / Math.max(1, n))}deg`,
+              ["--lift" as string]: `${Math.abs(off) * Math.min(2.4, 9 / Math.max(1, n))}px`,
               margin: `0 ${sideMargin}`,
             }}
           >
@@ -412,7 +457,7 @@ function MyHand({ insts, cardMap, onCtx, onHover, quickFor }: {
   );
 }
 
-function OppHand({ count = 5 }: { count?: number }) {
+export function OppHand({ count = 5 }: { count?: number }) {
   return (
     <div className="gb-opphand">
       {Array.from({ length: count }, (_, i) => {
@@ -428,9 +473,392 @@ function OppHand({ count = 5 }: { count?: number }) {
   );
 }
 
+// ─── Live opponent (test mode) — real state, read-only mirror ─────────────────
+
+/** The opponent's hand. In test mode `reveal` shows the actual faces so you can
+ *  play both sides; otherwise it's a row of card backs. */
+export function OppHandLive({ insts, cardMap, reveal }: {
+  insts: CardInstance[];
+  cardMap: Map<string, Card>;
+  reveal: boolean;
+}) {
+  const n = insts.length;
+  return (
+    <div className="gb-opphand gb-opphand-live">
+      {insts.map((i, k) => {
+        const off = k - (n - 1) / 2;
+        return (
+          <div key={i.instanceId} className="gb-opphand-card" style={{ ["--rot" as string]: `${-off * 4}deg` }}>
+            {reveal ? (
+              <div className="gb-card gb-opphand-reveal">
+                <CardArt inst={{ ...i, faceUp: true }} card={cardMap.get(i.cardId)} />
+              </div>
+            ) : (
+              <div className="gb-back"><span className="gb-back-emblem" /></div>
+            )}
+          </div>
+        );
+      })}
+      {n === 0 && <span className="gb-hand-empty">Opponent hand empty</span>}
+    </div>
+  );
+}
+
+/** The opponent's board — real cards, rotated, read-only (no drag / menus). You
+ *  take full control of it by passing the turn to them (the seat swaps down). */
+export function OppHalfLive({ player, cardMap, onHover }: {
+  player: PlayerState;
+  cardMap: Map<string, Card>;
+  onHover?: (card: Card | null) => void;
+}) {
+  const inst = (iid: InstanceId) => player.instances[iid];
+  const zone = (z: ZoneId): CardInstance[] => (player.zones[z] ?? []).map(inst).filter(Boolean);
+  const chars = zone("characterArea");
+  const lifes = zone("life");
+  const leaders = zone("leader");
+  const stages = zone("stage");
+  const plays = zone("playArea");
+  const deck = zone("deck");
+  const donDeck = zone("donDeck");
+  const donActive = zone("donActive");
+  const trash = zone("trash");
+  const donFree = donActive.filter((i) => !i.attachedTo);
+  const donGivenTo = (t: InstanceId) => donActive.filter((i) => i.attachedTo === t);
+
+  const OCard = ({ i, isLeader = false }: { i: CardInstance; isLeader?: boolean }) => {
+    const given = donGivenTo(i.instanceId).length;
+    return (
+      <div
+        className={`gb-card${i.rested ? " gb-rested" : ""}${isLeader ? " gb-isleader" : ""}`}
+        onMouseEnter={() => { if (i.faceUp && onHover) { const c = cardMap.get(i.cardId); if (c) onHover(c); } }}
+        onMouseLeave={() => onHover?.(null)}
+      >
+        <CardArt inst={i} card={cardMap.get(i.cardId)} isLeader={isLeader} />
+        {given > 0 && <span className="gb-donchip" style={{ pointerEvents: "none" }}>DON!!{given > 1 ? ` ×${given}` : ""}</span>}
+      </div>
+    );
+  };
+
+  return (
+    <div className="gb-half gb-half-opp gb-half-live">
+      <div className="gb-rightcol">
+        <div className="gb-zone gb-trashzone">
+          <span className="gb-zlabel">Trash</span>
+          {trash.length ? <Pile top={trash[trash.length - 1]} count={trash.length} cardMap={cardMap} onCtx={() => {}} /> : <div className="gb-slot" />}
+        </div>
+        <div className="gb-zone gb-deckzone">
+          <span className="gb-zlabel">Deck</span>
+          {deck.length ? <div className="gb-pile gb-pile-deep"><OCard i={deck[0]} /><span className="gb-count">{deck.length}</span></div> : <div className="gb-slot" />}
+        </div>
+      </div>
+
+      <div className="gb-center">
+        <div className="gb-donrow">
+          <div className="gb-zone gb-cost">
+            <span className="gb-zlabel">Cost Area</span>
+            <div className="gb-cost-row">
+              {donFree.map((i) => <OCard key={i.instanceId} i={i} />)}
+              {donActive.length === 0 && <span className="gb-slot-hint">—</span>}
+            </div>
+          </div>
+          <div className="gb-zone gb-dondeck">
+            <span className="gb-zlabel">DON!!</span>
+            {donDeck.length ? <div className="gb-pile gb-pile-deep"><OCard i={donDeck[0]} /><span className="gb-count">{donDeck.length}</span></div> : <div className="gb-slot" />}
+          </div>
+        </div>
+        <div className="gb-lsrow">
+          <div className="gb-zone gb-playzone">
+            <span className="gb-zlabel">Play Area</span>
+            <div className="gb-play-row">
+              {plays.map((i) => <OCard key={i.instanceId} i={i} />)}
+              {plays.length === 0 && <span className="gb-slot-hint">Events & reveals</span>}
+            </div>
+          </div>
+          <div className="gb-zone gb-stagezone">
+            <span className="gb-zlabel">Stage</span>
+            {stages.length ? stages.map((i) => <OCard key={i.instanceId} i={i} />) : <div className="gb-slot" />}
+          </div>
+          <div className="gb-zone gb-leaderzone">
+            <span className="gb-zlabel">Leader</span>
+            {leaders.length ? leaders.map((i) => <OCard key={i.instanceId} i={i} isLeader />) : <div className="gb-slot" />}
+          </div>
+        </div>
+        <div className="gb-zone gb-chars">
+          <span className="gb-zlabel">Character Area</span>
+          <div className="gb-chars-row">
+            {chars.map((i) => <OCard key={i.instanceId} i={i} />)}
+            {Array.from({ length: Math.max(0, 5 - chars.length) }, (_, k) => <div key={`ocs${k}`} className="gb-slot" />)}
+          </div>
+        </div>
+      </div>
+
+      <div className="gb-zone gb-life">
+        <span className="gb-zlabel">Life</span>
+        <div className="gb-life-stack">
+          {lifes.length === 0 && <div className="gb-slot gb-slot-life" />}
+          {lifes.map((i, k) => (
+            <div className="gb-life-card" style={{ ["--i" as string]: k }} key={i.instanceId}><OCard i={i} /></div>
+          ))}
+          {lifes.length > 0 && <span className="gb-count gb-life-count">{lifes.length}</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Hover preview (left panel) ──────────────────────────────────────────────
 
 // ─── Action log ───────────────────────────────────────────────────────────────
+
+// ─── DuelingBook-style field (v3 layout) ─────────────────────────────────────
+
+/** The seat you control — OP zones in the DB corner arrangement:
+ *  left corner LIFE stack over the DON!! deck (DB: pendulum over extra deck),
+ *  center rows char area → leader/stage/play → cost area,
+ *  right corner TRASH over DECK (DB: graveyard over deck). */
+export function DbMyHalf({ player, cardMap, onCtx, onHover, onDetachDon, quickFor, selectedDon, onToggleDon, onAssignDon, onViewZone }: {
+  player: PlayerState;
+  cardMap: Map<string, Card>;
+  onCtx: (id: InstanceId, x: number, y: number) => void;
+  onHover: (card: Card | null) => void;
+  onDetachDon: (donId: InstanceId) => void;
+  quickFor: (inst: CardInstance, zone: ZoneId) => QuickAction[];
+  selectedDon: Set<InstanceId>;
+  onToggleDon: (id: InstanceId) => void;
+  onAssignDon: (targetId: InstanceId) => void;
+  onViewZone: (z: ViewerZone) => void;
+}) {
+  const selecting = selectedDon.size > 0;
+  const inst = (iid: InstanceId) => player.instances[iid];
+  const zone = (z: ZoneId): CardInstance[] => (player.zones[z] ?? []).map(inst).filter(Boolean);
+  const chars = zone("characterArea");
+  const lifes = zone("life");
+  const leaders = zone("leader");
+  const stages = zone("stage");
+  const deck = zone("deck");
+  const donDeck = zone("donDeck");
+  const donActive = zone("donActive");
+  const trash = zone("trash");
+  const donFree = donActive.filter((i) => !i.attachedTo);
+  const donGivenTo = (t: InstanceId) => donActive.filter((i) => i.attachedTo === t);
+
+  return (
+    <div className={`db-half db-half-mine${selecting ? " gb-half-selecting" : ""}`}>
+      {/* LEFT corner — LIFE stack above the DON!! deck */}
+      <div className="db-sidecol">
+        <DropZone id="life" label="Life" className="db-lifezone">
+          <div className="db-lifestack">
+            {lifes.length === 0 && <div className="gb-slot" />}
+            {lifes.map((i) => (
+              <div className="db-lifecard" key={i.instanceId}>
+                <DCard instanceId={i.instanceId} inst={i} card={cardMap.get(i.cardId)} onCtx={onCtx} onHover={onHover} />
+              </div>
+            ))}
+            {lifes.length > 0 && <span className="gb-count">{lifes.length}</span>}
+          </div>
+        </DropZone>
+        <DropZone id="donDeck" label="DON!! Deck">
+          <Pile top={donDeck[0]} count={donDeck.length} cardMap={cardMap} onCtx={onCtx} empty="—" />
+        </DropZone>
+      </div>
+
+      {/* CENTER rows */}
+      <div className="db-halfmain">
+        <DropZone id="characterArea" label="Character Area" className="db-charrow-wrap">
+          <div className="db-charrow">
+            {chars.map((i) => (
+              <DCard key={i.instanceId} instanceId={i.instanceId} inst={i} card={cardMap.get(i.cardId)} attached={donGivenTo(i.instanceId)} onDetachDon={onDetachDon} onCtx={onCtx} onHover={onHover} quick={quickFor(i, "characterArea")} onSelect={selecting ? () => onAssignDon(i.instanceId) : undefined} />
+            ))}
+            {Array.from({ length: Math.max(0, 5 - chars.length) }, (_, k) => (
+              <div key={`cs${k}`} className="gb-slot" />
+            ))}
+          </div>
+        </DropZone>
+
+        {/* No Play Area zone: Events resolve via the centered animation and go
+            straight to the trash (see playEventCard in BoardPage).
+            Leader, Stage and the Cost Area share ONE row — dropping the separate
+            DON strip buys the whole field a much larger card scale. */}
+        <div className="db-lsrow">
+          <DropZone id="leader" label="Leader">
+            {leaders.map((i) => (
+              <DCard key={i.instanceId} instanceId={i.instanceId} inst={i} card={cardMap.get(i.cardId)} isLeader attached={donGivenTo(i.instanceId)} onDetachDon={onDetachDon} onCtx={onCtx} onHover={onHover} quick={quickFor(i, "leader")} onSelect={selecting ? () => onAssignDon(i.instanceId) : undefined} />
+            ))}
+            {leaders.length === 0 && <div className="gb-slot" />}
+          </DropZone>
+          <DropZone id="stage" label="Stage">
+            {stages.map((i) => (
+              <DCard key={i.instanceId} instanceId={i.instanceId} inst={i} card={cardMap.get(i.cardId)} onCtx={onCtx} onHover={onHover} quick={quickFor(i, "stage")} />
+            ))}
+            {stages.length === 0 && <div className="gb-slot" />}
+          </DropZone>
+          <DropZone id="donActive" label="Cost Area" className="db-costzone">
+            <div className="db-donrow" style={{ ["--doncount" as string]: Math.max(1, donFree.length) }}>
+              {donFree.map((i) => (
+                <div key={i.instanceId} className="db-doncell">
+                  <DCard instanceId={i.instanceId} inst={i} card={cardMap.get(i.cardId)} onCtx={onCtx} quick={quickFor(i, "donActive")} selected={selectedDon.has(i.instanceId)} onSelect={() => onToggleDon(i.instanceId)} />
+                </div>
+              ))}
+              {donActive.length === 0 && <span className="gb-slot-hint">DON!! land here</span>}
+              {donActive.length > 0 && donFree.length === 0 && <span className="gb-slot-hint">All DON!! given</span>}
+            </div>
+          </DropZone>
+        </div>
+      </div>
+
+      {/* RIGHT corner — TRASH above DECK */}
+      <div className="db-sidecol">
+        <DropZone id="trash" label="Trash">
+          <Pile top={trash[trash.length - 1]} count={trash.length} cardMap={cardMap} onCtx={onCtx} onHover={onHover} empty="Trash" onView={() => onViewZone("trash")} />
+        </DropZone>
+        <DropZone id="deck" label="Deck">
+          <Pile top={deck[0]} count={deck.length} cardMap={cardMap} onCtx={onCtx} empty="—" onView={() => onViewZone("deck")} />
+        </DropZone>
+      </div>
+    </div>
+  );
+}
+
+/** The opposite half, rotated 180° like DB draws the opponent's field.
+ *  `player` null = practice dummy (empty slots); otherwise a live read-only
+ *  mirror of the other seat's real state (hover still previews cards). */
+export function DbOppHalf({ player, cardMap, onHover }: {
+  player: PlayerState | null;
+  cardMap: Map<string, Card>;
+  onHover?: (card: Card | null) => void;
+}) {
+  const zone = (zn: ZoneId): CardInstance[] =>
+    player ? (player.zones[zn] ?? []).map((id) => player.instances[id]).filter(Boolean) : [];
+  const chars = zone("characterArea");
+  const lifes = zone("life");
+  const leaders = zone("leader");
+  const stages = zone("stage");
+  const deck = zone("deck");
+  const donDeck = zone("donDeck");
+  const donActive = zone("donActive");
+  const trash = zone("trash");
+  const donFree = donActive.filter((i) => !i.attachedTo);
+  const donGivenTo = (t: InstanceId) => donActive.filter((i) => i.attachedTo === t);
+
+  const OCard = ({ i, isLeader = false }: { i: CardInstance; isLeader?: boolean }) => {
+    const given = donGivenTo(i.instanceId).length;
+    return (
+      <div
+        className={`gb-card${i.rested ? " gb-rested" : ""}${isLeader ? " gb-isleader" : ""}`}
+        onMouseEnter={() => { if (i.faceUp && onHover) { const c = cardMap.get(i.cardId); if (c) onHover(c); } }}
+        onMouseLeave={() => onHover?.(null)}
+      >
+        <CardArt inst={i} card={cardMap.get(i.cardId)} isLeader={isLeader} />
+        {given > 0 && <span className="gb-donchip" style={{ pointerEvents: "none" }}>DON!!{given > 1 ? ` ×${given}` : ""}</span>}
+      </div>
+    );
+  };
+  const OPile = ({ items, topLast = false }: { items: CardInstance[]; topLast?: boolean }) =>
+    items.length === 0 ? <div className="gb-slot" /> : (
+      <div className={`gb-pile${items.length > 1 ? " gb-pile-deep" : ""}`}>
+        <OCard i={items[topLast ? items.length - 1 : 0]} />
+        <span className="gb-count">{items.length}</span>
+      </div>
+    );
+
+  return (
+    <div className={`db-half db-half-opp${player ? " db-half-live" : " db-static"}`}>
+      <div className="db-sidecol">
+        <div className="gb-zone db-lifezone"><span className="gb-zlabel">Life</span>
+          <div className="db-lifestack">
+            {lifes.length === 0 && <div className="gb-slot" />}
+            {lifes.map((i) => <div className="db-lifecard" key={i.instanceId}><OCard i={i} /></div>)}
+            {lifes.length > 0 && <span className="gb-count">{lifes.length}</span>}
+          </div>
+        </div>
+        <div className="gb-zone"><span className="gb-zlabel">DON!! Deck</span><OPile items={donDeck} /></div>
+      </div>
+
+      <div className="db-halfmain">
+        <div className="gb-zone db-charrow-wrap"><span className="gb-zlabel">Character Area</span>
+          <div className="db-charrow">
+            {chars.map((i) => <OCard key={i.instanceId} i={i} />)}
+            {Array.from({ length: Math.max(0, 5 - chars.length) }, (_, k) => <div key={`ocs${k}`} className="gb-slot" />)}
+          </div>
+        </div>
+        <div className="db-lsrow">
+          <div className="gb-zone"><span className="gb-zlabel">Leader</span>
+            {leaders.length ? leaders.map((i) => <OCard key={i.instanceId} i={i} isLeader />) : <div className="gb-slot" />}
+          </div>
+          <div className="gb-zone"><span className="gb-zlabel">Stage</span>
+            {stages.length ? stages.map((i) => <OCard key={i.instanceId} i={i} />) : <div className="gb-slot" />}
+          </div>
+          <div className="gb-zone db-costzone"><span className="gb-zlabel">Cost Area</span>
+            <div className="db-donrow" style={{ ["--doncount" as string]: Math.max(1, donFree.length) }}>
+              {donFree.map((i) => <div key={i.instanceId} className="db-doncell"><OCard i={i} /></div>)}
+              {donActive.length === 0 && <span className="gb-slot-hint">—</span>}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="db-sidecol">
+        <div className="gb-zone"><span className="gb-zlabel">Trash</span><OPile items={trash} topLast /></div>
+        <div className="gb-zone"><span className="gb-zlabel">Deck</span><OPile items={deck} /></div>
+      </div>
+    </div>
+  );
+}
+
+/** My hand — a flat face-up row at the bottom, DB style (no fan/arc). */
+export function DbHand({ insts, cardMap, onCtx, onHover, quickFor }: {
+  insts: CardInstance[];
+  cardMap: Map<string, Card>;
+  onCtx: (id: InstanceId, x: number, y: number) => void;
+  onHover: (card: Card | null) => void;
+  quickFor: (inst: CardInstance, zone: ZoneId) => QuickAction[];
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: "hand" });
+  const n = insts.length;
+  // flat row that compresses (cards overlap) as the hand grows past ~7
+  const step = n > 1 ? Math.min(1, 6.5 / (n - 1)) : 1;
+  const overlap = `calc(var(--cw) * ${(step - 1).toFixed(3)})`;
+  return (
+    <div ref={setNodeRef} className={`db-hand${isOver ? " gb-over" : ""}`}>
+      {insts.map((inst, i) => (
+        <div key={inst.instanceId} className="db-handcard" style={{ marginRight: i === n - 1 ? undefined : overlap }}>
+          <DCard instanceId={inst.instanceId} inst={inst} card={cardMap.get(inst.cardId)} onCtx={onCtx} onHover={onHover} quick={quickFor(inst, "hand")} />
+        </div>
+      ))}
+      {n === 0 && <span className="db-hand-empty">Hand empty — drag cards here</span>}
+    </div>
+  );
+}
+
+/** Opponent hand — flat row at the top: backs in practice, real cards in test
+ *  mode (`reveal` shows the faces so you can pilot both sides; hovering one
+ *  shows it full-size in the left preview so the tiny strip stays readable). */
+export function DbOppHand({ insts, count = 5, cardMap, reveal = false, onHover }: {
+  insts?: CardInstance[];
+  count?: number;
+  cardMap: Map<string, Card>;
+  reveal?: boolean;
+  onHover?: (card: Card | null) => void;
+}) {
+  const items: (CardInstance | null)[] = insts ?? Array.from({ length: count }, () => null);
+  return (
+    <div className={`db-opphand${reveal ? " reveal" : ""}`}>
+      {items.map((i, k) => (
+        <div
+          key={i ? i.instanceId : k}
+          className="db-ohcard"
+          onMouseEnter={() => { if (i && reveal && onHover) { const c = cardMap.get(i.cardId); if (c) onHover(c); } }}
+          onMouseLeave={() => onHover?.(null)}
+        >
+          {i && reveal
+            ? <CardArt inst={{ ...i, faceUp: true }} card={cardMap.get(i.cardId)} />
+            : <div className="gb-back"><span className="gb-back-emblem" /></div>}
+        </div>
+      ))}
+      {items.length === 0 && <span className="db-opphand-empty">Opponent hand empty</span>}
+    </div>
+  );
+}
 
 export function fmtAction(e: GameAction): string {
   switch (e.type) {
@@ -484,26 +912,31 @@ export function LogsModal({ log, onClose }: { log: GameAction[]; onClose: () => 
 
 // ─── Card overview (left rail) ───────────────────────────────────────────────
 
+/** DB-style card preview: art on top, name + stat line, then the effect text
+ *  in a white scrollable box (like DuelingBook's left-rail preview). */
 export function CardOverview({ card }: { card: Card | null }) {
   return (
-    <div className="gb-panel gb-overview" style={card ? { ["--lc" as string]: cardColorHex(card) } : undefined}>
-      <div className="gb-panel-h">Card Overview</div>
-      {!card ? (
-        <div className="gb-ov-empty">Hover a card to inspect it</div>
-      ) : (
-        <div className="gb-ov-body">
-          {card.image && <img className="gb-ov-img" src={card.image} alt={card.name} draggable={false} />}
-          <div className="gb-ov-name">{card.name}</div>
-          <div className="gb-ov-line">
+    <div className="db-preview" style={card ? { ["--lc" as string]: cardColorHex(card) } : undefined}>
+      <div className="db-preview-art">
+        {card?.image
+          ? <img src={card.image} alt={card.name} draggable={false} />
+          : <span className="db-preview-empty">{card ? card.name : "Hover a card to inspect it"}</span>}
+      </div>
+      {card && (
+        <>
+          <div className="db-preview-name">{card.name}</div>
+          <div className="db-preview-line">
             {card.category}
             {card.cost != null ? ` · ${card.category === "Leader" ? "Life" : "Cost"} ${card.cost}` : ""}
-            {card.power != null ? ` · ${card.power} pow` : ""}
-            {card.counter ? ` · +${card.counter}` : ""}
+            {card.power != null ? ` · ${card.power} POW` : ""}
+            {card.counter ? ` · Counter +${card.counter}` : ""}
           </div>
-          {card.types?.length > 0 && <div className="gb-ov-types">{card.types.join(" / ")}</div>}
-          {card.effect && <div className="gb-ov-fx">{card.effect}</div>}
-          {card.trigger && <div className="gb-ov-trigger"><b>Trigger:</b> {card.trigger}</div>}
-        </div>
+          <div className="db-preview-fx">
+            {card.types?.length ? `[${card.types.join(" / ")}]\n` : ""}
+            {card.effect || "—"}
+            {card.trigger ? `\n\nTrigger: ${card.trigger}` : ""}
+          </div>
+        </>
       )}
     </div>
   );
@@ -518,7 +951,9 @@ interface ChatMsg {
   body: string;
 }
 
-export function GameChat() {
+/** DB's white duel-log/chat box: system lines (the actionLog) and global chat
+ *  merged in one scrollable white panel, input + Send at the bottom. */
+export function GameChat({ log }: { log: GameAction[] }) {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -544,6 +979,8 @@ export function GameChat() {
     return () => window.clearInterval(id);
   }, []);
 
+  useEffect(() => { if (atBottom.current) toBottom(); }, [log.length]);
+
   const onScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -567,25 +1004,26 @@ export function GameChat() {
   };
 
   return (
-    <div className="gb-panel gb-chat">
-      <div className="gb-panel-h">Chat</div>
-      <div className="gb-chat-scroll" ref={scrollRef} onScroll={onScroll}>
-        {messages.length === 0 && <div className="gb-ov-empty">Say hi to the crew</div>}
+    <div className="db-duellog">
+      <div className="db-duellog-scroll" ref={scrollRef} onScroll={onScroll}>
+        {log.map((entry, i) => (
+          <div key={`l${i}`} className={`db-sysline${entry.type === "nextTurn" ? " turn" : ""}`}>{fmtAction(entry)}</div>
+        ))}
         {messages.map((m) => (
-          <div className="gb-chat-line" key={m.id}>
-            <span className={`gb-chat-name${m.fromMe ? " me" : ""}`}>{m.displayName}:</span> {m.body}
+          <div className="db-chatline" key={m.id}>
+            <b className={m.fromMe ? "me" : ""}>[{m.displayName}]</b> {m.body}
           </div>
         ))}
       </div>
-      <div className="gb-chat-input">
+      <div className="db-duellog-input">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Message…"
+          placeholder="Enter chat message…"
           maxLength={500}
         />
-        <button onClick={send} disabled={sending || !draft.trim()}>➤</button>
+        <button onClick={send} disabled={sending || !draft.trim()}>Send</button>
       </div>
     </div>
   );
@@ -594,7 +1032,7 @@ export function GameChat() {
 // ─── New game screen ──────────────────────────────────────────────────────────
 
 export function NewGameScreen({ onStart, onBack, cardMap }: {
-  onStart: (deck: Deck) => void;
+  onStart: (deck: Deck, asTest: boolean) => void;
   onBack: () => void;
   cardMap: Map<string, Card>;
 }) {
@@ -602,6 +1040,7 @@ export function NewGameScreen({ onStart, onBack, cardMap }: {
   const [selected, setSelected] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
+  const [testMode, setTestMode] = useState(false);
 
   useEffect(() => {
     api.myDecks()
@@ -615,9 +1054,13 @@ export function NewGameScreen({ onStart, onBack, cardMap }: {
   return (
     <div className="sn ng-overlay">
       <div className="ng-panel">
-        <p className="ng-kicker">Practice Mode</p>
+        <p className="ng-kicker">{testMode ? "Test Mode · 2 players" : "Practice Mode"}</p>
         <p className="ng-title">Choose your deck</p>
-        <p className="ng-sub">Solo board — pilot your deck against an empty seat.</p>
+        <p className="ng-sub">
+          {testMode
+            ? "Hotseat both sides — the opponent mirrors your deck, hands are revealed, and turns auto-run (draw + DON!!)."
+            : "Solo board — pilot your deck against an empty seat. Turns auto-run (draw + DON!!)."}
+        </p>
 
         {loading ? (
           <p className="ng-note">Loading decks…</p>
@@ -650,14 +1093,23 @@ export function NewGameScreen({ onStart, onBack, cardMap }: {
           </div>
         )}
 
+        <label className="ng-toggle">
+          <input type="checkbox" checked={testMode} onChange={(e) => setTestMode(e.target.checked)} />
+          <span className="ng-toggle-box" aria-hidden="true" />
+          <span className="ng-toggle-text">
+            <b>Test mode (2 players)</b>
+            <span>See both hands and pass the turn for either side</span>
+          </span>
+        </label>
+
         <div className="ng-actions">
           <button className="ng-btn ghost" onClick={onBack}>Back</button>
           <button
             className="ng-btn primary"
             disabled={!deck || starting}
-            onClick={() => { if (deck) { setStarting(true); onStart(deck); } }}
+            onClick={() => { if (deck) { setStarting(true); onStart(deck, testMode); } }}
           >
-            {starting ? "Setting sail…" : "Start Game"}
+            {starting ? "Setting sail…" : testMode ? "Start Test Game" : "Start Game"}
           </button>
         </div>
       </div>
@@ -741,12 +1193,14 @@ export function ZoneViewer({ zone, player, cardMap, onClose }: {
 
 // ─── Context menu ─────────────────────────────────────────────────────────────
 
-export function CtxMenu({ ctx, player, cardMap, onOpenViewer, onClose }: {
+export function CtxMenu({ ctx, player, cardMap, onOpenViewer, onClose, hidePlayArea = false }: {
   ctx: CtxState;
   player: PlayerState;
   cardMap: Map<string, Card>;
   onOpenViewer: (zone: ViewerZone) => void;
   onClose: () => void;
+  /** Layout 1 has no Play Area zone (Events resolve via animation) — hide the move. */
+  hidePlayArea?: boolean;
 }) {
   const { restCard, flipCard, moveCard, attachDon, setMarker, declareAttack } = useGameStore();
   const inst = player.instances[ctx.instanceId];
@@ -837,7 +1291,7 @@ export function CtxMenu({ ctx, player, cardMap, onOpenViewer, onClose }: {
           Move to Hand
         </button>
       )}
-      {ctx.zone !== "playArea" && ctx.zone !== "donActive" && ctx.zone !== "donDeck" && (
+      {!hidePlayArea && ctx.zone !== "playArea" && ctx.zone !== "donActive" && ctx.zone !== "donDeck" && (
         <button className="gb-ctx-item" onClick={() => act(() =>
           moveCard({ playerId: pid, instanceId: ctx.instanceId, from: ctx.zone, to: "playArea" }))}>
           Move to Play Area
@@ -872,13 +1326,22 @@ export function BoardPage() {
   const setView = useUiStore((s) => s.setView);
 
   const {
-    state, setup, drawCard, drawDon, moveCard, attachDon, refresh,
-    shuffleDeck, restCard, declareAttack, rollDie, nextTurn, mulligan, resetGame,
+    state, setup, addSeat, beginTurn, passTurn, drawCard, drawDon, moveCard, attachDon,
+    shuffleDeck, restCard, declareAttack, rollDie, mulligan, undo, resetGame,
   } = useGameStore();
+  const canUndo = useGameStore((s) => s.past.length > 0);
 
-  const playerId = user?.id ?? "guest";
+  const humanId = user?.id ?? "guest";
+  const oppId   = "opponent";
+  // Test mode = a second seat exists. You always control the seat whose turn it
+  // is (bottom half); the other seat is shown at the top with its hand revealed.
+  const testMode = state.playerOrder.length > 1;
+  const playerId = testMode ? state.turnPlayerId : humanId;
   const player   = state.players[playerId] ?? null;
-  const gameActive = !!player;
+  const otherId  = testMode ? (state.playerOrder.find((id) => id !== playerId) ?? null) : null;
+  const opp      = otherId ? (state.players[otherId] ?? null) : null;
+  const gameActive = !!state.players[humanId];
+  const seatName = testMode ? (playerId === humanId ? (user?.displayName || "You") : "Opponent") : null;
 
   const [cardMap, setCardMap]     = useState<Map<string, Card>>(new Map());
   const [ctx, setCtx]             = useState<CtxState | null>(null);
@@ -911,6 +1374,23 @@ export function BoardPage() {
   const [rollToast, setRollToast] = useState<string | null>(null);
   const rollTimer = useRef<number | null>(null);
 
+  // Event resolve FX: the card is moved to the trash IMMEDIATELY (one clean,
+  // undoable action) while a big centered copy plays a short "activated"
+  // animation + chime on top. Pure presentation — nothing extra in the log.
+  const [eventFx, setEventFx] = useState<{ card?: Card; inst: CardInstance; leaving: boolean } | null>(null);
+  const eventTimers = useRef<number[]>([]);
+  const playEventCard = useCallback((inst: CardInstance, from: ZoneId) => {
+    eventTimers.current.forEach((t) => window.clearTimeout(t));
+    moveCard({ playerId, instanceId: inst.instanceId, from, to: "trash" });
+    setEventFx({ card: cardMap.get(inst.cardId), inst, leaving: false });
+    playEventSound();
+    eventTimers.current = [
+      window.setTimeout(() => setEventFx((s) => (s ? { ...s, leaving: true } : s)), 950),
+      window.setTimeout(() => setEventFx(null), 1400),
+    ];
+  }, [cardMap, moveCard, playerId]);
+  useEffect(() => () => eventTimers.current.forEach((t) => window.clearTimeout(t)), []);
+
   // Coin flip / die roll: the store decides + logs the result; we toast it.
   const handleRoll = (sides: number) => {
     rollDie(playerId, sides);
@@ -925,6 +1405,8 @@ export function BoardPage() {
 
   useEffect(() => { loadCardsById().then(setCardMap).catch(() => {}); }, []);
   useEffect(() => { if (!gameActive) setShowNewGame(true); }, [gameActive]);
+  // Switching which seat you control clears any in-progress DON!! selection.
+  useEffect(() => { setSelectedDon(new Set()); }, [playerId]);
 
   // DuelingBook-style hover menu: quick actions shown above the card per zone.
   const quickFor = useCallback((i: CardInstance, z: ZoneId): QuickAction[] => {
@@ -935,7 +1417,7 @@ export function BoardPage() {
       case "hand":
         return [
           { label: "Play", run: () => mv("characterArea"), gold: true },
-          { label: "Event", run: () => mv("playArea") },
+          { label: "Event", run: () => playEventCard(i, "hand") },
           { label: "Trash", run: () => mv("trash"), danger: true },
         ];
       case "characterArea":
@@ -969,7 +1451,7 @@ export function BoardPage() {
       default:
         return [];
     }
-  }, [playerId, player, moveCard, restCard, declareAttack, attachDon]);
+  }, [playerId, player, moveCard, restCard, declareAttack, attachDon, playEventCard]);
 
   // Close context menu on outside click (clicks INSIDE the menu must land first)
   useEffect(() => {
@@ -993,7 +1475,7 @@ export function BoardPage() {
   }, [player]);
 
   // Start a game
-  const handleStart = useCallback(async (deck: Deck) => {
+  const handleStart = useCallback(async (deck: Deck, asTest: boolean) => {
     if (!deck.leaderId) return;
     const cm = cardMap.size > 0 ? cardMap : await loadCardsById();
     if (cardMap.size === 0) setCardMap(cm);
@@ -1004,9 +1486,13 @@ export function BoardPage() {
       leaderLife,
       main: deck.cards.map((c) => ({ cardId: c.id, count: c.count })),
     };
-    setup(playerId, input);
+    setup(humanId, input);
+    // Test mode: a second seat mirrors the same deck (it shuffles its own copy).
+    if (asTest) addSeat(oppId, input);
+    // Auto turn-1 phases for the starting player: refresh, no draw, +1 DON!!.
+    beginTurn(humanId);
     setShowNewGame(false);
-  }, [cardMap, playerId, setup]);
+  }, [cardMap, humanId, setup, addSeat, beginTurn]);
 
   // dnd-kit sensors
   const sensors = useSensors(
@@ -1060,11 +1546,11 @@ export function BoardPage() {
   const leaderCard   = leaderInstId ? cardMap.get(player!.instances[leaderInstId]?.cardId || "") : undefined;
   const leaderColor  = leaderCard ? cardColorHex(leaderCard) : "#e3b24c";
 
-  // Official refresh phase, then advance the turn (both fully in the actionLog)
+  // Semi-automatic turn pass: hands the turn to the next seat and runs their
+  // refresh → draw → DON!! phases automatically (all in the actionLog, undoable).
   const handleNextTurn = () => {
     if (!player) return;
-    refresh(playerId);
-    nextTurn();
+    passTurn();
   };
 
   const lifeCount = player?.zones.life.length ?? 0;
@@ -1106,78 +1592,104 @@ export function BoardPage() {
 
       {gameActive && (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="gb-felt" style={{ ["--lc" as string]: leaderColor }}>
+          <div className="db-root" style={{ ["--lc" as string]: leaderColor }}>
 
-            {/* top bar */}
-            <div className="gb-topbar">
-              <button className="gb-top-btn" onClick={() => setView("home")}>← Exit</button>
-              <div className="gb-turnpill">
-                <span className="gb-turn-k">Turn</span>
-                <span className="gb-turn-v">{state.turn}</span>
+            {/* LEFT rail — card preview + flat utility buttons (DB style) */}
+            <aside className="db-left">
+              <CardOverview card={preview} />
+              <div className="db-turnrow">
+                <span className="db-turnpill">Turn <b>{state.turn}</b></span>
+                {testMode
+                  ? <span className="db-seatpill">playing as <b>{seatName}</b></span>
+                  : <span className="db-seatpill">Practice</span>}
               </div>
-              <div className="gb-top-right">
-                <span className="gb-opp-name">Practice · empty seat</span>
+              <div className="db-tools">
+                <button className="db-btn" onClick={() => drawCard(playerId)} disabled={deckCount === 0}>
+                  Draw <span className="db-btn-n">({deckCount})</span>
+                </button>
+                <button className="db-btn" onClick={() => drawDon(playerId)} disabled={donLeft === 0}>
+                  DON!! <span className="db-btn-n">({donLeft})</span>
+                </button>
+                <button className="db-btn" onClick={handleTakeLife} disabled={lifeCount === 0}>
+                  Take Life <span className="db-btn-n">({lifeCount})</span>
+                </button>
+                <button className="db-btn" onClick={() => shuffleDeck(playerId)}>Shuffle</button>
+                <button className="db-btn" onClick={() => mulligan(playerId)}>Mulligan</button>
+                <button className="db-btn" onClick={undo} disabled={!canUndo} title="Undo the last action">↶ Undo</button>
+                <button className="db-btn" onClick={() => handleRoll(6)}>Roll D6</button>
+                <button className="db-btn" onClick={() => setLogsOpen(true)}>Duel Log</button>
+                <button className="db-btn danger" onClick={() => { resetGame(); setShowNewGame(true); }}>Reset</button>
+                <button className="db-btn" onClick={() => setView("home")}>Exit</button>
+                <button className="db-btn wide primary" onClick={handleNextTurn} title="End turn — next player auto-runs refresh, draw and DON!!">End Turn ⟳</button>
               </div>
-            </div>
+            </aside>
 
-            {/* 3-column table: card overview | mat | controls+log+chat */}
-            <div className="gb-main3">
-              {/* LEFT — card overview */}
-              <aside className="gb-side gb-side-left">
-                <CardOverview card={preview} />
-              </aside>
+            {/* CENTER — opponent hand, the field with the midline phase bar, my hand */}
+            <section className="db-center">
+              {testMode && opp
+                ? <DbOppHand insts={opp.zones.hand.map((id) => opp.instances[id]).filter(Boolean)} cardMap={cardMap} reveal onHover={hoverCard} />
+                : <DbOppHand count={5} cardMap={cardMap} />}
 
-              {/* CENTER — opponent hand + mat */}
-              <section className="gb-centercol">
-                <OppHand count={5} />
-                <div className="gb-mat">
-                  <OppHalf />
-                  <div className="gb-divider">
-                    <span className="gb-compass" />
-                  </div>
-                  <MyHalf player={player} cardMap={cardMap} onCtx={openCtx} onHover={hoverCard} onDetachDon={handleDetachDon} quickFor={quickFor} leaderColor={leaderColor} selectedDon={selectedDon} onToggleDon={toggleDon} onAssignDon={assignDonTo} />
+              <div className="db-field">
+                <DbOppHalf player={opp} cardMap={cardMap} onHover={testMode ? hoverCard : undefined} />
+                <DbMyHalf player={player} cardMap={cardMap} onCtx={openCtx} onHover={hoverCard} onDetachDon={handleDetachDon} quickFor={quickFor} selectedDon={selectedDon} onToggleDon={toggleDon} onAssignDon={assignDonTo} onViewZone={setViewer} />
+              </div>
+
+              <DbHand insts={handInsts} cardMap={cardMap} onCtx={openCtx} onHover={hoverCard} quickFor={quickFor} />
+            </section>
+
+            {/* RIGHT rail — LIFE bars + avatars + white duel log/chat (DB order) */}
+            <aside className="db-right">
+              <div className="db-lifebar">
+                <span className="k">LIFE</span>
+                <span className="v">{opp ? opp.zones.life.length : "—"}</span>
+              </div>
+              <div className="db-avatar">
+                <div className="db-avatar-img">
+                  {(() => {
+                    const oc = opp ? cardMap.get(opp.instances[opp.zones.leader[0]]?.cardId || "") : undefined;
+                    return oc?.image ? <img src={oc.image} alt="" draggable={false} /> : <span className="ph">?</span>;
+                  })()}
                 </div>
-              </section>
+                <div className="db-avatar-name">{testMode ? (otherId === humanId ? (user?.displayName || "You") : "Opponent") : "Practice Dummy#0000"}</div>
+              </div>
 
-              {/* RIGHT — controls + log + chat */}
-              <aside className="gb-side gb-side-right">
-                <div className="gb-panel gb-ctrlpanel">
-                  <div className="gb-controls">
-                    <button className="gb-btn" onClick={() => drawCard(playerId)} disabled={deckCount === 0}>
-                      Draw <span className="gb-btn-n">{deckCount}</span>
-                    </button>
-                    <button className="gb-btn gold" onClick={() => drawDon(playerId)} disabled={donLeft === 0}>
-                      DON!! <span className="gb-btn-n">{donLeft}</span>
-                    </button>
-                    <button className="gb-btn" onClick={() => shuffleDeck(playerId)}>Shuffle</button>
-                    <button className="gb-btn" onClick={() => mulligan(playerId)}>Mulligan</button>
-                    <button className="gb-btn" onClick={() => handleRoll(2)}>Coin Flip</button>
-                    <button className="gb-btn" onClick={() => handleRoll(6)}>Roll D6</button>
-                    <button className="gb-btn" onClick={handleTakeLife} disabled={lifeCount === 0}>
-                      Take Life <span className="gb-btn-n">{lifeCount}</span>
-                    </button>
-                    <button className="gb-btn" onClick={() => setLogsOpen(true)}>Logs</button>
-                    <button className="gb-btn danger" onClick={() => { resetGame(); setShowNewGame(true); }}>Reset</button>
-                    <button className="gb-btn primary" onClick={handleNextTurn}>Next Turn</button>
-                  </div>
+              <GameChat log={state.actionLog} />
+
+              <div className="db-avatar active">
+                <div className="db-avatar-img">
+                  {leaderCard?.image ? <img src={leaderCard.image} alt="" draggable={false} /> : <span className="ph">{(user?.displayName || "Y")[0]}</span>}
                 </div>
-                <GameChat />
-              </aside>
-            </div>
-
-            {/* my hand */}
-            <MyHand insts={handInsts} cardMap={cardMap} onCtx={openCtx} onHover={hoverCard} quickFor={quickFor} />
+                <div className="db-avatar-name">{testMode ? seatName : (user?.displayName || "You")}</div>
+              </div>
+              <div className="db-lifebar">
+                <span className="k">LIFE</span>
+                <span className="v">{lifeCount}</span>
+              </div>
+            </aside>
 
             {/* coin/die result toast */}
-            {rollToast && <div className="gb-rolltoast">{rollToast}</div>}
+            {rollToast && <div className="db-rolltoast">{rollToast}</div>}
+
+            {/* Event resolve FX — big centered card, then it "leaves" to the trash */}
+            {eventFx && (
+              <div className={`db-eventfx${eventFx.leaving ? " out" : ""}`}>
+                <div className="db-eventfx-card">
+                  {eventFx.card?.image
+                    ? <img src={eventFx.card.image} alt={eventFx.card.name} draggable={false} />
+                    : <CardArt inst={{ ...eventFx.inst, faceUp: true }} card={eventFx.card} />}
+                </div>
+                <span className="db-eventfx-tag">{eventFx.card?.name ?? "Event"}</span>
+              </div>
+            )}
 
             {/* DON!! selection action bar */}
             {selectedDon.size > 0 && (
-              <div className="gb-donbar">
-                <span className="gb-donbar-n">{selectedDon.size} DON!! selected</span>
-                <span className="gb-donbar-hint">Click a Leader or Character to give →</span>
-                <button className="gb-donbar-btn" onClick={restSelectedDon}>Rest</button>
-                <button className="gb-donbar-btn cancel" onClick={clearDon}>Cancel</button>
+              <div className="db-donbar">
+                <span>{selectedDon.size} DON!! selected</span>
+                <span className="db-donbar-hint">Click a Leader or Character to give →</span>
+                <button onClick={restSelectedDon}>Rest</button>
+                <button onClick={clearDon}>Cancel</button>
               </div>
             )}
           </div>
@@ -1201,6 +1713,7 @@ export function BoardPage() {
           cardMap={cardMap}
           onOpenViewer={setViewer}
           onClose={() => setCtx(null)}
+          hidePlayArea
         />
       )}
 

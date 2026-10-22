@@ -548,7 +548,7 @@
   position: relative;
 }
 .gb-hand-card:hover {
-  transform: rotate(0deg) translateY(-30px) scale(1.1);
+  transform: rotate(0deg) translateY(-12px) scale(1.06);
   z-index: 40;
 }
 .gb-hand-card .gb-card { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65); }
@@ -1118,3 +1118,99 @@
 @media (prefers-reduced-motion: reduce) {
   .gb-card, .gb-hand-card, .gb-ctx, .ng-panel { transition: none; animation: none; }
 }
+
+/* ── Zone colour coding ─────────────────────────────────────────────────────
+   Each zone type carries its own hue on the border + label (plus a faint fill)
+   so the board reads at a glance even in a dim room. Applied to both halves.
+   The gold drag-hover state (.gb-over) still overrides while dragging. */
+.gb-life      { border-color: rgba(236, 77, 77, 0.32);  background: rgba(236, 77, 77, 0.055); }
+.gb-life      .gb-zlabel { color: rgba(240, 130, 122, 0.9); }
+.gb-chars     { border-color: rgba(74, 142, 240, 0.30); background: rgba(74, 142, 240, 0.05); }
+.gb-chars     .gb-zlabel { color: rgba(126, 174, 246, 0.9); }
+.gb-leaderzone{ border-color: rgba(227, 178, 76, 0.38); background: rgba(227, 178, 76, 0.06); }
+.gb-leaderzone .gb-zlabel { color: rgba(240, 205, 120, 0.95); }
+.gb-stagezone { border-color: rgba(176, 106, 230, 0.32); background: rgba(176, 106, 230, 0.05); }
+.gb-stagezone .gb-zlabel { color: rgba(198, 150, 240, 0.9); }
+.gb-playzone  { border-color: rgba(41, 181, 111, 0.30); background: rgba(41, 181, 111, 0.05); }
+.gb-playzone  .gb-zlabel { color: rgba(90, 210, 150, 0.9); }
+.gb-cost      { border-color: rgba(230, 185, 63, 0.30); background: rgba(230, 185, 63, 0.05); }
+.gb-cost      .gb-zlabel { color: rgba(240, 205, 110, 0.9); }
+.gb-dondeck   { border-color: rgba(224, 147, 47, 0.34); background: rgba(224, 147, 47, 0.055); }
+.gb-dondeck   .gb-zlabel { color: rgba(240, 176, 96, 0.92); }
+.gb-deckzone  { border-color: rgba(41, 176, 160, 0.30); background: rgba(41, 176, 160, 0.05); }
+.gb-deckzone  .gb-zlabel { color: rgba(90, 205, 192, 0.9); }
+.gb-trashzone { border-color: rgba(147, 155, 173, 0.30); background: rgba(147, 155, 173, 0.05); }
+.gb-trashzone .gb-zlabel { color: rgba(176, 184, 200, 0.88); }
+
+/* ── New Game: test-mode toggle ─────────────────────────────────────────── */
+.ng-toggle { display: flex; align-items: center; gap: 12px; margin: 16px 2px 2px; cursor: pointer; user-select: none; }
+.ng-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.ng-toggle-box { width: 42px; height: 24px; border-radius: 999px; flex: 0 0 auto; position: relative;
+  background: rgba(140, 165, 200, 0.18); border: 1px solid rgba(140, 165, 200, 0.32); transition: background 0.15s, border-color 0.15s; }
+.ng-toggle-box::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%;
+  background: #e6e9f0; transition: transform 0.16s; }
+.ng-toggle input:checked + .ng-toggle-box { background: linear-gradient(90deg, #c23a31, #e3b24c); border-color: rgba(227, 178, 76, 0.6); }
+.ng-toggle input:checked + .ng-toggle-box::after { transform: translateX(18px); }
+.ng-toggle input:focus-visible + .ng-toggle-box { box-shadow: 0 0 0 3px rgba(227, 178, 76, 0.35); }
+.ng-toggle-text { display: flex; flex-direction: column; gap: 1px; }
+.ng-toggle-text b { font: 700 13px var(--display, var(--font)); color: #e6e9f0; }
+.ng-toggle-text span { font: 500 11.5px var(--font); color: rgba(140, 165, 200, 0.75); }
+
+/* ── Test mode: live opponent ───────────────────────────────────────────── */
+.gb-seat-tag b { color: #ffd98a; }
+/* the live opponent half is real state — allow hover for the card preview */
+.gb-half-live { pointer-events: auto; opacity: 0.96; }
+/* Test mode shows a second full half PLUS the opponent's revealed-hand strip, so
+   the field must shrink a touch to fit both halves + both hands without the
+   centered content overflowing upward into the opponent's hand row. */
+.gb-felt-test .gb-mat {
+  --cwbase: clamp(28px, min(5.4vw, 6.3vh), 88px);
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+/* revealed opponent hand: a compact face-up row that RESERVES its full height
+   (flex:0 0 auto) so the cards never spill down over the opponent's DON row. */
+.gb-opphand-live {
+  height: auto;
+  overflow: visible;
+  pointer-events: auto;
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+  padding-top: 4px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 6;
+}
+.gb-opphand-live .gb-opphand-card { --cw: clamp(38px, 3.9vw, 54px); transform: rotate(var(--rot)); filter: none; margin: 0 calc(var(--cw) * -0.04); }
+.gb-opphand-reveal { width: 100%; height: 100%; border-radius: 7px; overflow: hidden; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5); }
+.gb-opphand-reveal .gb-img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-height: 780px) {
+  /* keep the opponent's revealed hand visible in test mode even on short screens */
+  .gb-opphand-live { display: flex; }
+}
+
+/* ── Deck / Trash pile — click to open the viewer ───────────────────────── */
+.gb-pile-view, .gb-slot-view { cursor: pointer; }
+.gb-pile-viewbtn {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid rgba(227, 178, 76, 0.5);
+  background: rgba(14, 18, 28, 0.92);
+  color: #ffd98a;
+  font-size: 11px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 8;
+  opacity: 0;
+  transition: opacity 0.14s, transform 0.12s, border-color 0.14s;
+}
+.gb-pile:hover .gb-pile-viewbtn, .gb-zone:hover .gb-pile-viewbtn { opacity: 1; }
+.gb-pile-viewbtn:hover { border-color: #ffd98a; transform: scale(1.12); }
+.gb-slot-view:hover { border-color: rgba(227, 178, 76, 0.5); }

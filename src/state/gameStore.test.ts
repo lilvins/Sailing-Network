@@ -115,6 +115,15 @@ describe("moveCard", () => {
     expect(zone("deck")[zone("deck").length - 1]).toBe(someCard);
   });
 
+  it("a rested character sent to the trash is no longer rested", () => {
+    const char = zone("hand")[0];
+    store().moveCard({ playerId: PID, instanceId: char, from: "hand", to: "characterArea" });
+    store().restCard(PID, char, true);
+    expect(inst(char).rested).toBe(true);
+    store().moveCard({ playerId: PID, instanceId: char, from: "characterArea", to: "trash" });
+    expect(inst(char).rested).toBe(false); // cards in a pile are never rested
+  });
+
   it("a character leaving the board returns its attached DON and drops markers", () => {
     const char = zone("hand")[0];
     store().moveCard({ playerId: PID, instanceId: char, from: "hand", to: "characterArea" });
@@ -196,6 +205,62 @@ describe("refresh / nextTurn", () => {
     store().nextTurn();
     expect(store().state.turn).toBe(2);
     expect(lastLog()).toMatchObject({ type: "nextTurn", turn: 2 });
+  });
+});
+
+describe("beginTurn (auto start-of-turn phases)", () => {
+  it("turn 1: no draw, exactly 1 DON!!, everything stood", () => {
+    store().beginTurn(PID);
+    expect(zone("hand")).toHaveLength(5); // first turn skips the draw
+    expect(zone("deck")).toHaveLength(40);
+    expect(zone("donActive")).toHaveLength(1); // first turn places only 1 DON!!
+    expect(zone("donDeck")).toHaveLength(9);
+  });
+});
+
+describe("passTurn (semi-automatic turn pass)", () => {
+  it("solo practice: same seat, draws 1 and places 2 DON!!, bumps the turn", () => {
+    store().passTurn();
+    expect(store().state.turn).toBe(2);
+    expect(store().state.turnPlayerId).toBe(PID);
+    expect(zone("hand")).toHaveLength(6);
+    expect(zone("donActive")).toHaveLength(2);
+    expect(lastLog()).toMatchObject({ type: "drawDon" });
+  });
+
+  it("is a single undo step despite running several sub-actions", () => {
+    store().passTurn();
+    expect(store().past).toHaveLength(1);
+    store().undo();
+    expect(store().state.turn).toBe(1);
+    expect(zone("hand")).toHaveLength(5);
+    expect(zone("donActive")).toHaveLength(0);
+  });
+
+  it("two seats: hands the turn to the opponent, who draws and gets 2 DON!!", () => {
+    const OPP = "player-2";
+    store().addSeat(OPP, SETUP);
+    expect(store().state.playerOrder).toEqual([PID, OPP]);
+    store().passTurn();
+    expect(store().state.turnPlayerId).toBe(OPP);
+    expect(store().state.players[OPP].zones.hand).toHaveLength(6);
+    expect(store().state.players[OPP].zones.donActive).toHaveLength(2);
+    // the first player's board is untouched by the opponent's turn
+    expect(zone("hand")).toHaveLength(5);
+    expect(zone("donActive")).toHaveLength(0);
+  });
+});
+
+describe("undo", () => {
+  it("reverts the last action and does nothing on an empty stack", () => {
+    const before = zone("deck").length;
+    store().drawCard(PID);
+    expect(zone("deck")).toHaveLength(before - 1);
+    store().undo();
+    expect(zone("deck")).toHaveLength(before);
+    // stack now empty (setup does not snapshot) — undo is a no-op
+    store().undo();
+    expect(zone("deck")).toHaveLength(before);
   });
 });
 
