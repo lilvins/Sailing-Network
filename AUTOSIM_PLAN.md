@@ -287,8 +287,10 @@ Golden examples (da compilare A MANO come primi test):
   Unblockable/RushCharacter, Counter Step completo (counter values + eventi
   [Counter] tier-1), [Trigger] flow, trigger queue con ordering 8-6.
   *Exit: starter vs starter giocabile con keyword corrette.*
-- **M2 — Compilazione tier-1** · pipeline AI su ST01+OP01 per: powerMod, KO,
-  draw, rest/stand, discard, grantKeyword, restriction; UI ChoiceRequest.
+- ✅ **M2 — Compilazione tier-1** (2026-10-22, parte engine/dati — la UI
+  ChoiceRequest vive in board-auto, fuori da questo passo) · pipeline AI su
+  ST01+OP01 per: powerMod, KO, draw, rest/stand, discard, grantKeyword,
+  restriction; UI ChoiceRequest.
   *Exit: ≥80% carte ST01/OP01 `compiled` e giocabili; golden al 100%.*
 - **M3 — Tier-2 zone/risorse** · peek/search, play-from-zone, life manip,
   DON manip, mill, bounce, costMod. *Exit: ≥90% ST01+OP01, ≥75% OP02-OP05.*
@@ -473,6 +475,67 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     per il driver Playwright `scripts/boardauto-shots.mjs`, che gioca una
     partita vera via UI e verifica ogni finestra (screenshot in
     `scripts/.shots/boardauto-*.png`).
+
+**M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
+rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**
+Scelte fatte dove il piano lasciava margine:
+31. **Artefatti dati**: `src/autosim/data/compiled/st01-op01.json` (tutte le
+    138 carte ST01+OP01) + `coverage-report.json` (conteggi per set, carte
+    compiled che degradano a manual e perché, motivi dei partial/unsupported)
+    + API `getCompiledCard`/`allCompiledCards`/`coverage` in
+    `data/compiled/index.ts`. Il report è asserito nei test contro un
+    ricalcolo dal batch: non può driftare.
+32. **Metrica dell'exit "≥80% compiled e giocabili"**: contano le
+    classificazioni IR-complete `vanilla` + `keyword-only` + `compiled`
+    (vanilla/keyword-only sono compilazioni complete degeneri). Risultato:
+    **113/138 = 81.9%** (ST01 17/17 = 100%, OP01 96/121 = 79.3%).
+    Strettamente `classification: "compiled"` sono 90: 37 girano interamente
+    sull'esecutore tier-1 di M1, 53 usano azioni tier-2/3 già previste
+    dall'IR (peekDeck, playFromZone, returnToHand/Deck, DON manip, ifThen,
+    prev) che fino a M3 degradano a `manualResolve` — giocabili, mai
+    bloccanti (§1.3). Dettaglio carta per carta nel report.
+33. **Estensioni IR minime** per fedeltà al testo (types+schema+validate in
+    sync): `filter.nameExcludes` ("other than [Name]"), `Selector.prev`
+    ("that card" — binding alla selezione precedente, manual fino a M3),
+    azione `returnToDeck` (top|bottom), costo `lifeToHand` ("add 1 card from
+    your Life area to your hand:"), disposizione peek `topOrBottomAnyOrder`.
+    Convenzioni documentate: `count: 99` = "all" (auto-selezione, nessuna
+    choice); ricerca sull'intero mazzo = `peekDeck 50 + shuffle`;
+    "[Trigger] Activate this card's [Main]/[Counter] effect" = stesse azioni
+    duplicate sotto timing `trigger`; le clausole "If X" dopo i due punti
+    compilate come `conditions` (approssimazione di 8-3-3, annotata per
+    carta: leggermente più stretta, il costo non si può pagare a vuoto).
+34. **Mai inventare semantica** (il testo vince, 1-3-1): pattern non
+    esprimibili → `partial`/`unsupported` con nota e confidence ≤0.7 (triage
+    §6.5). Cause reali su OP01: amount scalari ("+1000 per ogni…"), stand dei
+    DON ("set DON as active"), timing mancanti ("when your opponent activates
+    an Event", "when your opponent's Character is K.O.'d"), reveal della mano
+    avversaria, costi non modellati (rest 2 Characters, return a Character,
+    hand→bottom deck), permessi d'attacco ("can also attack active
+    Characters"), taunt di Kid (OP01-051), name-treatment (OP01-121),
+    override di costruzione mazzo (OP01-075). Gli effetti con timing chiaro
+    restano nel JSON come azioni `manual` → prompt in partita.
+35. **Dry-run §6c**: ogni effetto non-static di ogni carta è istanziato in
+    una partita sintetica e pompato dall'engine con risposte automatiche alle
+    ChoiceRequest (i trigger passano dal percorso reale `triggerActivated`,
+    10-1-5-3); gli static sono effetti continui (8-1-3-3, fixpoint in M4) e
+    non si pompano. Fix contestuale: `legalMoves` ora filtra gli eventi
+    [Main] con costo non pagabile (specchia il check 8-3-1-3 di playCard).
+    In più: partite complete seedate con mazzi REALI (mirror ST01, OP01 rosso
+    vs verde) giocate dal driver random fino alla vittoria.
+36. **Golden set**: +22 carte REALI ST01/OP01 verificate a mano contro il
+    testo (tutte le keyword, counter event a doppia azione, trigger "play
+    this card", restriction untilEndOfOpponentsNextTurn, DON!!−6 board wipe,
+    discard scelto dall'avversario, dual-timing WA/OnBlock, static
+    DoubleAttack condizionale…). Il test fa il diff strutturale golden ↔
+    output del batch (§6.4) — al 100%.
+
+Debiti M3 (dettagliati nel coverage report): esecutore tier-2
+(peekDeck/search, playFromZone, returnToHand, returnToDeck,
+addFromTrashToHand, giveRestedDon, placeDonInCostArea, lifeToHand), costi con
+scelta di carte (trashFromHand/lifeToHand) con pausa di pagamento, binding
+`prev`, intent [Activate: Main], DON!!−X da leader/characters, condizione
+"N DON on field", azione "stand DON".
 
 ## Fonti
 

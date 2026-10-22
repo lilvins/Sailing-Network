@@ -11,10 +11,19 @@
         "timing": "onPlay",
         "optional": false,
         "actions": [
-          { "kind": "koTarget",
-            "sel": { "owner": "opponent", "zone": "characterArea",
-                     "filter": { "costAtMost": 3 }, "count": 1, "upTo": true,
-                     "chooser": "controller" } }
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "costAtMost": 3
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
         ]
       }
     ],
@@ -25,17 +34,38 @@
     "version": 1,
     "confidence": 1,
     "classification": "compiled",
-    "keywords": ["Blocker"],
+    "keywords": [
+      "Blocker"
+    ],
     "counterValue": 2000,
     "effects": [
       {
         "timing": "activateMain",
         "oncePerTurn": true,
-        "cost": [ { "kind": "restDon", "count": 1 }, { "kind": "restSelf" } ],
+        "cost": [
+          {
+            "kind": "restDon",
+            "count": 1
+          },
+          {
+            "kind": "restSelf"
+          }
+        ],
         "actions": [
-          { "kind": "draw", "count": 1 },
-          { "kind": "discard", "who": "self",
-            "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "controller" } }
+          {
+            "kind": "draw",
+            "count": 1
+          },
+          {
+            "kind": "discard",
+            "who": "self",
+            "sel": {
+              "owner": "self",
+              "zone": "hand",
+              "count": 1,
+              "chooser": "controller"
+            }
+          }
         ]
       }
     ],
@@ -51,15 +81,27 @@
       {
         "timing": "counter",
         "actions": [
-          { "kind": "powerMod",
-            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" },
-            "amount": 4000, "duration": "thisBattle" }
+          {
+            "kind": "powerMod",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            },
+            "amount": 4000,
+            "duration": "thisBattle"
+          }
         ]
       },
       {
         "timing": "trigger",
         "actions": [
-          { "kind": "draw", "count": 1 }
+          {
+            "kind": "draw",
+            "count": 1
+          }
         ]
       }
     ],
@@ -70,7 +112,9 @@
     "version": 1,
     "confidence": 1,
     "classification": "keyword-only",
-    "keywords": ["Rush"],
+    "keywords": [
+      "Rush"
+    ],
     "counterValue": 1000,
     "effects": [],
     "notes": "SYNTHETIC golden (M1): '[Rush]' — may attack the turn it is played (10-1-1)."
@@ -80,7 +124,9 @@
     "version": 1,
     "confidence": 1,
     "classification": "keyword-only",
-    "keywords": ["DoubleAttack"],
+    "keywords": [
+      "DoubleAttack"
+    ],
     "effects": [],
     "notes": "SYNTHETIC golden (M1): '[Double Attack]' — deals 2 damage to the Leader (10-1-2)."
   },
@@ -89,7 +135,9 @@
     "version": 1,
     "confidence": 1,
     "classification": "keyword-only",
-    "keywords": ["Banish"],
+    "keywords": [
+      "Banish"
+    ],
     "effects": [],
     "notes": "SYNTHETIC golden (M1): '[Banish]' — damage trashes the Life card; no [Trigger] (10-1-3)."
   },
@@ -98,7 +146,9 @@
     "version": 1,
     "confidence": 1,
     "classification": "keyword-only",
-    "keywords": ["Unblockable"],
+    "keywords": [
+      "Unblockable"
+    ],
     "effects": [],
     "notes": "SYNTHETIC golden (M1): '[Unblockable]' — the opponent cannot activate [Blocker] (10-1-7)."
   },
@@ -107,7 +157,9 @@
     "version": 1,
     "confidence": 1,
     "classification": "keyword-only",
-    "keywords": ["RushCharacter"],
+    "keywords": [
+      "RushCharacter"
+    ],
     "counterValue": 1000,
     "effects": [],
     "notes": "SYNTHETIC golden (M1): '[Rush: Character]' — may attack Characters the turn it is played (10-1-6)."
@@ -117,7 +169,9 @@
     "version": 1,
     "confidence": 1,
     "classification": "keyword-only",
-    "keywords": ["Blocker"],
+    "keywords": [
+      "Blocker"
+    ],
     "counterValue": 2000,
     "effects": [],
     "notes": "SYNTHETIC golden (M1): plain '[Blocker]' (10-1-4)."
@@ -132,9 +186,18 @@
       {
         "timing": "counter",
         "actions": [
-          { "kind": "powerMod",
-            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" },
-            "amount": 2000, "duration": "thisBattle" }
+          {
+            "kind": "powerMod",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            },
+            "amount": 2000,
+            "duration": "thisBattle"
+          }
         ]
       }
     ],
@@ -151,8 +214,18 @@
       {
         "timing": "trigger",
         "actions": [
-          { "kind": "playFromZone", "zone": "hand", "free": true,
-            "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+          {
+            "kind": "playFromZone",
+            "zone": "hand",
+            "free": true,
+            "sel": {
+              "owner": "self",
+              "zone": "hand",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
         ]
       }
     ],
@@ -169,9 +242,18 @@
       {
         "timing": "whenAttacking",
         "actions": [
-          { "kind": "powerMod",
-            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" },
-            "amount": 2000, "duration": "thisBattle" }
+          {
+            "kind": "powerMod",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            },
+            "amount": 2000,
+            "duration": "thisBattle"
+          }
         ]
       }
     ],
@@ -188,9 +270,17 @@
       {
         "timing": "onYourOpponentsAttack",
         "actions": [
-          { "kind": "powerMod",
-            "sel": { "owner": "self", "zone": "leader", "count": 1, "chooser": "controller" },
-            "amount": 1000, "duration": "thisBattle" }
+          {
+            "kind": "powerMod",
+            "sel": {
+              "owner": "self",
+              "zone": "leader",
+              "count": 1,
+              "chooser": "controller"
+            },
+            "amount": 1000,
+            "duration": "thisBattle"
+          }
         ]
       }
     ],
@@ -207,7 +297,10 @@
       {
         "timing": "onKO",
         "actions": [
-          { "kind": "draw", "count": 1 }
+          {
+            "kind": "draw",
+            "count": 1
+          }
         ]
       }
     ],
@@ -223,8 +316,18 @@
       {
         "timing": "onPlay",
         "actions": [
-          { "kind": "grantKeyword", "keyword": "Rush", "duration": "thisTurn",
-            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+          {
+            "kind": "grantKeyword",
+            "keyword": "Rush",
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
         ]
       }
     ],
@@ -240,11 +343,844 @@
       {
         "timing": "onPlay",
         "actions": [
-          { "kind": "restriction", "what": "cannotAttack", "duration": "untilEndOfOpponentsNextTurn",
-            "sel": { "owner": "opponent", "zone": "characterArea", "count": 1, "upTo": true, "chooser": "controller" } }
+          {
+            "kind": "restriction",
+            "what": "cannotAttack",
+            "duration": "untilEndOfOpponentsNextTurn",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
         ]
       }
     ],
     "notes": "SYNTHETIC golden (M1): '[On Play] Up to 1 of your opponent's Characters cannot attack until the end of your opponent's next turn.'"
+  },
+  {
+    "cardId": "ST01-002",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 2
+          }
+        ],
+        "actions": [
+          {
+            "kind": "restriction",
+            "what": "cannotBlock",
+            "duration": "thisBattle",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "powerAtLeast": 5000,
+                "hasKeyword": "Blocker"
+              },
+              "count": 99,
+              "chooser": "controller"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          {
+            "kind": "playFromZone",
+            "zone": "hand",
+            "free": true,
+            "sel": {
+              "owner": "self",
+              "zone": "hand",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'Your opponent cannot activate a [Blocker] Character that has 5000 or more power during this battle' = cannotBlock restriction on all matching blockers (count 99 = all)."
+  },
+  {
+    "cardId": "ST01-005",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 1
+          }
+        ],
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": 1000,
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "filter": {
+                "excludeSelf": true
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "ST01-006",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": [
+      "Blocker"
+    ],
+    "effects": []
+  },
+  {
+    "cardId": "ST01-012",
+    "version": 1,
+    "confidence": 0.85,
+    "classification": "compiled",
+    "keywords": [
+      "Rush"
+    ],
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 2
+          }
+        ],
+        "actions": [
+          {
+            "kind": "grantKeyword",
+            "keyword": "Unblockable",
+            "duration": "thisBattle",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'Your opponent cannot activate [Blocker] during this battle' while this card attacks ≡ this card gains [Unblockable] for the battle (10-1-7-1)."
+  },
+  {
+    "cardId": "ST01-013",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "static",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 1
+          }
+        ],
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": 1000,
+            "duration": "permanentWhileInPlay",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "Permanent effect (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "ST01-014",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "counter",
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": 3000,
+            "duration": "thisBattle",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": 1000,
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "ST01-015",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "main",
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "powerAtMost": 6000
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "powerAtMost": 6000
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'[Trigger] Activate this card's [Main] effect' compiled by duplicating the [Main] actions under the trigger timing."
+  },
+  {
+    "cardId": "ST01-016",
+    "version": 1,
+    "confidence": 0.85,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "main",
+        "actions": [
+          {
+            "kind": "grantKeyword",
+            "keyword": "Unblockable",
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "filter": {
+                "typeIncludes": [
+                  "Straw Hat Crew"
+                ]
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "hasKeyword": "Blocker",
+                "costAtMost": 3
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'Your opponent cannot activate [Blocker] if that Leader or Character attacks during this turn' ≡ grant [Unblockable] during this turn (10-1-7-1)."
+  },
+  {
+    "cardId": "ST01-017",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "activateMain",
+        "cost": [
+          {
+            "kind": "restSelf"
+          }
+        ],
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": 1000,
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "filter": {
+                "typeIncludes": [
+                  "Straw Hat Crew"
+                ]
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'You may rest this Stage:' = restSelf activation cost (8-3-1-4)."
+  },
+  {
+    "cardId": "OP01-006",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 2000,
+    "effects": [
+      {
+        "timing": "onPlay",
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": -2000,
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "OP01-016",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "onPlay",
+        "actions": [
+          {
+            "kind": "peekDeck",
+            "who": "self",
+            "count": 5,
+            "then": {
+              "reveal": true,
+              "addToHand": {
+                "typeIncludes": [
+                  "Straw Hat Crew"
+                ],
+                "nameExcludes": [
+                  "Nami"
+                ]
+              },
+              "addCount": 1,
+              "rest": "bottomAnyOrder"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-017",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 1
+          }
+        ],
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "powerAtMost": 3000
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "OP01-025",
+    "version": 1,
+    "confidence": 1,
+    "classification": "keyword-only",
+    "keywords": [
+      "Rush"
+    ],
+    "effects": []
+  },
+  {
+    "cardId": "OP01-026",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "counter",
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": 4000,
+            "duration": "thisBattle",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          },
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "powerAtMost": 4000
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          {
+            "kind": "powerMod",
+            "amount": -10000,
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "opponent",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "OP01-038",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 1
+          }
+        ],
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "rested": true,
+                "costAtMost": 2
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "onKO",
+        "actions": [
+          {
+            "kind": "discard",
+            "who": "self",
+            "sel": {
+              "owner": "self",
+              "zone": "hand",
+              "count": 1,
+              "chooser": "opponent"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'Your opponent chooses 1 card from your hand; trash that card' = discard from own hand with chooser: opponent."
+  },
+  {
+    "cardId": "OP01-056",
+    "version": 1,
+    "confidence": 0.95,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "main",
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "rested": true,
+                "costAtMost": 5
+              },
+              "count": 2,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "OP01-068",
+    "version": 1,
+    "confidence": 0.85,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "static",
+        "conditions": [
+          {
+            "kind": "yourTurn"
+          },
+          {
+            "kind": "handAtLeast",
+            "who": "self",
+            "count": 5
+          }
+        ],
+        "actions": [
+          {
+            "kind": "grantKeyword",
+            "keyword": "DoubleAttack",
+            "duration": "permanentWhileInPlay",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "Permanent keyword grant (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "OP01-078",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [
+      "Blocker"
+    ],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 1
+          },
+          {
+            "kind": "handAtMost",
+            "who": "self",
+            "count": 5
+          }
+        ],
+        "actions": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "timing": "onBlock",
+        "conditions": [
+          {
+            "kind": "donAttached",
+            "count": 1
+          },
+          {
+            "kind": "handAtMost",
+            "who": "self",
+            "count": 5
+          }
+        ],
+        "actions": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "notes": "'[When Attacking]/[On Block]' = the same effect under both timings."
+  },
+  {
+    "cardId": "OP01-085",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "onPlay",
+        "conditions": [
+          {
+            "kind": "leaderIs",
+            "filter": {
+              "typeIncludes": [
+                "Baroque Works"
+              ]
+            }
+          }
+        ],
+        "actions": [
+          {
+            "kind": "restriction",
+            "what": "cannotAttack",
+            "duration": "untilEndOfOpponentsNextTurn",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "costAtMost": 4
+              },
+              "count": 1,
+              "upTo": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "OP01-094",
+    "version": 1,
+    "confidence": 0.8,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "onPlay",
+        "optional": true,
+        "cost": [
+          {
+            "kind": "returnDonToDeck",
+            "count": 6
+          }
+        ],
+        "conditions": [
+          {
+            "kind": "leaderIs",
+            "filter": {
+              "typeIncludes": [
+                "Animal Kingdom Pirates"
+              ]
+            }
+          }
+        ],
+        "actions": [
+          {
+            "kind": "koTarget",
+            "sel": {
+              "owner": "any",
+              "zone": "characterArea",
+              "filter": {
+                "excludeSelf": true
+              },
+              "count": 99,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'K.O. all Characters other than this Character' = count 99 + excludeSelf; the post-colon leader check compiled as a condition (8-3-3 convention); DON!!−6 is paid from the active cost area in the current engine."
+  },
+  {
+    "cardId": "OP01-102",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "optional": true,
+        "cost": [
+          {
+            "kind": "returnDonToDeck",
+            "count": 1
+          }
+        ],
+        "actions": [
+          {
+            "kind": "discard",
+            "who": "opponent",
+            "sel": {
+              "owner": "opponent",
+              "zone": "hand",
+              "count": 1,
+              "chooser": "opponent"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "cardId": "OP01-120",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [
+      "Rush"
+    ],
+    "effects": [
+      {
+        "timing": "whenAttacking",
+        "actions": [
+          {
+            "kind": "restriction",
+            "what": "cannotBlock",
+            "duration": "thisBattle",
+            "sel": {
+              "owner": "opponent",
+              "zone": "characterArea",
+              "filter": {
+                "powerAtMost": 2000,
+                "hasKeyword": "Blocker"
+              },
+              "count": 99,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'Your opponent cannot activate a [Blocker] Character that has 2000 or less power during this battle' = cannotBlock restriction on all matching blockers (count 99 = all)."
   }
 ]

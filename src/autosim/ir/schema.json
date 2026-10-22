@@ -27,6 +27,7 @@
       "properties": {
         "typeIncludes": { "type": "array", "items": { "type": "string" } },
         "nameIncludes": { "type": "array", "items": { "type": "string" } },
+        "nameExcludes": { "type": "array", "items": { "type": "string" } },
         "colors": { "type": "array", "items": { "type": "string" } },
         "category": { "type": "array", "items": { "enum": ["Leader", "Character", "Event", "Stage"] } },
         "costAtMost": { "type": "number" },
@@ -49,13 +50,14 @@
         "count": { "type": "integer", "minimum": 0 },
         "upTo": { "type": "boolean" },
         "self": { "type": "boolean" },
+        "prev": { "type": "boolean" },
         "chooser": { "enum": ["controller", "opponent"] }
       }
     },
     "costItem": {
       "type": "object",
       "required": ["kind"],
-      "properties": { "kind": { "enum": ["restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf", "trashFromLife"] } }
+      "properties": { "kind": { "enum": ["restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf", "trashFromLife", "lifeToHand"] } }
     },
     "condition": {
       "type": "object",
@@ -66,7 +68,7 @@
       "type": "object",
       "required": ["kind"],
       "properties": {
-        "kind": { "enum": ["powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard", "grantKeyword", "restriction", "returnToHand", "playFromZone", "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife", "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck", "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle", "ifThen", "chooseOne", "manual"] }
+        "kind": { "enum": ["powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard", "grantKeyword", "restriction", "returnToHand", "returnToDeck", "playFromZone", "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife", "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck", "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle", "ifThen", "chooseOne", "manual"] }
       }
     },
     "effect": {

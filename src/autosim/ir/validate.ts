@@ -23,11 +23,15 @@ const ZONES = [
 ];
 const ACTION_KINDS = [
   "powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard",
-  "grantKeyword", "restriction", "returnToHand", "playFromZone", "peekDeck",
-  "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife",
+  "grantKeyword", "restriction", "returnToHand", "returnToDeck", "playFromZone",
+  "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife",
   "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck",
   "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle",
   "ifThen", "chooseOne", "manual",
+];
+const COST_KINDS = [
+  "restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf",
+  "trashFromLife", "lifeToHand",
 ];
 
 export interface ValidationResult {
@@ -108,6 +112,11 @@ export function validateCompiledCard(input: unknown): ValidationResult {
       if (!TIMINGS.includes(fx.timing)) errors.push(`${path}.timing invalid: ${fx.timing}`);
       if (!Array.isArray(fx.actions) || fx.actions.length === 0) errors.push(`${path}.actions must be a non-empty array`);
       else fx.actions.forEach((a, j) => checkAction(a, `${path}.actions[${j}]`, errors));
+      for (const [j, c] of (fx.cost ?? []).entries()) {
+        if (!COST_KINDS.includes((c as { kind: string }).kind)) {
+          errors.push(`${path}.cost[${j}].kind unknown: ${(c as { kind: string }).kind}`);
+        }
+      }
       lintEffect(fx, path, errors);
     }
     // classification coherence

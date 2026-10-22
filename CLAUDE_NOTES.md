@@ -79,6 +79,30 @@ modifier hygiene, [Trigger]-limbo card conservation). Decisions #12-22 + M2
 debts in AUTOSIM_PLAN.md. Next: M2 (AI compile pipeline ST01+OP01,
 [Activate: Main] intent, ChoiceRequest UI) — launch with the §10 prompt.
 **2026-10-22: BoardAutoPage DONE (plan §7)** — see "Board Auto" section below.
+**2026-10-22: M2 DONE (data/engine side)** — real-card compilation batch for
+ST01+OP01 (all 138 cards) in `src/autosim/data/compiled/st01-op01.json` +
+`coverage-report.json` (test-asserted against a recomputation) + lookup API
+`getCompiledCard`/`allCompiledCards`/`coverage` in
+`src/autosim/data/compiled/index.ts` (board-auto still runs its heuristic
+compile.ts — swapping it to this API is a separate follow-up step). Coverage:
+113/138 = **81.9%** vanilla+keyword-only+compiled (ST01 100%, OP01 79.3%);
+90 strictly `compiled` (37 fully tier-1-executable today, 53 use tier-2/3 IR
+actions that degrade to manualResolve until M3); 8 partial + 17 unsupported
+with per-card reasons in the report (never-invent-semantics rule: scaling
+amounts, DON standing, missing timings, opponent-hand reveal, unmodeled costs,
+attack permissions, name-treatment, deck-rule override). Minimal IR extensions
+(types+schema+validate in sync): `nameExcludes`, `Selector.prev` ("that
+card"), `returnToDeck`, `lifeToHand` cost, `topOrBottomAnyOrder` peek
+disposition; conventions: count 99 = "all", whole-deck search = peek 50 +
+shuffle, trigger-duplicates for "Activate this card's [Main]/[Counter]
+effect". Golden set +22 REAL hand-verified cards, structurally diffed against
+the batch (100%). §6 validation: schema+lint (validateCompiledSet), engine
+dry-run of EVERY non-static effect (auto-answered choices, triggers via the
+real 10-1-5-3 path), plus seeded full games with real ST01/OP01 decks to a
+result. `legalMoves` fix: [Main] Events with unpayable costs are no longer
+offered (8-3-1-3). Tests 142→249 green (+107 in m2-compiled.test.ts).
+Decisions #31-36 + M3 debts in AUTOSIM_PLAN.md. Next: M3 (tier-2 executor) or
+the board-auto compile.ts swap.
 
 ## Board Auto — "Play Auto · Full Rules" (view `board-auto`)
 `src/features/board-auto/` (+ the `board-auto` case in `src/app/App.tsx`).

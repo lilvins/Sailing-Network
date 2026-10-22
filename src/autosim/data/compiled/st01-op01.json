@@ -1,0 +1,1241 @@
+[
+  {
+    "cardId": "ST01-001", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true,
+        "actions": [
+          { "kind": "giveRestedDon", "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "chooser": "controller" }, "count": 1 }
+        ] }
+    ],
+    "notes": "'Give this Leader or 1 of your Characters up to 1 rested DON!!' — giveRestedDon is tier-2 (executor in M3); 'up to 1' DON approximated as count 1 (activation is already optional)."
+  },
+  {
+    "cardId": "ST01-002", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 2 } ],
+        "actions": [
+          { "kind": "restriction", "what": "cannotBlock", "duration": "thisBattle",
+            "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtLeast": 5000, "hasKeyword": "Blocker" }, "count": 99, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'Your opponent cannot activate a [Blocker] Character that has 5000 or more power during this battle' = cannotBlock restriction on all matching blockers (count 99 = all)."
+  },
+  { "cardId": "ST01-003", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "ST01-004", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 2 } ],
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "Rush", "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'[DON!! x2] This Character gains [Rush]' — permanent effect (8-1-3-3); the engine executes static effects from M4 (inert until then)."
+  },
+  {
+    "cardId": "ST01-005", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "filter": { "excludeSelf": true }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  { "cardId": "ST01-006", "version": 1, "confidence": 1, "classification": "keyword-only", "keywords": ["Blocker"], "effects": [] },
+  {
+    "cardId": "ST01-007", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true,
+        "actions": [
+          { "kind": "giveRestedDon", "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "chooser": "controller" }, "count": 1 }
+        ] }
+    ],
+    "notes": "giveRestedDon is tier-2 (executor in M3); 'up to 1' DON approximated as count 1."
+  },
+  { "cardId": "ST01-008", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  { "cardId": "ST01-009", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  { "cardId": "ST01-010", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "ST01-011", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "giveRestedDon", "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "chooser": "controller" }, "count": 2 }
+        ] }
+    ],
+    "notes": "'Give up to 2 rested DON!! cards to your Leader or 1 of your Characters' — giveRestedDon is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "ST01-012", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": ["Rush"],
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 2 } ],
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "Unblockable", "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'Your opponent cannot activate [Blocker] during this battle' while this card attacks ≡ this card gains [Unblockable] for the battle (10-1-7-1)."
+  },
+  {
+    "cardId": "ST01-013", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "Permanent effect (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "ST01-014", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 3000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "ST01-015", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtMost": 6000 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtMost": 6000 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'[Trigger] Activate this card's [Main] effect' compiled by duplicating the [Main] actions under the trigger timing."
+  },
+  {
+    "cardId": "ST01-016", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "Unblockable", "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "filter": { "typeIncludes": ["Straw Hat Crew"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "hasKeyword": "Blocker", "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'Your opponent cannot activate [Blocker] if that Leader or Character attacks during this turn' ≡ grant [Unblockable] during this turn (10-1-7-1)."
+  },
+  {
+    "cardId": "ST01-017", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "activateMain", "cost": [ { "kind": "restSelf" } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "filter": { "typeIncludes": ["Straw Hat Crew"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'You may rest this Stage:' = restSelf activation cost (8-3-1-4)."
+  },
+
+  {
+    "cardId": "OP01-001", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "yourTurn" } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 99, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "Permanent effect on all own Characters (count 99 = all); the engine executes static effects from M4 (inert until then)."
+  },
+  {
+    "cardId": "OP01-002", "version": 1, "confidence": 0.6, "classification": "partial", "keywords": [],
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true, "cost": [ { "kind": "restDon", "count": 2 } ],
+        "actions": [
+          { "kind": "manual", "text": "If you have 5 Characters, return 1 of your Characters to the owner's hand. Then, play up to 1 Character with a cost of 5 or less from your hand that is a different color than the returned Character." }
+        ] }
+    ],
+    "notes": "The 'different color than the returned Character' binding is not expressible in the IR — manual resolution."
+  },
+  {
+    "cardId": "OP01-003", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true, "cost": [ { "kind": "restDon", "count": 4 } ],
+        "actions": [
+          { "kind": "standTarget",
+            "sel": { "owner": "self", "zone": "characterArea", "filter": { "typeIncludes": ["Supernovas", "Straw Hat Crew"], "costAtMost": 5, "rested": true }, "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "powerMod", "amount": 1000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "prev": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'It gains +1000' uses the prev-selector ('that card'); the executor binds it in M3 (manualResolve until then)."
+  },
+  {
+    "cardId": "OP01-004", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 2000, "effects": [],
+    "notes": "Activation timing 'when your opponent activates an Event' does not exist in the IR Timing set yet."
+  },
+  {
+    "cardId": "OP01-005", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "addFromTrashToHand",
+            "sel": { "owner": "self", "zone": "trash", "filter": { "category": ["Character"], "colors": ["Red"], "costAtMost": 3, "nameExcludes": ["Uta"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "addFromTrashToHand is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-006", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "powerMod", "amount": -2000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "characterArea", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-007", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtMost": 4000 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-008", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "lifeToHand", "count": 1 } ],
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "Rush", "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'You may add 1 card from your Life area to your hand:' = lifeToHand activation cost (payable from M3)."
+  },
+  {
+    "cardId": "OP01-009", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  { "cardId": "OP01-010", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-011", "version": 1, "confidence": 0.6, "classification": "partial", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onPlay", "optional": true,
+        "actions": [
+          { "kind": "manual", "text": "You may place 1 card from your hand at the bottom of your deck: Draw 1 card." }
+        ] }
+    ],
+    "notes": "The 'place 1 card from your hand at the bottom of your deck' activation cost is not in the IR CostItem set yet."
+  },
+  { "cardId": "OP01-012", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-013", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true, "optional": true, "cost": [ { "kind": "lifeToHand", "count": 1 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } },
+          { "kind": "giveRestedDon", "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" }, "count": 2 }
+        ] }
+    ],
+    "notes": "lifeToHand cost payable from M3; giveRestedDon is tier-2 ('up to 2' approximated as count 2)."
+  },
+  {
+    "cardId": "OP01-014", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Blocker"],
+    "effects": [
+      { "timing": "onBlock", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "category": ["Character"], "colors": ["Red"], "costAtMost": 2 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "playFromZone is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-015", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ], "optional": true,
+        "cost": [ { "kind": "trashFromHand", "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "controller" } } ],
+        "actions": [
+          { "kind": "addFromTrashToHand",
+            "sel": { "owner": "self", "zone": "trash", "filter": { "typeIncludes": ["Straw Hat Crew"], "category": ["Character"], "costAtMost": 4, "nameExcludes": ["Tony Tony.Chopper"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "trashFromHand cost payable from M3; addFromTrashToHand is tier-2."
+  },
+  {
+    "cardId": "OP01-016", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "reveal": true, "addToHand": { "typeIncludes": ["Straw Hat Crew"], "nameExcludes": ["Nami"] }, "addCount": 1, "rest": "bottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-017", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtMost": 3000 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  { "cardId": "OP01-018", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-019", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 2 }, { "kind": "opponentsTurn" } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 3000, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "Permanent effect (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "OP01-020", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "activateMain", "cost": [ { "kind": "restSelf" } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-021", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
+    "notes": "'[DON!! x1] This Character can also attack your opponent's active Characters' — attack-permission permanents are not in the IR yet (M4)."
+  },
+  {
+    "cardId": "OP01-022", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": -2000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "characterArea", "count": 2, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  { "cardId": "OP01-023", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-024", "version": 1, "confidence": 0.7, "classification": "partial", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true,
+        "actions": [
+          { "kind": "giveRestedDon", "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" }, "count": 2 }
+        ] }
+    ],
+    "notes": "'[DON!! x2] This Character cannot be K.O.'d in battle by <Strike> attribute Characters' — attribute-conditional battle immunity is not expressible (IR has no attributes); that permanent is dropped, so the card is partial."
+  },
+  { "cardId": "OP01-025", "version": 1, "confidence": 1, "classification": "keyword-only", "keywords": ["Rush"], "effects": [] },
+  {
+    "cardId": "OP01-026", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 4000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtMost": 4000 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "powerMod", "amount": -10000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-027", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "powerMod", "amount": -10000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "characterArea", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-028", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": -2000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "powerMod", "amount": -2000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'[Trigger] Activate this card's [Counter] effect' compiled by duplicating the [Counter] actions under the trigger timing (the powerMod is 'during this turn' so it survives the battle)."
+  },
+  {
+    "cardId": "OP01-029", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "ifThen", "if": [ { "kind": "lifeAtMost", "who": "self", "count": 2 } ],
+            "then": [
+              { "kind": "powerMod", "amount": 2000, "duration": "thisBattle",
+                "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "prev": true, "chooser": "controller" } }
+            ] }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'that card gains an additional +2000' uses ifThen + the prev-selector; executable from M3 (manualResolve until then)."
+  },
+  {
+    "cardId": "OP01-030", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "reveal": true, "addToHand": { "typeIncludes": ["Straw Hat Crew"], "category": ["Character"] }, "addCount": 1, "rest": "bottomAnyOrder" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "reveal": true, "addToHand": { "typeIncludes": ["Straw Hat Crew"], "category": ["Character"] }, "addCount": 1, "rest": "bottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "'[Trigger] Activate this card's [Main] effect' duplicated under the trigger timing; peekDeck is tier-2."
+  },
+  {
+    "cardId": "OP01-031", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [],
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true,
+        "cost": [ { "kind": "trashFromHand", "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["Land of Wano"] }, "count": 1, "chooser": "controller" } } ],
+        "actions": [
+          { "kind": "manual", "text": "Set up to 2 of your DON!! cards as active." }
+        ] }
+    ],
+    "notes": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+  },
+  {
+    "cardId": "OP01-032", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "static",
+        "conditions": [
+          { "kind": "donAttached", "count": 1 },
+          { "kind": "countInZone", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "rested": true }, "count": 99, "chooser": "controller" }, "atLeast": 2 }
+        ],
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "Permanent effect (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "OP01-033", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "restTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-034", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 2 } ],
+        "actions": [ { "kind": "manual", "text": "Set up to 1 of your DON!! cards as active." } ] }
+    ],
+    "notes": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+  },
+  {
+    "cardId": "OP01-035", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "whenAttacking", "oncePerTurn": true, "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "restTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 5 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  { "cardId": "OP01-036", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-037", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-038", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "rested": true, "costAtMost": 2 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "onKO",
+        "actions": [
+          { "kind": "discard", "who": "self", "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "opponent" } }
+        ] }
+    ],
+    "notes": "'Your opponent chooses 1 card from your hand; trash that card' = discard from own hand with chooser: opponent."
+  },
+  {
+    "cardId": "OP01-039", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onBlock",
+        "conditions": [
+          { "kind": "donAttached", "count": 1 },
+          { "kind": "countInZone", "sel": { "owner": "self", "zone": "characterArea", "count": 99, "chooser": "controller" }, "atLeast": 3 }
+        ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
+    ],
+    "notes": "'If you have 3 or more Characters' compiled as an activation condition (8-3-3 'if' approximated — no cost, so equivalent)."
+  },
+  {
+    "cardId": "OP01-040", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay", "conditions": [ { "kind": "leaderIs", "filter": { "nameIncludes": ["Kouzuki Oden"] } } ],
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["The Akazaya Nine"], "category": ["Character"], "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "whenAttacking", "oncePerTurn": true, "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "standTarget",
+            "sel": { "owner": "self", "zone": "characterArea", "filter": { "typeIncludes": ["The Akazaya Nine"], "costAtMost": 3, "rested": true }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "playFromZone is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-041", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "activateMain", "cost": [ { "kind": "restDon", "count": 1 }, { "kind": "restSelf" } ],
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "reveal": true, "addToHand": { "typeIncludes": ["Land of Wano"] }, "addCount": 1, "rest": "bottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-042", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "restDon", "count": 3 } ],
+        "conditions": [ { "kind": "leaderIs", "filter": { "nameIncludes": ["Kouzuki Oden"] } } ],
+        "actions": [
+          { "kind": "standTarget",
+            "sel": { "owner": "self", "zone": "characterArea", "filter": { "typeIncludes": ["Land of Wano"], "costAtMost": 3, "rested": true }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "The post-colon 'If your Leader is [Kouzuki Oden]' clause (8-3-3) is compiled as an activation condition — slightly stricter (the cost can't be paid for nothing), noted convention."
+  },
+  { "cardId": "OP01-043", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-044", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "conditions": [ { "kind": "countInZone", "sel": { "owner": "self", "zone": "characterArea", "filter": { "nameIncludes": ["Penguin"] }, "count": 99, "chooser": "controller" }, "atMost": 0 } ],
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "nameIncludes": ["Penguin"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "\"If you don't have [Penguin]\" = countInZone atMost 0; playFromZone is tier-2."
+  },
+  { "cardId": "OP01-045", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-046", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [],
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "leaderIs", "filter": { "nameIncludes": ["Kouzuki Oden"] } } ],
+        "actions": [ { "kind": "manual", "text": "Set up to 2 of your DON!! cards as active." } ] }
+    ],
+    "notes": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+  },
+  {
+    "cardId": "OP01-047", "version": 1, "confidence": 0.65, "classification": "partial", "keywords": ["Blocker"],
+    "effects": [
+      { "timing": "onPlay", "optional": true,
+        "actions": [
+          { "kind": "manual", "text": "You may return 1 Character to your hand: Play up to 1 Character card with a cost of 3 or less from your hand." }
+        ] }
+    ],
+    "notes": "The 'return 1 Character to your hand' activation cost is not in the IR CostItem set yet."
+  },
+  {
+    "cardId": "OP01-048", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "restTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-049", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["Heart Pirates"], "category": ["Character"], "costAtMost": 4, "nameExcludes": ["Bepo"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "playFromZone is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-050", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "conditions": [ { "kind": "countInZone", "sel": { "owner": "self", "zone": "characterArea", "filter": { "nameIncludes": ["Shachi"] }, "count": 99, "chooser": "controller" }, "atMost": 0 } ],
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "nameIncludes": ["Shachi"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "\"If you don't have [Shachi]\" = countInZone atMost 0; playFromZone is tier-2."
+  },
+  {
+    "cardId": "OP01-051", "version": 1, "confidence": 0.7, "classification": "partial", "keywords": [],
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true, "optional": true, "cost": [ { "kind": "restSelf" } ],
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "category": ["Character"], "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "The '[DON!! x1] [Opponent's Turn] If this Character is rested, your opponent cannot attack any card other than [Eustass\"Captain\"Kid]' taunt permanent is not expressible in the IR yet (M4) — dropped, so the card is partial."
+  },
+  {
+    "cardId": "OP01-052", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "oncePerTurn": true,
+        "conditions": [ { "kind": "countInZone", "sel": { "owner": "self", "zone": "characterArea", "filter": { "rested": true }, "count": 99, "chooser": "controller" }, "atLeast": 2 } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
+    ],
+    "notes": "'If you have 2 or more rested Characters' compiled as an activation condition (8-3-3 approximated — no cost, so equivalent). The attacker itself is rested by the attack declaration (7-1-1-1) and counts."
+  },
+  { "cardId": "OP01-053", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-054", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "rested": true, "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-055", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [],
+    "effects": [
+      { "timing": "main", "optional": true,
+        "actions": [ { "kind": "manual", "text": "You may rest 2 of your Characters: Draw 2 cards." } ] }
+    ],
+    "notes": "The 'rest 2 of your Characters' activation cost is not in the IR CostItem set yet."
+  },
+  {
+    "cardId": "OP01-056", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "rested": true, "costAtMost": 5 }, "count": 2, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-057", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "standTarget", "sel": { "owner": "self", "zone": "characterArea", "filter": { "rested": true }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "rested": true, "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-058", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 4000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "restTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "restTarget", "sel": { "owner": "opponent", "zone": "characterArea", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-059", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main", "optional": true,
+        "cost": [ { "kind": "trashFromHand", "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["Land of Wano"] }, "count": 1, "chooser": "controller" } } ],
+        "actions": [
+          { "kind": "standTarget",
+            "sel": { "owner": "self", "zone": "characterArea", "filter": { "typeIncludes": ["Land of Wano"], "costAtMost": 3, "rested": true }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "trashFromHand cost payable from M3 (until then the Event is not offered as playable)."
+  },
+  {
+    "cardId": "OP01-060", "version": 1, "confidence": 0.65, "classification": "partial", "keywords": [],
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 2 } ], "optional": true,
+        "cost": [ { "kind": "restDon", "count": 1 } ],
+        "actions": [
+          { "kind": "manual", "text": "Reveal 1 card from the top of your deck. If that card is a {The Seven Warlords of the Sea} type Character card with a cost of 4 or less, you may play that card rested." }
+        ] }
+    ],
+    "notes": "PeekDisposition cannot express 'play that card rested' nor the leave-on-top fallback — manual resolution."
+  },
+  {
+    "cardId": "OP01-061", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
+    "notes": "Activation timing 'when your opponent's Character is K.O.'d' does not exist in the IR Timing set; DON!! gain is also tier-2."
+  },
+  {
+    "cardId": "OP01-062", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
+    "notes": "Activation timing 'when you activate an Event' plus the per-turn memory clause are not expressible in the IR yet."
+  },
+  {
+    "cardId": "OP01-063", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "activateMain", "optional": true, "conditions": [ { "kind": "donAttached", "count": 1 } ], "cost": [ { "kind": "restSelf" } ],
+        "actions": [
+          { "kind": "manual", "text": "Choose 1 card from your opponent's hand; your opponent reveals that card. If the revealed card is an Event, place up to 1 card from your opponent's Life area at the bottom of the owner's deck." }
+        ] }
+    ],
+    "notes": "Opponent-hand reveal and Life-to-deck movement are not in the IR yet."
+  },
+  {
+    "cardId": "OP01-064", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ], "optional": true,
+        "cost": [ { "kind": "trashFromHand", "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "controller" } } ],
+        "actions": [
+          { "kind": "returnToHand", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "trashFromHand cost payable from M3; returnToHand is tier-2."
+  },
+  { "cardId": "OP01-065", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  { "cardId": "OP01-066", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-067", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": ["Banish"], "counterValue": 1000,
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "costMod", "amount": -1, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "hand", "filter": { "category": ["Event"], "colors": ["Blue"] }, "count": 99, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "Permanent cost reduction (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "OP01-068", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "yourTurn" }, { "kind": "handAtLeast", "who": "self", "count": 5 } ],
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "DoubleAttack", "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "Permanent keyword grant (8-1-3-3); the engine executes static effects from M4."
+  },
+  {
+    "cardId": "OP01-069", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 50,
+            "then": { "play": { "nameIncludes": ["Smiley"] }, "playCount": 1, "rest": "shuffle" } }
+        ] }
+    ],
+    "notes": "Whole-deck search = peekDeck count 50 + shuffle disposition (convention); peekDeck is tier-2."
+  },
+  {
+    "cardId": "OP01-070", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "returnToDeck", "where": "bottom",
+            "sel": { "owner": "any", "zone": "characterArea", "filter": { "costAtMost": 7 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "returnToDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-071", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "returnToDeck", "where": "bottom",
+            "sel": { "owner": "any", "zone": "characterArea", "filter": { "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "returnToDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-072", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000, "effects": [],
+    "notes": "'+1000 power for every card in your hand' — scaling amounts are not expressible in the IR yet."
+  },
+  {
+    "cardId": "OP01-073", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5, "then": { "rest": "topOrBottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-074", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "nameIncludes": ["Pacifista"], "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "playFromZone is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-075", "version": 1, "confidence": 0.7, "classification": "partial", "keywords": ["Blocker"],
+    "effects": [],
+    "notes": "'Under the rules of this game, you may have any number of this card in your deck' — deck-construction overrides are not expressible (the engine enforces 5-1-2-3); [Blocker] compiles."
+  },
+  { "cardId": "OP01-076", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-077", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5, "then": { "rest": "topOrBottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-078", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "handAtMost", "who": "self", "count": 5 } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] },
+      { "timing": "onBlock", "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "handAtMost", "who": "self", "count": 5 } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
+    ],
+    "notes": "'[When Attacking]/[On Block]' = the same effect under both timings."
+  },
+  {
+    "cardId": "OP01-079", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO", "conditions": [ { "kind": "leaderIs", "filter": { "typeIncludes": ["Baroque Works"] } } ],
+        "actions": [
+          { "kind": "addFromTrashToHand",
+            "sel": { "owner": "self", "zone": "trash", "filter": { "category": ["Event"] }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "addFromTrashToHand is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-080", "version": 1, "confidence": 1, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO", "actions": [ { "kind": "draw", "count": 1 } ] }
+    ]
+  },
+  { "cardId": "OP01-081", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-082", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-083", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000, "effects": [],
+    "notes": "'+1000 power for every 2 Events in your trash' — scaling amounts are not expressible in the IR yet."
+  },
+  {
+    "cardId": "OP01-084", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "reveal": true, "addToHand": { "typeIncludes": ["Baroque Works"], "category": ["Event"] }, "addCount": 1, "rest": "bottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-085", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay", "conditions": [ { "kind": "leaderIs", "filter": { "typeIncludes": ["Baroque Works"] } } ],
+        "actions": [
+          { "kind": "restriction", "what": "cannotAttack", "duration": "untilEndOfOpponentsNextTurn",
+            "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-086", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 4000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "returnToHand",
+            "sel": { "owner": "any", "zone": "characterArea", "filter": { "rested": false, "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "returnToHand",
+            "sel": { "owner": "any", "zone": "characterArea", "filter": { "costAtMost": 4 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "returnToHand is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-087", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["Baroque Works"], "category": ["Character"], "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["Baroque Works"], "category": ["Character"], "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'[Trigger] Activate this card's [Counter] effect' duplicated under the trigger timing; playFromZone is tier-2."
+  },
+  {
+    "cardId": "OP01-088", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "peekDeck", "who": "self", "count": 3, "then": { "rest": "topOrBottomAnyOrder" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "draw", "count": 2 },
+          { "kind": "discard", "who": "self", "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-089", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter", "conditions": [ { "kind": "leaderIs", "filter": { "typeIncludes": ["The Seven Warlords of the Sea"] } } ],
+        "actions": [
+          { "kind": "returnToHand",
+            "sel": { "owner": "any", "zone": "characterArea", "filter": { "costAtMost": 5 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "returnToHand is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-090", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "reveal": true, "addToHand": { "typeIncludes": ["Baroque Works"], "nameExcludes": ["Baroque Works"] }, "addCount": 1, "rest": "bottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "nameExcludes matches by substring — 'other than [Baroque Works]' may over-exclude names containing it; peekDeck is tier-2."
+  },
+  {
+    "cardId": "OP01-091", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
+    "notes": "'If you have 10 DON!! on your field' — DON-count conditions are not in the IR; all-opponent static powerMod executes from M4 anyway."
+  },
+  { "cardId": "OP01-092", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-093", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "restDon", "count": 1 } ],
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": true } ] }
+    ],
+    "notes": "placeDonInCostArea is tier-2 (executor in M3); 'up to 1' approximated as count 1."
+  },
+  {
+    "cardId": "OP01-094", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 6 } ],
+        "conditions": [ { "kind": "leaderIs", "filter": { "typeIncludes": ["Animal Kingdom Pirates"] } } ],
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "any", "zone": "characterArea", "filter": { "excludeSelf": true }, "count": 99, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'K.O. all Characters other than this Character' = count 99 + excludeSelf; the post-colon leader check compiled as a condition (8-3-3 convention); DON!!−6 is paid from the active cost area in the current engine."
+  },
+  {
+    "cardId": "OP01-095", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay", "actions": [ { "kind": "manual", "text": "Draw 1 card if you have 8 or more DON!! cards on your field." } ] }
+    ],
+    "notes": "DON-count conditions are not in the IR yet."
+  },
+  {
+    "cardId": "OP01-096", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 2 } ],
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 2 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-097", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [
+          { "kind": "grantKeyword", "keyword": "Rush", "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } },
+          { "kind": "powerMod", "amount": -2000, "duration": "thisTurn",
+            "sel": { "owner": "opponent", "zone": "characterArea", "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-098", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 50,
+            "then": { "reveal": true, "addToHand": { "nameIncludes": ["Artificial Devil Fruit SMILE"] }, "addCount": 1, "rest": "shuffle" } }
+        ] }
+    ],
+    "notes": "Whole-deck search = peekDeck count 50 + shuffle disposition (convention); peekDeck is tier-2."
+  },
+  {
+    "cardId": "OP01-099", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000, "effects": [],
+    "notes": "All-target 'cannot be K.O.'d in battle' permanent — the IR restriction cannotBeKOd also covers effect K.O. (10-2-1-3), so the battle-only wording cannot be compiled faithfully; statics execute from M4 anyway."
+  },
+  { "cardId": "OP01-100", "version": 1, "confidence": 1, "classification": "keyword-only", "keywords": ["Blocker"], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-101", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 } ], "optional": true,
+        "cost": [ { "kind": "trashFromHand", "sel": { "owner": "self", "zone": "hand", "count": 1, "chooser": "controller" } } ],
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": true } ] }
+    ],
+    "notes": "trashFromHand cost payable from M3; placeDonInCostArea is tier-2."
+  },
+  {
+    "cardId": "OP01-102", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "whenAttacking", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [
+          { "kind": "discard", "who": "opponent", "sel": { "owner": "opponent", "zone": "hand", "count": 1, "chooser": "opponent" } }
+        ] }
+    ]
+  },
+  { "cardId": "OP01-103", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-104", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-105", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay", "actions": [ { "kind": "manual", "text": "Choose 2 cards from your opponent's hand; your opponent reveals those cards." } ] }
+    ],
+    "notes": "Opponent-hand reveal is not in the IR yet."
+  },
+  {
+    "cardId": "OP01-106", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onPlay",
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": true } ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "playFromZone", "zone": "hand", "free": true, "sel": { "owner": "self", "zone": "hand", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "placeDonInCostArea is tier-2 (executor in M3)."
+  },
+  { "cardId": "OP01-107", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-108", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 5 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-109", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000, "effects": [],
+    "notes": "'If you have 8 or more DON!! on your field' — DON-count conditions are not in the IR yet; the static executes from M4 anyway."
+  },
+  { "cardId": "OP01-110", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
+  {
+    "cardId": "OP01-111", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": ["Blocker"], "counterValue": 1000,
+    "effects": [
+      { "timing": "onBlock", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-112", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "activateMain", "oncePerTurn": true, "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [ { "kind": "manual", "text": "This Character can also attack your opponent's active Characters during this turn." } ] }
+    ],
+    "notes": "Attack-permission effects are not in the IR yet (M4)."
+  },
+  {
+    "cardId": "OP01-113", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "onKO",
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": true } ] }
+    ],
+    "notes": "placeDonInCostArea is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-114", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [
+          { "kind": "discard", "who": "opponent", "sel": { "owner": "opponent", "zone": "hand", "count": 1, "chooser": "opponent" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-115", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 2 }, "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "placeDonInCostArea", "count": 1, "rested": false }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "koTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 2 }, "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "placeDonInCostArea", "count": 1, "rested": false }
+        ] }
+    ],
+    "notes": "'[Trigger] Activate this card's [Main] effect' duplicated; placeDonInCostArea is tier-2."
+  },
+  {
+    "cardId": "OP01-116", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "play": { "typeIncludes": ["SMILE"], "category": ["Character"], "costAtMost": 3 }, "playCount": 1, "rest": "bottomAnyOrder" } }
+        ] },
+      { "timing": "trigger",
+        "actions": [
+          { "kind": "peekDeck", "who": "self", "count": 5,
+            "then": { "play": { "typeIncludes": ["SMILE"], "category": ["Character"], "costAtMost": 3 }, "playCount": 1, "rest": "bottomAnyOrder" } }
+        ] }
+    ],
+    "notes": "'[Trigger] Activate this card's [Main] effect' duplicated; peekDeck is tier-2."
+  },
+  {
+    "cardId": "OP01-117", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "main", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
+        "actions": [
+          { "kind": "restTarget", "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "costAtMost": 6 }, "count": 1, "upTo": true, "chooser": "controller" } }
+        ] }
+    ]
+  },
+  {
+    "cardId": "OP01-118", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter", "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 2 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 2000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "draw", "count": 1 }
+        ] },
+      { "timing": "trigger",
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": false } ] }
+    ],
+    "notes": "placeDonInCostArea is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-119", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "counter",
+        "actions": [
+          { "kind": "powerMod", "amount": 4000, "duration": "thisBattle",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "count": 1, "upTo": true, "chooser": "controller" } },
+          { "kind": "ifThen", "if": [ { "kind": "lifeAtMost", "who": "self", "count": 2 } ],
+            "then": [ { "kind": "placeDonInCostArea", "count": 1, "rested": true } ] }
+        ] },
+      { "timing": "trigger",
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": false } ] }
+    ],
+    "notes": "ifThen and placeDonInCostArea are tier-2/3 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-120", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": ["Rush"],
+    "effects": [
+      { "timing": "whenAttacking",
+        "actions": [
+          { "kind": "restriction", "what": "cannotBlock", "duration": "thisBattle",
+            "sel": { "owner": "opponent", "zone": "characterArea", "filter": { "powerAtMost": 2000, "hasKeyword": "Blocker" }, "count": 99, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "'Your opponent cannot activate a [Blocker] Character that has 2000 or less power during this battle' = cannotBlock restriction on all matching blockers (count 99 = all)."
+  },
+  {
+    "cardId": "OP01-121", "version": 1, "confidence": 0.7, "classification": "partial", "keywords": ["DoubleAttack", "Banish"], "counterValue": 1000,
+    "effects": [],
+    "notes": "'Also treat this card's name as [Kouzuki Oden] according to the rules' — name-treatment permanents are not expressible in the IR; the keywords compile."
+  }
+]

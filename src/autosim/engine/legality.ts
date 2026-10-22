@@ -5,7 +5,7 @@
  */
 import type { AutoGameState, CardDb, Iid, PID } from "./state";
 import { hasRestriction, isPlayersFirstTurn, keywordsOf, opponentOf } from "./state";
-import { conditionsMet } from "./effects";
+import { canPayCost, conditionsMet } from "./effects";
 
 export interface LegalMoves {
   /** Who must act right now (pending choice player, else turn player). */
@@ -70,11 +70,14 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
       if (card.category === "Leader" || (card.cost ?? 0) > p.don.active) return false;
       if (card.category === "Event") {
         // 10-2-3: only Events with a [Main] effect (or no compiled effects —
-        // legacy vanilla fixtures) are playable in the Main Phase
+        // legacy vanilla fixtures) are playable in the Main Phase, and only if
+        // the effect's activation cost is payable (8-3-1-3, mirrors playCard)
         const effects = card.compiled?.effects ?? [];
         if (effects.length === 0) return true;
         const main = effects.find((fx) => fx.timing === "main");
-        return !!main && conditionsMet(db, state, player, iid, main.conditions);
+        return !!main
+          && conditionsMet(db, state, player, iid, main.conditions)
+          && canPayCost(state, player, iid, main.cost);
       }
       return true;
     })

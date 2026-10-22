@@ -1,0 +1,491 @@
+{
+  "generated": "2026-10-22",
+  "batch": "st01-op01",
+  "pipeline": "M2 hand/AI compilation (AUTOSIM_PLAN.md §6); validated: schema + semantic lint + engine dry-run (m2-compiled.test.ts)",
+  "counts": {
+    "ST01": {
+      "vanilla": 4,
+      "keyword-only": 1,
+      "compiled": 12,
+      "partial": 0,
+      "unsupported": 0,
+      "total": 17,
+      "coveredPct": 100
+    },
+    "ALL": {
+      "vanilla": 20,
+      "keyword-only": 3,
+      "compiled": 90,
+      "partial": 8,
+      "unsupported": 17,
+      "total": 138,
+      "coveredPct": 81.9
+    },
+    "OP01": {
+      "vanilla": 16,
+      "keyword-only": 2,
+      "compiled": 78,
+      "partial": 8,
+      "unsupported": 17,
+      "total": 121,
+      "coveredPct": 79.3
+    }
+  },
+  "fullyTier1Executable": 37,
+  "compiledButDegradingToManual": [
+    {
+      "cardId": "ST01-001",
+      "needs": [
+        "giveRestedDon"
+      ]
+    },
+    {
+      "cardId": "ST01-002",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "ST01-004",
+      "needs": [
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "ST01-007",
+      "needs": [
+        "giveRestedDon"
+      ]
+    },
+    {
+      "cardId": "ST01-011",
+      "needs": [
+        "giveRestedDon"
+      ]
+    },
+    {
+      "cardId": "ST01-013",
+      "needs": [
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "OP01-001",
+      "needs": [
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "OP01-003",
+      "needs": [
+        "prev-selector"
+      ]
+    },
+    {
+      "cardId": "OP01-005",
+      "needs": [
+        "addFromTrashToHand"
+      ]
+    },
+    {
+      "cardId": "OP01-008",
+      "needs": [
+        "cost:lifeToHand"
+      ]
+    },
+    {
+      "cardId": "OP01-009",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-013",
+      "needs": [
+        "cost:lifeToHand",
+        "giveRestedDon"
+      ]
+    },
+    {
+      "cardId": "OP01-014",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-015",
+      "needs": [
+        "addFromTrashToHand",
+        "cost:trashFromHand"
+      ]
+    },
+    {
+      "cardId": "OP01-016",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-019",
+      "needs": [
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "OP01-029",
+      "needs": [
+        "ifThen",
+        "prev-selector"
+      ]
+    },
+    {
+      "cardId": "OP01-030",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-032",
+      "needs": [
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "OP01-037",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-040",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-041",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-044",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-049",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-050",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-059",
+      "needs": [
+        "cost:trashFromHand"
+      ]
+    },
+    {
+      "cardId": "OP01-064",
+      "needs": [
+        "cost:trashFromHand",
+        "returnToHand"
+      ]
+    },
+    {
+      "cardId": "OP01-067",
+      "needs": [
+        "costMod",
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "OP01-068",
+      "needs": [
+        "static(M4)"
+      ]
+    },
+    {
+      "cardId": "OP01-069",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-070",
+      "needs": [
+        "returnToDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-071",
+      "needs": [
+        "playFromZone",
+        "returnToDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-073",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-074",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-077",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-079",
+      "needs": [
+        "addFromTrashToHand"
+      ]
+    },
+    {
+      "cardId": "OP01-082",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-084",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-086",
+      "needs": [
+        "returnToHand"
+      ]
+    },
+    {
+      "cardId": "OP01-087",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-088",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-089",
+      "needs": [
+        "returnToHand"
+      ]
+    },
+    {
+      "cardId": "OP01-090",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-093",
+      "needs": [
+        "placeDonInCostArea"
+      ]
+    },
+    {
+      "cardId": "OP01-098",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-101",
+      "needs": [
+        "cost:trashFromHand",
+        "placeDonInCostArea"
+      ]
+    },
+    {
+      "cardId": "OP01-104",
+      "needs": [
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-106",
+      "needs": [
+        "placeDonInCostArea",
+        "playFromZone"
+      ]
+    },
+    {
+      "cardId": "OP01-113",
+      "needs": [
+        "placeDonInCostArea"
+      ]
+    },
+    {
+      "cardId": "OP01-115",
+      "needs": [
+        "placeDonInCostArea"
+      ]
+    },
+    {
+      "cardId": "OP01-116",
+      "needs": [
+        "peekDeck"
+      ]
+    },
+    {
+      "cardId": "OP01-118",
+      "needs": [
+        "placeDonInCostArea"
+      ]
+    },
+    {
+      "cardId": "OP01-119",
+      "needs": [
+        "ifThen",
+        "placeDonInCostArea"
+      ]
+    }
+  ],
+  "notCompiled": [
+    {
+      "cardId": "OP01-002",
+      "classification": "partial",
+      "reason": "The 'different color than the returned Character' binding is not expressible in the IR — manual resolution."
+    },
+    {
+      "cardId": "OP01-004",
+      "classification": "unsupported",
+      "reason": "Activation timing 'when your opponent activates an Event' does not exist in the IR Timing set yet."
+    },
+    {
+      "cardId": "OP01-011",
+      "classification": "partial",
+      "reason": "The 'place 1 card from your hand at the bottom of your deck' activation cost is not in the IR CostItem set yet."
+    },
+    {
+      "cardId": "OP01-021",
+      "classification": "unsupported",
+      "reason": "'[DON!! x1] This Character can also attack your opponent's active Characters' — attack-permission permanents are not in the IR yet (M4)."
+    },
+    {
+      "cardId": "OP01-024",
+      "classification": "partial",
+      "reason": "'[DON!! x2] This Character cannot be K.O.'d in battle by <Strike> attribute Characters' — attribute-conditional battle immunity is not expressible (IR has no attributes); that permanent is dropped, so the card is partial."
+    },
+    {
+      "cardId": "OP01-031",
+      "classification": "unsupported",
+      "reason": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+    },
+    {
+      "cardId": "OP01-034",
+      "classification": "unsupported",
+      "reason": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+    },
+    {
+      "cardId": "OP01-046",
+      "classification": "unsupported",
+      "reason": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+    },
+    {
+      "cardId": "OP01-047",
+      "classification": "partial",
+      "reason": "The 'return 1 Character to your hand' activation cost is not in the IR CostItem set yet."
+    },
+    {
+      "cardId": "OP01-051",
+      "classification": "partial",
+      "reason": "The '[DON!! x1] [Opponent's Turn] If this Character is rested, your opponent cannot attack any card other than [Eustass\"Captain\"Kid]' taunt permanent is not expressible in the IR yet (M4) — dropped, so the card is partial."
+    },
+    {
+      "cardId": "OP01-055",
+      "classification": "unsupported",
+      "reason": "The 'rest 2 of your Characters' activation cost is not in the IR CostItem set yet."
+    },
+    {
+      "cardId": "OP01-060",
+      "classification": "partial",
+      "reason": "PeekDisposition cannot express 'play that card rested' nor the leave-on-top fallback — manual resolution."
+    },
+    {
+      "cardId": "OP01-061",
+      "classification": "unsupported",
+      "reason": "Activation timing 'when your opponent's Character is K.O.'d' does not exist in the IR Timing set; DON!! gain is also tier-2."
+    },
+    {
+      "cardId": "OP01-062",
+      "classification": "unsupported",
+      "reason": "Activation timing 'when you activate an Event' plus the per-turn memory clause are not expressible in the IR yet."
+    },
+    {
+      "cardId": "OP01-063",
+      "classification": "unsupported",
+      "reason": "Opponent-hand reveal and Life-to-deck movement are not in the IR yet."
+    },
+    {
+      "cardId": "OP01-072",
+      "classification": "unsupported",
+      "reason": "'+1000 power for every card in your hand' — scaling amounts are not expressible in the IR yet."
+    },
+    {
+      "cardId": "OP01-075",
+      "classification": "partial",
+      "reason": "'Under the rules of this game, you may have any number of this card in your deck' — deck-construction overrides are not expressible (the engine enforces 5-1-2-3); [Blocker] compiles."
+    },
+    {
+      "cardId": "OP01-083",
+      "classification": "unsupported",
+      "reason": "'+1000 power for every 2 Events in your trash' — scaling amounts are not expressible in the IR yet."
+    },
+    {
+      "cardId": "OP01-091",
+      "classification": "unsupported",
+      "reason": "'If you have 10 DON!! on your field' — DON-count conditions are not in the IR; all-opponent static powerMod executes from M4 anyway."
+    },
+    {
+      "cardId": "OP01-095",
+      "classification": "unsupported",
+      "reason": "DON-count conditions are not in the IR yet."
+    },
+    {
+      "cardId": "OP01-099",
+      "classification": "unsupported",
+      "reason": "All-target 'cannot be K.O.'d in battle' permanent — the IR restriction cannotBeKOd also covers effect K.O. (10-2-1-3), so the battle-only wording cannot be compiled faithfully; statics execute from M4 anyway."
+    },
+    {
+      "cardId": "OP01-105",
+      "classification": "unsupported",
+      "reason": "Opponent-hand reveal is not in the IR yet."
+    },
+    {
+      "cardId": "OP01-109",
+      "classification": "unsupported",
+      "reason": "'If you have 8 or more DON!! on your field' — DON-count conditions are not in the IR yet; the static executes from M4 anyway."
+    },
+    {
+      "cardId": "OP01-112",
+      "classification": "unsupported",
+      "reason": "Attack-permission effects are not in the IR yet (M4)."
+    },
+    {
+      "cardId": "OP01-121",
+      "classification": "partial",
+      "reason": "'Also treat this card's name as [Kouzuki Oden] according to the rules' — name-treatment permanents are not expressible in the IR; the keywords compile."
+    }
+  ]
+}

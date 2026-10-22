@@ -50,6 +50,7 @@ export type Who = "self" | "opponent" | "both";
 export interface SelectorFilter {
   typeIncludes?: string[];    // {Type} braces (2-4-3)
   nameIncludes?: string[];    // [Name] / "partial" (2-1-2)
+  nameExcludes?: string[];    // "other than [Name]" (M2; 2-1-2)
   colors?: string[];
   category?: ("Leader" | "Character" | "Event" | "Stage")[];
   costAtMost?: number;
@@ -67,9 +68,13 @@ export interface Selector {
     | "characterArea" | "leader" | "leaderOrCharacter" | "stage"
     | "hand" | "trash" | "deckTop" | "costArea" | "life";
   filter?: SelectorFilter;
-  count: number;
+  count: number;              // convention: 99 = "all" (auto-selected, no choice)
   upTo?: boolean;             // 4-8: may choose 0..count
   self?: boolean;             // the compiled card itself
+  /** "that card": the card(s) chosen by the PREVIOUS action of this effect
+   *  (M2 — compilation only; the executor degrades it to manualResolve
+   *  until selection-binding lands in M3). */
+  prev?: boolean;
   chooser: "controller" | "opponent";
 }
 
@@ -80,7 +85,8 @@ export type CostItem =
   | { kind: "restSelf" }
   | { kind: "trashFromHand"; sel: Selector }
   | { kind: "trashSelf" }
-  | { kind: "trashFromLife"; count: number };
+  | { kind: "trashFromLife"; count: number }
+  | { kind: "lifeToHand"; count: number };  // "add N card(s) from your Life to your hand:" (M2)
 
 /** Conditions ([DON!!xX], [Your Turn], … — 8-3-2). */
 export type Condition =
@@ -101,7 +107,7 @@ export interface PeekDisposition {
   addCount?: number;
   play?: Selector["filter"];        // play matching from among them
   playCount?: number;
-  rest: "topAnyOrder" | "bottomAnyOrder" | "shuffle" | "trash";
+  rest: "topAnyOrder" | "bottomAnyOrder" | "topOrBottomAnyOrder" | "shuffle" | "trash";
 }
 
 export type Action =
@@ -118,6 +124,7 @@ export type Action =
       duration: Duration }
   // ── Tier 2 — zones & resources ────────────────────────────────────────────
   | { kind: "returnToHand"; sel: Selector }
+  | { kind: "returnToDeck"; sel: Selector; where: "top" | "bottom" }  // "place ... at the top/bottom of the owner's deck" (M2)
   | { kind: "playFromZone"; zone: "hand" | "trash" | "revealed"; sel: Selector;
       free?: boolean; rested?: boolean }
   | { kind: "peekDeck"; who: Who; count: number; then: PeekDisposition }

@@ -64,6 +64,11 @@ export function matchesFilter(
     const name = (card.name ?? "").toLowerCase();
     if (!filter.nameIncludes.some((n) => name.includes(n.toLowerCase()))) return false;
   }
+  // "other than [Name]" (M2): a missing name never excludes
+  if (filter.nameExcludes) {
+    const name = (card.name ?? "").toLowerCase();
+    if (filter.nameExcludes.some((n) => name.includes(n.toLowerCase()))) return false;
+  }
   const cost = card.cost ?? 0;
   if (filter.costAtMost !== undefined && cost > filter.costAtMost) return false;
   if (filter.costAtLeast !== undefined && cost < filter.costAtLeast) return false;
@@ -209,6 +214,11 @@ export function planAction(
 
   const act = action as Extract<Action, { sel: Selector }>;
   const sel = act.sel;
+  if (sel.prev) {
+    // "that card" selection-binding is compiled in the IR but not executable
+    // yet (M3) — degrade gracefully instead of re-selecting (wrong semantics)
+    return { kind: "manual", text: `"that card" binding for "${action.kind}" is not auto-executable yet — resolve manually` };
+  }
   if (sel.self) {
     // the compiled card itself (no choice) — only if still on the field
     const onField = findOnField(state, running.sourceIid);
