@@ -18,11 +18,11 @@
   padding: 0;
   display: flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid var(--card-border);
   background: var(--surface);
   cursor: pointer;
-  box-shadow: var(--shadow-1);
+  
   transition:
     background 0.2s ease,
     border-color 0.2s ease;
@@ -34,13 +34,13 @@
   width: 24px;
   height: 24px;
   margin-left: 3px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, var(--accent-hi, var(--accent)), var(--accent));
+  border-radius: 0;
+  background: var(--accent);
   color: #fff;
   display: grid;
   place-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  transition: transform 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+  
+  transition: transform 0.1s ease-out;
 }
 :root[data-theme="light"] .theme-toggle-knob {
   transform: translateX(28px);
@@ -61,18 +61,18 @@
   place-items: center;
   padding: 20px;
   background: rgba(6, 10, 18, 0.6);
-  backdrop-filter: blur(3px);
-  animation: tt-fade 0.18s ease-out;
+  
+  animation: tt-fade 0.1s ease-out;
 }
 .tt-modal {
   width: min(360px, 100%);
   padding: 26px 24px 20px;
-  border-radius: 18px;
+  border-radius: 0;
   border: 1px solid var(--card-border);
   background: var(--surface);
-  box-shadow: var(--shadow-2);
+  
   text-align: center;
-  animation: tt-pop 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: tt-pop 0.1s ease-out;
 }
 .tt-modal-title {
   font-size: 1.25rem;
@@ -93,7 +93,7 @@
 .tt-yes {
   flex: 1;
   padding: 10px 16px;
-  border-radius: 11px;
+  border-radius: 0;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid var(--card-border);
@@ -110,7 +110,7 @@
   border-color: var(--accent);
 }
 .tt-yes {
-  background: linear-gradient(180deg, var(--accent-hi, var(--accent)), var(--accent));
+  background: var(--accent);
   color: #fff;
   border-color: transparent;
 }
@@ -125,14 +125,14 @@
   transform: translateX(-50%);
   z-index: 300;
   padding: 11px 22px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--card-border);
-  box-shadow: var(--shadow-2);
+  
   font-weight: 600;
   letter-spacing: 0.01em;
-  animation: tt-pop 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: tt-pop 0.1s ease-out;
 }
 @keyframes tt-fade {
   from {
@@ -146,7 +146,7 @@
   }
 }
 .tt-toast {
-  animation: tt-toast-in 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: tt-toast-in 0.1s ease-out;
 }
 @keyframes tt-toast-in {
   from {
@@ -187,25 +187,24 @@
 [data-theme="light"] .sn {
   --bg: #eef1f6;
   --bg2: #e3e8f0;
-  --acc2: #a9781a; /* gold darker for contrast on light */
-  --glass: rgba(255, 255, 255, 0.72);
-  --glass2: rgba(255, 255, 255, 0.92);
+  --elev: #ffffff;
+  --elev2: #e9edf5;
+  --acc2: #9a6f1c; /* brass darkened for contrast on light */
+  --brass: #9a6f1c;
+  --brass-hi: #7c5a13;
+  --brass-dim: rgba(154, 111, 28, 0.4);
+  --glass: #ffffff;
+  --glass2: #ffffff;
   --edge: rgba(20, 30, 45, 0.1);
   --edge2: rgba(20, 30, 45, 0.16);
   --txt: #16202e;
   --muted: #56627a;
 }
 
-/* 3) page backgrounds (override the hardcoded dark gradients) */
+/* 3) page backgrounds (flat) */
 [data-theme="light"] .sn,
 [data-theme="light"] .snp {
-  background:
-    radial-gradient(120% 80% at 50% -10%, rgba(120, 160, 220, 0.18), transparent 60%),
-    linear-gradient(180deg, #f6f8fc, #e7edf5 72%);
-}
-[data-theme="light"] .sn::before,
-[data-theme="light"] .snp::before {
-  opacity: 0.04;
+  background: #eef1f6;
 }
 [data-theme="light"] .snp-head {
   background: rgba(255, 255, 255, 0.7);
@@ -226,11 +225,31 @@
 }
 
 /* 5) explicit dark card gradients / fills -> light */
-[data-theme="light"] .sn-tile {
-  background: linear-gradient(155deg, #ffffff, #eef2f8);
+[data-theme="light"] .hu-mode {
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(20, 30, 50, 0.1);
 }
-[data-theme="light"] .sn-tile.danger {
-  background: linear-gradient(155deg, #fdeceb, #f7dad7);
+[data-theme="light"] .hu-mode.duel {
+  background: #fbeeec;
+}
+[data-theme="light"] .hu-mode.duel .hu-mode-go {
+  color: #b3281f;
+}
+[data-theme="light"] .hu-tile,
+[data-theme="light"] .hu-tile:hover {
+  background: rgba(20, 30, 45, 0.04);
+}
+[data-theme="light"] .hu-row.linky:hover,
+[data-theme="light"] .hu-crew-row.linky:hover,
+[data-theme="light"] .hu-link-row:hover,
+[data-theme="light"] .hu-me:hover {
+  background: rgba(20, 30, 45, 0.05);
+}
+[data-theme="light"] .hu-share-line {
+  background: rgba(20, 30, 45, 0.12);
+}
+[data-theme="light"] .hu-tile.danger .hu-tile-ico {
+  background: #fbeeec;
 }
 [data-theme="light"] .dr-duel {
   background: rgba(20, 30, 45, 0.04);

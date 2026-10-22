@@ -6,13 +6,13 @@
 
 .adm-refresh {
   padding: 8px 14px;
-  border-radius: 9px;
+  border-radius:0;
   border: 1px solid var(--edge2);
   background: var(--glass);
   color: var(--txt);
   font: 600 13px var(--font);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.1s, background 0.1s;
 }
 .adm-refresh:hover {
   border-color: var(--acc);
@@ -25,7 +25,7 @@
 .adm-error {
   margin-bottom: 14px;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius:0;
   background: rgba(226, 59, 50, 0.12);
   border: 1px solid rgba(226, 59, 50, 0.4);
   color: #ff9a93;
@@ -40,7 +40,7 @@
 
 .adm-table {
   border: 1px solid var(--edge);
-  border-radius: 14px;
+  border-radius:0;
   overflow: hidden;
   background: var(--glass);
 }
@@ -77,13 +77,13 @@
   width: 36px;
   height: 36px;
   flex: 0 0 auto;
-  border-radius: 50%;
+  border-radius:0;
   display: grid;
   place-items: center;
   font: 800 15px var(--display, var(--font));
   color: #fff;
-  background: linear-gradient(150deg, #7a3030, #0d1420);
-  box-shadow: 0 0 0 2px var(--edge2);
+  background: #7a3030;
+  
 }
 .adm-user-txt {
   display: flex;
@@ -111,7 +111,7 @@
   color: var(--acc2, #caa023);
   background: rgba(227, 178, 76, 0.14);
   border: 1px solid rgba(227, 178, 76, 0.35);
-  border-radius: 5px;
+  border-radius:0;
   padding: 1px 5px;
 }
 
@@ -132,7 +132,7 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius:0;
 }
 .adm-role.admin {
   color: #ffd98a;
@@ -150,13 +150,13 @@
 }
 .adm-btn {
   padding: 7px 12px;
-  border-radius: 8px;
+  border-radius:0;
   font: 600 12.5px var(--font);
   cursor: pointer;
   border: 1px solid var(--edge2);
   background: transparent;
   color: var(--txt);
-  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+  transition: border-color 0.1s, background 0.1s, transform 0.1s;
 }
 .adm-btn:active {
   transform: scale(0.96);

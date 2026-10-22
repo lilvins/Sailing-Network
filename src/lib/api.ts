@@ -283,6 +283,10 @@ export const api = {
   // ---- meta analytics ----
   meta: () => request<{ leaders: MetaLeader[] }>("/meta"),
 
+  // ---- rating leaderboard (top N) ----
+  leaderboard: (limit = 5) =>
+    request<{ leaders: LeaderboardEntry[] }>(`/leaderboard?limit=${limit}`),
+
   // ---- consolidated badge poll ----
   sync: () => request<SyncState>("/me/sync"),
 
@@ -320,6 +324,16 @@ export interface Notification {
   read: boolean;
   actor: { username: string; displayName: string } | null;
   createdAt: number;
+}
+
+export interface LeaderboardEntry {
+  userId: string;
+  username: string;
+  displayName: string;
+  rating: number;
+  rd: number;
+  wins: number;
+  losses: number;
 }
 
 export interface MetaLeader {

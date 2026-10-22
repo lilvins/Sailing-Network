@@ -33,7 +33,7 @@
   padding: 13px 14px;
   cursor: pointer;
   color: var(--txt);
-  transition: background 0.14s;
+  transition: background 0.1s;
 }
 .pd-region:first-of-type {
   border-top: none;
@@ -43,12 +43,12 @@
 }
 .pd-region.on {
   background: rgba(226, 59, 50, 0.1);
-  box-shadow: inset 3px 0 0 var(--acc);
+  
 }
 .pd-region-flag {
   width: 36px;
   height: 36px;
-  border-radius: 9px;
+  border-radius:0;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
@@ -59,6 +59,13 @@
 .pd-region-main {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.pd-region-name {
+  display: block;
 }
 .pd-region-name {
   font: 700 13.5px var(--display);
@@ -87,7 +94,7 @@
   border-bottom: 1px solid var(--edge);
 }
 .pd-detail-title {
-  font: 800 16px var(--display);
+  font: 700 16px var(--serif);
   color: var(--txt);
 }
 .pd-detail-sub {
@@ -121,14 +128,14 @@
 .pd-leader {
   width: 42px;
   height: 58px;
-  border-radius: 8px;
+  border-radius:0;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
   font: 800 22px var(--display);
   color: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--edge2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  
 }
 .pd-list-main {
   flex: 1;
@@ -155,13 +162,13 @@
   align-items: center;
   gap: 7px;
   padding: 8px 14px;
-  border-radius: 9px;
+  border-radius:0;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--edge2);
-  color: #cfd9e6;
+  color: #d6d0c2;
   font: 700 12.5px var(--display);
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: border-color 0.1s, color 0.1s, background 0.1s, transform 0.1s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .pd-btn:hover {
   border-color: var(--acc2);
@@ -171,7 +178,7 @@
   transform: scale(0.95);
 }
 .pd-btn.primary {
-  background: linear-gradient(160deg, #f04037, var(--acc) 55%, #a82820);
+  background: var(--acc);
   border-color: rgba(255, 255, 255, 0.15);
   color: #fff;
 }
@@ -187,7 +194,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .pd-list {
-    animation: sn-rise 360ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation: sn-rise 120ms cubic-bezier(0.23, 1, 0.32, 1) both;
   }
   .pd-list:nth-child(2) { animation-delay: 40ms; }
   .pd-list:nth-child(3) { animation-delay: 80ms; }
@@ -260,13 +267,13 @@
   width: 64px;
   height: 90px;
   font-size: 32px;
-  border-radius: 10px;
+  border-radius:0;
 }
 .pd-list {
   padding: 18px 16px;
   gap: 20px;
   cursor: pointer;
-  transition: background 0.14s;
+  transition: background 0.1s;
 }
 .pd-list:hover {
   background: rgba(255, 255, 255, 0.05);
@@ -296,7 +303,7 @@
   place-items: center;
   padding: 24px;
   background: rgba(4, 6, 10, 0.66);
-  backdrop-filter: blur(4px);
+  
   animation: pd-fade 160ms ease-out;
 }
 @keyframes pd-fade {
@@ -310,8 +317,8 @@
   flex-direction: column;
   background: var(--glass2);
   border: 1px solid var(--edge2);
-  border-radius: 18px;
-  box-shadow: var(--shadow-2);
+  border-radius:0;
+  
   overflow: hidden;
   animation: pd-pop 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -329,7 +336,7 @@
 .pd-modal-leader {
   width: 56px;
   height: 78px;
-  border-radius: 9px;
+  border-radius:0;
   display: grid;
   place-items: center;
   font: 800 28px var(--display);
@@ -338,7 +345,7 @@
   flex: 0 0 auto;
 }
 .pd-modal-title {
-  font: 800 20px var(--display);
+  font: 700 20px var(--serif);
 }
 .pd-modal-meta {
   font: 600 12.5px var(--display);
@@ -349,7 +356,7 @@
   margin-left: auto;
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius:0;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--edge2);
   color: var(--txt);
@@ -357,7 +364,7 @@
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  transition: border-color 0.15s, transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: border-color 0.1s, transform 0.1s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .pd-modal-close:hover {
   border-color: var(--acc);
@@ -377,16 +384,16 @@
   scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
 }
 .pd-modal-body::-webkit-scrollbar { width: 10px; }
-.pd-modal-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 8px; }
+.pd-modal-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius:0; }
 .pd-mgroup {
   display: flex;
 }
 .pd-mcard {
   width: 66px;
   height: 92px;
-  border-radius: 7px;
+  border-radius:0;
   border: 1px solid rgba(0, 0, 0, 0.55);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  
   flex: 0 0 auto;
 }
 .pd-mgroup .pd-mcard:not(:first-child) {
@@ -394,7 +401,7 @@
 }
 .pd-mgroup.leader .pd-mcard {
   border-color: var(--acc);
-  box-shadow: 0 0 12px -2px rgba(226, 59, 78, 0.6);
+  
 }
 .pd-modal-foot {
   display: flex;
@@ -440,7 +447,7 @@
 /* ---- animations ---- */
 @media (prefers-reduced-motion: no-preference) {
   .pd-region {
-    animation: sn-rise 340ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation: sn-rise 120ms cubic-bezier(0.23, 1, 0.32, 1) both;
   }
   .pd-region:nth-child(2) { animation-delay: 30ms; }
   .pd-region:nth-child(3) { animation-delay: 60ms; }
@@ -449,7 +456,7 @@
   .pd-region:nth-child(6) { animation-delay: 150ms; }
   /* pd-detail is keyed by the selected regional in JSX → replays on switch */
   .pd-detail {
-    animation: pd-swap 340ms cubic-bezier(0.23, 1, 0.32, 1);
+    animation: pd-swap 120ms cubic-bezier(0.23, 1, 0.32, 1);
   }
   @keyframes pd-swap {
     from { opacity: 0; transform: translateX(16px); }
@@ -457,7 +464,7 @@
   }
 }
 .pd-region {
-  transition: background 0.14s, transform 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: background 0.1s, transform 0.1s cubic-bezier(0.23, 1, 0.32, 1);
 }
 @media (hover: hover) and (pointer: fine) {
   .pd-region:hover { transform: translateX(3px); }

@@ -19,12 +19,12 @@ export function LeaderAvatar({
       style={{
         width: fill ? "100%" : size,
         height: fill ? "100%" : size,
-        borderRadius: fill ? "inherit" : 10,
+        borderRadius: fill ? "inherit" : 0,
         overflow: "hidden",
         flex: "0 0 auto",
         position: "relative",
-        background: `linear-gradient(150deg, ${color}, #0d1420)`,
-        boxShadow: fill ? undefined : "0 0 0 2px rgba(227,178,76,0.35)",
+        background: color,
+        boxShadow: fill ? undefined : "0 0 0 1px rgba(236,230,216,0.25)",
       }}
     >
       {image && (

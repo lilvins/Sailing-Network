@@ -1,7 +1,7 @@
 # Notes for Claude — session handoff
 
 Context that the project brief (`CLAUDE.md`) doesn't capture yet, plus the most
-recent work. Read this alongside `CLAUDE.md`. Last updated 2026-06-18.
+recent work. Read this alongside `CLAUDE.md`. Last updated 2026-10-22.
 
 > Why this file exists: Claude's per-machine memory does **not** sync via git, so
 > this doc carries the cross-machine context. Keep it updated when state changes.
@@ -52,9 +52,32 @@ phases/DON costs/structure limits/defeat + full 5-step battle with counter
 values, deterministic seeded shuffles (lib/rng seededRng/shuffleWith), replay
 via applyEvent fold. 17 tests incl. a full scripted vanilla game to GameOver
 and replay determinism (57/57 green overall). Every rule cites its section
-number. See AUTOSIM_PLAN.md "Decisioni prese in corso d'opera". Next: M1
-(keywords, [Blocker] window, [Trigger] flow, trigger queue ordering 8-6) —
-launch with the §10 prompt.
+number. See AUTOSIM_PLAN.md "Decisioni prese in corso d'opera".
+**2026-10-22: M1 DONE** — keyword effects (Rush / Rush: Character / Double
+Attack / Banish / Blocker / Unblockable, from `CompiledCard.keywords` via the
+new `EngineCard.compiled` field), full Counter Step (counter values + [Counter]
+Events with paid costs), [Trigger] flow with damage suspension + triggerDecision
+(8-6-2-1, decline→hand / activate→execute then trash unless moved), auto-effect
+queue with 8-6 ordering (generations, turn-player-first; [On K.O.] resolves
+post-damage per 8-6-2), and the tier-1 action executor (powerMod / draw /
+koTarget / restTarget / standTarget / discard / grantKeyword / restriction)
+over a unified `state.modifiers` list with rule-exact duration expiry in the
+reducer. New modules: `engine/battle.ts` (battle machine + effect pump),
+`engine/effects.ts` (executor, selectors, conditions, costs), `engine/
+triggers.ts` (8-6 queue). New ChoiceRequests: blockWindow / triggerDecision /
+selectTargets / mayActivate / manualResolve (graceful degradation for
+non-tier-1 actions). [Main] Events now execute too; [Counter]-only Events are
+not playable in Main (10-2-3/4). Golden set grew to 16 synthetic TEST cards
+(every keyword + [Counter]/[Trigger] samples). Tests 62→90 in src/autosim
+(130/130 overall): m1.test.ts covers every keyword, both trigger decisions,
+counter stacking, 8-6 ordering, durations, each tier-1 action, replay with M1
+events, and the M1 exit scenario (scripted starter-vs-starter hotseat game
+exercising Rush/Blocker/DA/counter value/[Counter] event/[Trigger]
+activated+declined to a leaderDamageAtZeroLife win); fuzz extended with the
+new windows + invariants (one blocker per battle, step↔choice↔exec coherence,
+modifier hygiene, [Trigger]-limbo card conservation). Decisions #12-22 + M2
+debts in AUTOSIM_PLAN.md. Next: M2 (AI compile pipeline ST01+OP01,
+[Activate: Main] intent, ChoiceRequest UI) — launch with the §10 prompt.
 
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to

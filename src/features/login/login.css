@@ -1,7 +1,7 @@
 /* ===========================================================
-   Login / Landing — ported from Sailing Network.html.
-   Scoped under .snlogin (rendered as `.sn snlogin` so design vars resolve).
-   Fluid + responsive; animated ocean scene.
+   Login / Landing — night harbor, utilitarian cut.
+   Scoped under .snlogin (rendered as `.sn snlogin`).
+   Flat panels, square shapes, static scene (no starfield/particles).
    =========================================================== */
 .snlogin {
   position: fixed;
@@ -9,10 +9,10 @@
   display: grid;
   grid-template-columns: minmax(340px, 460px) 1fr;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--ocean-a), var(--ocean-b) 50%, var(--ocean-c));
+  background: var(--ocean-a);
 }
 
-/* ---- LEFT: login ---- */
+/* ---- LEFT: login (solid panel, hard edge) ---- */
 .snlogin-login {
   position: relative;
   z-index: 2;
@@ -22,19 +22,8 @@
   justify-content: center;
   padding: clamp(28px, 5vw, 52px);
   background: var(--glass2);
-  border-right: 1px solid var(--edge);
-  box-shadow: 8px 0 48px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(24px);
+  border-right: 2px solid var(--edge2);
   overflow-y: auto;
-}
-.snlogin-login::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.22;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 .snlogin-inner {
   width: 100%;
@@ -56,13 +45,13 @@
   gap: 1px;
 }
 .snlogin-logo-name {
-  font: 800 22px/1 var(--display);
-  letter-spacing: 2px;
+  font: 800 20px/1.05 var(--display);
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--txt);
 }
 .snlogin-logo-tag {
-  font: 500 11px var(--font);
+  font: 700 11px var(--font);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--acc2);
@@ -74,7 +63,7 @@
   gap: 14px;
 }
 .snlogin-label {
-  font: 600 11px var(--display);
+  font: 700 11px var(--display);
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--muted);
@@ -86,21 +75,19 @@
   flex-direction: column;
 }
 .snlogin-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--edge2);
-  border-radius: 12px;
-  padding: 13px 16px;
+  background: var(--bg);
+  border: 2px solid var(--edge2);
+  padding: 12px 14px;
   font: 500 14px var(--font);
   color: var(--txt);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.1s;
   outline: none;
 }
 .snlogin-input::placeholder {
   color: var(--muted);
 }
 .snlogin-input:focus {
-  border-color: var(--acc);
-  box-shadow: 0 0 0 3px rgba(226, 59, 50, 0.15);
+  border-color: var(--brass, #c9973b);
 }
 
 .snlogin-btn {
@@ -108,32 +95,28 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(160deg, #f04037 0%, var(--acc) 45%, #a82820 100%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 15px;
-  font: 700 15px var(--display);
+  background: var(--acc);
+  border: 2px solid #8f221b;
+  padding: 14px;
+  font: 800 15px var(--display);
   letter-spacing: 1px;
   text-transform: uppercase;
   color: #fff;
   cursor: pointer;
-  transition: filter 0.15s, transform 0.12s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.15s;
-  box-shadow: 0 8px 24px rgba(226, 59, 50, 0.4), 0 1px 0 rgba(255, 255, 255, 0.14) inset;
+  transition: background 0.1s;
 }
 .snlogin-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
+  background: #ef4a40;
 }
 .snlogin-btn:active {
-  transform: scale(0.97);
+  background: #b3281f;
 }
 
 .snlogin-error {
   margin: -2px 0 2px;
   padding: 9px 12px;
-  border-radius: 9px;
   background: rgba(226, 59, 50, 0.12);
-  border: 1px solid rgba(226, 59, 50, 0.4);
+  border: 1px solid rgba(226, 59, 50, 0.5);
   color: #ff9a93;
   font: 500 12.5px var(--font);
 }
@@ -146,7 +129,7 @@
   align-items: center;
   gap: 12px;
   color: var(--muted);
-  font: 500 11px var(--font);
+  font: 600 11px var(--font);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -160,7 +143,7 @@
 
 .snlogin-cta {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.2fr; /* "Enter as Test Captain" must not wrap */
   gap: 10px;
 }
 .snlogin-glass {
@@ -168,27 +151,26 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--edge2);
-  border-radius: 12px;
-  padding: 13px 10px;
-  font: 600 13px var(--display);
-  letter-spacing: 0.5px;
+  background: var(--elev2);
+  border: 2px solid var(--edge2);
+  padding: 12px 8px;
+  font: 700 12.5px var(--display);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
   color: var(--txt);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: background 0.1s, border-color 0.1s;
 }
 .snlogin-glass:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
+  background: #17233b;
+  border-color: var(--brass-dim);
 }
 .snlogin-glass.highlight {
-  border-color: rgba(227, 178, 76, 0.45);
+  border-color: var(--brass-dim);
   color: var(--acc2);
 }
 .snlogin-glass:active {
-  transform: scale(0.97);
+  background: var(--elev);
 }
 
 .snlogin-foot {
@@ -206,44 +188,27 @@
   text-decoration: underline;
 }
 
-/* ---- RIGHT: animated scene (always the night ocean, in both themes) ---- */
+/* ---- RIGHT: static night scene (flat, no animation) ---- */
 .snlogin-scene {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--ocean-a), var(--ocean-b) 50%, var(--ocean-c));
-}
-.snlogin-stars {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  background: var(--ocean-a);
 }
 .snlogin-grand {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font: 900 clamp(64px, 13vw, 160px) / 1 var(--display);
-  letter-spacing: 0.1em;
+  font: 800 clamp(64px, 13vw, 150px) / 1 var(--display);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.028);
+  color: rgba(236, 230, 216, 0.035);
   white-space: nowrap;
   pointer-events: none;
 }
 
 .snlogin-hero-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(240px, 34vw, 340px);
-  height: clamp(320px, 46vw, 450px);
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(227, 178, 76, 0.14) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 3;
-  animation: snl-pulse 4s ease-in-out infinite;
+  display: none; /* flat scene: no glow */
 }
 .snlogin-hero-frame {
   position: absolute;
@@ -252,32 +217,20 @@
   transform: translate(-50%, -50%);
   width: clamp(200px, 22vw, 280px);
   height: clamp(280px, 31vw, 390px);
-  border-radius: 16px;
-  border: 2px solid var(--acc2);
-  box-shadow: 0 0 0 6px rgba(8, 11, 16, 0.6), 0 0 60px rgba(227, 178, 76, 0.22), 0 30px 80px rgba(0, 0, 0, 0.6);
+  border: 3px solid var(--brass, #c9973b);
   overflow: hidden;
   z-index: 4;
-  animation: snl-float 5s ease-in-out infinite;
 }
 .snlogin-hero-ph {
   width: 100%;
   height: 100%;
   display: grid;
   place-items: center;
-  background: radial-gradient(120% 90% at 50% 16%, rgba(226, 59, 50, 0.55), rgba(122, 31, 41, 0.4) 45%, #0a0f17 88%);
-  font: 700 13px var(--display);
+  background: #1a0d0e;
+  font: 800 13px var(--display);
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-@keyframes snl-float {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-  50% { transform: translate(-50%, -50%) translateY(-14px); }
-}
-@keyframes snl-pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .snlogin-compass {
@@ -286,12 +239,8 @@
   right: clamp(20px, 4vw, 52px);
   width: 90px;
   height: 90px;
-  opacity: 0.7;
+  opacity: 0.6;
   z-index: 5;
-  animation: snl-spin 24s linear infinite;
-}
-@keyframes snl-spin {
-  to { transform: rotate(360deg); }
 }
 
 .snlogin-waves {
@@ -308,15 +257,10 @@
   bottom: 0;
   left: 0;
   width: 200%;
-  animation: snl-wave linear infinite;
 }
-.snlogin-wave-1 { animation-duration: 12s; opacity: 0.55; }
-.snlogin-wave-2 { animation-duration: 18s; opacity: 0.35; animation-direction: reverse; bottom: 10px; }
-.snlogin-wave-3 { animation-duration: 8s; opacity: 0.2; bottom: 20px; }
-@keyframes snl-wave {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
+.snlogin-wave-1 { opacity: 0.55; }
+.snlogin-wave-2 { opacity: 0.35; bottom: 10px; }
+.snlogin-wave-3 { opacity: 0.2; bottom: 20px; }
 
 .snlogin-ship {
   position: absolute;
@@ -324,25 +268,6 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
-  animation: snl-ship 6s ease-in-out infinite;
-}
-@keyframes snl-ship {
-  0%, 100% { transform: translateX(-50%) rotate(-1.5deg) translateY(0); }
-  50% { transform: translateX(-50%) rotate(1.5deg) translateY(-6px); }
-}
-
-.snlogin-particle {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-  pointer-events: none;
-  animation: snl-rise linear infinite;
-}
-@keyframes snl-rise {
-  0% { transform: translateY(0) scale(1); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 0.4; }
-  100% { transform: translateY(-160px) scale(0.3); opacity: 0; }
 }
 
 .snlogin-scene-label {
@@ -355,58 +280,50 @@
   gap: 10px;
 }
 .snlogin-scene-label .pill {
-  background: rgba(14, 18, 26, 0.7);
+  background: var(--glass2);
   border: 1px solid var(--edge2);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font: 600 11px var(--display);
+  padding: 6px 12px;
+  font: 700 11px var(--display);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--muted);
-  backdrop-filter: blur(8px);
 }
 .snlogin-livedot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  background: #3cdd7a;
-  box-shadow: 0 0 8px #3cdd7a;
-  animation: snl-blink 2s ease-in-out infinite;
-}
-@keyframes snl-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  background: #46c983;
 }
 
 .snlogin-stat {
   position: absolute;
   z-index: 6;
-  background: rgba(14, 18, 26, 0.78);
+  background: var(--glass2);
   border: 1px solid var(--edge2);
-  border-radius: 14px;
   padding: 10px 16px;
-  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   gap: 2px;
-  animation: snl-floatstat 6s ease-in-out infinite;
 }
 .snlogin-stat .val {
-  font: 700 20px var(--display);
+  font: 700 20px var(--mono, monospace);
+  font-variant-numeric: tabular-nums;
   color: var(--acc2);
 }
 .snlogin-stat .lbl {
-  font: 500 10px var(--font);
+  font: 600 10px var(--font);
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--muted);
 }
-@keyframes snl-floatstat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+
+/* narrow phones: stack the two CTAs so neither label ever wraps */
+@media (max-width: 440px) {
+  .snlogin-cta {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* ---- responsive: stack; scene becomes a top banner, then hidden ---- */
+/* ---- responsive: stack; scene hidden on small screens ---- */
 @media (max-width: 880px) {
   .snlogin {
     grid-template-columns: 1fr;
@@ -417,29 +334,14 @@
   }
   .snlogin-login {
     border-right: none;
-    background: color-mix(in srgb, var(--glass2) 88%, transparent);
   }
 }
 
-/* ---- light theme tweaks for the (translucent) login panel ---- */
+/* ---- light theme tweaks ---- */
 [data-theme="light"] .snlogin-input,
 [data-theme="light"] .snlogin-glass {
   background: rgba(20, 30, 45, 0.05);
 }
 [data-theme="light"] .snlogin-input:focus {
   background: rgba(255, 255, 255, 0.9);
-}
-
-/* ---- reduced motion: calm everything ---- */
-@media (prefers-reduced-motion: reduce) {
-  .snlogin-hero-frame,
-  .snlogin-hero-glow,
-  .snlogin-compass,
-  .snlogin-wave,
-  .snlogin-ship,
-  .snlogin-particle,
-  .snlogin-stat,
-  .snlogin-livedot {
-    animation: none !important;
-  }
 }

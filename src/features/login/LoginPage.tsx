@@ -1,71 +1,33 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useUiStore } from "../../app/uiStore";
 import { useAuthStore } from "../../app/authStore";
 import { api, type SiteStats } from "../../lib/api";
 import "../home/home.css"; // for the shared .sn vars/atoms
 import "./login.css";
 
-/* Ported from Claude design (Sailing Network.html) — the landing/login.
-   Wired to the real backend: login + signup against /api/auth/*. */
+/* The landing/login — night harbor, static and fast (no canvas, no
+   particles). Wired to the real backend: login + signup against /api/auth/*. */
 
-interface Star {
-  x: number;
-  y: number;
-  r: number;
-  a: number;
-  speed: number;
-  phase: number;
-}
-
-/** Twinkling starfield on a canvas (faithful to the design's vanilla JS). */
-function Starfield() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let stars: Star[] = [];
-    let raf = 0;
-
-    const initStars = () => {
-      stars = Array.from({ length: 160 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height * 0.72,
-        r: Math.random() * 1.4 + 0.3,
-        a: Math.random(),
-        speed: Math.random() * 0.4 + 0.1,
-        phase: Math.random() * Math.PI * 2,
-      }));
-    };
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      initStars();
-    };
-    const draw = (t: number) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const s of stars) {
-        const twinkle = 0.4 + 0.6 * Math.abs(Math.sin(t * 0.001 * s.speed + s.phase));
-        ctx.globalAlpha = s.a * twinkle;
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(draw);
-    };
-
-    resize();
-    raf = requestAnimationFrame(draw);
-    window.addEventListener("resize", resize);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-  return <canvas ref={ref} className="snlogin-stars" />;
+/** A fixed scatter of faint stars as plain SVG — zero runtime cost. */
+function Stars() {
+  const pts: [number, number, number][] = [
+    [8, 6, 1.2], [16, 14, 0.9], [24, 4, 1.1], [31, 18, 0.8], [38, 9, 1.3],
+    [46, 5, 0.9], [53, 15, 1.1], [61, 8, 0.8], [68, 19, 1.2], [75, 6, 0.9],
+    [83, 12, 1.2], [90, 4, 0.8], [95, 16, 1.0], [12, 26, 0.8], [43, 27, 1.0],
+    [71, 30, 0.9], [88, 26, 1.1], [27, 34, 0.9], [58, 36, 0.8],
+  ];
+  return (
+    <svg
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      {pts.map(([x, y, r], i) => (
+        <circle key={i} cx={x} cy={y} r={r * 0.22} fill="#ece6d8" opacity={0.5} />
+      ))}
+    </svg>
+  );
 }
 
 export function LoginPage() {
@@ -123,18 +85,6 @@ export function LoginPage() {
       setBusy(false);
     }
   };
-
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 18 }, () => ({
-        left: 20 + Math.random() * 80,
-        size: Math.random() * 3 + 1,
-        bottom: 100 + Math.random() * 60,
-        dur: 3 + Math.random() * 4,
-        delay: Math.random() * 6,
-      })),
-    [],
-  );
 
   return (
     <div className="sn snlogin">
@@ -240,7 +190,10 @@ export function LoginPage() {
                   Create an account
                 </button>
                 <button className="snlogin-glass highlight" onClick={quickLogin} disabled={busy}>
-                  ⚓ Enter as Test Captain
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 8a3 3 0 100-6 3 3 0 000 6zM12 8v13M5 12H2a10 10 0 0020 0h-3" />
+                  </svg>
+                  Enter as Test Captain
                 </button>
               </>
             ) : (
@@ -264,9 +217,9 @@ export function LoginPage() {
         </div>
       </aside>
 
-      {/* RIGHT — animated scene */}
+      {/* RIGHT — static night scene */}
       <main className="snlogin-scene">
-        <Starfield />
+        <Stars />
 
         <div className="snlogin-grand">GRAND LINE</div>
 
@@ -284,7 +237,6 @@ export function LoginPage() {
           <span className="lbl">Matches logged</span>
         </div>
 
-        <div className="snlogin-hero-glow" />
         <div className="snlogin-hero-frame">
           <div className="snlogin-hero-ph">Your Captain</div>
         </div>
@@ -341,20 +293,6 @@ export function LoginPage() {
           <circle cx="45" cy="45" r="2" fill="#fff" />
         </svg>
 
-        {particles.map((p, i) => (
-          <span
-            key={i}
-            className="snlogin-particle"
-            style={{
-              left: `${p.left}%`,
-              width: p.size,
-              height: p.size,
-              bottom: p.bottom,
-              animationDuration: `${p.dur}s`,
-              animationDelay: `${p.delay}s`,
-            }}
-          />
-        ))}
       </main>
     </div>
   );

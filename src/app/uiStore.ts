@@ -24,7 +24,8 @@ export type View =
   | "popular-decklists"
   | "admin"
   | "board" // the playmat (current layout)
-  | "board2"; // layout lab — OPTCGSim-style table
+  | "board2" // layout lab — OPTCGSim-style table
+  | "board-auto"; // AUTOSIM full-rules board (engine-driven)
 
 export type Theme = "dark" | "light";
 
