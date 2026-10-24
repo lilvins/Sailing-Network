@@ -27,6 +27,7 @@ import type { Card } from "../cards/cardsDb";
 import type { CompiledCard, Effect, Keyword } from "../../autosim/ir/types";
 import type { CardDb, EngineCard } from "../../autosim/engine/state";
 import { allCompiledCards, getCompiledCard } from "../../autosim/data/compiled";
+import coverageReport from "../../autosim/data/compiled/coverage-report.json";
 
 /** Keyword tags in match order ([Rush: Character] before [Rush]). */
 const KEYWORD_TAGS: [string, Keyword][] = [
@@ -124,23 +125,31 @@ export function compiledFor(card: Card): CompiledCard | undefined {
 
 // ─── automation transparency (an effect that doesn't run must SAY so) ────────
 
-/** Timings the M1/M2 engine actually fires today (battle.ts enqueue points +
- *  playCard [Main]/[Counter] windows). Everything else is stored but inert. */
+/** Timings the engine actually fires today (M3: enqueue points in battle.ts /
+ *  effects.ts + the [Activate: Main] intent + [Main]/[Counter] windows).
+ *  Everything else is stored but inert — update this list as M4+ lands. */
 const ENGINE_RUNNABLE_TIMINGS = new Set<string>([
   "onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger", "main", "onYourOpponentsAttack",
+  "activateMain", "endOfYourTurn", "endOfOpponentsTurn", "endOfBattle",
+  "onYouActivateEvent", "onOpponentActivatesEvent", "onOpponentCharacterKOd",
 ]);
 
 const TIMING_LABEL: Record<string, string> = {
-  activateMain: "[Activate: Main]",
-  static: "continuous effects ([DON!!xX] auras, +power while in play)",
-  endOfYourTurn: "end-of-turn effects",
-  endOfOpponentsTurn: "end-of-turn effects",
+  static: "continuous effect not yet automatic (M4)",
   startOfYourTurn: "start-of-turn effects",
   startOfOpponentsTurn: "start-of-turn effects",
   whenAttacked: "[When Attacked]",
-  endOfBattle: "end-of-battle effects",
   onOpponentPlaysCharacter: "effects on the opponent's plays",
 };
+
+/** Cards the coverage report marks as compiled but degrading ONLY because of
+ *  `static` effects (the "fullyAutoExecutable" metric, M3). */
+const STATIC_ONLY = new Set(
+  (coverageReport as { compiledButDegradingToManual: { cardId: string; needs: string[] }[] })
+    .compiledButDegradingToManual
+    .filter((row) => row.needs.every((n) => n.startsWith("static")))
+    .map((row) => row.cardId),
+);
 
 /** Effect text the fallback could NOT capture (anything beyond line-opening
  *  keywords and, on Events, the [Main]/[Counter] windows). */
@@ -180,8 +189,10 @@ export function automationInfo(card: Card): AutomationInfo {
   if (residual.length > 0) {
     bits.push(`set ${card.set} isn't compiled yet, so effect text beyond keywords / [Trigger] / [Main] / [Counter] does nothing automatically`);
   }
-  if (inertTimings.length > 0) {
-    bits.push(`the engine can't run ${inertTimings.map((t) => TIMING_LABEL[t] ?? t).join(", ")} yet (coming with M3+)`);
+  if (STATIC_ONLY.has(card.id) || (inertTimings.length === 1 && inertTimings[0] === "static")) {
+    bits.push("continuous effect not yet automatic (M4) — everything else on this card runs");
+  } else if (inertTimings.length > 0) {
+    bits.push(`the engine can't run ${inertTimings.map((t) => TIMING_LABEL[t] ?? t).join(", ")} yet`);
   }
   if (manual) bits.push('resolved by hand via the "resolve manually" panel');
   const info: AutomationInfo = {

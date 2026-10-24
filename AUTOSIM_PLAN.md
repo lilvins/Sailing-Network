@@ -512,6 +512,23 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     logica di gioco toccata; il desktop resta identico sopra la soglia.
     I chip (potenza/costo/DON) sono `pointer-events: none`: un chip di una
     carta rested intercettava i tap sulla vicina (bug trovato dal driver).
+34. **UI M3 (2026-10-24)** — nuovi intent/finestre collegati nello stile
+    legality-first: chip "ACTIVATE" sulle carte in `legalMoves.activatable`
+    (tap → `activateMain`; su una carta con [Activate: Main] NON legale il tap
+    spiega nel banner: già usata / condizioni o costo), con bottone gemello
+    nello sheet compact; `peekSelect` → pannello "look at the top N" (carte
+    viste in grande, eleggibili evidenziate, take ≤ N, resto ordinato con tap
+    in sequenza, Top/Bottom per `topOrBottomAnyOrder`, shuffle/trash senza
+    ordine — ordine vuoto = ordine corrente, come accetta il motore);
+    `payDon` → stepper per cost area rested/active e per ogni carta con DON
+    attaccati, Confirm solo a somma esatta, "Auto" = rested→active→attaccati;
+    `chooseNumber` → bottoni min..max (default max). I `selectTargets` in
+    fase di costo (`exec.running.costIndex < costs.length`) hanno titolo
+    "Pay the cost: …". `ENGINE_RUNNABLE_TIMINGS` aggiornato (activateMain,
+    end-of-turn/battle, onYou/OpponentActivatesEvent, onOpponentCharacterKOd);
+    le 12 carte "static-only" del coverage-report (`compiledButDegradingTo
+    Manual`) portano la nota "continuous effect not yet automatic (M4)".
+    Log: righe per i 12 eventi tier-2.
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

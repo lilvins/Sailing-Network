@@ -343,9 +343,19 @@ function GameScreen() {
   const [portraitOk, setPortraitOk] = useState(false);
   const [sheet, setSheet] = useState<"preview" | "log" | null>(null);
   const [selectedHand, setSelectedHand] = useState<Iid | null>(null);
+  /** The field card the preview sheet is showing (for its Activate button). */
+  const [previewRef, setPreviewRef] = useState<{ owner: PID; iid: Iid } | null>(null);
   useEffect(() => {
     if (!compact) setSheet(null);
   }, [compact]);
+  // M3 windows: local drafts of the answer being composed
+  const [peekTake, setPeekTake] = useState<Iid[]>([]);
+  const [peekOrder, setPeekOrder] = useState<Iid[]>([]);
+  const [peekSide, setPeekSide] = useState<Record<Iid, "top" | "bottom">>({});
+  const [payPlan, setPayPlan] = useState<{ fromActive: number; fromRested: number; fromGiven: Record<Iid, number> }>({
+    fromActive: 0, fromRested: 0, fromGiven: {},
+  });
+  const [numberPick, setNumberPick] = useState<number | null>(null);
   // DON placeholders: PURELY VISUAL, per-seat marked active-DON indexes.
   // Never an intent — the engine's DON state is untouched (plan §1 rule).
   const [donMarks, setDonMarks] = useState<Record<PID, number[]>>({});
@@ -363,7 +373,12 @@ function GameScreen() {
     setMode({ t: "idle" });
     setPicked([]);
     setHoverTarget(null);
-  }, [pc?.kind, game.turn, game.battle?.step, game.phase]);
+    setPeekTake([]);
+    setPeekOrder([]);
+    setPeekSide({});
+    setPayPlan({ fromActive: 0, fromRested: 0, fromGiven: {} });
+    setNumberPick(null);
+  }, [pc, game.turn, game.battle?.step, game.phase]);
 
   // DON placeholders reset at every turn change (they are thinking aids)
   useEffect(() => {
@@ -476,8 +491,9 @@ function GameScreen() {
   };
   /** A tap that performs NO action: desktop = preview rail (already set by
    *  hover); compact = open the preview sheet (no hover on touch). */
-  const inspect = (cardId: string | null) => {
+  const inspect = (cardId: string | null, ref: { owner: PID; iid: Iid } | null = null) => {
     hover(cardId);
+    setPreviewRef(ref);
     if (compact && cardId) setSheet("preview");
   };
 
@@ -583,7 +599,7 @@ function GameScreen() {
       dispatch({ type: "respondBlock", player: owner, blockerIid: iid });
       return;
     }
-    if (pc) { inspect(cardId); return; }
+    if (pc) { inspect(cardId, { owner, iid }); return; }
 
     if (mode.t === "don") {
       const me = game.turnPlayer;
@@ -631,14 +647,33 @@ function GameScreen() {
         return;
       }
       const inst = game.players[owner].instances[iid];
-      const isBoard = iid === game.players[owner].leaderIid || game.players[owner].zones.characterArea.includes(iid);
-      if (isBoard && inst.rested) explain("This card is rested — it already acted.", "It stands in your next Refresh Phase.");
+      const p = game.players[owner];
+      const isBoard = iid === p.leaderIid || p.zones.characterArea.includes(iid) || p.zones.stage.includes(iid);
+      // an [Activate: Main] that is NOT legal now gets its reason explained
+      const compiled = cardId ? db(cardId).compiled : undefined;
+      const amIdx = compiled?.effects.findIndex((fx) => fx.timing === "activateMain") ?? -1;
+      if (isBoard && amIdx >= 0 && !lm.activatable.some((a) => a.iid === iid)) {
+        const used = !!compiled!.effects[amIdx].oncePerTurn && game.oncePerTurnUsed[`${owner}:${iid}:${amIdx}`] === game.turn;
+        explain(
+          used ? "[Activate: Main] already used this turn (10-2-13-3)." : "[Activate: Main] not available right now.",
+          used
+            ? "It is usable again on your next turn."
+            : "Its conditions aren't met or its cost can't be paid (e.g. no rested DON!! to give, DON!!−X unaffordable).",
+        );
+      } else if (isBoard && inst.rested) explain("This card is rested — it already acted.", "It stands in your next Refresh Phase.");
       else if (isBoard && game.turn <= 2) explain("No battles on either player's first turn (6-5-6-1).");
-      inspect(cardId);
+      inspect(cardId, { owner, iid });
       return;
     }
     if (mode.t === "attack") { setMode({ t: "idle" }); return; }
-    inspect(cardId);
+    inspect(cardId, { owner, iid });
+  };
+
+  /** [Activate: Main] (10-2-2, M3): only ever offered from legality.activatable. */
+  const activate = (owner: PID, iid: Iid, effectIndex: number) => {
+    setMode({ t: "idle" });
+    setSheet(null);
+    dispatch({ type: "activateMain", player: owner, iid, effectIndex });
   };
 
   const onDonTap = (owner: PID, index: number) => {
@@ -698,10 +733,32 @@ function GameScreen() {
     if (pc?.kind === "selectTargets") {
       const max = Math.min(pc.count, pc.candidates.length);
       const ok = pc.upTo ? picked.length <= max : picked.length === max;
+      // cost phase (M3: trash from hand / return to hand / rest / hand→deck
+      // bottom) vs effect targets — the running effect tells which
+      const r = game.exec?.running;
+      const paying = !!r && r.costIndex < r.costs.length;
+      const n = pc.upTo ? `up to ${pc.count}` : `${max}`;
+      const plural = max === 1 ? "" : "s";
+      const COST_LABEL: Record<string, string> = {
+        discard: `trash ${n} card${plural} from your hand`,
+        returnToHand: `return ${n} card${plural} to hand`,
+        restTarget: `rest ${n} card${plural}`,
+        returnToDeck: `put ${n} card${plural} from your hand at the bottom of your deck`,
+      };
+      const ACTION_LABEL: Record<string, string> = {
+        koTarget: "K.O.", powerMod: "power change", restTarget: "rest", standTarget: "stand",
+        discard: "discard", grantKeyword: "keyword", restriction: "restriction",
+        returnToHand: "return to hand", playFromZone: "play", giveRestedDon: "give rested DON!! to",
+        addFromTrashToHand: "return from trash", attachDonFromDeck: "attach DON!! to",
+        costMod: "cost change", returnToDeck: "return to deck",
+      };
+      const title = paying
+        ? `Pay the cost: ${COST_LABEL[pc.actionKind] ?? `${pc.actionKind} (${n})`}`
+        : `choose ${n} target${plural} — ${ACTION_LABEL[pc.actionKind] ?? pc.actionKind}`;
       return (
         <div className="ba-actionbar">
           <span className="ba-actlabel">
-            <b>{seatName(pc.player)}</b> — choose {pc.upTo ? `up to ${pc.count}` : `${max}`} target{max === 1 ? "" : "s"} ({pc.actionKind})
+            <b>{seatName(pc.player)}</b> — {title}
           </span>
           <button
             className="ba-btn primary"
@@ -838,6 +895,26 @@ function GameScreen() {
           </span>
         )}
         {given > 0 && <span className="ba-given">DON!! ×{given}</span>}
+        {/* [Activate: Main] affordance = legality only (10-2-2, M3) */}
+        {onField && !pc && owner === game.turnPlayer &&
+          lm.activatable
+            .filter((a) => a.iid === iid)
+            .map((a) => (
+              <button
+                key={a.effectIndex}
+                className="ba-activate"
+                data-act="activate"
+                data-iid={iid}
+                data-effect={a.effectIndex}
+                title="[Activate: Main] — usable now"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  activate(owner, iid, a.effectIndex);
+                }}
+              >
+                ACTIVATE
+              </button>
+            ))}
       </div>
     );
   }
@@ -1078,6 +1155,196 @@ function GameScreen() {
         </div>
       </div>
     );
+  } else if (pc?.kind === "peekSelect") {
+    // M3 — look at the top N (8-4-4-4, 11-2-1): take up to takeCount among the
+    // eligible, then arrange the rest as the card's disposition says
+    const p = game.players[pc.player];
+    const cardOf = (iid: Iid) => cards.get(p.instances[iid].cardId);
+    const remaining = pc.cards.filter((iid) => !peekTake.includes(iid));
+    const ordered = pc.rest === "topAnyOrder" || pc.rest === "bottomAnyOrder" || pc.rest === "topOrBottomAnyOrder";
+    const sideOf = (iid: Iid): "top" | "bottom" => peekSide[iid] ?? (pc.rest === "bottomAnyOrder" ? "bottom" : "top");
+    const inOrder = (list: Iid[]) => {
+      const idx = (iid: Iid) => { const i = peekOrder.indexOf(iid); return i === -1 ? 999 + pc.cards.indexOf(iid) : i; };
+      return [...list].sort((a, b) => idx(a) - idx(b));
+    };
+    const modeLabel = pc.mode === "hand" ? "add to your hand" : pc.mode === "play" ? `play${pc.playRested ? " (rested)" : ""}` : "look";
+    const restLabel: Record<typeof pc.rest, string> = {
+      topAnyOrder: "the rest goes back ON TOP, in the order you choose (1 = top)",
+      bottomAnyOrder: "the rest goes to the BOTTOM, in the order you choose (1 = first placed)",
+      topOrBottomAnyOrder: "split the rest between TOP and BOTTOM (tap Top/Bottom), ordered by your taps",
+      shuffle: "the rest is shuffled back into the deck",
+      trash: "the rest is trashed",
+    };
+    const confirmPeek = () => {
+      let restTop: Iid[] = [];
+      let restBottom: Iid[] = [];
+      if (pc.rest === "topAnyOrder") restTop = peekOrder.length === remaining.length ? inOrder(remaining) : [];
+      else if (pc.rest === "bottomAnyOrder") restBottom = peekOrder.length === remaining.length ? inOrder(remaining) : [];
+      else if (pc.rest === "topOrBottomAnyOrder") {
+        restTop = inOrder(remaining.filter((iid) => sideOf(iid) === "top"));
+        restBottom = inOrder(remaining.filter((iid) => sideOf(iid) === "bottom"));
+      }
+      dispatch({ type: "respondPeek", player: pc.player, take: peekTake, restTop, restBottom });
+    };
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov ba-peek">
+          <span className="ba-ovtag">{seatName(pc.player)} — look at the top {pc.cards.length}</span>
+          <p className="ba-ovtext">
+            Tap up to <b>{pc.takeCount}</b> highlighted card{pc.takeCount === 1 ? "" : "s"} to {modeLabel}
+            {pc.eligible.length === 0 ? " (nothing matches)" : ""}. Then: {restLabel[pc.rest]}.
+          </p>
+          <div className="ba-peekgrid">
+            {pc.cards.map((iid, i) => {
+              const c = cardOf(iid);
+              const eligible = pc.eligible.includes(iid);
+              const taken = peekTake.includes(iid);
+              const pos = peekOrder.indexOf(iid);
+              return (
+                <div
+                  key={iid}
+                  className={`ba-peekcard${eligible ? " eligible" : " dim"}${taken ? " taken" : ""}`}
+                  data-peek-iid={iid}
+                  onClick={() => {
+                    if (!eligible) return;
+                    setPeekTake((prev) =>
+                      prev.includes(iid) ? prev.filter((x) => x !== iid)
+                        : prev.length >= pc.takeCount ? prev : [...prev, iid]);
+                    setPeekOrder((prev) => prev.filter((x) => x !== iid));
+                  }}
+                >
+                  <span className="ba-peekpos">#{i + 1}</span>
+                  <div className="ba-peekart">{c?.image && <img src={c.image} alt={c.name} />}</div>
+                  <b>{c?.name ?? iid}</b>
+                  {taken && <i className="ba-peektag">{pc.mode === "play" ? "PLAY" : "TAKE"}</i>}
+                  {!taken && ordered && (
+                    <span className="ba-peekorder" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        className={`ba-btn tiny${pos >= 0 ? " on" : ""}`}
+                        data-act="peek-order"
+                        data-peek-iid={iid}
+                        onClick={() => setPeekOrder((prev) => (prev.includes(iid) ? prev.filter((x) => x !== iid) : [...prev, iid]))}
+                      >
+                        {pos >= 0 ? `${pos + 1}` : "order"}
+                      </button>
+                      {pc.rest === "topOrBottomAnyOrder" && (
+                        <button
+                          className="ba-btn tiny"
+                          data-act="peek-side"
+                          data-peek-iid={iid}
+                          onClick={() => setPeekSide((prev) => ({ ...prev, [iid]: sideOf(iid) === "top" ? "bottom" : "top" }))}
+                        >
+                          {sideOf(iid) === "top" ? "Top" : "Bottom"}
+                        </button>
+                      )}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="ba-ovbtns">
+            {ordered && peekOrder.length > 0 && (
+              <button className="ba-btn" data-act="peek-reset" onClick={() => setPeekOrder([])}>Reset order</button>
+            )}
+            <button className="ba-btn primary big" data-act="peek-confirm" onClick={confirmPeek}>
+              Confirm{peekTake.length ? ` (${peekTake.length})` : " — take none"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  } else if (pc?.kind === "payDon") {
+    // M3 — DON!!−X (8-3-1-6): compose the payment from the cost area and the
+    // attached DON!!; "Auto" = rested first, then active, then attached
+    const p = game.players[pc.player];
+    const total = payPlan.fromActive + payPlan.fromRested + Object.values(payPlan.fromGiven).reduce((s, n) => s + n, 0);
+    const bump = (key: "fromActive" | "fromRested" | Iid, max: number, delta: number) =>
+      setPayPlan((prev) => {
+        if (key === "fromActive" || key === "fromRested") {
+          return { ...prev, [key]: Math.max(0, Math.min(max, prev[key] + delta)) };
+        }
+        const cur = prev.fromGiven[key] ?? 0;
+        return { ...prev, fromGiven: { ...prev.fromGiven, [key]: Math.max(0, Math.min(max, cur + delta)) } };
+      });
+    const auto = () => {
+      let left = pc.amount;
+      const plan = { fromActive: 0, fromRested: 0, fromGiven: {} as Record<Iid, number> };
+      plan.fromRested = Math.min(left, p.don.rested); left -= plan.fromRested;
+      plan.fromActive = Math.min(left, p.don.active); left -= plan.fromActive;
+      for (const [iid, n] of Object.entries(p.don.given)) {
+        if (left <= 0) break;
+        const take = Math.min(left, n);
+        if (take > 0) { plan.fromGiven[iid] = take; left -= take; }
+      }
+      setPayPlan(plan);
+    };
+    const row = (label: string, key: "fromActive" | "fromRested" | Iid, max: number, value: number) => (
+      <div className="ba-payrow" key={key}>
+        <span className="ba-paylabel">{label} <i>({max} available)</i></span>
+        <span className="ba-stepper">
+          <button className="ba-btn tiny" data-act={`paydon-minus-${key}`} disabled={value <= 0} onClick={() => bump(key, max, -1)}>−</button>
+          <b>{value}</b>
+          <button className="ba-btn tiny" data-act={`paydon-plus-${key}`} disabled={value >= max || total >= pc.amount} onClick={() => bump(key, max, +1)}>+</button>
+        </span>
+      </div>
+    );
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov ba-paydon">
+          <span className="ba-ovtag">{seatName(pc.player)} — DON!!−{pc.amount}</span>
+          <p className="ba-ovtext">Return <b>{pc.amount}</b> DON!! to your DON!! deck. Choose where they come from (8-3-1-6).</p>
+          <div className="ba-payrows">
+            {row("Cost area — rested DON!!", "fromRested", p.don.rested, payPlan.fromRested)}
+            {row("Cost area — active DON!!", "fromActive", p.don.active, payPlan.fromActive)}
+            {Object.entries(p.don.given).map(([iid, n]) =>
+              row(`On ${cards.get(p.instances[iid].cardId)?.name ?? iid}`, iid, n, payPlan.fromGiven[iid] ?? 0))}
+          </div>
+          <p className={`ba-paytotal${total === pc.amount ? " ok" : ""}`}>{total} / {pc.amount}</p>
+          <div className="ba-ovbtns">
+            <button className="ba-btn" data-act="paydon-auto" onClick={auto}>Auto (rested first)</button>
+            <button
+              className="ba-btn primary big"
+              data-act="paydon-confirm"
+              disabled={total !== pc.amount}
+              onClick={() => dispatch({ type: "respondPayDon", player: pc.player, ...payPlan })}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  } else if (pc?.kind === "chooseNumber") {
+    // M3 — "draw up to N" (8-4-4-1: 'up to' allows 0)
+    const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
+    const value = numberPick ?? pc.max;
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov">
+          <span className="ba-ovtag">{seatName(pc.player)} — {pc.purpose === "draw" ? `draw up to ${pc.max}` : "choose a number"}</span>
+          {src && <b className="ba-ovname">{src.name}</b>}
+          <p className="ba-ovtext">How many cards do you draw?</p>
+          <div className="ba-numbers">
+            {Array.from({ length: pc.max - pc.min + 1 }, (_, i) => pc.min + i).map((v) => (
+              <button
+                key={v}
+                className={`ba-btn${value === v ? " primary" : ""}`}
+                data-act={`number-${v}`}
+                onClick={() => setNumberPick(v)}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+          <div className="ba-ovbtns">
+            <button className="ba-btn primary big" data-act="number-confirm" onClick={() => dispatch({ type: "respondNumber", player: pc.player, value })}>
+              Confirm ({value})
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   } else if (game.phase === "over") {
     overlay = (
       <div className="ba-overlay">
@@ -1183,6 +1450,14 @@ function GameScreen() {
                     Play this card
                   </button>
                 )}
+                {previewRef && !pc &&
+                  lm.activatable
+                    .filter((a) => a.iid === previewRef.iid && previewRef.owner === game.turnPlayer)
+                    .map((a) => (
+                      <button key={a.effectIndex} className="ba-btn primary big" data-act="activate-sheet" onClick={() => activate(previewRef.owner, previewRef.iid, a.effectIndex)}>
+                        Activate [Activate: Main]
+                      </button>
+                    ))}
               </div>
             ) : (
               <div className="ba-sheet-body">

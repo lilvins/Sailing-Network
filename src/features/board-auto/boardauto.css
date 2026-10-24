@@ -583,6 +583,68 @@
   .ba-pickgrid { grid-template-columns: 1fr; overflow-y: auto; }
 }
 
+/* ── [Activate: Main] chip (M3): shown ONLY when legality says usable now ── */
+.ba-activate {
+  position: absolute;
+  right: -4px;
+  top: 40%;
+  z-index: 8;
+  padding: 3px 5px;
+  border: 1px solid #15100a;
+  background: var(--brass-hi);
+  color: #15100a;
+  font: 800 8px var(--mono);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: transform 100ms var(--ease), background 100ms;
+}
+.ba-activate:hover { background: #fff0c2; }
+.ba-activate:active { transform: scale(0.96); }
+.ba-root .gb-rested .ba-activate { transform: rotate(-90deg); }
+
+/* ── peek / search window (M3) ── */
+.ba-ov.ba-peek { max-width: min(760px, 96vw); }
+.ba-peekgrid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.ba-peekcard {
+  position: relative;
+  width: clamp(84px, 11vw, 118px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border: 2px solid var(--brass-dim);
+  background: var(--night-1);
+  cursor: default;
+  transition: border-color 100ms, transform 100ms var(--ease);
+}
+.ba-peekcard.eligible { border-color: var(--brass-hi); cursor: pointer; }
+.ba-peekcard.eligible:hover { transform: translateY(-2px); }
+.ba-peekcard.dim { opacity: 0.45; }
+.ba-peekcard.taken { border-color: var(--signal-hi); outline: 2px solid var(--signal-hi); }
+.ba-peekpos { position: absolute; top: -8px; left: -6px; padding: 0 4px; background: var(--brass); color: #15100a; font: 800 9px var(--mono); border: 1px solid #15100a; }
+.ba-peekart { width: 100%; aspect-ratio: 100 / 140; background: var(--night-0); overflow: hidden; }
+.ba-peekart img { width: 100%; height: 100%; object-fit: cover; }
+.ba-peekcard b { font: 700 10px var(--serif); color: var(--ivory); text-align: center; line-height: 1.2; }
+.ba-peektag { font: 800 9px var(--mono); font-style: normal; color: var(--signal-hi); letter-spacing: 0.1em; }
+.ba-peekorder { display: flex; gap: 3px; }
+.ba-peekorder .ba-btn.on { border-color: var(--brass-hi); color: var(--brass-hi); }
+
+/* ── DON!!−X payment (M3) ── */
+.ba-payrows { display: flex; flex-direction: column; gap: 4px; width: 100%; max-width: 360px; }
+.ba-payrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 6px; border: 1px solid var(--brass-dim); background: var(--night-1); }
+.ba-paylabel { font: 700 11px var(--serif); color: var(--ivory); text-align: left; }
+.ba-paylabel i { font-style: normal; font-weight: 500; color: var(--ivory-muted); }
+.ba-stepper { display: flex; align-items: center; gap: 6px; }
+.ba-stepper b { min-width: 18px; text-align: center; font: 800 13px var(--mono); color: var(--brass-hi); }
+.ba-stepper .ba-btn { min-width: 32px; }
+.ba-paytotal { margin: 0; font: 800 14px var(--mono); color: var(--signal-hi); }
+.ba-paytotal.ok { color: #4fd27a; }
+
+/* ── choose a number (M3) ── */
+.ba-numbers { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.ba-numbers .ba-btn { min-width: 44px; min-height: 40px; font-size: 14px; }
+
 @media (prefers-reduced-motion: reduce) {
   .ba-root * { transition-duration: 0ms !important; }
 }

@@ -131,8 +131,13 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     const { seats } = get();
     if (!seats || !cardDb) return;
     try {
+      // DEV: the verification driver may pin the seed (window.__autoSeed) to
+      // reproduce a specific opening hand; production ignores it
+      const pinned = import.meta.env.DEV && typeof window !== "undefined"
+        ? (window as unknown as { __autoSeed?: string }).__autoSeed
+        : undefined;
       const { state, events } = createGame(cardDb, {
-        seed: `boardauto-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`,
+        seed: pinned || `boardauto-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`,
         players: [
           { id: seats[0].pid, leader: seats[0].deck.leaderId, deck: seats[0].deck.main },
           { id: seats[1].pid, leader: seats[1].deck.leaderId, deck: seats[1].deck.main },

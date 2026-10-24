@@ -198,6 +198,10 @@
   .ba-root .ba-ov .ba-btn { min-height: 44px; }
   .ba-deckopt { min-height: 56px; }
 }
+.ba-game.compact .ba-activate { padding: 6px 5px; font-size: 7.5px; }
+.ba-game.compact .ba-peekcard { width: clamp(64px, 9vw, 90px); }
+.ba-game.compact .ba-peekcard b { font-size: 8.5px; }
+.ba-game.compact .ba-ov.ba-peek { max-height: 96vh; }
 /* modals must fit a 412px-tall viewport */
 .ba-game.compact .ba-ov { max-height: 96vh; gap: 6px; padding: 10px 14px; }
 .ba-game.compact .ba-ovcard { width: clamp(80px, 26vh, 180px); }

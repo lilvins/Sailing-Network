@@ -9,11 +9,13 @@ import { existsSync, mkdirSync, readFileSync } from "node:fs";
 
 // cards with a compiled [When Attacking] effect (to aim the DON dial at one
 // and prove the effect fires in play)
-const WA_IDS = new Set(
-  JSON.parse(readFileSync("src/autosim/data/compiled/st01-op01.json", "utf8"))
-    .filter((c) => c.effects.some((fx) => fx.timing === "whenAttacking"))
-    .map((c) => c.cardId),
-);
+const BATCH = JSON.parse(readFileSync("src/autosim/data/compiled/st01-op01.json", "utf8"));
+const WA_IDS = new Set(BATCH.filter((c) => c.effects.some((fx) => fx.timing === "whenAttacking")).map((c) => c.cardId));
+// M3 windows to exercise on purpose: DON!!−X costs (payDon), peek/search
+// (peekSelect) and "draw up to" (chooseNumber)
+const DONX_IDS = new Set(BATCH.filter((c) => c.effects.some((fx) => (fx.cost ?? []).some((k) => k.kind === "returnDonToDeck"))).map((c) => c.cardId));
+const PEEK_IDS = new Set(BATCH.filter((c) => c.effects.some((fx) => fx.timing === "onPlay" && JSON.stringify(fx.actions).includes('"peekDeck"'))).map((c) => c.cardId));
+const UPTO_IDS = new Set(BATCH.filter((c) => JSON.stringify(c.effects).includes('"kind":"draw"') && JSON.stringify(c.effects).includes('"upTo":true')).map((c) => c.cardId));
 
 const BASE = "http://localhost:5173";
 const OUT = "scripts/.shots";
@@ -29,6 +31,8 @@ const TAG = process.env.BA_TAG ? `-${process.env.BA_TAG}` : "";
 const PREFIX = process.env.BA_PREFIX ?? "";
 const MOBILE = !!process.env.BA_MOBILE;
 const PORTRAIT_ONLY = !!process.env.BA_PORTRAIT;
+// BA_SEED: pin the engine seed (DEV hook window.__autoSeed) to reproduce hands
+const SEED = process.env.BA_SEED ?? "";
 
 const consoleErrors = [];
 const browser = await chromium.launch();
@@ -39,6 +43,7 @@ const ctx = await browser.newContext({
   ...(MOBILE ? { isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : {}),
   ...(existsSync(AUTH) ? { storageState: AUTH } : {}),
 });
+if (SEED) await ctx.addInitScript((seed) => { window.__autoSeed = seed; }, SEED);
 // Kill Vite's HMR socket inside this context: other agents editing the repo
 // must not hot-reload the page mid-game (the driver reads state across turns).
 await ctx.addInitScript(() => {
@@ -95,6 +100,7 @@ const snap = () =>
       don: per((p) => p.don),
       chars: per((p) => p.zones.characterArea),
       charCards: per((p) => p.zones.characterArea.map((iid) => ({ iid, cardId: p.instances[iid].cardId }))),
+      handCards: per((p) => p.zones.hand.map((iid) => ({ iid, cardId: p.instances[iid].cardId }))),
       leaders: per((p) => p.leaderIid),
       life: per((p) => p.zones.life.length),
       handSizes: per((p) => p.zones.hand.length),
@@ -123,18 +129,31 @@ await page.waitForSelector("[data-deck-key]", { timeout: 15000 });
 
 // seat A = ST01 demo, seat B = an OP01 demo (both M2 batch-compiled sets)
 await page.locator('[data-seat="0"][data-deck-key="demo:ST01-001"]').first().click();
-const op01 = page.locator('[data-seat="1"][data-deck-key^="demo:OP01-"]');
-if (await op01.count()) await op01.first().click();
+// BA_DECK_B: exact deck key for seat B (e.g. "demo:OP01-091" = purple King,
+// whose DON!!−X / draw-up-to cards exercise the M3 payDon / chooseNumber windows)
+const deckB = process.env.BA_DECK_B
+  ? page.locator(`[data-seat="1"][data-deck-key="${process.env.BA_DECK_B}"]`)
+  : page.locator('[data-seat="1"][data-deck-key^="demo:OP01-"]');
+if (await deckB.count()) await deckB.first().click();
 else await page.locator('[data-seat="1"][data-deck-key^="demo:"]').nth(1).click();
 await shot("pick");
 await clickAct("start");
 
-// roll + choose first
+// roll + choose first. BA_FIRST=A|B forces who goes first (seed-reproducible
+// hands depend on the turn order); default: the roll winner plays first.
 await page.waitForSelector('[data-act="roll"]', { timeout: 8000 });
 await clickAct("roll");
 await page.waitForSelector('[data-act="first"]', { timeout: 8000 });
 await shot("roll");
-await clickAct("first");
+if (process.env.BA_FIRST) {
+  const a = Number(await page.getByTestId("die-a").textContent());
+  const b = Number(await page.getByTestId("die-b").textContent());
+  const winnerIsA = a > b;
+  const wantA = process.env.BA_FIRST === "A";
+  await clickAct(winnerIsA === wantA ? "first" : "second");
+} else {
+  await clickAct("first");
+}
 await page.waitForSelector(".ba-field", { timeout: 8000 });
 
 if (PORTRAIT_ONLY) {
@@ -164,6 +183,7 @@ const flags = {
   triggerActivated: false,
   triggerDeclined: false,
   donGivenTurn: 0,
+  activatedTurn: 0,
   playedTurnCount: 0,
   lastTurnSeen: 0,
 };
@@ -192,6 +212,7 @@ while (guard-- > 0) {
   }
 
   const p = s.pending;
+  const cardIdOfSeat = (pid, iid) => (s.handCards[pid] ?? []).find((h) => h.iid === iid)?.cardId ?? "";
   if (p) {
     if (p.kind === "mulligan") {
       await shot("mulligan");
@@ -215,9 +236,11 @@ while (guard-- > 0) {
         await clickIid(cc[0].iid);
         await page.waitForTimeout(120);
         await shot("counter-applied", true);
-      } else if (!flags.counterEvent && ce.length > 0) {
+      } else if (ce.length > 0 && (!flags.counterEvent || ce.some((e) => UPTO_IDS.has(cardIdOfSeat(p.player, e.iid))))) {
+        // prefer a "draw up to N" [Counter] event (chooseNumber window)
+        const upto = ce.find((e) => UPTO_IDS.has(cardIdOfSeat(p.player, e.iid)));
         flags.counterEvent = true;
-        await clickIid(ce[0].iid);
+        await clickIid((upto ?? ce[0]).iid);
       } else {
         await clickAct("endcounters");
       }
@@ -241,7 +264,32 @@ while (guard-- > 0) {
     } else if (p.kind === "selectTargets") {
       const max = Math.min(p.count, p.candidates.length);
       for (let i = 0; i < max; i++) await clickIid(p.candidates[i].iid);
+      if (flags.activatedTurn === s.turn && !taken.has("activate-targets")) await shot("activate-targets");
       await clickAct("confirm-targets");
+    } else if (p.kind === "peekSelect") {
+      // M3: take the first eligible card, order the rest by tapping in
+      // sequence (when the disposition asks for an order), confirm
+      await shot("peek");
+      if (p.eligible.length > 0) await page.locator(`[data-peek-iid="${p.eligible[0]}"]`).first().click();
+      const ordered = ["topAnyOrder", "bottomAnyOrder", "topOrBottomAnyOrder"].includes(p.rest);
+      if (ordered) {
+        const rest = p.cards.filter((iid) => iid !== p.eligible[0]);
+        for (const iid of [...rest].reverse()) {
+          await page.locator(`[data-act="peek-order"][data-peek-iid="${iid}"]`).first().click();
+        }
+      }
+      await page.waitForTimeout(120);
+      await shot("peek-ordered");
+      await clickAct("peek-confirm");
+    } else if (p.kind === "payDon") {
+      await shot("paydon");
+      await clickAct("paydon-auto");
+      await page.waitForTimeout(100);
+      await shot("paydon-auto", true);
+      await clickAct("paydon-confirm");
+    } else if (p.kind === "chooseNumber") {
+      await shot("number");
+      await clickAct("number-confirm");
     }
     await page.waitForTimeout(140);
     continue;
@@ -260,9 +308,26 @@ while (guard-- > 0) {
     flags.playedTurnCount = 0;
   }
 
-  // 1. play a character (max 2 per turn to keep DON for attacks)
+  // 1. play a character (max 2 per turn to keep DON for attacks) — cards that
+  //    open an M3 window first (peek/search, DON!!−X). A DON!!−X card only
+  //    gets a real payDon choice when DON!! are attached: give DON!! first.
+  const cardIdOf = (iid) => (s.handCards[me] ?? []).find((h) => h.iid === iid)?.cardId ?? "";
   const playable = (s.legal?.playableFromHand ?? []).filter((x) => !x.needsReplace);
-  if (playable.length > 0 && flags.playedTurnCount < 2 && (s.chars[me]?.length ?? 0) < 5) {
+  const donxPlayable = playable.find((x) => DONX_IDS.has(cardIdOf(x.iid)));
+  const givenTotal = Object.values(s.don[me]?.given ?? {}).reduce((a, b) => a + b, 0);
+  if (donxPlayable && givenTotal === 0 && (s.don[me]?.active ?? 0) >= 2 && flags.donGivenTurn !== s.turn) {
+    flags.donGivenTurn = s.turn;
+    await page.locator(`[data-don-seat="${me}"][data-don-index="1"]`).first().click();
+    await page.waitForTimeout(100);
+    await clickIid(s.chars[me]?.[0] ?? s.leaders[me]);
+    await page.waitForTimeout(120);
+    continue;
+  }
+  playable.sort((a, b) => {
+    const w = (x) => (PEEK_IDS.has(cardIdOf(x.iid)) ? 0 : DONX_IDS.has(cardIdOf(x.iid)) ? 1 : 2);
+    return w(a) - w(b);
+  });
+  if (playable.length > 0 && (flags.playedTurnCount < 2 || PEEK_IDS.has(cardIdOf(playable[0].iid)) || DONX_IDS.has(cardIdOf(playable[0].iid))) && (s.chars[me]?.length ?? 0) < 5) {
     flags.playedTurnCount++;
     await clickIid(playable[0].iid);
     await page.waitForTimeout(140);
@@ -289,6 +354,17 @@ while (guard-- > 0) {
     const waChar = (s.charCards[me] ?? []).find((c) => WA_IDS.has(c.cardId));
     const donTarget = waChar?.iid ?? s.chars[me]?.[0] ?? s.leaders[me];
     await clickIid(donTarget);
+    await page.waitForTimeout(140);
+    continue;
+  }
+
+  // 2b. [Activate: Main] once per turn when legality offers one (M3) —
+  //     e.g. ST01-001 giving a rested DON!! (there are rested DON after plays)
+  const acts = s.legal?.activatable ?? [];
+  if (acts.length > 0 && flags.activatedTurn !== s.turn) {
+    flags.activatedTurn = s.turn;
+    await shot("activate");
+    await page.locator(`[data-act="activate"][data-iid="${acts[0].iid}"]`).first().click();
     await page.waitForTimeout(140);
     continue;
   }

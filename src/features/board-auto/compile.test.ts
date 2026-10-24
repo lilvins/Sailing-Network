@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Card } from "../cards/cardsDb";
 import { getCompiledCard } from "../../autosim/data/compiled";
-import { compiledFor, deriveCompiled, innateKeywords, makeCardDb } from "./compile";
+import { automationInfo, compiledFor, deriveCompiled, innateKeywords, makeCardDb } from "./compile";
 
 /** Minimal catalog card factory. */
 function card(partial: Partial<Card> & { id: string }): Card {
@@ -117,6 +117,24 @@ describe("official M2 batch takes precedence over the fallback", () => {
       const id = `ST01-${String(i).padStart(3, "0")}`;
       expect(getCompiledCard(id), id).toBeDefined();
     }
+  });
+});
+
+describe("automationInfo (M3 metric)", () => {
+  it("[Activate: Main] leader ST01-001 is fully automated now — no note, no chips", () => {
+    const info = automationInfo(card({ id: "ST01-001", category: "Leader", effect: "[Activate: Main] [Once Per Turn] …" }));
+    expect(info).toEqual({ manual: false, inert: false, note: null });
+  });
+
+  it("a static-only card (OP01-001, fullyAutoExecutable=false) gets the M4 continuous-effect note", () => {
+    const info = automationInfo(card({ id: "OP01-001", category: "Leader", effect: "[DON!! x1] [Your Turn] …" }));
+    expect(info.inert).toBe(true);
+    expect(info.manual).toBe(false);
+    expect(info.note).toMatch(/continuous effect not yet automatic \(M4\)/);
+  });
+
+  it("a peek/search card (OP01-016 Nami) is fully automated", () => {
+    expect(automationInfo(card({ id: "OP01-016", effect: "[On Play] Look at 5 cards…" })).note).toBeNull();
   });
 });
 

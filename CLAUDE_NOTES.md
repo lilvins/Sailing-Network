@@ -190,8 +190,21 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   "Continue anyway" → minimal stacked fallback. Verified with the Playwright
   driver in touch emulation (`BA_MOBILE=1 BA_W=844 BA_H=390 BA_PREFIX=mobile-`,
   `BA_PORTRAIT=1` for the overlay) → `scripts/.shots/boardauto-mobile-*.png`.
-- **Known limits (engine debts)**: [Activate: Main], static/continuous,
-  start/end-of-turn timings don't run yet (now DISCLOSED via chips/notes);
+- **M3 wiring (2026-10-24)**: ACTIVATE chip from `legalMoves.activatable`
+  (+ Activate button in the compact card sheet; illegal activations are
+  explained on tap), `peekSelect` panel (take ≤ N, tap-sequence ordering,
+  Top/Bottom split), `payDon` steppers with "Auto", `chooseNumber` buttons,
+  cost-phase target picker titled "Pay the cost: …", 12 tier-2 events in the
+  log, `automationInfo` on the M3 metric (static-only cards → "continuous
+  effect not yet automatic (M4)"). Driver: `BA_DECK_B=demo:OP01-091` picks the
+  purple demo (DON!!−X cards → payDon), `BA_SEED=<seed> BA_FIRST=A|B` pins the
+  engine seed (DEV hook `window.__autoSeed` read by autoStore.chooseFirst) to
+  reproduce a hand, e.g. `BA_SEED=nami-0 BA_FIRST=A BA_DECK_B=demo:OP01-001`
+  opens with Nami OP01-016 → peekSelect. NOTE: no ST01/OP01 card has a real
+  `draw upTo`, so the chooseNumber window is wired + typechecked but only
+  exercisable with synthetic cards (engine tests cover it).
+- **Known limits (engine debts)**: static/continuous effects and
+  start-of-turn timings don't run yet (DISCLOSED via chips/notes);
   manualResolve is an acknowledged no-op (no free-move intents in M1); a
   [Trigger] "play this card" from an uncompiled set degrades to manual+trash;
   no undo (replayable event log makes it feasible later). Decisions #23-32

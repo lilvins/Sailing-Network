@@ -105,6 +105,41 @@ export function fmtEvent(
       return { text: `${seatName(e.player)} discards ${e.iids.map(n).join(", ")}.`, kind: "effect" };
     case "manualResolved":
       return { text: `${seatName(e.player)} resolves ${n(e.sourceIid)} manually.`, kind: "effect" };
+    // M3 — tier-2 executor
+    case "deckPeeked":
+      return { text: `${seatName(e.player)} looks at the top ${e.iids.length} card${e.iids.length === 1 ? "" : "s"} of their deck.`, kind: "effect" };
+    case "peekResolved": {
+      const bits: string[] = [];
+      if (e.toHand.length) bits.push(`adds ${e.toHand.map(n).join(", ")} to hand`);
+      if (e.played.length) bits.push(`plays ${e.played.map((x) => n(x.iid) + (x.rested ? " (rested)" : "")).join(", ")}`);
+      if (e.top.length) bits.push(`${e.top.length} on top`);
+      if (e.bottom.length) bits.push(`${e.bottom.length} to the bottom`);
+      if (e.trashed.length) bits.push(`${e.trashed.length} trashed`);
+      return { text: `${seatName(e.player)} ${bits.join(", ") || "takes nothing"}.`, kind: "effect" };
+    }
+    case "playedFromZone":
+      return { text: `${seatName(e.player)} plays ${n(e.iid)} from ${e.from}${e.rested ? " (rested)" : ""} by effect.`, kind: "effect" };
+    case "returnedToHand":
+      return { text: `${n(e.iid)} returns to ${seatName(e.player)}'s hand.`, kind: "effect" };
+    case "returnedToDeck":
+      return { text: `${seatName(e.player)} puts ${n(e.iid)} ${e.where === "top" ? "on top of" : "at the bottom of"} their deck (from ${e.from}).`, kind: "effect" };
+    case "milled":
+      return { text: `${seatName(e.player)} trashes ${e.iids.length} card${e.iids.length === 1 ? "" : "s"} from the top of their deck.`, kind: "effect" };
+    case "trashToHand":
+      return { text: `${seatName(e.player)} returns ${n(e.iid)} from the trash to hand.`, kind: "effect" };
+    case "donAdded":
+      return { text: `${seatName(e.player)} adds ${e.count} DON!! from the DON!! deck (${e.rested ? "rested" : "active"}).`, kind: "effect" };
+    case "donGivenFromRested":
+      return { text: `${seatName(e.player)} gives ${e.count} rested DON!! to ${n(e.targetIid)}.`, kind: "effect" };
+    case "donStood":
+      return { text: `${seatName(e.player)} sets ${e.count} DON!! as active.`, kind: "effect" };
+    case "donPaid": {
+      const parts: string[] = [];
+      if (e.fromActive) parts.push(`${e.fromActive} active`);
+      if (e.fromRested) parts.push(`${e.fromRested} rested`);
+      for (const [iid, c] of Object.entries(e.fromGiven)) if (c) parts.push(`${c} from ${n(iid)}`);
+      return { text: `${seatName(e.player)} returns DON!! to the deck (${parts.join(", ") || "none"}).`, kind: "effect" };
+    }
     case "triggerActivated":
       return { text: `${seatName(e.player)} activates the [Trigger] of ${n(e.iid)}!`, kind: "danger" };
     case "triggerCardTrashed":
