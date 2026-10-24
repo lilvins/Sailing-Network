@@ -18,7 +18,7 @@
   },
   "definitions": {
     "keyword": { "enum": ["Rush", "DoubleAttack", "Banish", "Blocker", "RushCharacter", "Unblockable"] },
-    "timing": { "enum": ["onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger", "activateMain", "main", "endOfYourTurn", "endOfOpponentsTurn", "startOfYourTurn", "startOfOpponentsTurn", "onYourOpponentsAttack", "whenAttacked", "endOfBattle", "static"] },
+    "timing": { "enum": ["onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger", "activateMain", "main", "endOfYourTurn", "endOfOpponentsTurn", "startOfYourTurn", "startOfOpponentsTurn", "onYourOpponentsAttack", "whenAttacked", "endOfBattle", "onYouActivateEvent", "onOpponentActivatesEvent", "onOpponentCharacterKOd", "static"] },
     "duration": { "enum": ["instant", "thisBattle", "thisTurn", "untilStartOfYourNextTurn", "untilEndOfOpponentsNextTurn", "permanentWhileInPlay"] },
     "who": { "enum": ["self", "opponent", "both"] },
     "filter": {
@@ -57,18 +57,18 @@
     "costItem": {
       "type": "object",
       "required": ["kind"],
-      "properties": { "kind": { "enum": ["restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf", "trashFromLife", "lifeToHand"] } }
+      "properties": { "kind": { "enum": ["restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf", "trashFromLife", "lifeToHand", "handToDeckBottom", "returnToHand", "restFromField"] } }
     },
     "condition": {
       "type": "object",
       "required": ["kind"],
-      "properties": { "kind": { "enum": ["donAttached", "yourTurn", "opponentsTurn", "leaderIs", "countInZone", "lifeAtMost", "lifeAtLeast", "handAtMost", "handAtLeast"] } }
+      "properties": { "kind": { "enum": ["donAttached", "yourTurn", "opponentsTurn", "leaderIs", "countInZone", "lifeAtMost", "lifeAtLeast", "handAtMost", "handAtLeast", "donOnField", "selfRested"] } }
     },
     "action": {
       "type": "object",
       "required": ["kind"],
       "properties": {
-        "kind": { "enum": ["powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard", "grantKeyword", "restriction", "returnToHand", "returnToDeck", "playFromZone", "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife", "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck", "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle", "ifThen", "chooseOne", "manual"] }
+        "kind": { "enum": ["powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard", "grantKeyword", "restriction", "returnToHand", "returnToDeck", "playFromZone", "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife", "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck", "standDon", "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle", "ifThen", "chooseOne", "manual"] }
       }
     },
     "effect": {

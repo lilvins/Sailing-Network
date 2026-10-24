@@ -5,23 +5,25 @@
  * effects, no Promises, RNG only through seeded derivations recorded in
  * events. Rule references point at docs/rules/op_comprehensive_rules_v1.2.0.txt.
  *
- * M1: the battle machine + effect pump live in battle.ts; the tier-1 action
- * executor in effects.ts; the 8-6 auto-effect queue in triggers.ts.
+ * M1: battle machine + effect pump in battle.ts; tier-1 executor in
+ * effects.ts; 8-6 queue in triggers.ts. M3: [Activate: Main] intent, the
+ * peek/payDon/chooseNumber windows, End Phase effects and the tier-2 executor.
  */
-import { seededRng, shuffleWith } from "../../lib/rng";
 import {
-  afterBlockResolved, declareAttack, pump, resolveManual, resolveMay,
-  resolveTargets, resolveTriggerDecision, startDamageStep, startOnPlayEffects,
+  afterBlockResolved, beginEffect, declareAttack, enqueueEventActivationReactions,
+  pump, resolveManual, resolveMay, resolveNumber, resolvePayDon, resolvePeek,
+  resolveTargets, resolveTriggerDecision, shuffleDeck, startActivateMain,
+  startDamageStep, startEndPhase, startOnPlayEffects, startTurn,
   useCounterEventCard,
 } from "./battle";
-import { canPayCost, conditionsMet, drawCards, payCost } from "./effects";
+import { canPayCost, conditionsMet } from "./effects";
 import { emit, type GameEvent } from "./events";
 import { EngineError, type PlayerIntent } from "./intents";
 import {
-  opponentOf,
+  effectiveCost, opponentOf,
   type AutoGameState, type AutoPlayerState, type CardDb, type Iid, type PID,
 } from "./state";
-import { ensureExec, nextGeneration } from "./triggers";
+import { ensureExec } from "./triggers";
 
 export interface GameConfig {
   seed: string;
@@ -40,14 +42,6 @@ export interface EngineResult {
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-
-/** Deterministic shuffle: derives from seed + per-state use counter; the
- *  resulting order is recorded in the event so replay never needs RNG. */
-function shuffleDeck(state: AutoGameState, log: GameEvent[], player: PID): void {
-  const rand = seededRng(`${state.seed}:${state.rngUses++}`);
-  const order = shuffleWith(state.players[player].zones.deck, rand);
-  emit(state, log, { type: "deckShuffled", player, order });
-}
 
 function requirePlayer(state: AutoGameState, pid: PID): AutoPlayerState {
   const p = state.players[pid];
@@ -161,29 +155,6 @@ function finishSetup(db: CardDb, state: AutoGameState, log: GameEvent[]): void {
   startTurn(state, log, state.order[0], 1);
 }
 
-// ─── turn flow (6) ───────────────────────────────────────────────────────────
-
-function startTurn(state: AutoGameState, log: GameEvent[], player: PID, turn: number): void {
-  emit(state, log, { type: "turnStarted", turn, player });
-
-  // Refresh Phase (6-2): return given DON rested (6-2-3), then stand all (6-2-4)
-  const p = state.players[player];
-  const givenTotal = Object.values(p.don.given).reduce((s, n) => s + n, 0);
-  if (givenTotal > 0) emit(state, log, { type: "givenDonReturned", player, count: givenTotal });
-  emit(state, log, { type: "allStood", player });
-
-  // Draw Phase (6-3): the first player does not draw on their first turn
-  if (!(player === state.order[0] && turn === 1)) {
-    drawCards(state, log, player, 1);
-    if (state.phase === "over") return; // deck-out during draw
-  }
-
-  // DON!! Phase (6-4): 2, or 1 on the first player's first turn; capped by deck
-  const wanted = player === state.order[0] && turn === 1 ? 1 : 2;
-  const count = Math.min(wanted, p.don.deck); // 6-4-2 / 6-4-3
-  if (count > 0) emit(state, log, { type: "donPlaced", player, count });
-}
-
 // ─── intent handling ─────────────────────────────────────────────────────────
 
 export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerIntent): EngineResult {
@@ -222,7 +193,7 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       const p = requirePlayer(state, intent.player);
       if (!p.zones.hand.includes(intent.iid)) throw new EngineError("card not in hand");
       const card = db(p.instances[intent.iid].cardId);
-      const cost = card.cost ?? 0;
+      const cost = effectiveCost(db, state, intent.player, intent.iid); // base + costMods (M3)
       if (p.don.active < cost) throw new EngineError(`not enough active DON!! (${p.don.active}/${cost})`);
 
       if (card.category === "Character") {
@@ -259,18 +230,46 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
           if (!conditionsMet(db, state, intent.player, intent.iid, fx.conditions)) {
             throw new EngineError("[Main] effect conditions not met (8-4-1-1)");
           }
-          if (!canPayCost(state, intent.player, intent.iid, fx.cost)) {
+          if (!canPayCost(db, state, intent.player, intent.iid, fx.cost)) {
             throw new EngineError("cannot pay the [Main] effect's activation cost (8-3-1-3)");
           }
         }
         // 2-7-3 / 8-4-2: pay, trash, activate
         emit(state, log, { type: "eventCardUsed", player: intent.player, iid: intent.iid, donRested: cost });
+        // "when you/your opponent activates an Event" (8-5-2, M3) — resolved
+        // after the Event's own effect (8.6.3)
+        ensureExec(state, { at: "none" });
+        enqueueEventActivationReactions(db, state, intent.player);
         if (mainIndex >= 0) {
-          useEventEffect(db, state, log, intent.player, intent.iid, mainIndex);
+          beginEffect(db, state, log, intent.player, intent.iid, p.instances[intent.iid].cardId, mainIndex);
         }
+        pump(db, state, log);
       } else {
         throw new EngineError("cannot play a Leader card");
       }
+      break;
+    }
+
+    case "activateMain": {
+      // 10-2-2-1 / 6-5-4: during your Main Phase, outside battle (M3)
+      requireMainActionWindow(state, intent.player);
+      const p = requirePlayer(state, intent.player);
+      const onField = intent.iid === p.leaderIid
+        || p.zones.characterArea.includes(intent.iid) || p.zones.stage.includes(intent.iid);
+      if (!onField) throw new EngineError("the card must be on your field");
+      const compiled = db(p.instances[intent.iid].cardId).compiled;
+      const fx = compiled?.effects[intent.effectIndex];
+      if (!fx || fx.timing !== "activateMain") throw new EngineError("not an [Activate: Main] effect (10-2-2)");
+      if (fx.oncePerTurn && state.oncePerTurnUsed[`${intent.player}:${intent.iid}:${intent.effectIndex}`] === state.turn) {
+        throw new EngineError("already activated this turn (10-2-13-3)");
+      }
+      if (!conditionsMet(db, state, intent.player, intent.iid, fx.conditions)) {
+        throw new EngineError("activation conditions not met (8-4-1-1)");
+      }
+      if (!canPayCost(db, state, intent.player, intent.iid, fx.cost)) {
+        throw new EngineError("cannot pay the activation cost (8-3-1-3)");
+      }
+      startActivateMain(db, state, log, intent.player, intent.iid, intent.effectIndex);
       break;
     }
 
@@ -349,14 +348,17 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       if (!conditionsMet(db, state, intent.player, intent.cardIid, counterFx.conditions)) {
         throw new EngineError("[Counter] effect conditions not met (8-4-1-1)");
       }
-      // pay the card's cost (7-1-3-2-2) plus the effect's own DON costs
-      let needDon = card.cost ?? 0;
-      for (const c of counterFx.cost ?? []) {
-        if (c.kind === "restDon" || c.kind === "returnDonToDeck") needDon += c.count;
-        else throw new EngineError(`unsupported [Counter] activation cost "${c.kind}" (M1)`);
+      // pay the card's cost (7-1-3-2-2) in active DON, plus the effect's own
+      // activation cost (M3: validated as a whole, paid by the pump)
+      const cardCost = effectiveCost(db, state, intent.player, intent.cardIid);
+      const restDonNeed = (counterFx.cost ?? []).reduce((s, c) => s + (c.kind === "restDon" ? c.count : 0), 0);
+      if (p.don.active < cardCost + restDonNeed) {
+        throw new EngineError(`not enough active DON!! (${p.don.active}/${cardCost + restDonNeed})`);
       }
-      if (p.don.active < needDon) throw new EngineError(`not enough active DON!! (${p.don.active}/${needDon})`);
-      useCounterEventCard(db, state, log, intent.player, intent.cardIid);
+      if (!canPayCost(db, state, intent.player, intent.cardIid, counterFx.cost)) {
+        throw new EngineError("cannot pay the [Counter] effect's activation cost (8-3-1-3)");
+      }
+      useCounterEventCard(db, state, log, intent.player, intent.cardIid, cardCost);
       break;
     }
 
@@ -423,13 +425,93 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       break;
     }
 
+    case "respondPeek": {
+      requireGameRunning(state);
+      const choice = state.pendingChoice;
+      if (!choice || choice.kind !== "peekSelect" || choice.player !== intent.player) {
+        throw new EngineError("no peek selection pending for this player");
+      }
+      const take = intent.take;
+      if (new Set(take).size !== take.length) throw new EngineError("duplicate take");
+      for (const iid of take) {
+        if (!choice.eligible.includes(iid)) throw new EngineError(`illegal take ${iid}`);
+      }
+      if (take.length > choice.takeCount) {
+        throw new EngineError(`may take at most ${choice.takeCount} card(s) (8-4-4-1)`);
+      }
+      const remaining = choice.cards.filter((iid) => !take.includes(iid));
+      const restTop = intent.restTop ?? [];
+      const restBottom = intent.restBottom ?? [];
+      const samePerm = (arr: Iid[], of: Iid[]) =>
+        arr.length === of.length && new Set(arr).size === arr.length && arr.every((x) => of.includes(x));
+      switch (choice.rest) {
+        case "topAnyOrder":
+          if (restBottom.length > 0 || (restTop.length > 0 && !samePerm(restTop, remaining))) {
+            throw new EngineError("the rest must go on top of the deck (in any order)");
+          }
+          break;
+        case "bottomAnyOrder":
+          if (restTop.length > 0 || (restBottom.length > 0 && !samePerm(restBottom, remaining))) {
+            throw new EngineError("the rest must go to the bottom of the deck (in any order)");
+          }
+          break;
+        case "topOrBottomAnyOrder": {
+          const all = [...restTop, ...restBottom];
+          if (!samePerm(all, remaining)) {
+            throw new EngineError("the rest must be split between top and bottom of the deck");
+          }
+          break;
+        }
+        case "shuffle":
+        case "trash":
+          if (restTop.length > 0 || restBottom.length > 0) {
+            throw new EngineError(`the rest is ${choice.rest === "shuffle" ? "shuffled into" : "trashed"} — no ordering`);
+          }
+          break;
+      }
+      resolvePeek(db, state, log, take, restTop, restBottom);
+      break;
+    }
+
+    case "respondPayDon": {
+      requireGameRunning(state);
+      const choice = state.pendingChoice;
+      if (!choice || choice.kind !== "payDon" || choice.player !== intent.player) {
+        throw new EngineError("no DON!! payment pending for this player");
+      }
+      const p = requirePlayer(state, intent.player);
+      const { fromActive, fromRested, fromGiven } = intent;
+      const ints = [fromActive, fromRested, ...Object.values(fromGiven)];
+      if (ints.some((n) => !Number.isInteger(n) || n < 0)) throw new EngineError("invalid DON!! amounts");
+      if (fromActive > p.don.active) throw new EngineError("not that many active DON!!");
+      if (fromRested > p.don.rested) throw new EngineError("not that many rested DON!!");
+      for (const [iid, n] of Object.entries(fromGiven)) {
+        if (n > (p.don.given[iid] ?? 0)) throw new EngineError(`not that many DON!! on ${iid}`);
+      }
+      const total = fromActive + fromRested + Object.values(fromGiven).reduce((s, n) => s + n, 0);
+      if (total !== choice.amount) throw new EngineError(`must return exactly ${choice.amount} DON!! (8-3-1-6)`);
+      resolvePayDon(db, state, log, fromActive, fromRested, fromGiven);
+      break;
+    }
+
+    case "respondNumber": {
+      requireGameRunning(state);
+      const choice = state.pendingChoice;
+      if (!choice || choice.kind !== "chooseNumber" || choice.player !== intent.player) {
+        throw new EngineError("no number choice pending for this player");
+      }
+      if (!Number.isInteger(intent.value) || intent.value < choice.min || intent.value > choice.max) {
+        throw new EngineError(`value must be between ${choice.min} and ${choice.max}`);
+      }
+      resolveNumber(db, state, log, intent.value);
+      break;
+    }
+
     case "endTurn": {
       requireMainActionWindow(state, intent.player);
-      // End Phase (6-6): end-of-turn auto effects land in M2; "during this
-      // turn" durations expire in the turnEnded reducer (6-6-1-3/4).
-      emit(state, log, { type: "turnEnded", turn: state.turn, player: intent.player });
-      const next = opponentOf(state, intent.player);
-      startTurn(state, log, next, state.turn + 1);
+      // End Phase (6-6-1): [End of Your Turn] / [End of Your Opponent's Turn]
+      // effects first, then durations expire and the turn passes (M3).
+      startEndPhase(db, state, log, intent.player);
       break;
     }
 
@@ -450,19 +532,4 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
   }
 
   return { state, events: log };
-}
-
-/** Run a [Main] Event effect after the card was used (trashed, 8-4-2). */
-function useEventEffect(db: CardDb, state: AutoGameState, log: GameEvent[], player: PID, iid: Iid, effectIndex: number): void {
-  const cardId = state.players[player].instances[iid].cardId;
-  const fx = db(cardId).compiled!.effects[effectIndex];
-  ensureExec(state, { at: "none" });
-  nextGeneration(state);
-  payCost(state, log, player, iid, fx.cost);
-  emit(state, log, {
-    type: "effectActivated", player, sourceIid: iid, sourceCardId: cardId,
-    effectIndex, timing: fx.timing, oncePerTurn: !!fx.oncePerTurn,
-  });
-  state.exec!.running = { controller: player, sourceIid: iid, sourceCardId: cardId, effectIndex, actionIndex: 0 };
-  pump(db, state, log);
 }

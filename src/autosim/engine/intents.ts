@@ -12,6 +12,7 @@ export type PlayerIntent =
   | { type: "playCard"; player: PID; iid: Iid; replaceIid?: Iid }    // 6-5-3 (+3-7-6-1/3-8-5-1)
   | { type: "giveDon"; player: PID; targetIid: Iid }                 // 6-5-5
   | { type: "attack"; player: PID; attackerIid: Iid; targetIid: Iid } // 6-5-6, 7-1-1
+  | { type: "activateMain"; player: PID; iid: Iid; effectIndex: number } // 6-5-4, 10-2-2 (M3)
   | { type: "endTurn"; player: PID }                                 // 6-5-2-1 → 6-6
   // battle windows
   | { type: "respondBlock"; player: PID; blockerIid: Iid | null }    // 7-1-2 / 10-1-4
@@ -23,6 +24,12 @@ export type PlayerIntent =
   | { type: "respondTargets"; player: PID; iids: Iid[] }             // 8-4-4 selectTargets
   | { type: "respondMay"; player: PID; activate: boolean }           // 8-1-2 mayActivate
   | { type: "ackManual"; player: PID }                               // manualResolve acknowledgement
+  // M3 — tier-2 windows
+  | { type: "respondPeek"; player: PID; take: Iid[];
+      restTop?: Iid[]; restBottom?: Iid[] }                          // peekSelect (8-4-4-4)
+  | { type: "respondPayDon"; player: PID; fromActive: number; fromRested: number;
+      fromGiven: Record<Iid, number> }                               // payDon (8-3-1-6)
+  | { type: "respondNumber"; player: PID; value: number }            // chooseNumber ("up to", 8-4-4-1)
   // any time
   | { type: "concede"; player: PID };                                // 1-2-3
 

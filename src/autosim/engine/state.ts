@@ -5,7 +5,7 @@
  * events. Rule references ("7-1-2-1") point at
  * docs/rules/op_comprehensive_rules_v1.2.0.txt.
  */
-import type { Action, CompiledCard, Duration, Keyword } from "../ir/types";
+import type { Action, CompiledCard, CostItem, Duration, Keyword } from "../ir/types";
 
 export type PID = string;
 export type Iid = string; // deterministic instance id: `${seat}#${n}`
@@ -65,7 +65,10 @@ export interface AutoPlayerState {
 }
 
 export type RestrictionKind =
-  | "cannotAttack" | "cannotBeKOd" | "cannotBlock" | "cannotBeAttacked" | "mustAttackIfAble";
+  | "cannotAttack" | "cannotBeKOd" | "cannotBeKOdInBattle" | "cannotBlock"
+  | "cannotBeAttacked" | "mustAttackIfAble"
+  // a positive permission, stored with the same modifier machinery (M3):
+  | "canAttackActiveCharacters";
 
 /** A continuous modifier produced by a resolved one-shot effect (plan §4):
  *  recalculated over base values — base power is never mutated. Durations
@@ -75,7 +78,7 @@ export interface Modifier {
   source: Iid;
   /** Player whose effect created the modifier (expiry ordering 7-1-5-3/4). */
   controller: PID;
-  kind: "powerMod" | "keywordGrant" | "restriction";
+  kind: "powerMod" | "keywordGrant" | "restriction" | "costMod";
   targetOwner: PID;
   targetIid: Iid;
   amount?: number;            // powerMod
@@ -120,14 +123,23 @@ export interface QueuedEffect {
   fromTrash?: boolean;
 }
 
-/** The effect currently resolving, action by action (1-3-7 written order). */
+/** The effect currently resolving: activation costs first (8-3-1-1), then
+ *  actions in written order (1-3-7). `costs`/`actions` are JSON snapshots so
+ *  ifThen can splice its branch inline and choices can resume mid-item. */
 export interface RunningEffect {
   controller: PID;
   sourceIid: Iid;
   sourceCardId: string;
-  /** Index into compiled.effects; -1 for synthetic effects (counter values). */
+  /** Index into compiled.effects; kept for logs/choice context. */
   effectIndex: number;
+  /** Unpaid activation-cost items, paid in written order (8-3-1-1). */
+  costs: CostItem[];
+  costIndex: number;
+  actions: Action[];
   actionIndex: number;
+  /** Targets chosen by the last selector action — "that card" binding for
+   *  `sel.prev` (M3). */
+  lastTargets: { owner: PID; iid: Iid }[];
   /** Set while resolving a [Trigger] card: the card belongs to no area
    *  (10-1-5-3) until trashed — unless an action moved it (`moved`). */
   triggerCard?: { iid: Iid; moved: boolean };
@@ -138,7 +150,9 @@ export type FlowResume =
   | { at: "toBlockStep" }                  // after Attack Step effects (7-1-1-3 → 7-1-2)
   | { at: "toCounterWindow" }              // after a block / a [Counter] event (7-1-3-2)
   | { at: "damage"; remaining: number }    // resume suspended damage (8-6-2-1)
-  | { at: "toEndBattle" }                  // after post-damage effects (8-6-2 → 7-1-5)
+  | { at: "toEndBattle" }                  // after post-damage effects (8-6-2 → 7-1-5-2)
+  | { at: "toBattleCleanup" }              // after end-of-battle effects → 7-1-5-3/4/5
+  | { at: "toEndTurn" }                    // after End Phase effects (6-6-1-1/2) → next turn
   | { at: "none" };                        // main-phase effect (e.g. [On Play])
 
 /** Effect-resolution bookkeeping. Like `pendingChoice`, this is engine
@@ -162,7 +176,19 @@ export type ChoiceRequest =
   | { kind: "selectTargets"; player: PID; sourceIid: Iid; actionKind: Action["kind"];
       candidates: { owner: PID; iid: Iid }[]; count: number; upTo: boolean } // 8-4-4
   | { kind: "mayActivate"; player: PID; sourceIid: Iid; sourceCardId: string; effectIndex: number } // 8-1-2
-  | { kind: "manualResolve"; player: PID; sourceIid: Iid; text: string };    // plan §1.3 fallback
+  | { kind: "manualResolve"; player: PID; sourceIid: Iid; text: string }     // plan §1.3 fallback
+  // M3 — look-at-deck resolution (8-4-4-2/4, 11-2-1): the controller sees the
+  // peeked cards, takes/plays up to takeCount matching ones, and arranges the
+  // rest per the card's disposition.
+  | { kind: "peekSelect"; player: PID; sourceIid: Iid; cards: Iid[]; eligible: Iid[];
+      takeCount: number; mode: "hand" | "play" | "none";
+      rest: "topAnyOrder" | "bottomAnyOrder" | "topOrBottomAnyOrder" | "shuffle" | "trash";
+      playRested: boolean }
+  // M3 — DON!!−X payment composition (8-3-1-6: from leader area, character
+  // area and cost area). Offered only when attached DON make it a real choice.
+  | { kind: "payDon"; player: PID; sourceIid: Iid; amount: number }
+  // M3 — "draw up to N" and friends (8-4-4-1: 'up to' allows 0).
+  | { kind: "chooseNumber"; player: PID; sourceIid: Iid; min: number; max: number; purpose: "draw" };
 
 export interface AutoGameState {
   /** RNG seed; each shuffle derives from `${seed}:${rngUses}` so replays are
@@ -223,6 +249,16 @@ export function hasRestriction(state: AutoGameState, owner: PID, iid: Iid, what:
   return state.modifiers.some(
     (m) => m.kind === "restriction" && m.targetOwner === owner && m.targetIid === iid && m.restriction === what,
   );
+}
+
+/** Effective play cost: base + costMod modifiers, floored at 0 (M3). */
+export function effectiveCost(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
+  const inst = state.players[owner].instances[iid];
+  const base = db(inst.cardId).cost ?? 0;
+  const mod = state.modifiers
+    .filter((m) => m.kind === "costMod" && m.targetOwner === owner && m.targetIid === iid)
+    .reduce((s, m) => s + (m.amount ?? 0), 0);
+  return Math.max(0, base + mod);
 }
 
 export function opponentOf(state: AutoGameState, player: PID): PID {

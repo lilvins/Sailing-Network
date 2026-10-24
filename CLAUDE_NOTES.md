@@ -101,8 +101,39 @@ dry-run of EVERY non-static effect (auto-answered choices, triggers via the
 real 10-1-5-3 path), plus seeded full games with real ST01/OP01 decks to a
 result. `legalMoves` fix: [Main] Events with unpayable costs are no longer
 offered (8-3-1-3). Tests 142→249 green (+107 in m2-compiled.test.ts).
-Decisions #31-36 + M3 debts in AUTOSIM_PLAN.md. Next: M3 (tier-2 executor) or
-the board-auto compile.ts swap.
+Decisions #31-36 + M3 debts in AUTOSIM_PLAN.md.
+**2026-10-24: M3 DONE (tier-2 executor + [Activate: Main])** — the playtest
+pains are closed engine-side: Nami OP01-016-style searches run through a real
+`peekSelect` ChoiceRequest (cards seen, filtered take, rest ordered
+top/bottom/mixed or shuffled/trashed, `playRested` supported) and leader
+abilities run through the new `activateMain` intent (10-2-2; oncePerTurn
+10-2-13-3; affordance = `legalMoves.activatable`). Executor now covers
+playFromZone (hand/trash, free, [On Play] chains), returnToHand/returnToDeck,
+mill, lifeToHand/trashLife (top of Life), placeDonInCostArea,
+giveRestedDon, standDon, costMod (effectiveCost), ifThen inline, real `prev`
+("that card") binding, and `draw up to N` via `chooseNumber`. Costs are paid
+item-by-item inside the pump (8-3-1-1) with payment choices: card picks via
+selectTargets, DON!!−X via `payDon` composition from leader/characters/cost
+area (8-3-1-6; auto rested-first when nothing is attached); lifeToHand &
+trashFromHand & handToDeckBottom & returnToHand & restFromField cost kinds.
+End Phase ([End of Your (Opponent's) Turn], 6-6-1) and end-of-battle
+(7-1-5-2) effects now enqueue into the 8-6 queue; new reaction timings
+onYouActivateEvent/onOpponentActivatesEvent/onOpponentCharacterKOd; new
+conditions donOnField/selfRested; cannotBeKOdInBattle enforced in the damage
+step; canAttackActiveCharacters permission (attack active characters).
+New intents: activateMain, respondPeek, respondPayDon, respondNumber; new
+ChoiceRequests: peekSelect, payDon, chooseNumber (board-auto UI wiring is the
+board agent's next step — its if-chains ignore unknown kinds safely).
+Batch RECOMPILED: 130/138 = **94.2% IR-complete** (ST01 100%, OP01 93.4%),
+95/107 compiled fully auto-executable, 12 degrade only for static (M4), 8
+not compiled with reasons; report regenerated (fullyAutoExecutable metric),
+golden +5 real activate/search cards (ST01-001, OP01-030/041/055/112) → 43
+entries at 100%. ST02-ST06 batch deferred to a dedicated step (decision #44).
+Tests 249→276 green (m3.test.ts: ST01-001 & Nami end-to-end exits, payDon,
+chooseNumber, prev, End Phase ordering, end-of-battle, tier-2 zone moves;
+fuzz extended with the new windows + probes; m2 dry-run now pays costs).
+Decisions #37-44 + M4 debts in AUTOSIM_PLAN.md. Next: M4 (static fixpoint,
+replacement/negate) or the board-auto wiring of the new ChoiceRequests.
 
 ## Board Auto — "Play Auto · Full Rules" (view `board-auto`)
 `src/features/board-auto/` (+ the `board-auto` case in `src/app/App.tsx`).
@@ -148,6 +179,17 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   in flow between field and hand (never covers DON cells or counter cards),
   and right-click on an active DON toggles a purely-visual "HOLD" placeholder
   (no intent, resets each turn, info-tone hint on first use).
+- **Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
+  (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
+  compact chrome — same table geometry scaled from viewport height, hands as
+  top/bottom overlay strips (horizontal scroll), minimal seat pills,
+  bottom-right action bar (End turn / Log / Card), preview + log as toggled
+  sheets, step prompt bottom-right over the pile corner, 2-tap play from hand
+  on touch (select → "Play this card"), long-press DON placeholder, ≥44px
+  targets, safe-area. Portrait shows a "Rotate your phone" overlay with
+  "Continue anyway" → minimal stacked fallback. Verified with the Playwright
+  driver in touch emulation (`BA_MOBILE=1 BA_W=844 BA_H=390 BA_PREFIX=mobile-`,
+  `BA_PORTRAIT=1` for the overlay) → `scripts/.shots/boardauto-mobile-*.png`.
 - **Known limits (engine debts)**: [Activate: Main], static/continuous,
   start/end-of-turn timings don't run yet (now DISCLOSED via chips/notes);
   manualResolve is an acknowledged no-op (no free-move intents in M1); a

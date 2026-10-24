@@ -183,8 +183,13 @@
     "notes": "'It gains +1000' uses the prev-selector ('that card'); the executor binds it in M3 (manualResolve until then)."
   },
   {
-    "cardId": "OP01-004", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 2000, "effects": [],
-    "notes": "Activation timing 'when your opponent activates an Event' does not exist in the IR Timing set yet."
+    "cardId": "OP01-004", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
+    "effects": [
+      { "timing": "onOpponentActivatesEvent", "oncePerTurn": true,
+        "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "yourTurn" } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
+    ],
+    "notes": "M3: 'when your opponent activates an Event' timing (8-5-2)."
   },
   {
     "cardId": "OP01-005", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
@@ -238,14 +243,12 @@
   },
   { "cardId": "OP01-010", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
   {
-    "cardId": "OP01-011", "version": 1, "confidence": 0.6, "classification": "partial", "keywords": [], "counterValue": 2000,
+    "cardId": "OP01-011", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 2000,
     "effects": [
-      { "timing": "onPlay", "optional": true,
-        "actions": [
-          { "kind": "manual", "text": "You may place 1 card from your hand at the bottom of your deck: Draw 1 card." }
-        ] }
+      { "timing": "onPlay", "optional": true, "cost": [ { "kind": "handToDeckBottom", "count": 1 } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
     ],
-    "notes": "The 'place 1 card from your hand at the bottom of your deck' activation cost is not in the IR CostItem set yet."
+    "notes": "M3: handToDeckBottom activation cost."
   },
   { "cardId": "OP01-012", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
   {
@@ -326,8 +329,15 @@
     ]
   },
   {
-    "cardId": "OP01-021", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
-    "notes": "'[DON!! x1] This Character can also attack your opponent's active Characters' — attack-permission permanents are not in the IR yet (M4)."
+    "cardId": "OP01-021", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 1 } ],
+        "actions": [
+          { "kind": "restriction", "what": "canAttackActiveCharacters", "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "M3 permission canAttackActiveCharacters; permanent effect (8-1-3-3) — the engine executes static effects from M4."
   },
   {
     "cardId": "OP01-022", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
@@ -431,15 +441,13 @@
     "notes": "'[Trigger] Activate this card's [Main] effect' duplicated under the trigger timing; peekDeck is tier-2."
   },
   {
-    "cardId": "OP01-031", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [],
+    "cardId": "OP01-031", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
     "effects": [
-      { "timing": "activateMain", "oncePerTurn": true,
+      { "timing": "activateMain", "oncePerTurn": true, "optional": true,
         "cost": [ { "kind": "trashFromHand", "sel": { "owner": "self", "zone": "hand", "filter": { "typeIncludes": ["Land of Wano"] }, "count": 1, "chooser": "controller" } } ],
-        "actions": [
-          { "kind": "manual", "text": "Set up to 2 of your DON!! cards as active." }
-        ] }
+        "actions": [ { "kind": "standDon", "count": 2 } ] }
     ],
-    "notes": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+    "notes": "M3: standDon action ('set up to 2 of your DON!! as active' — always max, no downside)."
   },
   {
     "cardId": "OP01-032", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 1000,
@@ -466,12 +474,12 @@
     ]
   },
   {
-    "cardId": "OP01-034", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "cardId": "OP01-034", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
     "effects": [
       { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 2 } ],
-        "actions": [ { "kind": "manual", "text": "Set up to 1 of your DON!! cards as active." } ] }
+        "actions": [ { "kind": "standDon", "count": 1 } ] }
     ],
-    "notes": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+    "notes": "M3: standDon action."
   },
   {
     "cardId": "OP01-035", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
@@ -572,22 +580,24 @@
   },
   { "cardId": "OP01-045", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
   {
-    "cardId": "OP01-046", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [],
+    "cardId": "OP01-046", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
     "effects": [
       { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "leaderIs", "filter": { "nameIncludes": ["Kouzuki Oden"] } } ],
-        "actions": [ { "kind": "manual", "text": "Set up to 2 of your DON!! cards as active." } ] }
+        "actions": [ { "kind": "standDon", "count": 2 } ] }
     ],
-    "notes": "'Set your DON!! as active' (standing rested DON) is not an IR action yet."
+    "notes": "M3: standDon action; the post-colon leader check compiled as a condition (8-3-3 convention)."
   },
   {
-    "cardId": "OP01-047", "version": 1, "confidence": 0.65, "classification": "partial", "keywords": ["Blocker"],
+    "cardId": "OP01-047", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": ["Blocker"],
     "effects": [
       { "timing": "onPlay", "optional": true,
+        "cost": [ { "kind": "returnToHand", "sel": { "owner": "self", "zone": "characterArea", "count": 1, "chooser": "controller" } } ],
         "actions": [
-          { "kind": "manual", "text": "You may return 1 Character to your hand: Play up to 1 Character card with a cost of 3 or less from your hand." }
+          { "kind": "playFromZone", "zone": "hand", "free": true,
+            "sel": { "owner": "self", "zone": "hand", "filter": { "category": ["Character"], "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
         ] }
     ],
-    "notes": "The 'return 1 Character to your hand' activation cost is not in the IR CostItem set yet."
+    "notes": "M3: returnToHand activation cost. 'Return 1 Character to your hand' read as one of YOUR Characters (it goes to your hand)."
   },
   {
     "cardId": "OP01-048", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [], "counterValue": 1000,
@@ -622,15 +632,21 @@
     "notes": "\"If you don't have [Shachi]\" = countInZone atMost 0; playFromZone is tier-2."
   },
   {
-    "cardId": "OP01-051", "version": 1, "confidence": 0.7, "classification": "partial", "keywords": [],
+    "cardId": "OP01-051", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [],
     "effects": [
+      { "timing": "static",
+        "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "opponentsTurn" }, { "kind": "selfRested" } ],
+        "actions": [
+          { "kind": "restriction", "what": "cannotBeAttacked", "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "leaderOrCharacter", "filter": { "excludeSelf": true }, "count": 99, "chooser": "controller" } }
+        ] },
       { "timing": "activateMain", "oncePerTurn": true, "optional": true, "cost": [ { "kind": "restSelf" } ],
         "actions": [
           { "kind": "playFromZone", "zone": "hand", "free": true,
             "sel": { "owner": "self", "zone": "hand", "filter": { "category": ["Character"], "costAtMost": 3 }, "count": 1, "upTo": true, "chooser": "controller" } }
         ] }
     ],
-    "notes": "The '[DON!! x1] [Opponent's Turn] If this Character is rested, your opponent cannot attack any card other than [Eustass\"Captain\"Kid]' taunt permanent is not expressible in the IR yet (M4) — dropped, so the card is partial."
+    "notes": "M3: 'your opponent cannot attack any card other than this one' ≡ all your OTHER cards gain cannotBeAttacked while this is rested (selfRested condition); permanent — the engine executes static effects from M4."
   },
   {
     "cardId": "OP01-052", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
@@ -652,12 +668,13 @@
     ]
   },
   {
-    "cardId": "OP01-055", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [],
+    "cardId": "OP01-055", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
     "effects": [
       { "timing": "main", "optional": true,
-        "actions": [ { "kind": "manual", "text": "You may rest 2 of your Characters: Draw 2 cards." } ] }
+        "cost": [ { "kind": "restFromField", "sel": { "owner": "self", "zone": "characterArea", "filter": { "rested": false }, "count": 2, "chooser": "controller" } } ],
+        "actions": [ { "kind": "draw", "count": 2 } ] }
     ],
-    "notes": "The 'rest 2 of your Characters' activation cost is not in the IR CostItem set yet."
+    "notes": "M3: restFromField activation cost (resting requires ACTIVE Characters)."
   },
   {
     "cardId": "OP01-056", "version": 1, "confidence": 0.95, "classification": "compiled", "keywords": [],
@@ -711,23 +728,34 @@
     "notes": "trashFromHand cost payable from M3 (until then the Event is not offered as playable)."
   },
   {
-    "cardId": "OP01-060", "version": 1, "confidence": 0.65, "classification": "partial", "keywords": [],
+    "cardId": "OP01-060", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [],
     "effects": [
       { "timing": "whenAttacking", "conditions": [ { "kind": "donAttached", "count": 2 } ], "optional": true,
         "cost": [ { "kind": "restDon", "count": 1 } ],
         "actions": [
-          { "kind": "manual", "text": "Reveal 1 card from the top of your deck. If that card is a {The Seven Warlords of the Sea} type Character card with a cost of 4 or less, you may play that card rested." }
+          { "kind": "peekDeck", "who": "self", "count": 1,
+            "then": { "reveal": true, "play": { "typeIncludes": ["The Seven Warlords of the Sea"], "category": ["Character"], "costAtMost": 4 }, "playCount": 1, "playRested": true, "rest": "topAnyOrder" } }
         ] }
     ],
-    "notes": "PeekDisposition cannot express 'play that card rested' nor the leave-on-top fallback — manual resolution."
+    "notes": "M3: playRested peek disposition; a card left unplayed returns to the top (11-2-2)."
   },
   {
-    "cardId": "OP01-061", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
-    "notes": "Activation timing 'when your opponent's Character is K.O.'d' does not exist in the IR Timing set; DON!! gain is also tier-2."
+    "cardId": "OP01-061", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onOpponentCharacterKOd", "oncePerTurn": true,
+        "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "yourTurn" } ],
+        "actions": [ { "kind": "placeDonInCostArea", "count": 1, "rested": false } ] }
+    ],
+    "notes": "M3: 'when your opponent's Character is K.O.'d' timing + placeDonInCostArea ('add up to 1 DON!! and set it as active')."
   },
   {
-    "cardId": "OP01-062", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
-    "notes": "Activation timing 'when you activate an Event' plus the per-turn memory clause are not expressible in the IR yet."
+    "cardId": "OP01-062", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "onYouActivateEvent", "oncePerTurn": true, "optional": true,
+        "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "handAtMost", "who": "self", "count": 4 } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
+    ],
+    "notes": "M3: 'when you activate an Event' timing; \"haven't drawn a card using this Leader's effect during this turn\" ≡ [Once Per Turn] (10-2-13)."
   },
   {
     "cardId": "OP01-063", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
@@ -987,8 +1015,15 @@
     "notes": "nameExcludes matches by substring — 'other than [Baroque Works]' may over-exclude names containing it; peekDeck is tier-2."
   },
   {
-    "cardId": "OP01-091", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "effects": [],
-    "notes": "'If you have 10 DON!! on your field' — DON-count conditions are not in the IR; all-opponent static powerMod executes from M4 anyway."
+    "cardId": "OP01-091", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [],
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "yourTurn" }, { "kind": "donOnField", "who": "self", "atLeast": 10 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": -1000, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "opponent", "zone": "characterArea", "count": 99, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "M3: donOnField condition; permanent effect (8-1-3-3) — the engine executes static effects from M4."
   },
   { "cardId": "OP01-092", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
   {
@@ -1011,11 +1046,12 @@
     "notes": "'K.O. all Characters other than this Character' = count 99 + excludeSelf; the post-colon leader check compiled as a condition (8-3-3 convention); DON!!−6 is paid from the active cost area in the current engine."
   },
   {
-    "cardId": "OP01-095", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "cardId": "OP01-095", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
     "effects": [
-      { "timing": "onPlay", "actions": [ { "kind": "manual", "text": "Draw 1 card if you have 8 or more DON!! cards on your field." } ] }
+      { "timing": "onPlay", "conditions": [ { "kind": "donOnField", "who": "self", "atLeast": 8 } ],
+        "actions": [ { "kind": "draw", "count": 1 } ] }
     ],
-    "notes": "DON-count conditions are not in the IR yet."
+    "notes": "M3: donOnField condition; the trailing 'if' clause compiled as a condition (8-3-3 convention, no cost → equivalent)."
   },
   {
     "cardId": "OP01-096", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [],
@@ -1051,8 +1087,15 @@
     "notes": "Whole-deck search = peekDeck count 50 + shuffle disposition (convention); peekDeck is tier-2."
   },
   {
-    "cardId": "OP01-099", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000, "effects": [],
-    "notes": "All-target 'cannot be K.O.'d in battle' permanent — the IR restriction cannotBeKOd also covers effect K.O. (10-2-1-3), so the battle-only wording cannot be compiled faithfully; statics execute from M4 anyway."
+    "cardId": "OP01-099", "version": 1, "confidence": 0.8, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "static",
+        "actions": [
+          { "kind": "restriction", "what": "cannotBeKOdInBattle", "duration": "permanentWhileInPlay",
+            "sel": { "owner": "any", "zone": "characterArea", "filter": { "typeIncludes": ["Kurozumi Clan"], "nameExcludes": ["Kurozumi Semimaru"] }, "count": 99, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "M3: cannotBeKOdInBattle restriction (battle-only, unlike cannotBeKOd per 10-2-1-3); permanent — the engine executes static effects from M4. 'Characters' read as both players' (text names no owner)."
   },
   { "cardId": "OP01-100", "version": 1, "confidence": 1, "classification": "keyword-only", "keywords": ["Blocker"], "counterValue": 1000, "effects": [] },
   {
@@ -1113,8 +1156,15 @@
     ]
   },
   {
-    "cardId": "OP01-109", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000, "effects": [],
-    "notes": "'If you have 8 or more DON!! on your field' — DON-count conditions are not in the IR yet; the static executes from M4 anyway."
+    "cardId": "OP01-109", "version": 1, "confidence": 0.85, "classification": "compiled", "keywords": [], "counterValue": 1000,
+    "effects": [
+      { "timing": "static", "conditions": [ { "kind": "donAttached", "count": 1 }, { "kind": "yourTurn" }, { "kind": "donOnField", "who": "self", "atLeast": 8 } ],
+        "actions": [
+          { "kind": "powerMod", "amount": 1000, "duration": "permanentWhileInPlay",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
+    ],
+    "notes": "M3: donOnField condition; permanent effect (8-1-3-3) — the engine executes static effects from M4."
   },
   { "cardId": "OP01-110", "version": 1, "confidence": 1, "classification": "vanilla", "keywords": [], "counterValue": 1000, "effects": [] },
   {
@@ -1128,12 +1178,15 @@
     ]
   },
   {
-    "cardId": "OP01-112", "version": 1, "confidence": 0.6, "classification": "unsupported", "keywords": [], "counterValue": 1000,
+    "cardId": "OP01-112", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,
     "effects": [
       { "timing": "activateMain", "oncePerTurn": true, "optional": true, "cost": [ { "kind": "returnDonToDeck", "count": 1 } ],
-        "actions": [ { "kind": "manual", "text": "This Character can also attack your opponent's active Characters during this turn." } ] }
+        "actions": [
+          { "kind": "restriction", "what": "canAttackActiveCharacters", "duration": "thisTurn",
+            "sel": { "owner": "self", "zone": "characterArea", "count": 1, "self": true, "chooser": "controller" } }
+        ] }
     ],
-    "notes": "Attack-permission effects are not in the IR yet (M4)."
+    "notes": "M3: canAttackActiveCharacters permission, enforced by declareAttack/legality."
   },
   {
     "cardId": "OP01-113", "version": 1, "confidence": 0.9, "classification": "compiled", "keywords": [], "counterValue": 1000,

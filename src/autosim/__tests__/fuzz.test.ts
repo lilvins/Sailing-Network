@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import { EngineError, type PlayerIntent } from "../engine/intents";
 import { legalMoves } from "../engine/legality";
-import type { AutoGameState, CardDb, EngineCard } from "../engine/state";
+import type { AutoGameState, CardDb, EngineCard, Iid } from "../engine/state";
 import type { GameEvent } from "../engine/events";
 import type { Effect, Keyword } from "../ir/types";
 import { seededRng } from "../../lib/rng";
@@ -44,7 +44,7 @@ const CARDS: Record<string, EngineCard> = {
   // leaders (cost = Life value, local DB quirk)
   "FL-A": { id: "FL-A", category: "Leader", cost: 4, power: 5000, counter: null, colors: ["Red"], types: ["Fuzz"] },
   "FL-B": { id: "FL-B", category: "Leader", cost: 5, power: 5000, counter: null, colors: ["Blue", "Red"], types: ["Fuzz"] },
-  // stage (vanilla)
+  // stage — [End of Your Turn] draw (M3 End Phase window under fuzz)
   "FS-1": { id: "FS-1", category: "Stage", cost: 1, power: null, counter: null, colors: ["Red"], types: ["Fuzz"] },
 };
 
@@ -56,16 +56,21 @@ function compiled(opts: { keywords?: Keyword[]; effects?: Effect[] }): EngineCar
   };
 }
 
-// [Counter] event (+2000 up to 1) that is also a [Trigger] (draw 1)
+// [Counter] event (+2000 up to 1, DON!!−1 cost → payDon window when DON are
+// attached) that is also a [Trigger] (draw 1)
 CARDS["FE-1"] = {
   id: "FE-1", category: "Event", cost: 1, power: null, counter: null, colors: ["Red"], types: ["Fuzz"],
   compiled: compiled({ effects: [
-    { timing: "counter", actions: [
+    { timing: "counter", cost: [{ kind: "returnDonToDeck", count: 1 }], actions: [
       { kind: "powerMod", sel: { owner: "self", zone: "leaderOrCharacter", count: 1, upTo: true, chooser: "controller" }, amount: 2000, duration: "thisBattle" },
     ]},
     { timing: "trigger", actions: [{ kind: "draw", count: 1 }] },
   ]}),
 };
+// stage effect: [End of Your Turn] draw 1 (exercises the End Phase enqueue)
+CARDS["FS-1"].compiled = compiled({ effects: [
+  { timing: "endOfYourTurn", actions: [{ kind: "draw", count: 1 }] },
+]});
 
 // characters — two card numbers per cost tier, mix of powers/counters;
 // B variants exercise the M1 mechanics
@@ -79,7 +84,20 @@ for (const [cost, power, counter] of TIERS) {
     CARDS[id] = { id, category: "Character", cost, power, counter, colors: ["Red"], types: ["Fuzz"] };
   }
 }
+CARDS["FC-0A"].compiled = compiled({ effects: [
+  // peek 3, take up to 1 Fuzz card, rest to the bottom (M3 peekSelect window)
+  { timing: "onPlay", actions: [
+    { kind: "peekDeck", who: "self", count: 3, then: { reveal: true, addToHand: { typeIncludes: ["Fuzz"] }, addCount: 1, rest: "bottomAnyOrder" } },
+  ]},
+]});
 CARDS["FC-0B"].compiled = compiled({ effects: [{ timing: "trigger", actions: [{ kind: "draw", count: 1 }] }] });
+CARDS["FC-1A"].compiled = compiled({ effects: [
+  // [Activate: Main] [Once Per Turn] ①: draw up to 1 (M3 activateMain +
+  // chooseNumber windows)
+  { timing: "activateMain", oncePerTurn: true, optional: false,
+    cost: [{ kind: "restDon", count: 1 }],
+    actions: [{ kind: "draw", count: 1, upTo: true }] },
+]});
 CARDS["FC-1B"].compiled = compiled({ keywords: ["Blocker"] });
 CARDS["FC-2A"].compiled = compiled({ keywords: ["Rush"] });
 CARDS["FC-2B"].compiled = compiled({ effects: [
@@ -191,7 +209,7 @@ function checkInvariants(state: AutoGameState, ctx: () => string, deep = true): 
 
   // pendingChoice / battle / exec consistency
   const pc = state.pendingChoice;
-  const effectChoice = pc && ["selectTargets", "mayActivate", "manualResolve"].includes(pc.kind);
+  const effectChoice = pc && ["selectTargets", "mayActivate", "manualResolve", "peekSelect", "payDon", "chooseNumber"].includes(pc.kind);
   if (state.battle) {
     if (!pc) fail(`battle in step "${state.battle.step}" with no pending choice`);
     const step = state.battle.step;
@@ -311,6 +329,50 @@ function enumerateMoves(state: AutoGameState): PlayerIntent[] {
   if (pc?.kind === "manualResolve") {
     return [{ type: "ackManual", player: actor }];
   }
+  if (pc?.kind === "peekSelect") {
+    const takes: Iid[][] = [[]];
+    if (pc.eligible.length > 0 && pc.takeCount > 0) takes.push(pc.eligible.slice(0, Math.min(pc.takeCount, pc.eligible.length)));
+    return takes.map((take): PlayerIntent => {
+      const remaining = pc.cards.filter((iid) => !take.includes(iid));
+      return {
+        type: "respondPeek", player: actor, take,
+        restTop: pc.rest === "topAnyOrder" ? remaining
+          : pc.rest === "topOrBottomAnyOrder" ? remaining.slice(0, 1) : [],
+        restBottom: pc.rest === "bottomAnyOrder" ? [...remaining].reverse()
+          : pc.rest === "topOrBottomAnyOrder" ? remaining.slice(1) : [],
+      };
+    });
+  }
+  if (pc?.kind === "payDon") {
+    const d = state.players[actor].don;
+    const compose = (preferGiven: boolean): PlayerIntent => {
+      let left = pc.amount;
+      const fromGiven: Record<Iid, number> = {};
+      if (preferGiven) {
+        for (const [iid, n] of Object.entries(d.given)) {
+          if (left <= 0) break;
+          const use = Math.min(left, n);
+          if (use > 0) { fromGiven[iid] = use; left -= use; }
+        }
+      }
+      const fromRested = Math.min(left, d.rested); left -= fromRested;
+      const fromActive = Math.min(left, d.active); left -= fromActive;
+      if (left > 0) {
+        for (const [iid, n] of Object.entries(d.given)) {
+          if (left <= 0) break;
+          const use = Math.min(left, n - (fromGiven[iid] ?? 0));
+          if (use > 0) { fromGiven[iid] = (fromGiven[iid] ?? 0) + use; left -= use; }
+        }
+      }
+      return { type: "respondPayDon", player: actor, fromActive, fromRested, fromGiven };
+    };
+    return [compose(false), compose(true)];
+  }
+  if (pc?.kind === "chooseNumber") {
+    const moves: PlayerIntent[] = [{ type: "respondNumber", player: actor, value: pc.min }];
+    if (pc.max > pc.min) moves.push({ type: "respondNumber", player: actor, value: pc.max });
+    return moves;
+  }
 
   // main action window
   const p = state.players[actor];
@@ -331,6 +393,9 @@ function enumerateMoves(state: AutoGameState): PlayerIntent[] {
     for (const t of a.targets) {
       moves.push({ type: "attack", player: actor, attackerIid: a.iid, targetIid: t });
     }
+  }
+  for (const act of lm.activatable) {
+    moves.push({ type: "activateMain", player: actor, iid: act.iid, effectIndex: act.effectIndex });
   }
   return moves;
 }
@@ -474,6 +539,14 @@ function makeIllegalIntents(state: AutoGameState): PlayerIntent[] {
     // may/manual answers by the wrong player
     { type: "respondMay", player: pc?.kind === "mayActivate" ? other(pc.player) : turnP, activate: true },
     { type: "ackManual", player: pc?.kind === "manualResolve" ? other(pc.player) : turnP },
+    // M3 windows — wrong player / impossible payloads
+    { type: "respondPeek", player: pc?.kind === "peekSelect" ? other(pc.player) : turnP, take: [] },
+    { type: "respondPeek", player: pc?.kind === "peekSelect" ? pc.player : turnP, take: [ghost] },
+    { type: "respondPayDon", player: pc?.kind === "payDon" ? other(pc.player) : turnP, fromActive: 0, fromRested: 0, fromGiven: {} },
+    { type: "respondNumber", player: pc?.kind === "chooseNumber" ? other(pc.player) : turnP, value: 0 },
+    { type: "respondNumber", player: pc?.kind === "chooseNumber" ? pc.player : turnP, value: 99 },
+    // activateMain on a card that does not exist
+    { type: "activateMain", player: turnP, iid: ghost, effectIndex: 0 },
   ];
   return out;
 }

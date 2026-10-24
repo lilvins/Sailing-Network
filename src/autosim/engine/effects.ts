@@ -1,16 +1,16 @@
 /**
- * AUTOSIM effect executor core (M1 — AUTOSIM_PLAN.md §5, §8 M1.5).
+ * AUTOSIM effect executor core (M1 tier-1, M3 tier-2 — AUTOSIM_PLAN.md §5).
  *
  * Pure helpers that turn IR `Action`s into GameEvents: selector resolution,
- * filter matching, condition evaluation (8-3-2), activation-cost payment
- * (8-3-1) and the tier-1 action implementations. The flow machine that decides
- * WHEN an effect runs (queue ordering 8-6, battle resumption) lives in
- * battle.ts — this module never imports it.
+ * filter matching, condition evaluation (8-3-2), activation-cost checks
+ * (8-3-1) and the action implementations. The flow machine that decides WHEN
+ * an effect runs (queue ordering 8-6, battle resumption, cost payment with
+ * choices) lives in battle.ts — this module never imports it.
  *
- * Tier-1 actions (plan §8 M1): powerMod, draw, koTarget, restTarget,
- * standTarget, discard, grantKeyword, restriction. Everything else degrades
- * to a `manualResolve` prompt (plan §1.3) — plus the [Trigger]-only
- * `playFromZone self` ("play this card").
+ * Still out of scope (degrade to `manualResolve`, plan §1.3): setBasePower,
+ * negateEffect, redirectAttack, endBattle, addToLife, chooseOne, and
+ * playFromZone "revealed". `static` effects are continuous (8-1-3-3) and are
+ * executed by the M4 fixpoint, not here.
  */
 import type { Action, Condition, CostItem, Selector, SelectorFilter } from "../ir/types";
 import { emit, type GameEvent } from "./events";
@@ -22,7 +22,7 @@ import { enqueueAutoEffects } from "./triggers";
 
 export interface TargetRef { owner: PID; iid: Iid }
 
-// ─── drawing (4-5) ───────────────────────────────────────────────────────────
+// ─── drawing (4-5) & milling ─────────────────────────────────────────────────
 
 export function drawCards(state: AutoGameState, log: GameEvent[], player: PID, count: number): void {
   const p = state.players[player];
@@ -41,6 +41,17 @@ export function drawCards(state: AutoGameState, log: GameEvent[], player: PID, c
       emit(state, log, { type: "gameEnded", winner: opponentOf(state, player), reason: "deckOut" });
       return;
     }
+  }
+}
+
+/** Deck top → trash. Milling the last card is a defeat too (9-2-1-2). */
+export function millCards(state: AutoGameState, log: GameEvent[], player: PID, count: number): void {
+  const p = state.players[player];
+  const iids = p.zones.deck.slice(0, count);
+  if (iids.length === 0) return;
+  emit(state, log, { type: "milled", player, iids });
+  if (p.zones.deck.length === 0) {
+    emit(state, log, { type: "gameEnded", winner: opponentOf(state, player), reason: "deckOut" });
   }
 }
 
@@ -102,13 +113,25 @@ export function resolveSelector(
       case "stage": pool = [...p.zones.stage]; break;
       case "hand": pool = [...p.zones.hand]; break;
       case "trash": pool = [...p.zones.trash]; break;
-      default: pool = []; // deckTop / costArea / life selectors land in M2+
+      default: pool = []; // deckTop / costArea / life selectors land in M4+
     }
     for (const iid of pool) {
       if (matchesFilter(db, state, owner, iid, sel.filter, sourceIid, onField)) out.push({ owner, iid });
     }
   }
   return out;
+}
+
+export function isOnField(state: AutoGameState, owner: PID, iid: Iid): boolean {
+  const p = state.players[owner];
+  return iid === p.leaderIid || p.zones.characterArea.includes(iid) || p.zones.stage.includes(iid);
+}
+
+function findOnField(state: AutoGameState, iid: Iid): TargetRef | null {
+  for (const pid of state.order) {
+    if (isOnField(state, pid, iid)) return { owner: pid, iid };
+  }
+  return null;
 }
 
 // ─── conditions (8-3-2) ──────────────────────────────────────────────────────
@@ -144,40 +167,68 @@ export function conditionsMet(
       case "lifeAtLeast": return whoToPids(state, controller, c.who).every((pid) => state.players[pid].zones.life.length >= c.count);
       case "handAtMost": return whoToPids(state, controller, c.who).every((pid) => state.players[pid].zones.hand.length <= c.count);
       case "handAtLeast": return whoToPids(state, controller, c.who).every((pid) => state.players[pid].zones.hand.length >= c.count);
+      case "donOnField": // "N or more DON!! on your field" = cost area + given (4-4)
+        return whoToPids(state, controller, c.who).every((pid) => {
+          const d = state.players[pid].don;
+          const given = Object.values(d.given).reduce((s, n) => s + n, 0);
+          return d.active + d.rested + given >= c.atLeast;
+        });
+      case "selfRested": { // "if this Character is rested" (M3)
+        const on = findOnField(state, sourceIid);
+        return !!on && state.players[on.owner].instances[sourceIid].rested;
+      }
     }
   });
 }
 
-// ─── activation costs (8-3-1) ────────────────────────────────────────────────
+// ─── activation costs (8-3-1) — payable check ────────────────────────────────
 
-/** M1 pays restDon (① 8-3-1-5), returnDonToDeck (DON!!−X 8-3-1-6, from the
- *  active cost area only) and restSelf. Costs that need a card choice
- *  (trashFromHand/…) land in M2 — effects carrying them are not offered. */
-export function canPayCost(state: AutoGameState, player: PID, sourceIid: Iid, cost: CostItem[] | undefined): boolean {
+/** Whether the FULL activation cost can be paid right now (8-3-1-3). Payment
+ *  itself happens item by item in the pump (choices may pause it). */
+export function canPayCost(
+  db: CardDb, state: AutoGameState, player: PID, sourceIid: Iid, cost: CostItem[] | undefined,
+): boolean {
   if (!cost || cost.length === 0) return true;
-  let restNeeded = 0;
-  let returnNeeded = 0;
+  const p = state.players[player];
+  let restDonNeed = 0;
+  let returnDonNeed = 0;
+  let lifeNeed = 0;
+  let handNeed = 0;
   for (const c of cost) {
-    if (c.kind === "restDon") restNeeded += c.count;
-    else if (c.kind === "returnDonToDeck") returnNeeded += c.count;
-    else if (c.kind === "restSelf") {
-      const inst = state.players[player].instances[sourceIid];
-      if (!inst || inst.rested) return false;
-    } else return false; // trashFromHand / trashSelf / trashFromLife → M2
+    switch (c.kind) {
+      case "restDon": restDonNeed += c.count; break;
+      case "returnDonToDeck": returnDonNeed += c.count; break; // 8-3-1-6
+      case "restSelf": {
+        const on = findOnField(state, sourceIid);
+        if (!on || state.players[on.owner].instances[sourceIid].rested) return false;
+        break;
+      }
+      case "trashSelf":
+        if (!findOnField(state, sourceIid)) return false;
+        break;
+      case "trashFromHand":
+        if (resolveSelector(db, state, player, sourceIid, c.sel).length < c.sel.count) return false;
+        break;
+      case "returnToHand":
+      case "restFromField":
+        if (resolveSelector(db, state, player, sourceIid, c.sel).length < c.sel.count) return false;
+        break;
+      case "trashFromLife":
+      case "lifeToHand":
+        lifeNeed += c.count;
+        break;
+      case "handToDeckBottom":
+        handNeed += c.count;
+        break;
+    }
   }
-  return state.players[player].don.active >= restNeeded + returnNeeded;
-}
-
-export function payCost(state: AutoGameState, log: GameEvent[], player: PID, sourceIid: Iid, cost: CostItem[] | undefined): void {
-  if (!cost || cost.length === 0) return;
-  let restDon = 0;
-  let returnDon = 0;
-  for (const c of cost) {
-    if (c.kind === "restDon") restDon += c.count;
-    else if (c.kind === "returnDonToDeck") returnDon += c.count;
-    else if (c.kind === "restSelf") emit(state, log, { type: "cardRested", player, iid: sourceIid });
-  }
-  if (restDon > 0 || returnDon > 0) emit(state, log, { type: "costPaid", player, restDon, returnDon });
+  if (p.zones.life.length < lifeNeed) return false;
+  if (p.zones.hand.length < handNeed) return false;
+  if (p.don.active < restDonNeed) return false;
+  const givenSum = Object.values(p.don.given).reduce((s, n) => s + n, 0);
+  // DON!!−X may come from the cost area AND from leader/characters (8-3-1-6)
+  if (p.don.active - restDonNeed + p.don.rested + givenSum < returnDonNeed) return false;
+  return true;
 }
 
 // ─── action planning & application ───────────────────────────────────────────
@@ -186,10 +237,19 @@ export function payCost(state: AutoGameState, log: GameEvent[], player: PID, sou
 export type ActionPlan =
   | { kind: "apply"; targets: TargetRef[] }
   | { kind: "choose"; chooser: PID; candidates: TargetRef[]; count: number; upTo: boolean }
+  | { kind: "peek" }                       // handled by the pump (peekSelect window)
+  | { kind: "chooseNumber"; max: number }  // "draw up to N"
   | { kind: "manual"; text: string };
 
 const SELECTOR_ACTIONS = new Set<Action["kind"]>([
-  "powerMod", "koTarget", "restTarget", "standTarget", "discard", "grantKeyword", "restriction",
+  "powerMod", "koTarget", "restTarget", "standTarget", "discard", "grantKeyword",
+  "restriction", "costMod",
+  // tier-2 (M3)
+  "returnToHand", "returnToDeck", "playFromZone", "addFromTrashToHand", "giveRestedDon",
+]);
+const NO_TARGET_ACTIONS = new Set<Action["kind"]>([
+  "draw", "mill", "trashLife", "lifeToHand", "placeDonInCostArea", "standDon",
+  "returnDonToDeck", "ifThen",
 ]);
 
 /** Resolve the legal target set of a selector-based action and decide whether
@@ -198,15 +258,23 @@ const SELECTOR_ACTIONS = new Set<Action["kind"]>([
 export function planAction(
   db: CardDb, state: AutoGameState, controller: PID, running: RunningEffect, action: Action,
 ): ActionPlan {
-  if (action.kind === "draw") return { kind: "apply", targets: [] };
+  if (action.kind === "draw") {
+    // "draw up to N": the player picks how many (8-4-4-1 allows 0)
+    if (action.upTo && action.count > 0) return { kind: "chooseNumber", max: action.count };
+    return { kind: "apply", targets: [] };
+  }
+  if (NO_TARGET_ACTIONS.has(action.kind)) return { kind: "apply", targets: [] };
 
-  if (action.kind === "playFromZone") {
-    // [Trigger]-only tier-1 case: "play this card" (sel.self on the trigger card)
-    if (action.sel.self && running.triggerCard) return { kind: "apply", targets: [] };
-    return { kind: "manual", text: `playFromZone (${action.zone}) is not auto-executable yet — resolve manually` };
+  if (action.kind === "peekDeck") {
+    if (action.who !== "self") return { kind: "manual", text: "peeking the opponent's deck is not auto-executable yet — resolve manually" };
+    return { kind: "peek" };
   }
 
   if (action.kind === "manual") return { kind: "manual", text: action.text };
+
+  if (action.kind === "playFromZone" && action.zone === "revealed") {
+    return { kind: "manual", text: "playFromZone (revealed) is not auto-executable yet — resolve manually" };
+  }
 
   if (!SELECTOR_ACTIONS.has(action.kind)) {
     return { kind: "manual", text: `unsupported action "${action.kind}" — resolve manually` };
@@ -215,9 +283,11 @@ export function planAction(
   const act = action as Extract<Action, { sel: Selector }>;
   const sel = act.sel;
   if (sel.prev) {
-    // "that card" selection-binding is compiled in the IR but not executable
-    // yet (M3) — degrade gracefully instead of re-selecting (wrong semantics)
-    return { kind: "manual", text: `"that card" binding for "${action.kind}" is not auto-executable yet — resolve manually` };
+    // "that card" (M3): bind to the previous action's chosen targets; cards
+    // that already left their area drop out (8-1-2 to the extent possible)
+    const targets = running.lastTargets.filter((t) =>
+      FIELD_ZONES.has(sel.zone) ? isOnField(state, t.owner, t.iid) : true);
+    return { kind: "apply", targets };
   }
   if (sel.self) {
     // the compiled card itself (no choice) — only if still on the field
@@ -226,24 +296,25 @@ export function planAction(
   }
   let candidates = resolveSelector(db, state, controller, running.sourceIid, sel);
   // 10-2-1-2: K.O. moves a CHARACTER from the character area — leaders and
-  // non-field cards can never be K.O. targets.
+  // non-field cards can never be K.O. targets. 10-2-1-3: "cannot be K.O.'d"
+  // covers effect K.O.; cannotBeKOdInBattle does not.
   if (action.kind === "koTarget") {
-    candidates = candidates.filter(({ owner, iid }) => state.players[owner].zones.characterArea.includes(iid));
+    candidates = candidates.filter(({ owner, iid }) =>
+      state.players[owner].zones.characterArea.includes(iid)
+      && !hasRestriction(state, owner, iid, "cannotBeKOd"));
+  }
+  // playing by effect needs room in the character area (3-7-6; no replace-by-
+  // rule for effect plays — M1 decision, "to the extent possible" 8-1-2)
+  let count = sel.count;
+  if (action.kind === "playFromZone") {
+    const room = 5 - state.players[controller].zones.characterArea.length;
+    if (room <= 0) return { kind: "apply", targets: [] };
+    count = Math.min(count, room);
   }
   if (candidates.length === 0) return { kind: "apply", targets: [] };
-  if (!sel.upTo && candidates.length <= sel.count) return { kind: "apply", targets: candidates }; // 8-4-4-1
+  if (!sel.upTo && candidates.length <= count) return { kind: "apply", targets: candidates }; // 8-4-4-1
   const chooser = sel.chooser === "opponent" ? opponentOf(state, controller) : controller;
-  return { kind: "choose", chooser, candidates, count: sel.count, upTo: sel.upTo ?? false };
-}
-
-function findOnField(state: AutoGameState, iid: Iid): TargetRef | null {
-  for (const pid of state.order) {
-    const p = state.players[pid];
-    if (iid === p.leaderIid || p.zones.characterArea.includes(iid) || p.zones.stage.includes(iid)) {
-      return { owner: pid, iid };
-    }
-  }
-  return null;
+  return { kind: "choose", chooser, candidates, count, upTo: sel.upTo ?? false };
 }
 
 /** Apply one action with its resolved targets, emitting events. */
@@ -251,15 +322,77 @@ export function applyAction(
   db: CardDb, state: AutoGameState, log: GameEvent[],
   controller: PID, running: RunningEffect, action: Action, targets: TargetRef[],
 ): void {
+  // "that card" bookkeeping (M3): remember the targets this action used,
+  // unless the action itself was a prev-binding
+  const hasSel = (a: Action): a is Extract<Action, { sel: Selector }> => "sel" in a;
+  if (hasSel(action) && !action.sel.prev) running.lastTargets = targets;
+
   switch (action.kind) {
     case "draw":
       drawCards(state, log, controller, action.count); // may end the game (deck-out)
       break;
 
+    case "mill":
+      for (const pid of whoToPids(state, controller, action.who)) {
+        millCards(state, log, pid, action.count);
+        if (state.phase === "over") return;
+      }
+      break;
+
+    case "trashLife": // top Life card(s) to the trash (3-10 ordering)
+      for (const pid of whoToPids(state, controller, action.who)) {
+        const z = state.players[pid].zones;
+        for (let i = 0; i < action.count && z.life.length > 0; i++) {
+          emit(state, log, { type: "lifeCardTrashed", player: pid, iid: z.life[z.life.length - 1] });
+        }
+      }
+      break;
+
+    case "lifeToHand": // "add N from your Life to your hand" — top cards (3-10, secret area)
+      for (const pid of whoToPids(state, controller, action.who)) {
+        const z = state.players[pid].zones;
+        for (let i = 0; i < action.count && z.life.length > 0; i++) {
+          emit(state, log, { type: "lifeCardToHand", player: pid, iid: z.life[z.life.length - 1] });
+        }
+      }
+      break;
+
+    case "placeDonInCostArea": { // "add N DON!! from your DON!! deck" (tier-2)
+      const n = Math.min(action.count, state.players[controller].don.deck);
+      if (n > 0) emit(state, log, { type: "donAdded", player: controller, count: n, rested: action.rested ?? false });
+      break;
+    }
+
+    case "standDon": { // "set up to N of your DON!! as active" — always max (no downside)
+      const n = Math.min(action.count, state.players[controller].don.rested);
+      if (n > 0) emit(state, log, { type: "donStood", player: controller, count: n });
+      break;
+    }
+
+    case "returnDonToDeck": { // as an ACTION (rare): cost-area DON, rested first
+      const don = state.players[controller].don;
+      const fromRested = Math.min(action.count, don.rested);
+      const fromActive = Math.min(action.count - fromRested, don.active);
+      if (fromRested + fromActive > 0) {
+        emit(state, log, { type: "donPaid", player: controller, fromActive, fromRested, fromGiven: {} });
+      }
+      break;
+    }
+
     case "powerMod":
       for (const t of targets) {
         emit(state, log, { type: "modifierAdded", modifier: {
           source: running.sourceIid, controller, kind: "powerMod",
+          targetOwner: t.owner, targetIid: t.iid, amount: action.amount,
+          duration: action.duration, anchor: controller, createdTurn: state.turn,
+        }});
+      }
+      break;
+
+    case "costMod":
+      for (const t of targets) {
+        emit(state, log, { type: "modifierAdded", modifier: {
+          source: running.sourceIid, controller, kind: "costMod",
           targetOwner: t.owner, targetIid: t.iid, amount: action.amount,
           duration: action.duration, anchor: controller, createdTurn: state.turn,
         }});
@@ -289,11 +422,13 @@ export function applyAction(
     case "koTarget":
       for (const t of targets) {
         if (!state.players[t.owner].zones.characterArea.includes(t.iid)) continue; // left already
-        // M1 enforces no cannotBeKOd (10-2-1-3 — stored, enforced in M4)
         const given = state.players[t.owner].don.given[t.iid] ?? 0;
         // [On K.O.] activates on the field, resolves from the trash
         // (10-2-17-1/2) — fulfilled here, queued per 8-6.
         enqueueAutoEffects(db, state, t.owner, t.iid, "onKO", { fromTrash: true });
+        // "when your opponent's Character is K.O.'d" (M3) fulfills for the
+        // other player's cards
+        enqueueKOdReactions(db, state, t.owner, t.iid);
         emit(state, log, { type: "characterKOd", player: t.owner, iid: t.iid, donReturned: given });
       }
       break;
@@ -320,23 +455,87 @@ export function applyAction(
       }
       break;
 
+    case "returnToHand": // bounce (M3)
+      for (const t of targets) {
+        if (!isOnField(state, t.owner, t.iid)) continue;
+        emit(state, log, { type: "returnedToHand", player: t.owner, iid: t.iid });
+      }
+      break;
+
+    case "returnToDeck": // "place at the top/bottom of the owner's deck" (M3)
+      for (const t of targets) {
+        if (!isOnField(state, t.owner, t.iid)) continue;
+        emit(state, log, { type: "returnedToDeck", player: t.owner, iid: t.iid, where: action.where, from: "field" });
+      }
+      break;
+
+    case "addFromTrashToHand": // (M3)
+      for (const t of targets) {
+        emit(state, log, { type: "trashToHand", player: t.owner, iid: t.iid });
+      }
+      break;
+
+    case "giveRestedDon": { // "give N rested DON!! to ..." (M3)
+      const don = state.players[controller].don;
+      for (const t of targets) {
+        const n = Math.min(action.count, don.rested); // 8-1-2 as much as possible
+        if (n > 0) emit(state, log, { type: "donGivenFromRested", player: controller, targetIid: t.iid, count: n });
+      }
+      break;
+    }
+
     case "playFromZone": {
       // [Trigger] "play this card" (10-1-5-3: the card is area-less right now)
       const tc = running.triggerCard;
-      if (!tc || !action.sel.self) break;
-      const p = state.players[controller];
-      const card = db(p.instances[tc.iid].cardId);
-      // 8-1-2 "to the extent possible": a full character area (3-7-6) or a
-      // non-Character card can't be played — the card falls to the trash.
-      if (card.category === "Character" && p.zones.characterArea.length < 5) {
-        emit(state, log, { type: "triggerCardPlayed", player: controller, iid: tc.iid });
-        tc.moved = true;
+      if (action.sel.self && tc) {
+        const p = state.players[controller];
+        const card = db(p.instances[tc.iid].cardId);
+        // 8-1-2 "to the extent possible": a full character area (3-7-6) or a
+        // non-Character card can't be played — the card falls to the trash.
+        if (card.category === "Character" && p.zones.characterArea.length < 5) {
+          emit(state, log, { type: "triggerCardPlayed", player: controller, iid: tc.iid });
+          tc.moved = true;
+        }
+        break;
       }
+      // generic play from hand/trash (M3; free — the effect pays no DON)
+      for (const t of targets) {
+        const p = state.players[controller];
+        if (p.zones.characterArea.length >= 5) break; // 3-7-6, no replace for effect plays
+        const card = db(state.players[t.owner].instances[t.iid].cardId);
+        if (card.category !== "Character") continue;
+        emit(state, log, {
+          type: "playedFromZone", player: t.owner, iid: t.iid,
+          from: action.zone === "trash" ? "trash" : "hand", rested: action.rested ?? false,
+        });
+        // 10-2-6 [On Play] fires for effect plays too
+        enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
+      }
+      break;
+    }
+
+    case "ifThen": {
+      // 8-3-3: resolve the branch inline by splicing it into the running
+      // actions right after this one (conditions checked now)
+      const branch = conditionsMet(db, state, controller, running.sourceIid, action.if)
+        ? action.then
+        : (action.else ?? []);
+      running.actions.splice(running.actionIndex + 1, 0, ...branch);
       break;
     }
 
     default:
       break; // unreachable: planAction routed unsupported kinds to manualResolve
+  }
+}
+
+/** "When your opponent's Character is K.O.'d" (M3): fulfilled on the OTHER
+ *  player's field cards whenever a character is K.O.'d. */
+export function enqueueKOdReactions(db: CardDb, state: AutoGameState, koOwner: PID, _koIid: Iid): void {
+  const reactor = opponentOf(state, koOwner);
+  const rp = state.players[reactor];
+  for (const iid of [rp.leaderIid, ...rp.zones.characterArea, ...rp.zones.stage]) {
+    enqueueAutoEffects(db, state, reactor, iid, "onOpponentCharacterKOd");
   }
 }
 

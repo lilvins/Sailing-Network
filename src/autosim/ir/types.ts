@@ -35,6 +35,9 @@ export type Timing =
   | "onYourOpponentsAttack"   // 10-2-16
   | "whenAttacked"            // 7-1-3-1
   | "endOfBattle"             // 7-1-5-2
+  | "onYouActivateEvent"      // "when you activate an Event" (8-5-2, M3)
+  | "onOpponentActivatesEvent" // "when your opponent activates an Event" (M3)
+  | "onOpponentCharacterKOd"  // "when your opponent's Character is K.O.'d" (M3)
   | "static";                 // permanent effects (8-1-3-3)
 
 export type Duration =
@@ -86,7 +89,10 @@ export type CostItem =
   | { kind: "trashFromHand"; sel: Selector }
   | { kind: "trashSelf" }
   | { kind: "trashFromLife"; count: number }
-  | { kind: "lifeToHand"; count: number };  // "add N card(s) from your Life to your hand:" (M2)
+  | { kind: "lifeToHand"; count: number }   // "add N card(s) from your Life to your hand:" (M2)
+  | { kind: "handToDeckBottom"; count: number }   // "place N card(s) from your hand at the bottom of your deck:" (M3)
+  | { kind: "returnToHand"; sel: Selector }       // "return N Character(s) to your hand:" (M3)
+  | { kind: "restFromField"; sel: Selector };     // "rest N of your Characters:" (M3)
 
 /** Conditions ([DON!!xX], [Your Turn], … — 8-3-2). */
 export type Condition =
@@ -98,7 +104,9 @@ export type Condition =
   | { kind: "lifeAtMost"; who: Who; count: number }
   | { kind: "lifeAtLeast"; who: Who; count: number }
   | { kind: "handAtMost"; who: Who; count: number }
-  | { kind: "handAtLeast"; who: Who; count: number };
+  | { kind: "handAtLeast"; who: Who; count: number }
+  | { kind: "donOnField"; who: Who; atLeast: number }  // "N or more DON!! on your field" (cost area + given, M3)
+  | { kind: "selfRested" };                            // "if this Character is rested" (M3)
 
 /** What to do with cards seen by a deck peek. */
 export interface PeekDisposition {
@@ -107,6 +115,7 @@ export interface PeekDisposition {
   addCount?: number;
   play?: Selector["filter"];        // play matching from among them
   playCount?: number;
+  playRested?: boolean;             // "you may play that card rested" (M3)
   rest: "topAnyOrder" | "bottomAnyOrder" | "topOrBottomAnyOrder" | "shuffle" | "trash";
 }
 
@@ -120,7 +129,8 @@ export type Action =
   | { kind: "discard"; who: Who; sel: Selector }              // trash from hand (10-2-14)
   | { kind: "grantKeyword"; sel: Selector; keyword: Keyword; duration: Duration }
   | { kind: "restriction"; sel: Selector;
-      what: "cannotAttack" | "cannotBeKOd" | "cannotBlock" | "cannotBeAttacked" | "mustAttackIfAble";
+      what: "cannotAttack" | "cannotBeKOd" | "cannotBeKOdInBattle" | "cannotBlock"
+          | "cannotBeAttacked" | "mustAttackIfAble" | "canAttackActiveCharacters";
       duration: Duration }
   // ── Tier 2 — zones & resources ────────────────────────────────────────────
   | { kind: "returnToHand"; sel: Selector }
@@ -137,6 +147,7 @@ export type Action =
   | { kind: "attachDonFromDeck"; sel: Selector; count: number; rested?: boolean }
   | { kind: "placeDonInCostArea"; count: number; rested?: boolean }
   | { kind: "returnDonToDeck"; who: Who; count: number }
+  | { kind: "standDon"; count: number }       // "set up to N of your DON!! as active" (M3)
   | { kind: "costMod"; sel: Selector; amount: number; duration: Duration }
   | { kind: "setBasePower"; sel: Selector; amount: number; duration: Duration } // 4-9
   // ── Tier 3 — control & meta ───────────────────────────────────────────────

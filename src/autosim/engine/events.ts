@@ -52,6 +52,20 @@ export type GameEvent =
   | { type: "cardStood"; player: PID; iid: Iid }                     // standTarget
   | { type: "cardsDiscarded"; player: PID; iids: Iid[] }             // 10-2-14 (hand → trash)
   | { type: "manualResolved"; player: PID; sourceIid: Iid; text: string } // plan §1.3 fallback ack
+  // M3 — tier-2 executor
+  | { type: "deckPeeked"; player: PID; iids: Iid[] }                 // "look at N from the top" (log marker)
+  | { type: "peekResolved"; player: PID; toHand: Iid[]; played: { iid: Iid; rested: boolean }[];
+      top: Iid[]; bottom: Iid[]; trashed: Iid[] }                    // 8-4-4-4, 11-2-1
+  | { type: "playedFromZone"; player: PID; iid: Iid; from: "hand" | "trash"; rested: boolean } // playFromZone
+  | { type: "returnedToHand"; player: PID; iid: Iid }                // bounce (field → hand)
+  | { type: "returnedToDeck"; player: PID; iid: Iid; where: "top" | "bottom"; from: "field" | "hand" }
+  | { type: "milled"; player: PID; iids: Iid[] }                     // deck top → trash
+  | { type: "trashToHand"; player: PID; iid: Iid }                   // addFromTrashToHand
+  | { type: "donAdded"; player: PID; count: number; rested: boolean } // DON!! deck → cost area
+  | { type: "donGivenFromRested"; player: PID; targetIid: Iid; count: number } // "give rested DON"
+  | { type: "donStood"; player: PID; count: number }                 // "set DON as active"
+  | { type: "donPaid"; player: PID; fromActive: number; fromRested: number;
+      fromGiven: Record<Iid, number> }                               // DON!!−X (8-3-1-6)
   // [Trigger] lifecycle (10-1-5)
   | { type: "triggerActivated"; player: PID; iid: Iid; cardId: string } // 10-1-5-1 (revealed; leaves Life)
   | { type: "triggerCardTrashed"; player: PID; iid: Iid }            // 10-1-5-3
@@ -324,6 +338,119 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
 
     case "manualResolved":
       break; // log-only acknowledgement
+
+    case "deckPeeked":
+      break; // look-only (11-3-2: cards remain in place while looked at)
+
+    case "peekResolved": {
+      const p = state.players[e.player];
+      const moved = new Set([...e.toHand, ...e.played.map((x) => x.iid), ...e.top, ...e.bottom, ...e.trashed]);
+      p.zones.deck = p.zones.deck.filter((x) => !moved.has(x));
+      p.zones.hand.push(...e.toHand);          // 11-2-1: revealed on the way
+      for (const pl of e.played) {
+        p.zones.characterArea.push(pl.iid);
+        const inst = p.instances[pl.iid];
+        inst.rested = pl.rested;
+        inst.playedOnTurn = state.turn;        // 3-7-4 summoning sickness
+      }
+      p.zones.deck = [...e.top, ...p.zones.deck]; // chosen order, first = new top
+      p.zones.deck.push(...e.bottom);
+      p.zones.trash.push(...e.trashed);
+      break;
+    }
+
+    case "playedFromZone": {
+      const p = state.players[e.player];
+      p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
+      p.zones.trash = p.zones.trash.filter((x) => x !== e.iid);
+      p.zones.characterArea.push(e.iid);
+      const inst = p.instances[e.iid];
+      inst.rested = e.rested;
+      inst.playedOnTurn = state.turn;          // 3-7-4
+      break;
+    }
+
+    case "returnedToHand": {
+      const p = state.players[e.player];
+      p.zones.characterArea = p.zones.characterArea.filter((x) => x !== e.iid);
+      p.zones.stage = p.zones.stage.filter((x) => x !== e.iid);
+      const given = p.don.given[e.iid] ?? 0;
+      if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; } // 6-5-5-4
+      p.instances[e.iid].rested = false;
+      p.zones.hand.push(e.iid);
+      cardLeftField(state, e.player, e.iid);   // 3-1-6
+      break;
+    }
+
+    case "returnedToDeck": {
+      const p = state.players[e.player];
+      if (e.from === "field") {
+        p.zones.characterArea = p.zones.characterArea.filter((x) => x !== e.iid);
+        p.zones.stage = p.zones.stage.filter((x) => x !== e.iid);
+        const given = p.don.given[e.iid] ?? 0;
+        if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; } // 6-5-5-4
+        p.instances[e.iid].rested = false;
+        cardLeftField(state, e.player, e.iid); // 3-1-6
+      } else {
+        p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
+      }
+      if (e.where === "top") p.zones.deck.unshift(e.iid);
+      else p.zones.deck.push(e.iid);
+      break;
+    }
+
+    case "milled": {
+      const p = state.players[e.player];
+      for (const iid of e.iids) {
+        p.zones.deck = p.zones.deck.filter((x) => x !== iid);
+        p.zones.trash.push(iid);
+      }
+      break;
+    }
+
+    case "trashToHand": {
+      const p = state.players[e.player];
+      p.zones.trash = p.zones.trash.filter((x) => x !== e.iid);
+      p.zones.hand.push(e.iid);
+      break;
+    }
+
+    case "donAdded": {
+      const don = state.players[e.player].don;
+      don.deck -= e.count;
+      if (e.rested) don.rested += e.count;
+      else don.active += e.count;
+      break;
+    }
+
+    case "donGivenFromRested": {
+      const don = state.players[e.player].don;
+      don.rested -= e.count;
+      don.given[e.targetIid] = (don.given[e.targetIid] ?? 0) + e.count;
+      break;
+    }
+
+    case "donStood": {
+      const don = state.players[e.player].don;
+      don.rested -= e.count;
+      don.active += e.count;
+      break;
+    }
+
+    case "donPaid": {
+      // 8-3-1-6 DON!!−X: the chosen composition returns to the DON!! deck
+      const don = state.players[e.player].don;
+      don.active -= e.fromActive;
+      don.rested -= e.fromRested;
+      let total = e.fromActive + e.fromRested;
+      for (const [iid, n] of Object.entries(e.fromGiven)) {
+        don.given[iid] = (don.given[iid] ?? 0) - n;
+        if (don.given[iid] <= 0) delete don.given[iid];
+        total += n;
+      }
+      don.deck += total;
+      break;
+    }
 
     case "triggerActivated": {
       // 10-1-5-3: while the [Trigger] resolves, the card belongs to NO area —

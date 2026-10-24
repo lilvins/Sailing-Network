@@ -1182,5 +1182,197 @@
       }
     ],
     "notes": "'Your opponent cannot activate a [Blocker] Character that has 2000 or less power during this battle' = cannotBlock restriction on all matching blockers (count 99 = all)."
+  },
+  {
+    "cardId": "ST01-001",
+    "version": 1,
+    "confidence": 0.85,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "activateMain",
+        "oncePerTurn": true,
+        "actions": [
+          {
+            "kind": "giveRestedDon",
+            "sel": {
+              "owner": "self",
+              "zone": "leaderOrCharacter",
+              "count": 1,
+              "chooser": "controller"
+            },
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "notes": "'Give this Leader or 1 of your Characters up to 1 rested DON!!' — giveRestedDon is tier-2 (executor in M3); 'up to 1' DON approximated as count 1 (activation is already optional)."
+  },
+  {
+    "cardId": "OP01-030",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "main",
+        "actions": [
+          {
+            "kind": "peekDeck",
+            "who": "self",
+            "count": 5,
+            "then": {
+              "reveal": true,
+              "addToHand": {
+                "typeIncludes": [
+                  "Straw Hat Crew"
+                ],
+                "category": [
+                  "Character"
+                ]
+              },
+              "addCount": 1,
+              "rest": "bottomAnyOrder"
+            }
+          }
+        ]
+      },
+      {
+        "timing": "trigger",
+        "actions": [
+          {
+            "kind": "peekDeck",
+            "who": "self",
+            "count": 5,
+            "then": {
+              "reveal": true,
+              "addToHand": {
+                "typeIncludes": [
+                  "Straw Hat Crew"
+                ],
+                "category": [
+                  "Character"
+                ]
+              },
+              "addCount": 1,
+              "rest": "bottomAnyOrder"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "'[Trigger] Activate this card's [Main] effect' duplicated under the trigger timing; peekDeck is tier-2."
+  },
+  {
+    "cardId": "OP01-041",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "activateMain",
+        "cost": [
+          {
+            "kind": "restDon",
+            "count": 1
+          },
+          {
+            "kind": "restSelf"
+          }
+        ],
+        "actions": [
+          {
+            "kind": "peekDeck",
+            "who": "self",
+            "count": 5,
+            "then": {
+              "reveal": true,
+              "addToHand": {
+                "typeIncludes": [
+                  "Land of Wano"
+                ]
+              },
+              "addCount": 1,
+              "rest": "bottomAnyOrder"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "peekDeck is tier-2 (executor in M3)."
+  },
+  {
+    "cardId": "OP01-055",
+    "version": 1,
+    "confidence": 0.85,
+    "classification": "compiled",
+    "keywords": [],
+    "effects": [
+      {
+        "timing": "main",
+        "optional": true,
+        "cost": [
+          {
+            "kind": "restFromField",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "filter": {
+                "rested": false
+              },
+              "count": 2,
+              "chooser": "controller"
+            }
+          }
+        ],
+        "actions": [
+          {
+            "kind": "draw",
+            "count": 2
+          }
+        ]
+      }
+    ],
+    "notes": "M3: restFromField activation cost (resting requires ACTIVE Characters)."
+  },
+  {
+    "cardId": "OP01-112",
+    "version": 1,
+    "confidence": 0.9,
+    "classification": "compiled",
+    "keywords": [],
+    "counterValue": 1000,
+    "effects": [
+      {
+        "timing": "activateMain",
+        "oncePerTurn": true,
+        "optional": true,
+        "cost": [
+          {
+            "kind": "returnDonToDeck",
+            "count": 1
+          }
+        ],
+        "actions": [
+          {
+            "kind": "restriction",
+            "what": "canAttackActiveCharacters",
+            "duration": "thisTurn",
+            "sel": {
+              "owner": "self",
+              "zone": "characterArea",
+              "count": 1,
+              "self": true,
+              "chooser": "controller"
+            }
+          }
+        ]
+      }
+    ],
+    "notes": "M3: canAttackActiveCharacters permission, enforced by declareAttack/legality."
   }
 ]

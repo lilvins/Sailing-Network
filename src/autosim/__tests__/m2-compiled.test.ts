@@ -98,9 +98,10 @@ describe("M2 batch: structure and lint", () => {
 
 // ─── M2 exit: coverage ≥ 80% + report integrity ──────────────────────────────
 
-const TIER1 = new Set<Action["kind"]>([
-  "powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard",
-  "grantKeyword", "restriction", "manual",
+// Action kinds the executor cannot auto-run yet (M4+: continuous/meta); the
+// M3 executor covers everything else, every cost kind, prev and ifThen.
+const NOT_AUTO = new Set<Action["kind"]>([
+  "setBasePower", "negateEffect", "redirectAttack", "endBattle", "addToLife", "chooseOne",
 ]);
 function flatActions(actions: Action[]): Action[] {
   return actions.flatMap((a) => [
@@ -109,17 +110,14 @@ function flatActions(actions: Action[]): Action[] {
     ...(a.kind === "chooseOne" ? flatActions(a.options.flat()) : []),
   ]);
 }
-function beyondTier1(cc: CompiledCard): string[] {
+function beyondAuto(cc: CompiledCard): string[] {
   const kinds = new Set<string>();
   for (const fx of cc.effects) {
-    if (fx.timing === "static") kinds.add("static(M4)");
+    if (fx.timing === "static") kinds.add("static(M4)"); // 8-1-3-3 fixpoint
     for (const a of flatActions(fx.actions)) {
-      if (!TIER1.has(a.kind) || a.kind === "ifThen") kinds.add(a.kind);
-      const sel = (a as { sel?: { prev?: boolean } }).sel;
-      if (sel?.prev) kinds.add("prev-selector");
-    }
-    for (const c of fx.cost ?? []) {
-      if (["trashFromHand", "trashSelf", "trashFromLife", "lifeToHand"].includes(c.kind)) kinds.add(`cost:${c.kind}`);
+      if (NOT_AUTO.has(a.kind) || a.kind === "manual") kinds.add(a.kind);
+      if (a.kind === "playFromZone" && a.zone === "revealed") kinds.add("playFromZone(revealed)");
+      if (a.kind === "peekDeck" && a.who !== "self") kinds.add("peekDeck(opponent)");
     }
   }
   return [...kinds].sort();
@@ -136,9 +134,9 @@ describe("M2 exit: coverage", () => {
   it("coverage-report.json matches a recomputation (it can never drift)", () => {
     expect(coverageReport.counts).toEqual(coverage());
     const compiledOnly = allCompiledCards().filter((c) => c.classification === "compiled");
-    expect(coverageReport.fullyTier1Executable).toBe(compiledOnly.filter((c) => beyondTier1(c).length === 0).length);
+    expect(coverageReport.fullyAutoExecutable).toBe(compiledOnly.filter((c) => beyondAuto(c).length === 0).length);
     expect(coverageReport.compiledButDegradingToManual).toEqual(
-      compiledOnly.filter((c) => beyondTier1(c).length > 0).map((c) => ({ cardId: c.cardId, needs: beyondTier1(c) })),
+      compiledOnly.filter((c) => beyondAuto(c).length > 0).map((c) => ({ cardId: c.cardId, needs: beyondAuto(c) })),
     );
     expect(coverageReport.notCompiled).toEqual(
       allCompiledCards()
@@ -235,6 +233,32 @@ function drainChoices(db: CardDb, state: AutoGameState): AutoGameState {
       }
       case "mayActivate": intent = { type: "respondMay", player: pc.player, activate: true }; break;
       case "manualResolve": intent = { type: "ackManual", player: pc.player }; break;
+      case "peekSelect": {
+        const take = pc.eligible.slice(0, pc.takeCount);
+        const remaining = pc.cards.filter((iid) => !take.includes(iid));
+        intent = {
+          type: "respondPeek", player: pc.player, take,
+          restTop: pc.rest === "topAnyOrder" || pc.rest === "topOrBottomAnyOrder" ? remaining : [],
+          restBottom: pc.rest === "bottomAnyOrder" ? remaining : [],
+        };
+        break;
+      }
+      case "payDon": {
+        // compose greedily: rested, then active, then attached DON
+        const d = state.players[pc.player].don;
+        let left = pc.amount;
+        const fromRested = Math.min(left, d.rested); left -= fromRested;
+        const fromActive = Math.min(left, d.active); left -= fromActive;
+        const fromGiven: Record<string, number> = {};
+        for (const [iid, n] of Object.entries(d.given)) {
+          if (left <= 0) break;
+          const use = Math.min(left, n);
+          if (use > 0) { fromGiven[iid] = use; left -= use; }
+        }
+        intent = { type: "respondPayDon", player: pc.player, fromActive, fromRested, fromGiven };
+        break;
+      }
+      case "chooseNumber": intent = { type: "respondNumber", player: pc.player, value: pc.max }; break;
       default: throw new Error(`unexpected choice in dry-run: ${pc.kind}`);
     }
     state = applyIntent(db, state, intent).state;
@@ -271,11 +295,17 @@ describe("M2 §6c: engine dry-run of every compiled effect", () => {
           emit(state, log, { type: "triggerActivated", player: controller, iid: top, cardId: cut.id });
           sourceIid = top;
           state.exec.running = {
-            controller, sourceIid: top, sourceCardId: cut.id, effectIndex, actionIndex: 0,
+            controller, sourceIid: top, sourceCardId: cut.id, effectIndex,
+            costs: fx.cost ? [...fx.cost] : [], costIndex: 0,
+            actions: [...fx.actions], actionIndex: 0, lastTargets: [],
             triggerCard: { iid: top, moved: false },
           };
         } else {
-          state.exec.running = { controller, sourceIid, sourceCardId: cut.id, effectIndex, actionIndex: 0 };
+          state.exec.running = {
+            controller, sourceIid, sourceCardId: cut.id, effectIndex,
+            costs: fx.cost ? [...fx.cost] : [], costIndex: 0,
+            actions: [...fx.actions], actionIndex: 0, lastTargets: [],
+          };
         }
         pump(db, state, log);
         state = drainChoices(db, state);
@@ -339,6 +369,31 @@ function playRealGame(seed: string, config: GameConfig): AutoGameState {
         }
         case "mayActivate": step({ type: "respondMay", player: pc.player, activate: rng() < 0.7 }); break;
         case "manualResolve": step({ type: "ackManual", player: pc.player }); break;
+        case "peekSelect": {
+          const take = rng() < 0.8 ? pc.eligible.slice(0, pc.takeCount) : [];
+          const remaining = pc.cards.filter((iid) => !take.includes(iid));
+          step({
+            type: "respondPeek", player: pc.player, take,
+            restTop: pc.rest === "topAnyOrder" || pc.rest === "topOrBottomAnyOrder" ? remaining : [],
+            restBottom: pc.rest === "bottomAnyOrder" ? remaining : [],
+          });
+          break;
+        }
+        case "payDon": {
+          const d = state.players[pc.player].don;
+          let left = pc.amount;
+          const fromRested = Math.min(left, d.rested); left -= fromRested;
+          const fromActive = Math.min(left, d.active); left -= fromActive;
+          const fromGiven: Record<string, number> = {};
+          for (const [iid, n] of Object.entries(d.given)) {
+            if (left <= 0) break;
+            const use = Math.min(left, n);
+            if (use > 0) { fromGiven[iid] = use; left -= use; }
+          }
+          step({ type: "respondPayDon", player: pc.player, fromActive, fromRested, fromGiven });
+          break;
+        }
+        case "chooseNumber": step({ type: "respondNumber", player: pc.player, value: Math.floor(rng() * (pc.max - pc.min + 1)) + pc.min }); break;
       }
       continue;
     }

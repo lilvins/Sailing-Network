@@ -10,7 +10,8 @@ const TIMINGS = [
   "onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger",
   "activateMain", "main", "endOfYourTurn", "endOfOpponentsTurn",
   "startOfYourTurn", "startOfOpponentsTurn", "onYourOpponentsAttack",
-  "whenAttacked", "endOfBattle", "static",
+  "whenAttacked", "endOfBattle", "onYouActivateEvent",
+  "onOpponentActivatesEvent", "onOpponentCharacterKOd", "static",
 ];
 const DURATIONS = [
   "instant", "thisBattle", "thisTurn", "untilStartOfYourNextTurn",
@@ -26,12 +27,12 @@ const ACTION_KINDS = [
   "grantKeyword", "restriction", "returnToHand", "returnToDeck", "playFromZone",
   "peekDeck", "mill", "addFromTrashToHand", "lifeToHand", "trashLife", "addToLife",
   "giveRestedDon", "attachDonFromDeck", "placeDonInCostArea", "returnDonToDeck",
-  "costMod", "setBasePower", "negateEffect", "redirectAttack", "endBattle",
-  "ifThen", "chooseOne", "manual",
+  "standDon", "costMod", "setBasePower", "negateEffect", "redirectAttack",
+  "endBattle", "ifThen", "chooseOne", "manual",
 ];
 const COST_KINDS = [
   "restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf",
-  "trashFromLife", "lifeToHand",
+  "trashFromLife", "lifeToHand", "handToDeckBottom", "returnToHand", "restFromField",
 ];
 
 export interface ValidationResult {

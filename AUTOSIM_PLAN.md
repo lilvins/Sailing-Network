@@ -292,7 +292,8 @@ Golden examples (da compilare A MANO come primi test):
   ST01+OP01 per: powerMod, KO, draw, rest/stand, discard, grantKeyword,
   restriction; UI ChoiceRequest.
   *Exit: ≥80% carte ST01/OP01 `compiled` e giocabili; golden al 100%.*
-- **M3 — Tier-2 zone/risorse** · peek/search, play-from-zone, life manip,
+- ✅ **M3 — Tier-2 zone/risorse** (2026-10-24, su ST01+OP01; l'estensione ad
+  altri set è un passo dedicato) · peek/search, play-from-zone, life manip,
   DON manip, mill, bounce, costMod. *Exit: ≥90% ST01+OP01, ≥75% OP02-OP05.*
 - **M4 — Continuous & meta** · permanents a fixpoint, negate, replacement,
   setBasePower, redirect/endBattle, [Once Per Turn] edge (10-2-13-5).
@@ -491,10 +492,26 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     `ENGINE_RUNNABLE_TIMINGS` (compile.ts) — aggiornarli quando M3+ ne accende
     di nuovi. I demo deck preferiscono carte dei set compilati (i demo
     ST01/OP01 sono 100% automatizzati, gli altri dichiarano l'avviso).
-32. **Segnaposto DON!! (tasto destro)**: marcatore PURAMENTE visivo locale
-    (tilt+dim+"HOLD") per dividersi i DON "come dal vivo" — nessun intent,
-    stato motore intatto, reset al cambio turno, hint (banner tone "info",
-    non rosso) alla prima attivazione.
+32. **Segnaposto DON!! (tasto destro / long-press su touch)**: marcatore
+    PURAMENTE visivo locale (tilt+dim+"HOLD") per dividersi i DON "come dal
+    vivo" — nessun intent, stato motore intatto, reset al cambio turno, hint
+    (banner tone "info", non rosso) alla prima attivazione.
+33. **Chrome "compact" per telefono (2026-10-24)** — `boardauto-compact.css`
+    + `COMPACT_QUERY` in BoardAutoPage (`(max-width:1024px) and
+    (max-height:560px)` oppure portrait ≤820px). LANDSCAPE è il target
+    primario: stessa geometria del tavolo (due metà specchiate) scalata
+    dall'ALTEZZA (`--bacw: clamp(40px, 9.5vh, 72px)`), mani come strisce
+    overlay top/bottom con scroll orizzontale, pill giocatore minime, barra
+    azioni in basso a destra (End turn / Log / Card), anteprima e log come
+    sheet a scomparsa (sinistra/destra), prompt di step ancorato in basso a
+    destra sopra l'angolo pile (mai sopra una char row). Su touch la carta in
+    mano si gioca in 2 tap (1° seleziona + apre lo sheet con "Play this
+    card", 2° o il bottone gioca). Tap target ≥44px, safe-area. PORTRAIT:
+    overlay "Rotate your phone" + "Continue anyway" → stesso DOM con metà
+    impilate e scroll verticale (fallback minimale, mai rotto). Nessuna
+    logica di gioco toccata; il desktop resta identico sopra la soglia.
+    I chip (potenza/costo/DON) sono `pointer-events: none`: un chip di una
+    carta rested intercettava i tap sulla vicina (bug trovato dal driver).
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**
@@ -556,6 +573,72 @@ addFromTrashToHand, giveRestedDon, placeDonInCostArea, lifeToHand), costi con
 scelta di carte (trashFromHand/lifeToHand) con pausa di pagamento, binding
 `prev`, intent [Activate: Main], DON!!−X da leader/characters, condizione
 "N DON on field", azione "stand DON".
+
+**M3 (2026-10-24) — completata (esecutore tier-2 + [Activate: Main] +
+ricompilazione ST01+OP01 al 94.2% IR-complete).** Scelte fatte:
+37. **Fase costi nel pump** (8-3-1-1): `RunningEffect` ora porta snapshot
+    JSON di `costs` e `actions` (così `ifThen` splice-a il ramo inline e le
+    pause riprendono a metà item); `effectActivated` è emesso PRIMA del
+    pagamento (10-2-13-5: l'[Once Per Turn] conta come usato all'attivazione).
+    Costi con scelta: trashFromHand/returnToHand/restFromField/handToDeckBottom
+    → `selectTargets`; DON!!−X → `payDon` quando esistono DON attaccati
+    (composizione da leader/characters/cost area, 8-3-1-6), altrimenti
+    auto-composizione rested-first (mai peggiorativa). `lifeToHand`/
+    `trashFromLife` pagano dalla CIMA della Life (3-10, area segreta:
+    nessuna ispezione).
+38. **Finestra peek/search**: `peekSelect` (carte viste, eleggibili filtrate,
+    take fino a N, resto ordinato top/bottom/misto o shuffle/trash come da
+    disposition; `playRested` per OP01-060, carta non giocata torna in cima
+    11-2-2); risposta `respondPeek {take, restTop, restBottom}` validata come
+    partizione. Ricerche "dall'intero mazzo" = peek 50 + shuffle (conv. M2).
+    Le carte giocate da peek/playFromZone innescano i loro [On Play] (10-2-6)
+    e hanno summoning sickness (3-7-4); con area piena l'effetto gioca ciò
+    che può (8-1-2, niente replace-by-rule per le giocate da effetto).
+39. **[Activate: Main] come intent** (10-2-2, 6-5-4): validazione = finestra
+    main, carta sul proprio campo, timing giusto, condizioni 8-4-1-1, costo
+    pagabile 8-3-1-3, [Once Per Turn] libero; `legalMoves.activatable` è lo
+    specchio esatto. ST01-001 end-to-end nel test di exit.
+40. **End Phase e fine battaglia agganciati alla coda**: `endTurn` →
+    [End of Your Turn] (TP) poi [End of Your Opponent's Turn] (NTP) via
+    ordering 8-6-1 (6-6-1-1/2), POI scadenze e passaggio di turno (flow
+    `toEndTurn`); fine battaglia → effetti 7-1-5-2 drenati prima di
+    battleEnded/scadenze thisBattle (flow `toBattleCleanup`). `startTurn` è
+    migrato in battle.ts per permettere la ripresa del flusso.
+41. **Binding `prev` reale**: `RunningEffect.lastTargets` ricorda i target
+    dell'ultima azione con selettore; `sel.prev` li riusa (filtrati a chi è
+    ancora in campo, 8-1-2) senza ri-selezione. `ifThen` eseguito inline;
+    `draw upTo` → finestra `chooseNumber` (8-4-4-1 ammette 0).
+42. **Nuove timing/condizioni/costi IR** (types+schema+validate in sync):
+    timing `onYouActivateEvent` / `onOpponentActivatesEvent` (8-5-2, enqueue
+    a ogni attivazione di Event, risolti dopo l'effetto della carta 8.6.3) e
+    `onOpponentCharacterKOd` (enqueue a ogni K.O.); condizioni `donOnField`
+    (cost area + attaccati) e `selfRested`; costi `handToDeckBottom`,
+    `returnToHand`, `restFromField`; azione `standDon` (sempre max: non
+    conviene mai stare sotto); restriction `cannotBeKOdInBattle` (battle-only,
+    distinta da cannotBeKOd 10-2-1-3, applicata nel damage step) e permission
+    `canAttackActiveCharacters` (7-1-1-2 allargata in declareAttack/legality).
+    `costMod` ora applicato: `effectiveCost` (base+mod, floor 0) usato da
+    playCard/legality/counter-event.
+43. **Ricompilazione ST01+OP01**: 17 carte da partial/unsupported a compiled
+    → **130/138 = 94.2% IR-complete** (ST01 100%, OP01 93.4%); 95 compiled su
+    107 interamente auto-eseguibili, 12 degradano SOLO per effetti static
+    (fixpoint M4). Restano 8 non compilate con motivo (chaining di colore
+    OP01-002, immunità per attributo 024, reveal mano avversaria 063/105,
+    amount scalari 072/083, override costruzione 075, name-treatment 121).
+    Report rigenerato con la metrica "fullyAutoExecutable" (asserito nei test
+    contro il ricalcolo). Golden +5 carte reali activate/search (ST01-001,
+    OP01-030, OP01-041, OP01-055, OP01-112) → 43 entry, diff al 100%.
+44. **Batch ST02-ST06 rimandato** a un passo dedicato: altre ~85 carte da
+    compilare e verificare a mano contro il testo; l'exit M3 richiedeva
+    ST01+OP01 e il vocabolario/esecutore ora copre i pattern necessari
+    (stesso §6 a 3 livelli quando si farà).
+
+Debiti M4+: effetti `static` a fixpoint (8-1-3-3-5) — unica causa di
+degrado rimasta tra i compiled —, replacement/negate (8-1-3-4, 8-2),
+setBasePower/redirectAttack/endBattle/addToLife/chooseOne, reveal della mano
+avversaria, amount scalari ("+X per ogni ..."), peek del mazzo avversario,
+[Once Per Turn] edge 10-2-13-5 con pagamento interrotto a metà (oggi il
+pagamento non può fallire a metà: validato prima).
 
 ## Fonti
 
