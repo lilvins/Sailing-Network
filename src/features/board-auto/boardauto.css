@@ -415,6 +415,7 @@
   color: var(--ivory);
   font: 800 10px var(--mono);
   white-space: nowrap;
+  pointer-events: none; /* informational: never intercept a tap on a neighbour */
 }
 .ba-power i { font-style: normal; }
 .ba-power.up i { color: #4fd27a; }
@@ -473,7 +474,9 @@
   color: #ffd9c9;
   font: 800 8.5px var(--mono);
   white-space: nowrap;
+  pointer-events: none;
 }
+.ba-cost { pointer-events: none; }
 
 /* attack arrow overlay */
 .ba-arrow {

@@ -19,10 +19,16 @@ const BASE = "http://localhost:5173";
 const OUT = "scripts/.shots";
 mkdirSync(OUT, { recursive: true });
 
-// BA_W/BA_H: viewport override · BA_TAG: shot-name suffix · BA_DECLINE: see triggers
+// BA_W/BA_H: viewport override · BA_TAG: shot-name suffix · BA_PREFIX: shot
+// name prefix (e.g. "mobile-") · BA_MOBILE=1: touch device emulation ·
+// BA_PORTRAIT=1: only verify the portrait overlay + fallback, no game ·
+// BA_DECLINE: see triggers
 const W = Number(process.env.BA_W ?? 1440);
 const H = Number(process.env.BA_H ?? 900);
 const TAG = process.env.BA_TAG ? `-${process.env.BA_TAG}` : "";
+const PREFIX = process.env.BA_PREFIX ?? "";
+const MOBILE = !!process.env.BA_MOBILE;
+const PORTRAIT_ONLY = !!process.env.BA_PORTRAIT;
 
 const consoleErrors = [];
 const browser = await chromium.launch();
@@ -30,6 +36,7 @@ const browser = await chromium.launch();
 const AUTH = `${OUT}/.boardauto-auth.json`;
 const ctx = await browser.newContext({
   viewport: { width: W, height: H },
+  ...(MOBILE ? { isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : {}),
   ...(existsSync(AUTH) ? { storageState: AUTH } : {}),
 });
 // Kill Vite's HMR socket inside this context: other agents editing the repo
@@ -57,8 +64,17 @@ const taken = new Set();
 async function shot(name, force = false) {
   if (taken.has(name) && !force) return;
   taken.add(name);
-  await page.screenshot({ path: `${OUT}/boardauto-${name}${TAG}.png` });
-  console.log("  shot:", name + TAG);
+  await page.screenshot({ path: `${OUT}/boardauto-${PREFIX}${name}${TAG}.png` });
+  console.log("  shot:", PREFIX + name + TAG);
+}
+
+/** Compact chrome: a card sheet may be open (tap outside closes it). */
+async function closeSheet() {
+  const bd = page.locator(".ba-sheet-backdrop");
+  if (await bd.count()) {
+    await bd.click({ position: { x: 5, y: 5 }, timeout: 2000 }).catch(() => {});
+    await page.waitForTimeout(80);
+  }
 }
 
 const snap = () =>
@@ -121,6 +137,25 @@ await shot("roll");
 await clickAct("first");
 await page.waitForSelector(".ba-field", { timeout: 8000 });
 
+if (PORTRAIT_ONLY) {
+  // portrait phone: the "rotate" overlay, then the minimal fallback stack
+  await page.waitForSelector(".ba-rotate", { timeout: 5000 });
+  await shot("rotate");
+  await clickAct("portrait-anyway");
+  await page.waitForTimeout(150);
+  await clickAct("keep");
+  await clickAct("keep");
+  await page.waitForTimeout(150);
+  await shot("portrait-main");
+  await clickAct("sheet-preview");
+  await page.waitForTimeout(150);
+  await shot("portrait-sheet");
+  await ctx.close();
+  await browser.close();
+  console.log(consoleErrors.length ? `CONSOLE ERRORS: ${consoleErrors.join(" | ")}` : "done, zero console errors");
+  process.exit(consoleErrors.length ? 1 : 0);
+}
+
 // ── game driver ───────────────────────────────────────────────────────────────
 const flags = {
   blocked: false,
@@ -138,6 +173,7 @@ let lastSig = "";
 let stuck = 0;
 
 while (guard-- > 0) {
+  if (MOBILE) await closeSheet(); // a preview sheet left open would block taps
   const s = await snap();
   if (!s || s.stage !== "play") break;
   if (s.phase === "over") {
@@ -230,6 +266,13 @@ while (guard-- > 0) {
     flags.playedTurnCount++;
     await clickIid(playable[0].iid);
     await page.waitForTimeout(140);
+    // compact chrome: 1st tap selects + opens the card sheet, Play confirms
+    const playBtn = page.locator('[data-act="play-selected"]');
+    if (await playBtn.count()) {
+      await shot("hand");
+      await playBtn.click();
+      await page.waitForTimeout(140);
+    }
     if (s.turn <= 3) await shot("main");
     continue;
   }

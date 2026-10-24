@@ -12,6 +12,7 @@ import { automationInfo } from "./compile";
 import { buildDemoDecks, userDeckChoices, type DeckChoice } from "./decks";
 import { fmtEvent } from "./log";
 import "./boardauto.css";
+import "./boardauto-compact.css";
 
 /* =============================================================================
    BOARD AUTO — the AUTOSIM full-rules board (AUTOSIM_PLAN.md §7).
@@ -54,6 +55,25 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
     events: () => useAutoStore.getState().events,
   };
 }
+
+// ─── viewport mode ────────────────────────────────────────────────────────────
+
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => typeof window !== "undefined" && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setMatches(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, [query]);
+  return matches;
+}
+
+/** Compact chrome: phone landscape (short viewport) or narrow portrait. The
+ *  desktop grid stays untouched above these. Mirrored by `.compact` in CSS. */
+const COMPACT_QUERY = "(max-width: 1024px) and (max-height: 560px), (max-width: 820px) and (orientation: portrait)";
+const PORTRAIT_QUERY = "(orientation: portrait)";
 
 // ─── page root ────────────────────────────────────────────────────────────────
 
@@ -317,6 +337,15 @@ function GameScreen() {
   const [mode, setMode] = useState<Mode>({ t: "idle" });
   const [picked, setPicked] = useState<Iid[]>([]);
   const [armConcede, setArmConcede] = useState<PID | null>(null);
+  // compact (phone) chrome: sheets instead of rails, 2-tap play from hand
+  const compact = useMediaQuery(COMPACT_QUERY);
+  const portrait = useMediaQuery(PORTRAIT_QUERY);
+  const [portraitOk, setPortraitOk] = useState(false);
+  const [sheet, setSheet] = useState<"preview" | "log" | null>(null);
+  const [selectedHand, setSelectedHand] = useState<Iid | null>(null);
+  useEffect(() => {
+    if (!compact) setSheet(null);
+  }, [compact]);
   // DON placeholders: PURELY VISUAL, per-seat marked active-DON indexes.
   // Never an intent — the engine's DON state is untouched (plan §1 rule).
   const [donMarks, setDonMarks] = useState<Record<PID, number[]>>({});
@@ -341,6 +370,32 @@ function GameScreen() {
     setDonMarks({});
   }, [game.turn]);
 
+  // compact: a selected hand card that left the hand (played / discarded /
+  // turn passed) is deselected
+  useEffect(() => {
+    if (!selectedHand) return;
+    const inHand = Object.values(game.players).some((p) => p.zones.hand.includes(selectedHand));
+    if (!inHand || game.pendingChoice) setSelectedHand(null);
+  }, [game, selectedHand]);
+
+  // touch: long-press on an active DON toggles the placeholder (no right-click)
+  const pressTimer = useRef<number | null>(null);
+  const longPressed = useRef(false);
+  const donPressStart = (pid: PID, index: number, pointerType: string) => {
+    if (pointerType !== "touch") return;
+    longPressed.current = false;
+    pressTimer.current = window.setTimeout(() => {
+      longPressed.current = true;
+      toggleDonMark(pid, index);
+    }, 480);
+  };
+  const donPressEnd = () => {
+    if (pressTimer.current != null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
+
   const toggleDonMark = (pid: PID, index: number) => {
     setDonMarks((prev) => {
       const cur = prev[pid] ?? [];
@@ -350,7 +405,7 @@ function GameScreen() {
       donHintShown.current = true;
       explain(
         "DON!! placeholder — visual only, the game state does not change.",
-        "Right-click toggles it off; all marks clear at the turn change.",
+        "Right-click (long-press on touch) toggles it off; all marks clear at the turn change.",
         "info",
       );
     }
@@ -419,6 +474,28 @@ function GameScreen() {
     const c = cards.get(cardId);
     if (c) setPreview(c);
   };
+  /** A tap that performs NO action: desktop = preview rail (already set by
+   *  hover); compact = open the preview sheet (no hover on touch). */
+  const inspect = (cardId: string | null) => {
+    hover(cardId);
+    if (compact && cardId) setSheet("preview");
+  };
+
+  /** Play a hand card (shared by the desktop 1-tap, the compact 2nd tap and
+   *  the sheet's Play button). */
+  const playFromHand = (owner: PID, iid: Iid) => {
+    const playable = lm.playableFromHand.find((x) => x.iid === iid);
+    if (!playable) return;
+    const card = cards.get(game.players[owner].instances[iid].cardId);
+    setSelectedHand(null);
+    setSheet(null);
+    if (playable.needsReplace && card?.category === "Character") {
+      setMode({ t: "replace", handIid: iid });
+      return;
+    }
+    setMode({ t: "idle" });
+    dispatch({ type: "playCard", player: owner, iid });
+  };
 
   const toggleTarget = (iid: Iid) => {
     if (pc?.kind !== "selectTargets") return;
@@ -472,24 +549,27 @@ function GameScreen() {
       explain("This card can't counter.", "Usable now: cards with a counter value, or [Counter] Events you can pay.");
       return;
     }
-    if (pc) return; // other prompts: tap = preview only
-    if (game.phase !== "main" || game.battle) return;
+    if (pc) { inspect(inst.cardId); return; } // other prompts: tap = preview only
+    if (game.phase !== "main" || game.battle) { inspect(inst.cardId); return; }
     if (owner !== game.turnPlayer) {
       explain("Not this seat's turn.", `${seatName(game.turnPlayer)} is acting.`);
+      inspect(inst.cardId);
       return;
     }
     const playable = lm.playableFromHand.find((x) => x.iid === iid);
     if (!playable) {
       whyNotPlayable(owner, iid);
+      inspect(inst.cardId);
       return;
     }
-    const card = cards.get(inst.cardId);
-    if (playable.needsReplace && card?.category === "Character") {
-      setMode({ t: "replace", handIid: iid });
+    if (compact && selectedHand !== iid) {
+      // touch: 1st tap selects + shows the card, 2nd tap (or the sheet's
+      // Play button) plays it — no accidental plays on a small screen
+      setSelectedHand(iid);
+      inspect(inst.cardId);
       return;
     }
-    setMode({ t: "idle" });
-    dispatch({ type: "playCard", player: owner, iid });
+    playFromHand(owner, iid);
   };
 
   const onBoardTap = (owner: PID, iid: Iid) => {
@@ -503,7 +583,7 @@ function GameScreen() {
       dispatch({ type: "respondBlock", player: owner, blockerIid: iid });
       return;
     }
-    if (pc) return;
+    if (pc) { inspect(cardId); return; }
 
     if (mode.t === "don") {
       const me = game.turnPlayer;
@@ -554,9 +634,11 @@ function GameScreen() {
       const isBoard = iid === game.players[owner].leaderIid || game.players[owner].zones.characterArea.includes(iid);
       if (isBoard && inst.rested) explain("This card is rested — it already acted.", "It stands in your next Refresh Phase.");
       else if (isBoard && game.turn <= 2) explain("No battles on either player's first turn (6-5-6-1).");
+      inspect(cardId);
       return;
     }
-    if (mode.t === "attack") setMode({ t: "idle" });
+    if (mode.t === "attack") { setMode({ t: "idle" }); return; }
+    inspect(cardId);
   };
 
   const onDonTap = (owner: PID, index: number) => {
@@ -714,7 +796,7 @@ function GameScreen() {
       small ? "ba-small" : "",
       highlightSets.legal.has(iid) ? "ba-legal" : "",
       highlightSets.target.has(iid) ? "ba-target" : "",
-      picked.includes(iid) ? "ba-picked" : "",
+      picked.includes(iid) || (inHand && selectedHand === iid) ? "ba-picked" : "",
       mode.t === "attack" && mode.iid === iid ? "ba-attacker" : "",
     ]
       .filter(Boolean)
@@ -810,8 +892,13 @@ function GameScreen() {
                     title={marked ? "Placeholder (visual only) — right-click to clear" : undefined}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (longPressed.current) { longPressed.current = false; return; } // the long-press already acted
                       onDonTap(pid, i + 1);
                     }}
+                    onPointerDown={(e) => donPressStart(pid, i, e.pointerType)}
+                    onPointerUp={donPressEnd}
+                    onPointerCancel={donPressEnd}
+                    onPointerLeave={donPressEnd}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -843,7 +930,7 @@ function GameScreen() {
                   data-iid={trashTop}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setPreview(trashCard);
+                    inspect(trashCard.id);
                   }}
                 >
                   <CardArt inst={{ instanceId: trashTop, cardId: trashCard.id, faceUp: true, rested: false }} card={trashCard} />
@@ -1012,52 +1099,143 @@ function GameScreen() {
   const phaseLabel =
     game.phase === "setup" ? "SETUP" : game.phase === "over" ? "GAME OVER" : battleStep ? `BATTLE · ${battleStep.toUpperCase()}` : "MAIN PHASE";
 
+  // shared preview content (desktop rail / compact sheet)
+  const previewPanel = preview ? (
+    <>
+      <div className="ba-prevart">{preview.image && <img src={preview.image} alt={preview.name} />}</div>
+      <b className="ba-prevname">{preview.name}</b>
+      <span className="ba-prevline">
+        {preview.category.toUpperCase()} · {preview.category === "Leader" ? `LIFE ${preview.cost ?? 0}` : `COST ${preview.cost ?? 0}`}
+        {preview.power != null && ` · POW ${preview.power}`}
+        {preview.counter ? ` · CTR +${preview.counter}` : ""}
+      </span>
+      <span className="ba-prevline">{preview.colors.join("/")} · {preview.types.join(", ")}</span>
+      <div className="ba-prevfx">
+        {preview.effect && preview.effect !== "-" ? preview.effect : "(no effect text)"}
+        {preview.trigger
+          ? `\n\n${preview.trigger.trimStart().startsWith("[Trigger]") ? preview.trigger : `[Trigger] ${preview.trigger}`}`
+          : ""}
+      </div>
+      {automationInfo(preview).note && <div className="ba-prevnote">{automationInfo(preview).note}</div>}
+    </>
+  ) : (
+    <div className="ba-prevempty">Tap or hover a card to inspect it.</div>
+  );
+
+  const endTurnButton = (
+    <button
+      className="ba-btn primary big"
+      data-act="endturn"
+      disabled={!lm.canEndTurn}
+      onClick={() => dispatch({ type: "endTurn", player: game.turnPlayer })}
+    >
+      End turn
+    </button>
+  );
+
+  // compact chrome: minimal seat pill for the overlay strips
+  const seatPill = (pid: PID) => {
+    const p = game.players[pid];
+    const active = lm.actor === pid && game.phase !== "over";
+    const sec = clocks[pid] ?? 0;
+    return (
+      <div className={`ba-m-pill${active ? " active" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
+        <b>{seatName(pid)}</b>
+        <span>
+          {Math.floor(sec / 60)}:{String(sec % 60).padStart(2, "0")} · L{p.zones.life.length} · D{p.zones.deck.length} · H{p.zones.hand.length} · DON {p.don.active}/{p.don.rested}
+        </span>
+      </div>
+    );
+  };
+
+  const selectedHandOwner = selectedHand ? (game.players[SEAT_A].zones.hand.includes(selectedHand) ? SEAT_A : SEAT_B) : null;
+  const selectedPlayable = !!selectedHand && selectedHandOwner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === selectedHand);
+
+  const compactChrome = compact && (
+    <>
+      <div className="ba-m-strip top">
+        {seatPill(SEAT_B)}
+        {HandRow({ pid: SEAT_B, small: true })}
+        <span className="ba-m-turn">T{Math.max(1, game.turn)} · {phaseLabel}</span>
+      </div>
+      <div className="ba-m-strip bottom">
+        {seatPill(SEAT_A)}
+        {HandRow({ pid: SEAT_A })}
+        <div className="ba-m-bar">
+          {endTurnButton}
+          <button className={`ba-btn${sheet === "log" ? " on" : ""}`} data-act="sheet-log" onClick={(e) => { e.stopPropagation(); setSheet(sheet === "log" ? null : "log"); }}>Log</button>
+          <button className={`ba-btn${sheet === "preview" ? " on" : ""}`} data-act="sheet-preview" onClick={(e) => { e.stopPropagation(); setSheet(sheet === "preview" ? null : "preview"); }}>Card</button>
+        </div>
+      </div>
+      {sheet && (
+        <>
+          <div className="ba-sheet-backdrop" onClick={(e) => { e.stopPropagation(); setSheet(null); setSelectedHand(null); }} />
+          <div className={`ba-sheet ${sheet === "preview" ? "left" : "right"}`} onClick={(e) => e.stopPropagation()}>
+            <div className="ba-sheet-head">
+              <b>{sheet === "preview" ? "CARD" : "LOG & SEATS"}</b>
+              <button className="ba-btn tiny" data-act="sheet-close" onClick={() => { setSheet(null); setSelectedHand(null); }}>Close</button>
+            </div>
+            {sheet === "preview" ? (
+              <div className="ba-sheet-body ba-preview">
+                {previewPanel}
+                {selectedPlayable && selectedHand && selectedHandOwner && (
+                  <button className="ba-btn primary big" data-act="play-selected" onClick={() => playFromHand(selectedHandOwner, selectedHand)}>
+                    Play this card
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="ba-sheet-body">
+                {SeatPanel({ pid: SEAT_B })}
+                <div className="ba-log ba-sheet-log">
+                  {logLines.map((l, i) => (
+                    <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
+                  ))}
+                </div>
+                {SeatPanel({ pid: SEAT_A })}
+                <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+      {portrait && !portraitOk && (
+        <div className="ba-rotate" role="dialog">
+          <div className="ba-rotate-box">
+            <svg className="ba-rotate-icon" viewBox="0 0 48 48" aria-hidden shapeRendering="crispEdges">
+              <rect x="6" y="14" width="36" height="20" fill="none" stroke="currentColor" strokeWidth="3" />
+              <rect x="36" y="22" width="3" height="4" fill="currentColor" />
+              <path d="M24 4 L30 9 L24 14 Z" fill="currentColor" />
+              <path d="M24 44 L18 39 L24 34 Z" fill="currentColor" />
+            </svg>
+            <b>ROTATE YOUR PHONE</b>
+            <p>The table is built for landscape: two mirrored halves, hands on the edges, everything in one screen.</p>
+            <button className="ba-btn ghost" data-act="portrait-anyway" onClick={() => setPortraitOk(true)}>Continue anyway</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
   return (
-    <div className="ba-root ba-game" onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}>
+    <div className={`ba-root ba-game${compact ? " compact" : ""}`} onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}>
       <Banner />
       {toast && <div className="ba-toast">{toast}</div>}
 
-      <div className="ba-left">
-        <div className="ba-preview">
-          {preview ? (
-            <>
-              <div className="ba-prevart">{preview.image && <img src={preview.image} alt={preview.name} />}</div>
-              <b className="ba-prevname">{preview.name}</b>
-              <span className="ba-prevline">
-                {preview.category.toUpperCase()} · {preview.category === "Leader" ? `LIFE ${preview.cost ?? 0}` : `COST ${preview.cost ?? 0}`}
-                {preview.power != null && ` · POW ${preview.power}`}
-                {preview.counter ? ` · CTR +${preview.counter}` : ""}
-              </span>
-              <span className="ba-prevline">{preview.colors.join("/")} · {preview.types.join(", ")}</span>
-              <div className="ba-prevfx">
-                {preview.effect && preview.effect !== "-" ? preview.effect : "(no effect text)"}
-                {preview.trigger
-                  ? `\n\n${preview.trigger.trimStart().startsWith("[Trigger]") ? preview.trigger : `[Trigger] ${preview.trigger}`}`
-                  : ""}
-              </div>
-              {automationInfo(preview).note && <div className="ba-prevnote">{automationInfo(preview).note}</div>}
-            </>
-          ) : (
-            <div className="ba-prevempty">Tap or hover a card to inspect it.</div>
-          )}
+      {!compact && (
+        <div className="ba-left">
+          <div className="ba-preview">{previewPanel}</div>
+          <div className="ba-turnbox">
+            <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
+            <span className="ba-phasepill">{phaseLabel}</span>
+          </div>
+          {endTurnButton}
+          <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
         </div>
-        <div className="ba-turnbox">
-          <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
-          <span className="ba-phasepill">{phaseLabel}</span>
-        </div>
-        <button
-          className="ba-btn primary big"
-          data-act="endturn"
-          disabled={!lm.canEndTurn}
-          onClick={() => dispatch({ type: "endTurn", player: game.turnPlayer })}
-        >
-          End turn
-        </button>
-        <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
-      </div>
+      )}
 
       <div className="ba-centercol">
-        {HandRow({ pid: SEAT_B, small: true })}
+        {!compact && HandRow({ pid: SEAT_B, small: true })}
         <div className="ba-field" ref={fieldRef}>
           {Half({ pid: SEAT_B, flip: true })}
           <div className="ba-midline" />
@@ -1081,19 +1259,22 @@ function GameScreen() {
           )}
         </div>
         {actionBar}
-        {HandRow({ pid: SEAT_A })}
+        {!compact && HandRow({ pid: SEAT_A })}
       </div>
 
-      <div className="ba-right">
-        {SeatPanel({ pid: SEAT_B })}
-        <div className="ba-log" ref={logRef}>
-          {logLines.map((l, i) => (
-            <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
-          ))}
+      {!compact && (
+        <div className="ba-right">
+          {SeatPanel({ pid: SEAT_B })}
+          <div className="ba-log" ref={logRef}>
+            {logLines.map((l, i) => (
+              <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
+            ))}
+          </div>
+          {SeatPanel({ pid: SEAT_A })}
         </div>
-        {SeatPanel({ pid: SEAT_A })}
-      </div>
+      )}
 
+      {compactChrome}
       {overlay}
     </div>
   );

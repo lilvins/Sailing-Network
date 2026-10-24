@@ -1,0 +1,229 @@
+/* =============================================================================
+   COMPACT CHROME — phones. Landscape is the primary target (~900×412): the
+   desktop table geometry (two mirrored halves) is kept, scaled from the
+   viewport HEIGHT; preview/log become toggled sheets, hands are thin overlay
+   strips on the top/bottom edges, the action bar sits bottom-right. Portrait
+   gets a "rotate" overlay with a minimal (never broken) vertical fallback.
+   The `.compact` class mirrors COMPACT_QUERY in BoardAutoPage.tsx.
+   ========================================================================== */
+.ba-game.compact {
+  display: block;
+  padding: 0;
+  --bacw: clamp(40px, 9.5vh, 72px);
+  --strip-h: 60px;
+}
+.ba-game.compact .ba-centercol {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--strip-h);
+  bottom: calc(var(--strip-h) + env(safe-area-inset-bottom, 0px));
+  padding: 2px 4px;
+  gap: 0;
+}
+.ba-game.compact .ba-field {
+  justify-content: space-evenly;
+  gap: 2px;
+  padding: 3px 4px;
+}
+.ba-game.compact .ba-half { padding: 3px 4px; gap: 5px; }
+.ba-game.compact .ba-halfmain { gap: 3px; }
+.ba-game.compact .ba-charrow { min-height: calc(var(--bacw) * 1.4); gap: 4px; }
+.ba-game.compact .ba-charrow .gb-rested,
+.ba-game.compact .ba-lsrow > .gb-card.gb-rested { margin: 0 calc(var(--bacw) * 0.26); }
+.ba-game.compact .ba-lsrow { gap: 5px; }
+.ba-game.compact .ba-donrow { min-height: calc(var(--bacw) * 0.9); padding: 1px 3px; }
+.ba-game.compact .ba-doncell { width: calc(var(--bacw) * 0.62) !important; margin-right: calc(var(--bacw) * -0.26); min-height: 44px; }
+.ba-game.compact .ba-sidecol { gap: 3px; }
+.ba-game.compact .ba-pcard { width: calc(var(--bacw) * 0.62); }
+.ba-game.compact .ba-plabel { font-size: 6.5px; letter-spacing: 0.08em; }
+.ba-game.compact .ba-pcount { font-size: 9px; min-width: 16px; right: -4px; bottom: -3px; }
+.ba-game.compact .ba-midline { display: none; }
+.ba-game.compact .ba-slot { font-size: 6.5px; }
+.ba-game.compact .ba-power { font-size: 8.5px; bottom: -6px; padding: 0 3px; }
+.ba-game.compact .ba-kw { font-size: 6.5px; padding: 0 2px; }
+.ba-game.compact .ba-given { font-size: 7px; bottom: 10px; }
+.ba-game.compact .ba-cost { min-width: 14px; height: 14px; font-size: 9px; top: -4px; left: -4px; }
+.ba-game.compact .ba-toast { top: calc(var(--strip-h) + 6px); font-size: 13px; padding: 5px 12px; }
+.ba-game.compact .ba-banner { top: calc(var(--strip-h) + 4px); max-width: 94vw; padding: 6px 10px; }
+
+/* overlay strips: opponent (top) and mine (bottom) */
+.ba-m-strip {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: var(--strip-h);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: rgba(6, 10, 18, 0.94);
+}
+.ba-m-strip.top { top: 0; border-bottom: 1px solid var(--brass-dim); }
+.ba-m-strip.bottom {
+  bottom: 0;
+  border-top: 1px solid var(--brass-dim);
+  padding-bottom: calc(3px + env(safe-area-inset-bottom, 0px));
+  height: calc(var(--strip-h) + env(safe-area-inset-bottom, 0px));
+}
+.ba-m-pill {
+  flex: 0 0 auto;
+  max-width: 34vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px 7px;
+  border: 1px solid var(--brass-dim);
+  border-left: 3px solid var(--lc, #3a4a5e);
+  background: var(--night-2);
+  min-height: 44px;
+  justify-content: center;
+}
+.ba-m-pill b { font: 800 11px var(--serif); color: var(--ivory); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-m-pill span { font: 700 9px var(--mono); color: var(--ivory-muted); white-space: nowrap; }
+.ba-m-pill.active { border-color: var(--brass-hi); background: var(--night-3); }
+.ba-m-pill.active b { color: var(--brass-hi); }
+/* the app's fixed ThemeToggle lives in the top-right corner: keep clear of it */
+.ba-m-turn { flex: 0 0 auto; margin-right: 62px; font: 800 9.5px var(--serif); letter-spacing: 0.08em; color: var(--brass-hi); white-space: nowrap; max-width: 26vw; overflow: hidden; text-overflow: ellipsis; }
+/* the hand inside a strip: horizontal snap scroller, cards >= 44px tall */
+.ba-m-strip .ba-hand,
+.ba-m-strip .ba-hand.small {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  padding: 0 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.ba-m-strip .ba-hand .gb-card,
+.ba-m-strip .ba-hand.small .gb-card {
+  width: 38px;
+  flex: 0 0 auto;
+  margin: 0 3px;
+  scroll-snap-align: start;
+}
+.ba-m-strip .ba-hand .gb-card:hover { transform: none; }
+.ba-m-strip .ba-hand .ba-picked { transform: translateY(-3px); }
+.ba-m-strip .ba-donempty { font-size: 8px; }
+.ba-m-bar { flex: 0 0 auto; display: flex; gap: 4px; align-items: center; }
+.ba-m-bar .ba-btn { min-height: 44px; min-width: 44px; padding: 0 10px; font-size: 11px; }
+.ba-m-bar .ba-btn.big { padding: 0 12px; font-size: 12px; }
+.ba-m-bar .ba-btn.on { border-color: var(--brass-hi); color: var(--brass-hi); }
+
+/* contextual prompt: fixed above the bottom strip, one line, 44px buttons */
+.ba-game.compact .ba-actionbar {
+  /* bottom-RIGHT, over the DECK/TRASH corner: never over a char row where a
+     blocker / target might need the tap */
+  position: fixed;
+  left: auto;
+  right: 6px;
+  bottom: calc(var(--strip-h) + 4px + env(safe-area-inset-bottom, 0px));
+  transform: none;
+  z-index: 46;
+  max-width: min(62vw, 520px);
+  padding: 4px 8px;
+  gap: 8px;
+}
+.ba-game.compact .ba-actionbar .ba-actlabel { font-size: 11px; line-height: 1.25; }
+.ba-game.compact .ba-actionbar .ba-btn { min-height: 44px; }
+
+/* sheets (preview from the left, log from the right) */
+.ba-sheet-backdrop { position: fixed; inset: 0; z-index: 69; background: rgba(0, 0, 0, 0.45); }
+.ba-sheet {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: min(380px, 58vw);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  background: var(--night-2);
+  border: 2px solid var(--brass);
+}
+.ba-sheet.left { left: 0; border-left: none; }
+.ba-sheet.right { right: 0; border-right: none; }
+.ba-sheet-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--brass-dim);
+}
+.ba-sheet-head b { font: 800 11px var(--serif); letter-spacing: 0.12em; color: var(--brass-hi); }
+.ba-sheet-head .ba-btn { min-height: 40px; }
+.ba-sheet-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 8px; }
+.ba-sheet-body.ba-preview .ba-prevart { max-height: 44vh; }
+.ba-sheet-body.ba-preview .ba-prevart img { max-height: calc(44vh - 2px); }
+.ba-sheet-body.ba-preview .ba-prevfx { flex: 0 0 auto; max-height: none; }
+.ba-sheet-body .ba-btn { min-height: 44px; }
+.ba-sheet-log { flex: 0 0 auto; max-height: 50vh; }
+
+/* "rotate your phone" overlay (portrait) over the dimmed table */
+.ba-rotate {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(6, 10, 18, 0.82);
+  backdrop-filter: blur(3px);
+}
+.ba-rotate-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 320px;
+  padding: 22px 20px;
+  background: var(--night-2);
+  border: 2px solid var(--brass);
+  text-align: center;
+}
+.ba-rotate-icon { width: 64px; height: 64px; color: var(--brass-hi); }
+.ba-rotate-box b { font: 800 15px var(--serif); letter-spacing: 0.14em; color: var(--ivory); }
+.ba-rotate-box p { margin: 0; font: 500 12px/1.45 var(--serif); color: var(--ivory-muted); }
+.ba-rotate-box .ba-btn { min-height: 44px; }
+
+/* touch: every pressable thing >= 44px */
+@media (pointer: coarse) {
+  .ba-root .ba-btn { min-height: 44px; }
+  .ba-root .ba-ov .ba-btn { min-height: 44px; }
+  .ba-deckopt { min-height: 56px; }
+}
+/* modals must fit a 412px-tall viewport */
+.ba-game.compact .ba-ov { max-height: 96vh; gap: 6px; padding: 10px 14px; }
+.ba-game.compact .ba-ovcard { width: clamp(80px, 26vh, 180px); }
+.ba-game.compact .ba-ovname { font-size: 13px; }
+.ba-game.compact .ba-ovtext { font-size: 11px; max-width: 46ch; }
+.ba-game.compact .ba-ovnote { font-size: 10px; }
+.ba-game.compact .ba-ovtag { font-size: 10px; }
+
+/* portrait fallback: the same DOM, halves stacked and scrollable; cards sized
+   from the width so 5 characters + piles fit a 390px row */
+@media (orientation: portrait) {
+  .ba-game.compact { --bacw: clamp(36px, 10.5vw, 60px); }
+  .ba-game.compact .ba-centercol { padding: 2px; }
+  .ba-game.compact .ba-field { overflow-y: auto; justify-content: flex-start; gap: 6px; padding: 3px; }
+  .ba-game.compact .ba-half { grid-template-columns: auto minmax(0, 1fr) auto; gap: 3px; padding: 3px; }
+  .ba-game.compact .ba-pcard { width: calc(var(--bacw) * 0.55); }
+  .ba-game.compact .ba-lsrow { flex-wrap: wrap; }
+  .ba-game.compact .ba-donrow { flex: 1 0 100%; min-height: 40px; }
+  .ba-game.compact .ba-doncell { width: 30px !important; margin-right: -8px; min-height: 40px; }
+  .ba-m-pill { max-width: 28vw; padding: 3px 5px; }
+  .ba-m-pill span { font-size: 7.5px; }
+  .ba-m-turn { display: none; }
+  .ba-m-strip.top { padding-right: 58px; } /* room for the app's ThemeToggle */
+  .ba-m-bar { gap: 3px; }
+  .ba-m-bar .ba-btn { padding: 0 7px; font-size: 10px; min-width: 44px; }
+  .ba-m-bar .ba-btn.big { padding: 0 9px; font-size: 11px; }
+  .ba-sheet { top: auto; left: 0; right: 0; width: auto; max-height: 72vh; border: 2px solid var(--brass); border-bottom: none; }
+  .ba-sheet.left, .ba-sheet.right { left: 0; right: 0; }
+}
