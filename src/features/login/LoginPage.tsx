@@ -6,21 +6,9 @@ import "../home/home.css"; // for the shared .sn vars/atoms
 import "./login.css";
 
 /* The landing/login — the right side is the REAL "Moon and Sea" pixel art
-   (public/assets/bg/night-sea, CraftPix via OpenGameArt, OGA-BY 3.0),
-   layered PNGs with slow functional drift. Wired to the real backend. */
-
-/** Layered pixel-art scene: base sky+sea, moon, drifting clouds, shimmering
-    moon reflections. All real PNGs — nothing drawn in markup. */
-function NightSea() {
-  return (
-    <div className="nsea" aria-hidden="true">
-      <div className="nsea-layer nsea-base" />
-      <div className="nsea-layer nsea-moon" />
-      <div className="nsea-layer nsea-clouds" />
-      <div className="nsea-layer nsea-refl" />
-    </div>
-  );
-}
+   (public/assets/bg/night-sea, CraftPix via OpenGameArt, OGA-BY 3.0): the
+   shared living NightSea scene. Wired to the real backend. */
+import { NightSea } from "../home/NightSea";
 
 export function LoginPage() {
   const setView = useUiStore((s) => s.setView);

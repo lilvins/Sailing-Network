@@ -139,7 +139,7 @@ export function MessagesPage() {
 
   return (
     <div className="sn snp">
-      <Header title="Messages" sub="Talk to your crew" />
+      <Header title="Messages" sub="Talk to your crew" hero="/assets/bg/sec-messages.png" heroSlim />
       <div className="snp-body">
         <div className="snp-wrap">
           <div className="msg-layout" data-active={active ? "true" : "false"}>

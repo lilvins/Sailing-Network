@@ -122,7 +122,7 @@ export function PopularDecklistsPage() {
   if (!data) {
     return (
       <div className="sn snp">
-        <Header title="Popular Decklists" sub="Top lists from recent regionals" />
+        <Header title="Popular Decklists" sub="Top lists from recent regionals" hero="/assets/bg/sec-popular.png" />
         <div className="snp-body">
           <div className="snp-wrap">
             <div style={{ padding: "60px", textAlign: "center", color: "var(--muted)" }}>
@@ -137,7 +137,7 @@ export function PopularDecklistsPage() {
 
   return (
     <div className="sn snp">
-      <Header title="Popular Decklists" sub="Top lists from recent regionals · egmanevents" />
+      <Header title="Popular Decklists" sub="Top lists from recent regionals · egmanevents" hero="/assets/bg/sec-popular.png" />
       <div className="snp-body">
         <div className="snp-wrap pd-layout">
           {/* regionals */}

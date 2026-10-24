@@ -410,7 +410,7 @@ function DeckBuilder() {
   return (
     <div className="sn snp db">
       {/* header */}
-      <header className="snp-head db-head">
+      <header className="snp-head db-head has-hero slim" style={{ "--hero-img": 'url("/assets/bg/sec-decks.png")' }}>
         <button className="snp-back" title="Back to My Decks" onClick={() => setView("my-decks")}><I n="back" /></button>
         <div className="snp-head-title">
           <h1>Deck Constructor</h1>

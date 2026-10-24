@@ -105,7 +105,7 @@ function MyDecks() {
 
   return (
     <div className="sn snp md">
-      <header className="snp-head">
+      <header className="snp-head has-hero" style={{ "--hero-img": 'url("/assets/bg/sec-decks.png")' }}>
         <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}><I n="back" /></button>
         <div className="snp-head-title">
           <h1>My Decks</h1>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode, type CSSProperties } from "react";
 import { useUiStore } from "../../app/uiStore";
 import { useAuthStore } from "../../app/authStore";
 import { api, type DirectoryUser, type Match } from "../../lib/api";
@@ -68,10 +68,27 @@ export function PH({ name, hue, big }: { name: string; hue: string; big?: boolea
   );
 }
 
-export function Header({ title, sub, right }: { title: string; sub?: string; right?: ReactNode }) {
+export function Header({
+  title,
+  sub,
+  right,
+  hero,
+  heroSlim,
+}: {
+  title: string;
+  sub?: string;
+  right?: ReactNode;
+  /** real card-art banner behind the header (public/assets/bg/sec-*.png or a card image) */
+  hero?: string | null;
+  /** smaller photographic accent (Messages/Friends) */
+  heroSlim?: boolean;
+}) {
   const setView = useUiStore((s) => s.setView);
   return (
-    <header className="snp-head">
+    <header
+      className={"snp-head" + (hero ? " has-hero" : "") + (heroSlim ? " slim" : "")}
+      style={hero ? ({ ["--hero-img" as string]: `url("${hero}")` } as CSSProperties) : undefined}
+    >
       <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}>
         <Ico n="back" />
       </button>
@@ -222,6 +239,7 @@ export function ProfileViewer() {
       <Header
         title="Profile Viewer"
         sub="Captain dossier"
+        hero={favCard?.image || "/assets/bg/sec-profile.png"}
         right={
           <span className="snp-select" style={{ minWidth: 180 }}>
             <select value={username} onChange={(e) => setUsername(e.target.value)}>
@@ -399,6 +417,7 @@ export function MyProfile() {
       <Header
         title="My Profile"
         sub="Customize your captain"
+        hero={favCard?.image || "/assets/bg/sec-profile.png"}
         right={
           <button className="snp-iconbtn" title="View as public" onClick={() => setView("profile-viewer")}>
             <Ico n="follow" />
@@ -506,6 +525,7 @@ export function DuelRecords() {
       <Header
         title="Duel Records"
         sub="Your recent matches"
+        hero="/assets/bg/sec-records.png"
         right={
           <div className="rec-summary">
             <span className="rec-chip w">Wins <span className="n">{wins}</span></span>
@@ -663,6 +683,7 @@ export function Rankings() {
       <Header
         title="Rankings"
         sub="Captain leaderboard"
+        hero="/assets/bg/sec-rankings.png"
         right={
           mine && (
             <div className="rk-myrank">

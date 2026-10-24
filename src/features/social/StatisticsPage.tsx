@@ -81,6 +81,7 @@ export function StatisticsPage() {
       <Header
         title="My Statistics"
         sub="Win rate by deck & matchup"
+        hero="/assets/bg/sec-statistics.png"
         right={<span className="rk-myrank-v" style={{ fontSize: 16 }}>{showPct(overall)} WR</span>}
       />
       <div className="snp-body">

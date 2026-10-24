@@ -36,6 +36,7 @@ export function MetaPage() {
       <Header
         title="Meta Analytics"
         sub="Leader popularity & win rate"
+        hero="/assets/bg/sec-meta.png"
         right={<span className="rk-myrank-v" style={{ fontSize: 14 }}>{totalGames.toLocaleString()} games</span>}
       />
       <div className="snp-body">

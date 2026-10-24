@@ -54,7 +54,7 @@ export function DirectoryPage() {
 
   return (
     <div className="sn snp">
-      <Header title="Player Directory" sub={`${users.length} captain${users.length === 1 ? "" : "s"}`} />
+      <Header title="Player Directory" sub={`${users.length} captain${users.length === 1 ? "" : "s"}`} hero="/assets/bg/sec-directory.png" />
       <div className="snp-body">
         <div className="snp-wrap">
           <div className="rec-toolbar">

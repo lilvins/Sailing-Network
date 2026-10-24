@@ -75,14 +75,56 @@
 .nsea-moon  {background-image:url("/assets/bg/night-sea/moon.png");}
 .nsea-clouds{background-image:url("/assets/bg/night-sea/clouds.png");}
 .nsea-refl  {background-image:url("/assets/bg/night-sea/reflections.png");}
-/* the clouds layer is 6% wider (same cover height → horizon stays aligned)
-   and drifts by translateX, never exposing its edges */
+/* cloud layers are wider than the pane (same cover height → the horizon
+   stays aligned) and drift by translateX, never exposing their edges.
+   Two copies at different widths/speeds = parallax. */
 .nsea-clouds{inset:0 auto;top:0;bottom:0;left:-3%;width:106%;}
+.nsea-clouds-far{left:-6%;width:112%;opacity:.5;}
+/* sprite layers (real pixel PNGs from scripts/build-mode-cards.mjs) */
+.nsea-stars{position:absolute;inset:0;}
+.nsea-star{position:absolute;image-rendering:pixelated;opacity:.9;}
+.nsea-refl2{transform:translateX(14px);opacity:.45;}
+.nsea-shoot{position:absolute;width:64px;opacity:0;image-rendering:pixelated;}
+.nsea-shoot1{left:12%;top:14%;}
+.nsea-shoot2{left:60%;top:8%;}
+.nsea-spark{position:absolute;width:5px;height:5px;background:url("/assets/bg/spark.png") center/cover;image-rendering:pixelated;opacity:0;}
+.nsea-spark.s1{left:38%;bottom:14%;}
+.nsea-spark.s2{left:56%;bottom:8%;}
+.nsea-spark.s3{left:71%;bottom:18%;}
 @media (prefers-reduced-motion: no-preference){
-  .nsea-clouds{animation:nsea-drift 120s linear infinite alternate;}
+  .nsea-clouds{animation:nsea-drift 90s linear infinite alternate;}
+  .nsea-clouds-far{animation:nsea-drift-far 160s linear infinite alternate;}
   .nsea-refl{animation:nsea-shimmer 3.2s steps(2, jump-none) infinite alternate;}
+  .nsea-refl2{animation:nsea-shimmer2 2.1s steps(2, jump-none) infinite alternate;animation-delay:1.2s;}
+  .nsea-star{animation:nsea-twinkle 3s steps(2, jump-none) infinite alternate;}
+  .nsea-shoot1{animation:nsea-shoot-a 31s linear infinite;animation-delay:4s;}
+  .nsea-shoot2{animation:nsea-shoot-b 47s linear infinite;animation-delay:18s;}
+  .nsea-spark{animation:nsea-rise 11s linear infinite;}
+  .nsea-spark.s2{animation-duration:14s;animation-delay:4s;}
+  .nsea-spark.s3{animation-duration:9s;animation-delay:7s;}
   @keyframes nsea-drift{from{transform:translateX(-1.3%);}to{transform:translateX(1.3%);}}
+  @keyframes nsea-drift-far{from{transform:translateX(0.7%);}to{transform:translateX(-0.7%);}}
   @keyframes nsea-shimmer{from{opacity:1;}to{opacity:0.55;}}
+  @keyframes nsea-shimmer2{from{opacity:0.5;}to{opacity:0.12;}}
+  @keyframes nsea-twinkle{from{opacity:0.2;}to{opacity:1;}}
+  @keyframes nsea-shoot-a{
+    0%{opacity:0;transform:translate(0,0) rotate(18deg);}
+    1%{opacity:1;}
+    4%{opacity:0;transform:translate(310px,104px) rotate(18deg);}
+    100%{opacity:0;transform:translate(310px,104px) rotate(18deg);}
+  }
+  @keyframes nsea-shoot-b{
+    0%{opacity:0;transform:translate(0,0) rotate(162deg) scaleY(-1);}
+    0.8%{opacity:1;}
+    3%{opacity:0;transform:translate(-290px,96px) rotate(162deg) scaleY(-1);}
+    100%{opacity:0;transform:translate(-290px,96px) rotate(162deg) scaleY(-1);}
+  }
+  @keyframes nsea-rise{
+    0%{opacity:0;transform:translateY(0);}
+    8%{opacity:0.9;}
+    70%{opacity:0.45;}
+    100%{opacity:0;transform:translateY(-72px);}
+  }
 }
 
 /* ---- HOME hero: the animated night sea, with the Ship's Log in the sky.

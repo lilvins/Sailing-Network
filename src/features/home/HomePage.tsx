@@ -13,6 +13,7 @@ import {
 } from "../../lib/api";
 import { loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import { LeaderAvatar } from "../cards/LeaderAvatar";
+import { NightSea } from "./NightSea";
 import "./home.css";
 
 /* Home hub — "one place for everything" (plancia di notte identity):
@@ -302,12 +303,7 @@ export function HomePage() {
       {/* hero: the animated night sea with the Ship's Log in the sky */}
       <div className="hu-hero-wrap">
         <div className="hu-hero-sea" aria-hidden="true">
-          <div className="nsea">
-            <div className="nsea-layer nsea-base" />
-            <div className="nsea-layer nsea-moon" />
-            <div className="nsea-layer nsea-clouds" />
-            <div className="nsea-layer nsea-refl" />
-          </div>
+          <NightSea />
         </div>
         {news.length > 0 && (
           <div className="hu-log">

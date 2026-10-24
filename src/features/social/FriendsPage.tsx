@@ -93,6 +93,8 @@ export function FriendsPage() {
       <Header
         title="Friends"
         sub={`${accepted.length} friend${accepted.length === 1 ? "" : "s"}${incoming.length ? ` · ${incoming.length} pending` : ""}`}
+        hero="/assets/bg/sec-friends.png"
+        heroSlim
       />
       <div className="snp-body">
         <div className="snp-wrap">
