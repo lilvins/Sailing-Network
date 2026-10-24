@@ -186,10 +186,17 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   bottom-right action bar (End turn / Log / Card), preview + log as toggled
   sheets, step prompt bottom-right over the pile corner, 2-tap play from hand
   on touch (select → "Play this card"), long-press DON placeholder, ≥44px
-  targets, safe-area. Portrait shows a "Rotate your phone" overlay with
-  "Continue anyway" → minimal stacked fallback. Verified with the Playwright
-  driver in touch emulation (`BA_MOBILE=1 BA_W=844 BA_H=390 BA_PREFIX=mobile-`,
-  `BA_PORTRAIT=1` for the overlay) → `scripts/.shots/boardauto-mobile-*.png`.
+  targets, safe-area. **Auto-landscape**: on a touch device the table tries
+  fullscreen + `screen.orientation.lock("landscape")` at the entry gesture
+  (silent when unsupported) and, whenever the viewport stays portrait, the
+  whole root is CSS-rotated 90° (`.ba-forced`: fixed 100dvh×100dvw box,
+  `rotate(90deg) translateY(-100%)`; fixed children stay inside; dvw/dvh
+  sizes; notch = table's left edge). No "rotate" overlay anymore; the stacked
+  portrait DOM survives only as the unexposed `.ba-stack` fallback. Verified
+  with the Playwright driver in touch emulation: `BA_MOBILE=1 BA_W=390
+  BA_H=844 BA_PREFIX=forced-landscape-` plays a whole game on the rotated
+  table → `scripts/.shots/boardauto-forced-landscape-*.png`; native landscape
+  `BA_W=844 BA_H=390 BA_PREFIX=mobile-` → `boardauto-mobile-*.png`.
 - **M3 wiring (2026-10-24)**: ACTIVATE chip from `legalMoves.activatable`
   (+ Activate button in the compact card sheet; illegal activations are
   explained on tap), `peekSelect` panel (take ≤ N, tap-sequence ordering,

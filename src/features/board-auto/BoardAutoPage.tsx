@@ -75,6 +75,34 @@ function useMediaQuery(query: string): boolean {
 const COMPACT_QUERY = "(max-width: 1024px) and (max-height: 560px), (max-width: 820px) and (orientation: portrait)";
 const PORTRAIT_QUERY = "(orientation: portrait)";
 
+/** Phone landscape, level 1 (needs a user gesture): fullscreen + orientation
+ *  lock where the platform allows it (Android Chrome). Silent otherwise —
+ *  iOS Safari has no lock; level 2 (CSS rotation, `.ba-forced`) always works. */
+function tryEnterLandscape(): void {
+  if (typeof window === "undefined" || !window.matchMedia("(pointer: coarse)").matches) return;
+  try {
+    const p = document.documentElement.requestFullscreen?.();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  } catch { /* unsupported */ }
+  try {
+    const o = screen.orientation as ScreenOrientation & { lock?: (t: string) => Promise<void> };
+    const p = o.lock?.("landscape");
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  } catch { /* unsupported */ }
+}
+function leaveLandscape(): void {
+  if (typeof document === "undefined") return;
+  try {
+    (screen.orientation as ScreenOrientation & { unlock?: () => void }).unlock?.();
+  } catch { /* unsupported */ }
+  try {
+    if (document.fullscreenElement) {
+      const p = document.exitFullscreen?.();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    }
+  } catch { /* unsupported */ }
+}
+
 // ─── page root ────────────────────────────────────────────────────────────────
 
 export function BoardAutoPage() {
@@ -225,6 +253,7 @@ function PickScreen() {
           disabled={!ready}
           onClick={() => {
             if (!ready) return;
+            tryEnterLandscape(); // user gesture: the table is landscape-first
             const seats: [SeatSetup, SeatSetup] = [
               { pid: SEAT_A, name: names[0].trim(), deck: sel[0]! },
               { pid: SEAT_B, name: names[1].trim(), deck: sel[1]! },
@@ -266,17 +295,17 @@ function RollScreen() {
           </div>
         </div>
         {!roll ? (
-          <button className="ba-btn primary big" data-act="roll" onClick={doRoll}>Roll</button>
+          <button className="ba-btn primary big" data-act="roll" onClick={() => { tryEnterLandscape(); doRoll(); }}>Roll</button>
         ) : (
           <>
             <p className="ba-rollwin">
               <b>{winner!.name}</b> wins the roll and chooses:
             </p>
             <div className="ba-rollchoices">
-              <button className="ba-btn primary" data-act="first" onClick={() => chooseFirst(roll.winnerIdx)}>
+              <button className="ba-btn primary" data-act="first" onClick={() => { tryEnterLandscape(); chooseFirst(roll.winnerIdx); }}>
                 Play first <i>(no draw, 1 DON!!)</i>
               </button>
-              <button className="ba-btn" data-act="second" onClick={() => chooseFirst(roll.winnerIdx === 0 ? 1 : 0)}>
+              <button className="ba-btn" data-act="second" onClick={() => { tryEnterLandscape(); chooseFirst(roll.winnerIdx === 0 ? 1 : 0); }}>
                 Play second <i>(draw + 2 DON!!)</i>
               </button>
             </div>
@@ -340,7 +369,19 @@ function GameScreen() {
   // compact (phone) chrome: sheets instead of rails, 2-tap play from hand
   const compact = useMediaQuery(COMPACT_QUERY);
   const portrait = useMediaQuery(PORTRAIT_QUERY);
-  const [portraitOk, setPortraitOk] = useState(false);
+  /** Level-2 landscape: the viewport stayed portrait on a compact device →
+   *  the whole table is rotated 90° by CSS (`.ba-forced`). */
+  const forced = compact && portrait;
+  // while at the table: no page rubber-banding (the rotated root is fixed);
+  // leaving it (home, change decks, rematch) releases the orientation lock
+  useEffect(() => {
+    const prev = document.body.style.overscrollBehavior;
+    document.body.style.overscrollBehavior = "none";
+    return () => {
+      document.body.style.overscrollBehavior = prev;
+      leaveLandscape();
+    };
+  }, []);
   const [sheet, setSheet] = useState<"preview" | "log" | null>(null);
   const [selectedHand, setSelectedHand] = useState<Iid | null>(null);
   /** The field card the preview sheet is showing (for its Activate button). */
@@ -1474,26 +1515,15 @@ function GameScreen() {
           </div>
         </>
       )}
-      {portrait && !portraitOk && (
-        <div className="ba-rotate" role="dialog">
-          <div className="ba-rotate-box">
-            <svg className="ba-rotate-icon" viewBox="0 0 48 48" aria-hidden shapeRendering="crispEdges">
-              <rect x="6" y="14" width="36" height="20" fill="none" stroke="currentColor" strokeWidth="3" />
-              <rect x="36" y="22" width="3" height="4" fill="currentColor" />
-              <path d="M24 4 L30 9 L24 14 Z" fill="currentColor" />
-              <path d="M24 44 L18 39 L24 34 Z" fill="currentColor" />
-            </svg>
-            <b>ROTATE YOUR PHONE</b>
-            <p>The table is built for landscape: two mirrored halves, hands on the edges, everything in one screen.</p>
-            <button className="ba-btn ghost" data-act="portrait-anyway" onClick={() => setPortraitOk(true)}>Continue anyway</button>
-          </div>
-        </div>
-      )}
     </>
   );
 
   return (
-    <div className={`ba-root ba-game${compact ? " compact" : ""}`} onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}>
+    <div
+      className={`ba-root ba-game${compact ? " compact" : ""}${forced ? " ba-forced" : ""}`}
+      data-forced-landscape={forced ? "1" : undefined}
+      onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
+    >
       <Banner />
       {toast && <div className="ba-toast">{toast}</div>}
 

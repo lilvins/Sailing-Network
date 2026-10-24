@@ -165,32 +165,49 @@
 .ba-sheet-body .ba-btn { min-height: 44px; }
 .ba-sheet-log { flex: 0 0 auto; max-height: 50vh; }
 
-/* "rotate your phone" overlay (portrait) over the dimmed table */
-.ba-rotate {
+/* ── FORCED LANDSCAPE (level 2): the viewport stayed portrait on a compact
+   device (rotation locked / browser that won't rotate), so the whole table is
+   rotated 90° clockwise by CSS. The box is 100dvh wide × 100dvw tall; after
+   rotate(90deg) translateY(-100%) around the top-left corner it covers the
+   portrait viewport exactly. Every position:fixed child (strips, sheets,
+   prompts, banners, modals) keeps the transformed root as its containing
+   block, so it stays INSIDE the rotated table. vw/vh swap: sizes use dvw/dvh.
+   Device top (notch) becomes the table's LEFT edge, device bottom its RIGHT. */
+.ba-game.compact.ba-forced {
   position: fixed;
-  inset: 0;
-  z-index: 90;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  background: rgba(6, 10, 18, 0.82);
-  backdrop-filter: blur(3px);
+  top: 0;
+  left: 0;
+  width: 100dvh;
+  height: 100dvw;
+  transform: rotate(90deg) translateY(-100%);
+  transform-origin: 0 0;
+  overflow: hidden;
+  --bacw: clamp(40px, 9.5dvw, 72px);
+  --sa-left: env(safe-area-inset-top, 0px);
+  --sa-right: env(safe-area-inset-bottom, 0px);
 }
-.ba-rotate-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  max-width: 320px;
-  padding: 22px 20px;
-  background: var(--night-2);
-  border: 2px solid var(--brass);
-  text-align: center;
-}
-.ba-rotate-icon { width: 64px; height: 64px; color: var(--brass-hi); }
-.ba-rotate-box b { font: 800 15px var(--serif); letter-spacing: 0.14em; color: var(--ivory); }
-.ba-rotate-box p { margin: 0; font: 500 12px/1.45 var(--serif); color: var(--ivory-muted); }
-.ba-rotate-box .ba-btn { min-height: 44px; }
+.ba-game.compact.ba-forced .ba-centercol,
+.ba-game.compact.ba-forced .ba-m-strip { left: var(--sa-left); right: var(--sa-right); }
+.ba-game.compact.ba-forced .ba-m-strip.bottom { padding-bottom: 3px; height: var(--strip-h); }
+.ba-game.compact.ba-forced .ba-centercol { bottom: var(--strip-h); }
+.ba-game.compact.ba-forced .ba-actionbar { bottom: calc(var(--strip-h) + 4px); right: calc(6px + var(--sa-right)); max-width: min(62dvh, 520px); }
+.ba-game.compact.ba-forced .ba-m-pill { max-width: 34dvh; }
+/* the app's fixed ThemeToggle lives in the DEVICE top-right corner, which is
+   the rotated table's top-LEFT: keep the opponent pill clear of it, and the
+   turn label no longer needs the right-side reserve */
+.ba-game.compact.ba-forced .ba-m-strip.top .ba-m-pill:first-child { margin-left: 48px; }
+.ba-game.compact.ba-forced .ba-m-turn { max-width: 26dvh; margin-right: 6px; }
+.ba-game.compact.ba-forced .ba-banner { max-width: 94dvh; }
+.ba-game.compact.ba-forced .ba-sheet { width: min(380px, 58dvh); }
+.ba-game.compact.ba-forced .ba-sheet.left { left: var(--sa-left); }
+.ba-game.compact.ba-forced .ba-sheet.right { right: var(--sa-right); }
+.ba-game.compact.ba-forced .ba-sheet-body.ba-preview .ba-prevart { max-height: 44dvw; }
+.ba-game.compact.ba-forced .ba-sheet-body.ba-preview .ba-prevart img { max-height: calc(44dvw - 2px); }
+.ba-game.compact.ba-forced .ba-ov { max-height: 96dvw; max-width: min(760px, 96dvh); }
+.ba-game.compact.ba-forced .ba-ovcard { width: clamp(80px, 26dvw, 180px); }
+.ba-game.compact.ba-forced .ba-peekcard { width: clamp(64px, 9dvh, 90px); }
+.ba-game.compact.ba-forced .ba-ov.ba-peek { max-width: min(760px, 96dvh); }
+.ba-game.compact.ba-forced .ba-sheet-log { max-height: 50dvw; }
 
 /* touch: every pressable thing >= 44px */
 @media (pointer: coarse) {
@@ -210,24 +227,17 @@
 .ba-game.compact .ba-ovnote { font-size: 10px; }
 .ba-game.compact .ba-ovtag { font-size: 10px; }
 
-/* portrait fallback: the same DOM, halves stacked and scrollable; cards sized
-   from the width so 5 characters + piles fit a 390px row */
-@media (orientation: portrait) {
-  .ba-game.compact { --bacw: clamp(36px, 10.5vw, 60px); }
-  .ba-game.compact .ba-centercol { padding: 2px; }
-  .ba-game.compact .ba-field { overflow-y: auto; justify-content: flex-start; gap: 6px; padding: 3px; }
-  .ba-game.compact .ba-half { grid-template-columns: auto minmax(0, 1fr) auto; gap: 3px; padding: 3px; }
-  .ba-game.compact .ba-pcard { width: calc(var(--bacw) * 0.55); }
-  .ba-game.compact .ba-lsrow { flex-wrap: wrap; }
-  .ba-game.compact .ba-donrow { flex: 1 0 100%; min-height: 40px; }
-  .ba-game.compact .ba-doncell { width: 30px !important; margin-right: -8px; min-height: 40px; }
-  .ba-m-pill { max-width: 28vw; padding: 3px 5px; }
-  .ba-m-pill span { font-size: 7.5px; }
-  .ba-m-turn { display: none; }
-  .ba-m-strip.top { padding-right: 58px; } /* room for the app's ThemeToggle */
-  .ba-m-bar { gap: 3px; }
-  .ba-m-bar .ba-btn { padding: 0 7px; font-size: 10px; min-width: 44px; }
-  .ba-m-bar .ba-btn.big { padding: 0 9px; font-size: 11px; }
-  .ba-sheet { top: auto; left: 0; right: 0; width: auto; max-height: 72vh; border: 2px solid var(--brass); border-bottom: none; }
-  .ba-sheet.left, .ba-sheet.right { left: 0; right: 0; }
-}
+/* portrait STACK — internal fallback only (not exposed): the same DOM with
+   halves stacked and scrollable, used if the CSS rotation were unavailable.
+   Opt-in via `.ba-stack` on the root. */
+.ba-game.compact.ba-stack { --bacw: clamp(36px, 10.5vw, 60px); }
+.ba-game.compact.ba-stack .ba-centercol { padding: 2px; }
+.ba-game.compact.ba-stack .ba-field { overflow-y: auto; justify-content: flex-start; gap: 6px; padding: 3px; }
+.ba-game.compact.ba-stack .ba-half { grid-template-columns: auto minmax(0, 1fr) auto; gap: 3px; padding: 3px; }
+.ba-game.compact.ba-stack .ba-pcard { width: calc(var(--bacw) * 0.55); }
+.ba-game.compact.ba-stack .ba-lsrow { flex-wrap: wrap; }
+.ba-game.compact.ba-stack .ba-donrow { flex: 1 0 100%; min-height: 40px; }
+.ba-game.compact.ba-stack .ba-doncell { width: 30px !important; margin-right: -8px; min-height: 40px; }
+.ba-game.compact.ba-stack .ba-m-pill { max-width: 28vw; padding: 3px 5px; }
+.ba-game.compact.ba-stack .ba-m-turn { display: none; }
+.ba-game.compact.ba-stack .ba-sheet { top: auto; left: 0; right: 0; width: auto; max-height: 72vh; border-bottom: none; }

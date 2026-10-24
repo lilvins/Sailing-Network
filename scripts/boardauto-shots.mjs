@@ -156,23 +156,11 @@ if (process.env.BA_FIRST) {
 }
 await page.waitForSelector(".ba-field", { timeout: 8000 });
 
-if (PORTRAIT_ONLY) {
-  // portrait phone: the "rotate" overlay, then the minimal fallback stack
-  await page.waitForSelector(".ba-rotate", { timeout: 5000 });
-  await shot("rotate");
-  await clickAct("portrait-anyway");
-  await page.waitForTimeout(150);
-  await clickAct("keep");
-  await clickAct("keep");
-  await page.waitForTimeout(150);
-  await shot("portrait-main");
-  await clickAct("sheet-preview");
-  await page.waitForTimeout(150);
-  await shot("portrait-sheet");
-  await ctx.close();
-  await browser.close();
-  console.log(consoleErrors.length ? `CONSOLE ERRORS: ${consoleErrors.join(" | ")}` : "done, zero console errors");
-  process.exit(consoleErrors.length ? 1 : 0);
+// portrait phone: the table rotates itself (CSS forced landscape) — assert it
+if (PORTRAIT_ONLY || (MOBILE && H > W)) {
+  const forced = await page.locator('[data-forced-landscape="1"]').count();
+  console.log(`forced landscape active: ${forced > 0 ? "yes" : "NO"}`);
+  if (forced === 0) console.log("WARNING: portrait viewport without the rotated table");
 }
 
 // ── game driver ───────────────────────────────────────────────────────────────

@@ -529,6 +529,23 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     le 12 carte "static-only" del coverage-report (`compiledButDegradingTo
     Manual`) portano la nota "continuous effect not yet automatic (M4)".
     Log: righe per i 12 eventi tier-2.
+35. **Landscape automatico da telefono (2026-10-24)** — l'overlay "Rotate
+    your phone" è stato sostituito da una rotazione a due livelli. Livello 1
+    (API, solo `pointer: coarse`, al gesto d'ingresso "To the starting roll"
+    / Roll / Play first-second): `requestFullscreen()` +
+    `screen.orientation.lock("landscape")` in try/catch silenzioso (iOS
+    Safari non ha il lock); `unlock()` + `exitFullscreen()` allo smontaggio
+    della GameScreen (Home / Change decks / Rematch). Livello 2 (CSS, vale
+    sempre quando il viewport resta portrait su device compact): la root
+    `.ba-game.compact.ba-forced` è `position: fixed`, 100dvh × 100dvw,
+    `transform: rotate(90deg) translateY(-100%)` con origine top-left → copre
+    esattamente il viewport portrait; i figli `position: fixed` (strisce,
+    sheet, prompt, banner, modali) restano DENTRO il contenitore trasformato
+    (containing block); `--bacw` e i limiti vw/vh passano a dvw/dvh;
+    safe-area: notch (inset-top) → lato SINISTRO della board, inset-bottom →
+    lato DESTRO. Le schermate pre-partita (pick, roll) restano portrait. Lo
+    stack verticale resta come fallback interno (`.ba-stack`, non esposto).
+    Il driver gioca partite complete sul tavolo ruotato (390×844, 412×915).
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**
