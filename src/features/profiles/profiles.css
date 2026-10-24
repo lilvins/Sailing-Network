@@ -15,9 +15,12 @@
 .snp::before{
   content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:url("/assets/bg/card-collage-tile.png") top left/560px auto repeat;
-  opacity:0.05;
+  opacity:0.10;
 }
 .gold{color:var(--acc2);}
+/* empty state: real pixel moon + one line, never bare text in a void */
+.snp-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:44px 20px;color:var(--muted);font-size:13.5px;text-align:center;}
+.snp-empty img{width:56px;height:56px;image-rendering:pixelated;border:1px solid var(--edge);}
 .snp .mono{font-variant-numeric:tabular-nums;}
 /* the .snp * reset above zeroes padding on shared buttons from home_styles.css — restore it */
 .snp .sn-btn-ghost,.snp .sn-btn-primary{padding:13px 22px;justify-content:center;}
@@ -172,6 +175,8 @@
 .rec-opp{display:flex;align-items:center;gap:12px;min-width:0;}
 .rec-opp .name{font-family:var(--display);font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rec-val{font-family:var(--display);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;}
+/* "your deck" cell: real leader thumb + name (thumb-vs-thumb rows) */
+.rec-mydeck{display:inline-flex;align-items:center;gap:8px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rec-fmt-pill{display:inline-block;background:rgba(242,243,245,0.10);border:1px solid rgba(242,243,245,0.26);color:var(--acc2);border-radius:0;padding:4px 9px;font-family:var(--display);font-weight:700;font-size:12px;}
 .rec-res{font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:1px;}
 .rec-res.win{color:#5fdd8f;}

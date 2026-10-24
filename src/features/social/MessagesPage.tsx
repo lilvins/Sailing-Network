@@ -150,7 +150,7 @@ export function MessagesPage() {
                   const peer = dir.find((d) => d.username === c.username);
                   return (
                     <button key={c.username} className={"msg-conv" + (c.username === activeUsername ? " active" : "")} onClick={() => selectThread(c.username)}>
-                      <LeaderAvatar name={c.displayName} color={c.color} image={c.image} />
+                      <LeaderAvatar name={c.displayName} color={c.color} image={c.image} size={46} />
                       <div className="msg-conv-main">
                         <div className="msg-conv-top">
                           <span className="msg-conv-name"><PresenceBadge userId={peer?.id || ""} /> {c.displayName}</span>
@@ -207,8 +207,11 @@ export function MessagesPage() {
                   </div>
                 </>
               ) : (
-                <div className="msg-scroll" style={{ alignItems: "center", justifyContent: "center", color: "var(--muted)" }}>
-                  Pick a conversation to start chatting.
+                <div className="msg-scroll" style={{ alignItems: "center", justifyContent: "center" }}>
+                  <div className="snp-empty">
+                    <img src="/assets/bg/avatar-moon.png" alt="" />
+                    Pick a conversation to start chatting.
+                  </div>
                 </div>
               )}
             </div>

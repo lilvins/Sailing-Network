@@ -120,7 +120,7 @@ export function FriendsPage() {
                 const u = dir.find((d) => d.id === f.user.id);
                 return (
                   <div className="fr-row" key={f.id}>
-                    <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} />
+                    <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} size={48} />
                     <div className="fr-main">
                       <div className="fr-name"><PresenceBadge userId={f.user.id} /> {f.user.displayName}{u?.supporter && <span style={{ marginLeft: 6, color: "#ffd98a" }}>★</span>}</div>
                       <div className="fr-status">@{f.user.username}{u ? ` · ${u.deckCount} decks · ${winRate(u.wins, u.losses)}% WR` : ""}</div>
@@ -133,7 +133,12 @@ export function FriendsPage() {
                   </div>
                 );
               })}
-              {accepted.length === 0 && <div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>No friends yet — try the "Find captains" tab.</div>}
+              {accepted.length === 0 && (
+                <div className="snp-empty">
+                  <img src="/assets/bg/avatar-moon.png" alt="" />
+                  No friends yet. Try the "Find captains" tab.
+                </div>
+              )}
             </div>
           )}
 
@@ -141,7 +146,7 @@ export function FriendsPage() {
             <div className="fr-list">
               {incoming.map((f) => (
                 <div className="fr-row" key={f.id}>
-                  <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} />
+                  <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} size={48} />
                   <div className="fr-main">
                     <div className="fr-name"><PresenceBadge userId={f.user.id} /> {f.user.displayName}</div>
                     <div className="fr-status">@{f.user.username} · wants to be friends</div>
@@ -160,7 +165,7 @@ export function FriendsPage() {
             <div className="fr-list">
               {outgoing.map((f) => (
                 <div className="fr-row" key={f.id}>
-                  <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} />
+                  <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} size={48} />
                   <div className="fr-main">
                     <div className="fr-name"><PresenceBadge userId={f.user.id} /> {f.user.displayName}</div>
                     <div className="fr-status">@{f.user.username} · waiting for response</div>
@@ -178,7 +183,7 @@ export function FriendsPage() {
             <div className="fr-list">
               {search(q, findable).map((u) => (
                 <div className="fr-row" key={(u as DirectoryUser).id}>
-                  <LeaderAvatar name={u.displayName} {...avatarOf(u.username)} />
+                  <LeaderAvatar name={u.displayName} {...avatarOf(u.username)} size={48} />
                   <div className="fr-main">
                     <div className="fr-name"><PresenceBadge userId={(u as DirectoryUser).id} /> {u.displayName}{(u as DirectoryUser).supporter && <span style={{ marginLeft: 6, color: "#ffd98a" }}>★</span>}</div>
                     <div className="fr-status">@{u.username} · {(u as DirectoryUser).deckCount} decks · {winRate((u as DirectoryUser).wins, (u as DirectoryUser).losses)}% WR</div>

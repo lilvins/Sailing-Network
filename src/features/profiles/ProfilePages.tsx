@@ -559,11 +559,14 @@ export function DuelRecords() {
             {loading && <div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>Loading matches…</div>}
             {!loading && rows.map((r) => (
               <div className="rec-row" key={r.id}>
-                <LeaderAvatar name={r.opponent.displayName} color={lcolor(r.oppLeaderId)} image={r.oppLeaderId ? cards?.get(r.oppLeaderId)?.image : null} />
+                <LeaderAvatar name={r.opponent.displayName} color={lcolor(r.oppLeaderId)} image={r.oppLeaderId ? cards?.get(r.oppLeaderId)?.image : null} size={44} />
                 <div className="rec-opp">
                   <span className="name">{r.opponent.displayName}</span>
                 </div>
-                <span className="rec-val">{r.myDeckName || "—"}</span>
+                <span className="rec-val rec-mydeck">
+                  <LeaderAvatar name={r.myDeckName || "?"} color={lcolor(r.myLeaderId)} image={r.myLeaderId ? cards?.get(r.myLeaderId)?.image : null} size={30} />
+                  {r.myDeckName || "—"}
+                </span>
                 <span>{r.format ? <span className="rec-fmt-pill">{r.format}</span> : "—"}</span>
                 <span className={"rec-res " + (r.result === "win" ? "win" : "lose")}>{r.result === "win" ? "WIN" : "LOSE"}</span>
                 <span className={"rec-pts " + (r.points >= 0 ? "up" : "down")}>{r.points >= 0 ? "+" : ""}{r.points}</span>
@@ -611,7 +614,7 @@ function RankRow({ r }: { r: RankedCaptain }) {
     <div className={"rec-row rk-row" + (r.you ? " me" : "")}>
       <span className={"rk-rank r" + (r.rank <= 3 ? r.rank : "")}>{r.rank}</span>
       <div className="rec-opp">
-        <LeaderAvatar name={r.displayName} color={r.leaderColor} image={r.leaderImage} />
+        <LeaderAvatar name={r.displayName} color={r.leaderColor} image={r.leaderImage} size={48} />
         <span className="name">
           {r.displayName}
           {r.you && <span className="rk-youtag">YOU</span>}

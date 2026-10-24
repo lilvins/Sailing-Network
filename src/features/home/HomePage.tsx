@@ -147,16 +147,18 @@ interface Tile {
   icon: IconName;
   view: View;
   danger?: boolean;
+  /** real card-art thumb (section hero crop); falls back to the icon */
+  art?: string;
 }
 
 const TILES: Tile[] = [
-  { id: "decks", label: "Deck Builder", sub: "Your decks & editor", icon: "deck", view: "my-decks" },
-  { id: "popular", label: "Popular Decks", sub: "Top regional lists", icon: "trophy", view: "popular-decklists" },
-  { id: "directory", label: "Directory", sub: "Every captain aboard", icon: "friends", view: "directory" },
-  { id: "records", label: "Duel Records", sub: "Your match history", icon: "records", view: "records" },
-  { id: "stats", label: "Statistics", sub: "Decks & matchups", icon: "stats", view: "statistics" },
-  { id: "profile", label: "Profile", sub: "Your public page", icon: "profile", view: "profile-viewer" },
-  { id: "edit", label: "Edit Profile", sub: "Avatar, bio, leader", icon: "edit", view: "edit-profile" },
+  { id: "decks", label: "Deck Builder", sub: "Your decks & editor", icon: "deck", view: "my-decks", art: "/assets/bg/sec-decks.png" },
+  { id: "popular", label: "Popular Decks", sub: "Top regional lists", icon: "trophy", view: "popular-decklists", art: "/assets/bg/sec-popular.png" },
+  { id: "directory", label: "Directory", sub: "Every captain aboard", icon: "friends", view: "directory", art: "/assets/bg/sec-directory.png" },
+  { id: "records", label: "Duel Records", sub: "Your match history", icon: "records", view: "records", art: "/assets/bg/sec-records.png" },
+  { id: "stats", label: "Statistics", sub: "Decks & matchups", icon: "stats", view: "statistics", art: "/assets/bg/sec-statistics.png" },
+  { id: "profile", label: "Profile", sub: "Your public page", icon: "profile", view: "profile-viewer", art: "/assets/bg/sec-profile.png" },
+  { id: "edit", label: "Edit Profile", sub: "Avatar, bio, leader", icon: "edit", view: "edit-profile", art: "/assets/bg/sec-profile.png" },
   { id: "exit", label: "Exit", sub: "Leave the network", icon: "exit", view: "login", danger: true },
 ];
 
@@ -354,16 +356,25 @@ export function HomePage() {
           {/* ---- live gauges ---- */}
           <section className="hu-gauges">
             <div className="hu-gauge">
-              <div className="hu-gauge-k">Captains</div>
-              <div className="hu-gauge-v">{stats ? fmt(stats.captains) : "···"}</div>
+              <img className="hu-gauge-art" src="/assets/bg/sec-directory.png" alt="" loading="lazy" />
+              <span>
+                <span className="hu-gauge-k">Captains</span>
+                <span className="hu-gauge-v">{stats ? fmt(stats.captains) : "···"}</span>
+              </span>
             </div>
             <div className="hu-gauge">
-              <div className="hu-gauge-k">Decks built</div>
-              <div className="hu-gauge-v">{stats ? fmt(stats.decks) : "···"}</div>
+              <img className="hu-gauge-art" src="/assets/bg/sec-decks.png" alt="" loading="lazy" />
+              <span>
+                <span className="hu-gauge-k">Decks built</span>
+                <span className="hu-gauge-v">{stats ? fmt(stats.decks) : "···"}</span>
+              </span>
             </div>
             <div className="hu-gauge">
-              <div className="hu-gauge-k">Duels logged</div>
-              <div className="hu-gauge-v">{stats ? fmt(stats.matches) : "···"}</div>
+              <img className="hu-gauge-art" src="/assets/bg/sec-records.png" alt="" loading="lazy" />
+              <span>
+                <span className="hu-gauge-k">Duels logged</span>
+                <span className="hu-gauge-v">{stats ? fmt(stats.matches) : "···"}</span>
+              </span>
             </div>
           </section>
 
@@ -378,12 +389,16 @@ export function HomePage() {
               </div>
               {board === null && <div className="hu-empty">Reading the charts…</div>}
               {board?.length === 0 && !useFallback && (
-                <div className="hu-empty">No rated duels yet. The board fills as ranked games land.</div>
+                <div className="hu-empty">
+                  <img src="/assets/bg/avatar-moon.png" alt="" />
+                  No rated duels yet. The board fills as ranked games land.
+                </div>
               )}
               {useFallback &&
                 fallbackBoard.map((u, i) => (
                   <button key={u.id} className="hu-row linky" onClick={() => openProfile(u.username)}>
                     <span className={"hu-rank" + (i < 3 ? " top" : "")}>{i + 1}</span>
+                    <LeaderAvatar name={u.displayName} {...avatarOf(u.username)} size={32} />
                     <span className="hu-row-name">
                       {u.displayName}
                       <span className="hu-row-sub" style={{ display: "block" }}>
@@ -401,6 +416,7 @@ export function HomePage() {
               {board?.map((l, i) => (
                 <button key={l.userId} className="hu-row linky" onClick={() => openProfile(l.username)}>
                   <span className={"hu-rank" + (i < 3 ? " top" : "")}>{i + 1}</span>
+                  <LeaderAvatar name={l.displayName} {...avatarOf(l.username)} size={32} />
                   <span className="hu-row-name">{l.displayName}</span>
                   <span className="hu-wl">
                     <span className="w">{l.wins}W</span> <span className="l">{l.losses}L</span>
@@ -462,17 +478,24 @@ export function HomePage() {
             {(user?.role === "admin"
               ? [...TILES.slice(0, -1), { id: "admin", label: "Admin Panel", sub: "Accounts & bans", icon: "admin" as IconName, view: "admin" as View }, TILES[TILES.length - 1]]
               : TILES
-            ).map((t) => (
-              <button key={t.id} className={"hu-tile" + (t.danger ? " danger" : "")} onClick={() => onTile(t)}>
-                <span className="hu-tile-ico">
-                  <Icon name={t.icon} size={17} />
-                </span>
-                <span>
-                  <b>{t.label}</b>
-                  <small>{t.sub}</small>
-                </span>
-              </button>
-            ))}
+            ).map((t) => {
+              const art = t.id === "profile" ? myAvatar.image || t.art : t.art;
+              return (
+                <button key={t.id} className={"hu-tile" + (t.danger ? " danger" : "")} onClick={() => onTile(t)}>
+                  {art ? (
+                    <img className="hu-tile-art" src={art} alt="" loading="lazy" />
+                  ) : (
+                    <span className="hu-tile-ico">
+                      <Icon name={t.icon} size={17} />
+                    </span>
+                  )}
+                  <span>
+                    <b>{t.label}</b>
+                    <small>{t.sub}</small>
+                  </span>
+                </button>
+              );
+            })}
           </section>
         </main>
 
@@ -505,7 +528,10 @@ export function HomePage() {
               </button>
             ))}
             {accepted.length === 0 && (
-              <div className="hu-empty">No crew yet. Find captains in the Directory.</div>
+              <div className="hu-empty">
+                <img src="/assets/bg/avatar-moon.png" alt="" />
+                No crew yet. Find captains in the Directory.
+              </div>
             )}
           </div>
 
@@ -531,9 +557,20 @@ export function HomePage() {
               <b>Global Chat</b>
             </div>
             <div className="hu-feed">
-              {feed.length === 0 && <div className="hu-empty">Quiet on deck. Say something.</div>}
+              {feed.length === 0 && (
+                <div className="hu-empty">
+                  <img src="/assets/bg/avatar-moon.png" alt="" />
+                  Quiet on deck. Say something.
+                </div>
+              )}
               {feed.map((m) => (
                 <div key={m.id} className="hu-feed-line">
+                  <LeaderAvatar
+                    name={m.displayName}
+                    color={m.avatarColor}
+                    image={m.favoriteLeader ? cards?.get(m.favoriteLeader)?.image || null : null}
+                    size={22}
+                  />
                   <span className="hu-feed-who">{m.displayName}</span>
                   <span className="hu-feed-txt">{m.body}</span>
                 </div>

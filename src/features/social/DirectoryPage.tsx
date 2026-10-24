@@ -71,7 +71,7 @@ export function DirectoryPage() {
             {!loading &&
               rows.map((u) => (
                 <div className="fr-row" key={u.id}>
-                  <LeaderAvatar name={u.displayName} {...avatarOf(u)} />
+                  <LeaderAvatar name={u.displayName} {...avatarOf(u)} size={54} />
                   <div className="fr-main">
                     <div className="fr-name">
                       <PresenceBadge userId={u.id} /> {u.displayName}
