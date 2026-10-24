@@ -58,19 +58,20 @@
      warm ivory text. The .sn design scope (home.css) maps its own
      vars onto these; they live here so any page can reach them.
      --------------------------------------------------------------- */
-  /* Sampled from the real pixel art (public/assets/bg/night-sea) —
-     night sky #0a0f1e→#1c2f52, sea blue #2b4a8b, moonlight #bfe3e8. */
-  --night-0: #0a0f1e; /* sky floor */
-  --night-1: #10172b; /* hull wash */
-  --night-2: #131c33; /* raised panel */
-  --night-3: #1c2947; /* nested surface */
-  --brass: #2b4a8b; /* legacy name — now SEA BLUE (borders, rules) */
-  --brass-hi: #bfe3e8; /* legacy name — now MOONLIGHT (text, numbers) */
-  --brass-dim: rgba(91, 130, 204, 0.5); /* blue hairline */
+  /* UI chrome is NEUTRAL near-black (no blue cast): the color comes from
+     the real images (card art, pixel scenes), not from the panels.
+     Blue lives only inside the pixel art and where semantic (leader colors). */
+  --night-0: #0b0c0e; /* page floor */
+  --night-1: #101114; /* wash */
+  --night-2: #141518; /* raised panel */
+  --night-3: #1b1d21; /* nested surface */
+  --brass: #565b63; /* legacy name — neutral accent border */
+  --brass-hi: #f2f3f5; /* legacy name — lit text/numbers (white) */
+  --brass-dim: rgba(255, 255, 255, 0.3); /* neutral hairline */
   --signal: #e23b32; /* signal red — primary actions / danger ONLY */
   --signal-hi: #f0554b;
-  --ivory: #f0f3f7; /* full white-ish text */
-  --ivory-muted: #93a1bd;
+  --ivory: #f2f3f5; /* full white text */
+  --ivory-muted: #9aa0a8;
 
   /* Type families. Titles are bold compact sans (no display serif: the site
      reads utilitarian, DuelingBook-style — --serif stays as a legacy alias). */

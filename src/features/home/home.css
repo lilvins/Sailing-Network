@@ -7,16 +7,16 @@
    page is a tool, not a landing.
    =========================================================== */
 .sn{
-  /* elevations (night-sea blues, sampled from the pixel art) */
-  --bg:var(--night-0,#0a0f1e); --bg2:var(--night-1,#10172b);
-  --elev:var(--night-2,#131c33); --elev2:var(--night-3,#1c2947);
-  --ocean-a:#0a0f1e; --ocean-b:#121c38; --ocean-c:#1c2f52;
-  --glass:#121a30; --glass2:#0d1326; /* legacy names — SOLID panels */
-  --edge:rgba(148,172,220,0.14); --edge2:rgba(148,172,220,0.26);
-  --brass:#2b4a8b; --brass-hi:#bfe3e8; --brass-dim:rgba(91,130,204,0.55);
+  /* NEUTRAL near-black chrome: color comes from the real images */
+  --bg:var(--night-0,#0b0c0e); --bg2:var(--night-1,#101114);
+  --elev:var(--night-2,#141518); --elev2:var(--night-3,#1b1d21);
+  --ocean-a:#0b0c0e; --ocean-b:#101114; --ocean-c:#141518;
+  --glass:#141518; --glass2:#0f1012; /* legacy names — SOLID panels */
+  --edge:rgba(242,243,245,0.10); --edge2:rgba(242,243,245,0.20);
+  --brass:#565b63; --brass-hi:#f2f3f5; --brass-dim:rgba(255,255,255,0.32);
   --acc:#e23b32;            /* signal red — primary actions / danger only */
-  --acc2:#bfe3e8;           /* MOONLIGHT accent (legacy var name, used site-wide) */
-  --txt:#f0f3f7; --muted:#93a1bd;
+  --acc2:#e8eaed;           /* neutral bright accent (legacy var name, site-wide) */
+  --txt:#f2f3f5; --muted:#9aa0a8;
   --font:'Manrope',system-ui,sans-serif;
   --display:'Sora',system-ui,sans-serif;
   --serif:'Sora',system-ui,sans-serif; /* legacy alias: titles are bold sans */
@@ -48,7 +48,7 @@
 .sn-btn-primary:hover{background:#ef4a40;}
 .sn-btn-primary:active{background:#b3281f;}
 .sn-btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:var(--elev2);border:2px solid var(--edge2);padding:12px 20px;font-family:var(--display);font-weight:700;font-size:13.5px;color:var(--txt);text-decoration:none;cursor:pointer;transition:background .1s,border-color .1s;}
-.sn-btn-ghost:hover{border-color:var(--brass-dim);background:#17233b;}
+.sn-btn-ghost:hover{border-color:var(--brass-dim);background:#1e2024;}
 .sn-btn-ghost:active{background:var(--elev);}
 
 /* plain hard rule under section titles */
@@ -64,21 +64,50 @@
    ================================================================= */
 .sn-hub{--pad-y:clamp(12px,2vw,22px);--pad-x:clamp(14px,2.6vw,30px);display:flex;flex-direction:column;gap:14px;padding:0 var(--pad-x) var(--pad-y);min-height:100dvh;width:100%;max-width:1480px;margin:0 auto;}
 
-/* hero band: REAL card art (public/assets/bg/card-collage-wide.png) behind
-   header + Play. The photo is the signature; a flat scrim keeps text legible. */
-.hu-hero{position:relative;isolation:isolate;margin:0 calc(-1*var(--pad-x));padding:var(--pad-y) var(--pad-x) 16px;display:flex;flex-direction:column;gap:14px;background:#070b16 url("/assets/bg/card-collage-wide.png") center 28%/cover no-repeat;border-bottom:2px solid var(--brass);}
-.hu-hero::before{content:'';position:absolute;inset:0;background:rgba(7,11,22,0.56);z-index:-1;}
-/* hero sits on the same dark photo in BOTH themes: force light text there */
-.hu-hero,
-.hu-hero .sn-logo-name,
-.hu-hero .hu-me-name,
-.hu-hero .hu-sec h2{color:#f0f3f7;}
-.hu-hero .hu-me-sub{color:#b9c6d8;}
-.hu-hero .sn-logo-tag{color:#bfe3e8;}
-.hu-hero .hu-sec-link{color:#bfe3e8;}
-.hu-hero .sn-pill{background:rgba(16,23,43,0.9);color:#b9c6d8;border-color:rgba(148,172,220,0.3);}
-.hu-hero .hu-me:hover{background:rgba(16,23,43,0.7);border-color:rgba(148,172,220,0.3);}
-.hu-hero .sn-rule{background:rgba(148,172,220,0.35);}
+/* =================================================================
+   Night-sea pixel scene (shared: login pane + home hero).
+   Real layered PNGs — base sky+sea, moon, drifting clouds, shimmering
+   reflections. Nothing drawn in markup.
+   ================================================================= */
+.nsea{position:absolute;inset:0;z-index:0;}
+.nsea-layer{position:absolute;inset:0;background-position:var(--nsea-pos,center);background-size:cover;background-repeat:no-repeat;image-rendering:pixelated;}
+.nsea-base  {background-image:url("/assets/bg/night-sea/base.png");}
+.nsea-moon  {background-image:url("/assets/bg/night-sea/moon.png");}
+.nsea-clouds{background-image:url("/assets/bg/night-sea/clouds.png");}
+.nsea-refl  {background-image:url("/assets/bg/night-sea/reflections.png");}
+/* the clouds layer is 6% wider (same cover height → horizon stays aligned)
+   and drifts by translateX, never exposing its edges */
+.nsea-clouds{inset:0 auto;top:0;bottom:0;left:-3%;width:106%;}
+@media (prefers-reduced-motion: no-preference){
+  .nsea-clouds{animation:nsea-drift 120s linear infinite alternate;}
+  .nsea-refl{animation:nsea-shimmer 3.2s steps(2, jump-none) infinite alternate;}
+  @keyframes nsea-drift{from{transform:translateX(-1.3%);}to{transform:translateX(1.3%);}}
+  @keyframes nsea-shimmer{from{opacity:1;}to{opacity:0.55;}}
+}
+
+/* ---- HOME hero: the animated night sea, with the Ship's Log in the sky.
+   The log is a SIBLING of the scene inside .hu-hero-wrap: overlaid on
+   desktop, stacked below the scene on mobile. ---- */
+.hu-hero-wrap{position:relative;margin:0 calc(-1*var(--pad-x));}
+.hu-hero-sea{position:relative;overflow:hidden;height:clamp(240px,24vw,330px);background:#0a0f1e;border-bottom:2px solid #26282d;}
+.hu-hero-sea .nsea-layer{--nsea-pos:center 30%;}
+/* announcements panel, floating in the empty sky left of the moon */
+.hu-log{position:absolute;z-index:2;top:50%;transform:translateY(-50%);left:var(--pad-x);width:min(470px,44%);background:rgba(11,12,14,0.84);border:1px solid rgba(242,243,245,0.22);color:#f2f3f5;}
+.hu-log-h{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(242,243,245,0.16);font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;}
+.hu-log-row{display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;padding:8px 14px;border:none;border-top:1px solid rgba(242,243,245,0.08);background:transparent;color:#f2f3f5;font-family:var(--font);}
+.hu-log-row:first-of-type{border-top:none;}
+.hu-log-row.linky{cursor:pointer;transition:background .1s;}
+.hu-log-row.linky:hover{background:rgba(242,243,245,0.07);}
+.hu-log-date{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:10.5px;color:#9aa0a8;flex:0 0 auto;}
+.hu-log-main{flex:1;min-width:0;}
+.hu-log-title{font-family:var(--display);font-weight:800;font-size:13px;display:block;}
+.hu-log-body{font-size:11.5px;line-height:1.35;color:#c3c7cd;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hu-log-tag{flex:0 0 auto;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#0b0c0e;background:#f2f3f5;padding:2px 7px;}
+/* mobile: the log leaves the sky and sits below the scene */
+@media (max-width:760px){
+  .hu-hero-sea{height:170px;}
+  .hu-log{position:static;transform:none;width:auto;border-top:none;}
+}
 
 /* header */
 .hu-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
@@ -87,6 +116,11 @@
 .hu-head-r{display:flex;align-items:center;gap:12px;margin-right:60px;}
 .hu-me{display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;padding:3px 8px 3px 3px;cursor:pointer;color:var(--txt);transition:border-color .1s,background .1s;}
 .hu-me:hover{border-color:var(--edge2);background:var(--elev);}
+/* persistent social icons (Messages / Notifications), always in the header */
+.hu-hicon{position:relative;width:38px;height:38px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:var(--elev);border:1px solid var(--edge2);color:var(--txt);cursor:pointer;transition:background .1s,border-color .1s;}
+.hu-hicon:hover{background:var(--elev2);border-color:var(--brass-dim);}
+.hu-hicon:active{background:var(--bg2);}
+.hu-hbadge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:#fff;font:700 10px var(--display);min-width:17px;height:17px;line-height:17px;text-align:center;padding:0 4px;border:1px solid rgba(255,255,255,0.5);}
 .hu-me-name{font-family:var(--display);font-weight:800;font-size:13.5px;}
 .hu-me-sub{font-size:11px;color:var(--muted);display:block;text-align:left;}
 
@@ -103,18 +137,31 @@
 
 /* ---- Play band ---- */
 .hu-play{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.hu-mode{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:14px 16px 13px;border:1px solid var(--edge2);border-top:3px solid var(--brass);background:rgba(16,23,43,0.92);color:var(--txt);cursor:pointer;transition:background .1s,border-color .1s;}
-.hu-mode:hover{background:rgba(28,41,71,0.95);border-color:var(--brass-dim);border-top-color:var(--brass-hi);}
-.hu-mode:active{background:rgba(10,15,30,0.95);}
-.hu-mode-badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);border:1px solid var(--edge2);padding:3px 8px;}
-.hu-mode-name{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.2px;text-transform:uppercase;}
-.hu-mode-sub{font-size:12px;line-height:1.4;color:var(--muted);}
-.hu-mode-go{margin-top:auto;padding-top:6px;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--acc2);display:inline-flex;align-items:center;gap:6px;}
-/* the multiplayer mode carries the signal red — the page's one red card */
-.hu-mode.duel{background:rgba(31,13,16,0.93);border-color:rgba(226,59,50,0.5);border-top-color:var(--acc);}
-.hu-mode.duel:hover{background:rgba(44,18,22,0.95);border-top-color:#f0554b;}
-.hu-mode.duel .hu-mode-go{color:#ff9a93;}
-.hu-mode.auto .hu-mode-badge{color:#0a0f1e;background:#bfe3e8;border-color:#2b4a8b;font-weight:800;}
+/* photographic mode cards: REAL card art (scripts/build-mode-cards.mjs →
+   public/assets/bg/mode-*.png) behind a flat scrim; micro-zoom on hover */
+.hu-mode{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;min-height:168px;padding:14px 16px 13px;border:1px solid #33363b;border-top:3px solid #565b63;background:#141518;color:#f2f3f5;cursor:pointer;transition:border-color .1s;}
+.hu-mode::before{content:'';position:absolute;inset:0;z-index:-2;background-position:center 18%;background-size:cover;background-repeat:no-repeat;transition:transform .14s var(--ease-out);}
+.hu-mode::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,12,14,0.38),rgba(11,12,14,0.78));}
+.hu-mode.m-board::before{background-image:url("/assets/bg/mode-board.png");}
+.hu-mode.m-lab::before{background-image:url("/assets/bg/mode-lab.png");}
+.hu-mode.m-auto::before{background-image:url("/assets/bg/mode-auto.png");}
+.hu-mode.m-duel::before{background-image:url("/assets/bg/mode-duel.png");}
+@media (hover: hover) and (pointer: fine){
+  .hu-mode:hover{border-top-color:#f2f3f5;}
+  .hu-mode:hover::before{transform:scale(1.05);}
+}
+@media (prefers-reduced-motion: reduce){
+  .hu-mode:hover::before{transform:none;}
+}
+.hu-mode-badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#e4e6ea;background:rgba(11,12,14,0.7);border:1px solid rgba(242,243,245,0.3);padding:3px 8px;}
+.hu-mode-name{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.2px;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,0.6);}
+.hu-mode-sub{font-size:12px;line-height:1.4;color:#d4d7db;text-shadow:0 1px 0 rgba(0,0,0,0.6);}
+.hu-mode-go{margin-top:auto;padding-top:6px;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:6px;}
+/* the multiplayer mode carries the signal red */
+.hu-mode.m-duel{border-color:rgba(226,59,50,0.55);border-top-color:var(--acc);}
+.hu-mode.m-duel:hover{border-top-color:#f0554b;}
+.hu-mode.m-duel .hu-mode-go{color:#ff9a93;}
+.hu-mode.m-auto .hu-mode-badge{color:#0b0c0e;background:#f2f3f5;border-color:#565b63;font-weight:800;}
 
 /* ---- gauges: live network counters (flat strip, mono) ---- */
 .hu-gauges{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--edge2);background:var(--elev);}
@@ -171,7 +218,7 @@
 .hu-crew-dot{width:8px;height:8px;flex:0 0 auto;}
 .hu-crew-dot.online{background:#46c983;}
 .hu-crew-dot.in_duel{background:var(--brass-hi);}
-.hu-crew-dot.offline{background:#4c5668;}
+.hu-crew-dot.offline{background:#4a4e55;}
 .hu-crew-st{font-size:10.5px;color:var(--muted);flex:0 0 auto;letter-spacing:.3px;}
 /* rail shortcut rows: label + live count */
 .hu-link-row{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border-top:1px solid var(--edge);background:transparent;color:var(--txt);cursor:pointer;transition:background .1s;}
@@ -188,23 +235,21 @@
 .hu-feed-who{font-family:var(--display);font-weight:800;font-size:12px;color:var(--acc2);flex:0 0 auto;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hu-feed-txt{color:var(--txt);min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 .hu-feed-open{display:block;width:100%;text-align:center;padding:9px 12px;border:none;border-top:1px solid var(--edge2);background:var(--elev2);color:var(--acc2);font-family:var(--display);font-weight:800;font-size:11.5px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .1s;}
-.hu-feed-open:hover{background:#17233b;}
+.hu-feed-open:hover{background:#1e2024;}
 
 /* touch devices: no hover styles */
 @media (hover: none), (pointer: coarse){
   .hu-mode:hover,.hu-tile:hover{background:var(--elev);}
 }
 
-/* ---- responsive: social stays high on small screens ---- */
+/* ---- responsive: social stays high AND the grid fills the width ---- */
 @media (max-width:1180px){
-  .hu-grid{display:flex;flex-direction:column;}
-  .hu-main,.hu-rail{display:contents;}
-  /* order: Play → social panels → data → browse */
-  .hu-rail>.hu-panel{order:1;position:static;}
-  .hu-gauges{order:2;}
-  .hu-data{order:3;}
-  .hu-sec.browse{order:4;}
-  .hu-index{order:5;}
+  /* align-items:stretch: the base grid uses start, which would shrink every
+     stacked block to content width (the "half-empty page" bug) */
+  .hu-grid{display:flex;flex-direction:column;align-items:stretch;}
+  .hu-main{display:contents;}
+  /* the rail becomes a full-width row of panels, right after Play */
+  .hu-rail{order:-1;position:static;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;align-items:start;}
 }
 @media (max-width:900px){
   .hu-play{grid-template-columns:repeat(2,1fr);}

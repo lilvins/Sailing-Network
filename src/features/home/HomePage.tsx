@@ -89,7 +89,7 @@ interface Mode {
   sub: string;
   go: string;
   view: View;
-  cls?: string;
+  cls: string; // picks the real card-art background (m-*)
 }
 
 const MODES: Mode[] = [
@@ -100,6 +100,7 @@ const MODES: Mode[] = [
     sub: "DuelingBook-style table. You make every move.",
     go: "Open table",
     view: "board",
+    cls: "m-board",
   },
   {
     id: "board2",
@@ -108,6 +109,7 @@ const MODES: Mode[] = [
     sub: "OPTCGSim-style arrangement of the same table.",
     go: "Open table",
     view: "board2",
+    cls: "m-lab",
   },
   {
     id: "board-auto",
@@ -116,7 +118,7 @@ const MODES: Mode[] = [
     sub: "Engine-driven duels. Costs, battles and rules enforced.",
     go: "Play",
     view: "board-auto",
-    cls: "auto",
+    cls: "m-auto",
   },
   {
     id: "duel-room",
@@ -125,9 +127,17 @@ const MODES: Mode[] = [
     sub: "Queue up and duel other captains live.",
     go: "Enter",
     view: "duel-room",
-    cls: "duel",
+    cls: "m-duel",
   },
 ];
+
+interface Announcement {
+  date: string;
+  title: string;
+  body: string;
+  tag: string | null;
+  view: View | null;
+}
 
 interface Tile {
   id: string;
@@ -166,6 +176,7 @@ export function HomePage() {
   const [dir, setDir] = useState<DirectoryUser[]>([]);
   const [cards, setCards] = useState<Map<string, Card> | null>(null);
   const [feed, setFeed] = useState<GlobalMessage[]>([]);
+  const [news, setNews] = useState<Announcement[]>([]);
   const [unread, setUnread] = useState(0);
   const [incoming, setIncoming] = useState(0);
   const [notifs, setNotifs] = useState(0);
@@ -182,6 +193,11 @@ export function HomePage() {
     api.directory().then(({ users }) => setDir(users)).catch(() => {});
     loadCardsById().then(setCards).catch(() => {});
     void fetchPresence();
+    // ship's log — static versioned announcements
+    fetch("/data/announcements.json")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((a: Announcement[]) => setNews(Array.isArray(a) ? a.slice(0, 3) : []))
+      .catch(() => {});
 
     Promise.all([api.myProfile(), loadCardsById()])
       .then(([{ profile }, byId]) => {
@@ -252,48 +268,90 @@ export function HomePage() {
 
   return (
     <div className="sn sn-hub">
-      {/* hero band — real card art behind header + Play */}
-      <div className="hu-hero">
-        <header className="hu-head">
-          <Logo />
-          <div className="hu-head-r">
-            {stats && (
-              <div className="sn-pill">
-                <span className="sn-livedot" /> {fmt(stats.captains)} captains aboard
-              </div>
-            )}
-            <button className="hu-me" title="Your profile" onClick={() => openProfile(null)}>
-              <LeaderAvatar
-                name={user?.displayName || "?"}
-                color={myAvatar.color}
-                image={myAvatar.image}
-                size={38}
-              />
-              <span>
-                <span className="hu-me-name">{user?.displayName || "Captain"}</span>
-                <span className="hu-me-sub">@{user?.username || ""}</span>
-              </span>
-            </button>
-          </div>
-        </header>
-
-        <div className="hu-sec">
-          <h2>Play</h2>
-          <div className="sn-rule" />
+      <header className="hu-head">
+        <Logo />
+        <div className="hu-head-r">
+          {stats && (
+            <div className="sn-pill">
+              <span className="sn-livedot" /> {fmt(stats.captains)} captains aboard
+            </div>
+          )}
+          <button className="hu-hicon" title="Messages" onClick={() => setView("messages")}>
+            <Icon name="chat" size={17} />
+            {unread > 0 && <span className="hu-hbadge">{unread}</span>}
+          </button>
+          <button className="hu-hicon" title="Notifications" onClick={() => setView("notifications")}>
+            <Icon name="bell" size={17} />
+            {notifs > 0 && <span className="hu-hbadge">{notifs}</span>}
+          </button>
+          <button className="hu-me" title="Your profile" onClick={() => openProfile(null)}>
+            <LeaderAvatar
+              name={user?.displayName || "?"}
+              color={myAvatar.color}
+              image={myAvatar.image}
+              size={38}
+            />
+            <span>
+              <span className="hu-me-name">{user?.displayName || "Captain"}</span>
+              <span className="hu-me-sub">@{user?.username || ""}</span>
+            </span>
+          </button>
         </div>
-        <section className="hu-play">
-          {MODES.map((m) => (
-            <button key={m.id} className={"hu-mode" + (m.cls ? ` ${m.cls}` : "")} onClick={() => setView(m.view)}>
-              <span className="hu-mode-badge">{m.badge}</span>
-              <span className="hu-mode-name">{m.name}</span>
-              <span className="hu-mode-sub">{m.sub}</span>
-              <span className="hu-mode-go">
-                {m.go} <Icon name="arrow" size={13} sw={2.2} />
-              </span>
-            </button>
-          ))}
-        </section>
+      </header>
+
+      {/* hero: the animated night sea with the Ship's Log in the sky */}
+      <div className="hu-hero-wrap">
+        <div className="hu-hero-sea" aria-hidden="true">
+          <div className="nsea">
+            <div className="nsea-layer nsea-base" />
+            <div className="nsea-layer nsea-moon" />
+            <div className="nsea-layer nsea-clouds" />
+            <div className="nsea-layer nsea-refl" />
+          </div>
+        </div>
+        {news.length > 0 && (
+          <div className="hu-log">
+            <div className="hu-log-h">Ship's Log</div>
+            {news.map((n) =>
+              n.view ? (
+                <button key={n.date + n.title} className="hu-log-row linky" onClick={() => setView(n.view!)}>
+                  <span className="hu-log-date">{n.date.slice(5)}</span>
+                  <span className="hu-log-main">
+                    <span className="hu-log-title">{n.title}</span>
+                    <span className="hu-log-body">{n.body}</span>
+                  </span>
+                  {n.tag && <span className="hu-log-tag">{n.tag}</span>}
+                </button>
+              ) : (
+                <div key={n.date + n.title} className="hu-log-row">
+                  <span className="hu-log-date">{n.date.slice(5)}</span>
+                  <span className="hu-log-main">
+                    <span className="hu-log-title">{n.title}</span>
+                    <span className="hu-log-body">{n.body}</span>
+                  </span>
+                </div>
+              ),
+            )}
+          </div>
+        )}
       </div>
+
+      <div className="hu-sec">
+        <h2>Play</h2>
+        <div className="sn-rule" />
+      </div>
+      <section className="hu-play">
+        {MODES.map((m) => (
+          <button key={m.id} className={`hu-mode ${m.cls}`} onClick={() => setView(m.view)}>
+            <span className="hu-mode-badge">{m.badge}</span>
+            <span className="hu-mode-name">{m.name}</span>
+            <span className="hu-mode-sub">{m.sub}</span>
+            <span className="hu-mode-go">
+              {m.go} <Icon name="arrow" size={13} sw={2.2} />
+            </span>
+          </button>
+        ))}
+      </section>
 
       <div className="hu-grid">
         <main className="hu-main">

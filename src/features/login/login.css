@@ -194,51 +194,7 @@
   overflow: hidden;
   background: #0a0f1e; /* matches the art's sky floor */
 }
-.nsea {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-.nsea-layer {
-  position: absolute;
-  inset: 0;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  image-rendering: pixelated; /* crisp pixel-art upscale */
-}
-.nsea-base  { background-image: url("/assets/bg/night-sea/base.png"); }
-.nsea-moon  { background-image: url("/assets/bg/night-sea/moon.png"); }
-.nsea-clouds{ background-image: url("/assets/bg/night-sea/clouds.png"); }
-.nsea-refl  { background-image: url("/assets/bg/night-sea/reflections.png"); }
-
-/* slow, functional motion only; off under reduced motion.
-   The clouds layer is 6% wider than the pane (same cover height, so the
-   horizon stays aligned with the base layer) and drifts by translateX,
-   never exposing its edges and never breaking the horizon line. */
-.nsea-clouds {
-  inset: 0 auto;
-  top: 0;
-  bottom: 0;
-  left: -3%;
-  width: 106%;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .nsea-clouds {
-    animation: nsea-drift 120s linear infinite alternate;
-  }
-  .nsea-refl {
-    animation: nsea-shimmer 3.2s steps(2, jump-none) infinite alternate;
-  }
-  @keyframes nsea-drift {
-    from { transform: translateX(-1.3%); }
-    to   { transform: translateX(1.3%); }
-  }
-  @keyframes nsea-shimmer {
-    from { opacity: 1; }
-    to   { opacity: 0.55; }
-  }
-}
+/* .nsea layer styles live in home.css (shared with the Home hero). */
 
 .snlogin-scene-label {
   position: absolute;

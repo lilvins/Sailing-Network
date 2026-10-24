@@ -732,7 +732,7 @@
   pointer-events: none;
 }
 .st2-mode select option {
-  background: #12161d;
+  background: #131417;
   color: #e8edf4;
 }
 
@@ -877,8 +877,8 @@
   gap: 7px;
   padding: 9px 12px;
   border-radius:0;
-  background: rgba(91,130,204, 0.14);
-  border: 1px solid rgba(91,130,204, 0.42);
+  background: rgba(242,243,245, 0.14);
+  border: 1px solid rgba(242,243,245, 0.42);
   color: var(--brass-hi);
   font: 700 11.5px var(--display);
   letter-spacing: 0.5px;
@@ -887,7 +887,7 @@
   transition: background 0.1s, transform 0.1s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .bl-copy:hover {
-  background: rgba(91,130,204, 0.24);
+  background: rgba(242,243,245, 0.24);
 }
 .bl-copy:active {
   transform: scale(0.96);
@@ -989,7 +989,7 @@
 .gc-handle{font-size:11px;color:var(--muted);}
 .gc-time{font-size:11px;color:var(--muted);}
 .gc-text{font-size:14px;color:var(--txt);line-height:1.4;word-break:break-word;}
-.gc-line.me .gc-name{color:var(--acc2,#8fd0da);}
+.gc-line.me .gc-name{color:var(--acc2,#e8eaed);}
 
 /* ===== Meta table ===== */
 .meta-head,.meta-row{grid-template-columns:54px 1.7fr 1.5fr 1.4fr 0.7fr !important;}
@@ -1000,7 +1000,7 @@
 
 /* ===== Notifications ===== */
 .notif-row{width:100%;text-align:left;background:transparent;border:none;border-bottom:1px solid var(--edge);cursor:pointer;}
-.notif-row.unread{background:rgba(191,227,232,0.06);}
+.notif-row.unread{background:rgba(242,243,245,0.06);}
 .notif-ico{width:36px;height:36px;flex:0 0 auto;border-radius:0;display:grid;place-items:center;color:#d6d0c2;background:rgba(255,255,255,0.05);border:1px solid var(--edge2);}
 .notif-ico.t-friend_request{color:var(--acc2);}
 .notif-ico.t-friend_accept{color:#5fdd8f;}

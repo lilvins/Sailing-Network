@@ -189,10 +189,10 @@
   --bg2: #e3e8f0;
   --elev: #ffffff;
   --elev2: #e9edf5;
-  --acc2: #2b4a8b; /* sea blue for contrast on light */
-  --brass: #2b4a8b;
-  --brass-hi: #1d3f7d;
-  --brass-dim: rgba(43, 74, 139, 0.45);
+  --acc2: #3c4046; /* neutral dark accent for contrast on light */
+  --brass: #4a4f57;
+  --brass-hi: #17191d;
+  --brass-dim: rgba(60, 64, 70, 0.45);
   --glass: #ffffff;
   --glass2: #ffffff;
   --edge: rgba(20, 30, 45, 0.1);
@@ -224,17 +224,8 @@
   color: var(--txt);
 }
 
-/* 5) explicit dark card gradients / fills -> light */
-[data-theme="light"] .hu-mode {
-  background: #ffffff;
-  box-shadow: 0 10px 26px rgba(20, 30, 50, 0.1);
-}
-[data-theme="light"] .hu-mode.duel {
-  background: #fbeeec;
-}
-[data-theme="light"] .hu-mode.duel .hu-mode-go {
-  color: #b3281f;
-}
+/* 5) photographic surfaces (mode cards, hero scene, ship's log) keep their
+   dark photo + light text in BOTH themes — no light override on purpose. */
 [data-theme="light"] .hu-tile,
 [data-theme="light"] .hu-tile:hover {
   background: rgba(20, 30, 45, 0.04);

@@ -27,7 +27,7 @@ export function LeaderAvatar({
         boxShadow: fill ? undefined : "0 0 0 1px rgba(236,230,216,0.25)",
       }}
     >
-      {image && (
+      {image ? (
         <img
           src={image}
           alt=""
@@ -36,13 +36,17 @@ export function LeaderAvatar({
           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "50% 14%" }}
         />
-      )}
-      {!image && (
-        <div className="snp-ph">
-          <div className="ph-emblem" style={{ fontSize: (fill ? 44 : size) * 0.55, transform: "translate(-50%,-50%)" }}>
-            {name[0]?.toUpperCase()}
-          </div>
-        </div>
+      ) : (
+        /* real fallback: the pixel-art moon from the night-sea pack —
+           never a plain color block */
+        <img
+          src="/assets/bg/avatar-moon.png"
+          alt=""
+          loading="lazy"
+          draggable={false}
+          title={name}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
+        />
       )}
     </div>
   );

@@ -30,9 +30,9 @@
 .dr-field.row label{width:110px;}
 .dr-pool-btn{margin:14px 16px 0;padding:12px;border-radius:0;font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.5px;color:#fff;cursor:pointer;background:var(--acc);border:1px solid rgba(255,255,255,0.16);transition:filter .1s;}
 .dr-pool-btn:hover{filter:brightness(1.1);}
-.dr-pool-btn.active{background:#2a3442;}
+.dr-pool-btn.active{background:#26282d;}
 .dr-pool-status{display:flex;align-items:center;gap:9px;margin:12px 16px 0;font-size:12px;color:var(--acc2);font-weight:600;}
-.dr-spinner{width:14px;height:14px;border-radius:0;border:2px solid rgba(191,227,232,0.3);border-top-color:var(--acc2);animation:dr-spin .8s linear infinite;}
+.dr-spinner{width:14px;height:14px;border-radius:0;border:2px solid rgba(242,243,245,0.3);border-top-color:var(--acc2);animation:dr-spin .8s linear infinite;}
 @keyframes dr-spin{to{transform:rotate(360deg);}}
 
 /* open duels */
@@ -70,7 +70,7 @@
 .dr-duel-watch{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);flex:0 0 auto;}
 .dr-join{flex:0 0 auto;padding:7px 14px;border-radius:0;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.5px;color:#fff;cursor:pointer;background:var(--acc);border:1px solid rgba(255,255,255,0.15);transition:filter .1s;}
 .dr-join:hover{filter:brightness(1.12);}
-.dr-join.watch{background:#2a6fc0;}
+.dr-join.watch{background:#3c4046;}
 
 /* ---- BOTTOM tools ---- */
 .dr-bottom{flex:0 0 auto;display:flex;align-items:flex-end;gap:14px;}
@@ -115,7 +115,7 @@
 .dr-select{position:relative;flex:1;min-width:0;}
 .dr-select select{appearance:none;-webkit-appearance:none;width:100%;font:inherit;font-size:13px;font-weight:600;color:var(--txt);padding:8px 32px 8px 11px;border:1px solid var(--edge2);border-radius:0;background:rgba(0,0,0,0.28);cursor:pointer;}
 .dr-select select:focus{outline:none;border-color:var(--acc);}
-.dr-select option{background:#12161d;color:var(--txt);}
+.dr-select option{background:#131417;color:var(--txt);}
 .dr-select-caret{position:absolute;right:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);display:flex;}
 
 /* footer */

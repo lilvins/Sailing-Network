@@ -1,0 +1,23 @@
+[
+  {
+    "date": "2026-10-23",
+    "title": "Play Auto is live",
+    "body": "Full-rules engine duels: ST01 and OP01 with real card effects.",
+    "tag": "Play Auto",
+    "view": "board-auto"
+  },
+  {
+    "date": "2026-10-22",
+    "title": "New night look",
+    "body": "Real pixel-art skies and true card art across the whole site.",
+    "tag": null,
+    "view": null
+  },
+  {
+    "date": "2026-10-20",
+    "title": "Popular decklists refreshed",
+    "body": "Top lists from six recent regionals, ready to import.",
+    "tag": "Popular",
+    "view": "popular-decklists"
+  }
+]
