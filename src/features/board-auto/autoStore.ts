@@ -32,6 +32,8 @@ export interface Banner {
   id: number;
   text: string;
   hint?: string;
+  /** "error" = explained refusal (red); "info" = neutral hint (brass). */
+  tone?: "error" | "info";
 }
 
 /** Module-level (non-serializable) lookups — deliberately outside the store
@@ -82,7 +84,7 @@ interface AutoStoreState {
   chooseFirst: (firstIdx: 0 | 1) => void;
   /** The single gate every UI move goes through. Returns true when applied. */
   dispatch: (intent: PlayerIntent) => boolean;
-  explain: (text: string, hint?: string) => void;
+  explain: (text: string, hint?: string, tone?: Banner["tone"]) => void;
   dismissBanner: () => void;
   /** Back to the roll with the same decks (rematch) or to the deck pick. */
   rematch: () => void;
@@ -165,7 +167,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     }
   },
 
-  explain: (text, hint) => set({ banner: { id: bannerSeq++, text, hint } }),
+  explain: (text, hint, tone) => set({ banner: { id: bannerSeq++, text, hint, tone } }),
   dismissBanner: () => set({ banner: null }),
 
   rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null }),

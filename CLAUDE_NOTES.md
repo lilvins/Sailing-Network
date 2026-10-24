@@ -138,11 +138,25 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   [Counter] event (manual resolve), [Trigger] activate AND decline
   (BA_DECLINE=1), down to leaderDamageAtZeroLife wins for either seat, zero
   console errors. Screenshots: `scripts/.shots/boardauto-*.png`.
-- **Known limits (M2 debts)**: non-compiled effects (On Play, Activate: Main,
-  …) silently do nothing (text readable in the preview panel); manualResolve
-  is an acknowledged no-op (no free-move intents in M1); a real [Trigger]
-  "play this card" degrades to manual+trash; no undo (replayable event log
-  makes it feasible later). Decisions #23-30 in AUTOSIM_PLAN.md.
+- **Automation transparency (UX round 2026-10-24)**: nothing un-automated is
+  silent — `automationInfo` (compile.ts) drives on-field chips ("MANUAL" /
+  "NO-AUTO"), a detailed note in the preview rail, and per-deck warnings in
+  the picker for uncompiled sets; `ENGINE_RUNNABLE_TIMINGS` lists what the
+  engine fires today (update it as M3+ lands). Same round: preview art never
+  crops (object-fit contain), rested leaders/stages get rotation clearance
+  (no more spilling over the LIFE/DON piles), the contextual action bar lives
+  in flow between field and hand (never covers DON cells or counter cards),
+  and right-click on an active DON toggles a purely-visual "HOLD" placeholder
+  (no intent, resets each turn, info-tone hint on first use).
+- **Known limits (engine debts)**: [Activate: Main], static/continuous,
+  start/end-of-turn timings don't run yet (now DISCLOSED via chips/notes);
+  manualResolve is an acknowledged no-op (no free-move intents in M1); a
+  [Trigger] "play this card" from an uncompiled set degrades to manual+trash;
+  no undo (replayable event log makes it feasible later). Decisions #23-32
+  in AUTOSIM_PLAN.md. NOTE for verification scripts: the login route is
+  rate-limited (10/10min) — boardauto-shots.mjs reuses its session via
+  storageState and mutes the HMR websocket so live edits by other agents
+  can't reload the page mid-game.
 
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to

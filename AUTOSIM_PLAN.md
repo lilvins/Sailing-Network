@@ -474,10 +474,27 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     Limite noto: un [Trigger] reale "play this card" degrada a manual+trash.
 29. Il bottone contestuale unico (Don't block / End counters / Confirm) vive
     IN FLUSSO tra campo e mano (mai sopra DON o counter da tappare).
-30. Dev hook `window.__auto` (solo `import.meta.env.DEV`) espone stato+legal
-    per il driver Playwright `scripts/boardauto-shots.mjs`, che gioca una
-    partita vera via UI e verifica ogni finestra (screenshot in
-    `scripts/.shots/boardauto-*.png`).
+30. Dev hook `window.__auto` (solo `import.meta.env.DEV`) espone stato+eventi+
+    legal per il driver Playwright `scripts/boardauto-shots.mjs`, che gioca una
+    partita vera via UI, verifica ogni finestra e a fine run stampa QUALI
+    effetti compilati sono partiti (cardId × timing). Il driver disattiva il
+    websocket HMR nel proprio browser (altri agenti che salvano file non
+    ricaricano la pagina a metà partita) e riusa la sessione via storageState
+    (la login è rate-limited 10/10min).
+31. **Trasparenza automazione (round UX 2026-10-24)**: un effetto che non parte
+    non deve mai sembrare un silenzio rotto. `automationInfo(card)` deriva da
+    batch/fallback: chip on-field "MANUAL" (si risolve col pannello manuale) e
+    "NO-AUTO" (timing che il motore non esegue ancora: [Activate: Main],
+    static/continui, start/end-of-turn… o testo di set non compilato), nota
+    dettagliata nel pannello anteprima, e avviso nel deck picker per i set
+    senza batch. I timing eseguibili oggi sono censiti in
+    `ENGINE_RUNNABLE_TIMINGS` (compile.ts) — aggiornarli quando M3+ ne accende
+    di nuovi. I demo deck preferiscono carte dei set compilati (i demo
+    ST01/OP01 sono 100% automatizzati, gli altri dichiarano l'avviso).
+32. **Segnaposto DON!! (tasto destro)**: marcatore PURAMENTE visivo locale
+    (tilt+dim+"HOLD") per dividersi i DON "come dal vivo" — nessun intent,
+    stato motore intatto, reset al cambio turno, hint (banner tone "info",
+    non rosso) alla prima attivazione.
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

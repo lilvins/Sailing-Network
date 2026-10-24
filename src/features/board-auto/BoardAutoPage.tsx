@@ -8,6 +8,7 @@ import { legalMoves } from "../../autosim/engine/legality";
 import { effectivePower, keywordsOf, type AutoGameState, type Iid, type PID } from "../../autosim/engine/state";
 import type { Keyword } from "../../autosim/ir/types";
 import { getCardDb, getCardsById, useAutoStore, type SeatSetup } from "./autoStore";
+import { automationInfo } from "./compile";
 import { buildDemoDecks, userDeckChoices, type DeckChoice } from "./decks";
 import { fmtEvent } from "./log";
 import "./boardauto.css";
@@ -50,6 +51,7 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
         legal: s.game && db ? legalMoves(db, s.game) : null,
       };
     },
+    events: () => useAutoStore.getState().events,
   };
 }
 
@@ -102,7 +104,7 @@ function Banner() {
   }, [banner, dismiss]);
   if (!banner) return null;
   return (
-    <div className="ba-banner" role="alert" onClick={dismiss}>
+    <div className={`ba-banner${banner.tone === "info" ? " info" : ""}`} role="alert" onClick={dismiss}>
       <b>{banner.text}</b>
       {banner.hint && <span>{banner.hint}</span>}
     </div>
@@ -173,6 +175,7 @@ function PickScreen() {
               <span className="ba-deckmeta">
                 <b>{d.name}</b>
                 <i>{d.sub}</i>
+                {d.warn && <i className="ba-deckwarn">{d.warn}</i>}
               </span>
             </button>
           );
@@ -314,6 +317,10 @@ function GameScreen() {
   const [mode, setMode] = useState<Mode>({ t: "idle" });
   const [picked, setPicked] = useState<Iid[]>([]);
   const [armConcede, setArmConcede] = useState<PID | null>(null);
+  // DON placeholders: PURELY VISUAL, per-seat marked active-DON indexes.
+  // Never an intent — the engine's DON state is untouched (plan §1 rule).
+  const [donMarks, setDonMarks] = useState<Record<PID, number[]>>({});
+  const donHintShown = useRef(false);
   const [hoverTarget, setHoverTarget] = useState<Iid | null>(null);
   const nodeMap = useRef(new Map<Iid, HTMLElement>());
   const fieldRef = useRef<HTMLDivElement | null>(null);
@@ -328,6 +335,26 @@ function GameScreen() {
     setPicked([]);
     setHoverTarget(null);
   }, [pc?.kind, game.turn, game.battle?.step, game.phase]);
+
+  // DON placeholders reset at every turn change (they are thinking aids)
+  useEffect(() => {
+    setDonMarks({});
+  }, [game.turn]);
+
+  const toggleDonMark = (pid: PID, index: number) => {
+    setDonMarks((prev) => {
+      const cur = prev[pid] ?? [];
+      return { ...prev, [pid]: cur.includes(index) ? cur.filter((x) => x !== index) : [...cur, index] };
+    });
+    if (!donHintShown.current) {
+      donHintShown.current = true;
+      explain(
+        "DON!! placeholder — visual only, the game state does not change.",
+        "Right-click toggles it off; all marks clear at the turn change.",
+        "info",
+      );
+    }
+  };
 
   // per-seat chess-style clocks (count up while that seat must act)
   const [clocks, setClocks] = useState<Record<PID, number>>({ [SEAT_A]: 0, [SEAT_B]: 0 });
@@ -673,6 +700,9 @@ function GameScreen() {
     const isLeader = iid === p.leaderIid;
     const onField = isLeader || p.zones.characterArea.includes(iid) || p.zones.stage.includes(iid);
     const kws = onField ? [...keywordsOf(db, game, owner, iid)] : [];
+    // automation disclosure chips: an effect that can't run must never look
+    // like silent breakage (shown on field cards; details in the preview)
+    const autoInfo = onField && card ? automationInfo(card) : null;
     const basePower = card?.power ?? null;
     const eff = onField && basePower != null ? effectivePower(db, game, owner, iid) : null;
     const delta = eff != null && basePower != null ? eff - basePower : 0;
@@ -716,11 +746,13 @@ function GameScreen() {
           </span>
         )}
         {inHand && card && <span className="ba-cost">{card.cost ?? 0}</span>}
-        {kws.length > 0 && (
+        {(kws.length > 0 || autoInfo?.manual || autoInfo?.inert) && (
           <span className="ba-kwrow">
             {kws.map((k) => (
               <i key={k} className="ba-kw">{KW_LABEL[k]}</i>
             ))}
+            {autoInfo?.manual && <i className="ba-kw manual" title="Some effects resolve via the manual panel">MANUAL</i>}
+            {autoInfo?.inert && <i className="ba-kw noauto" title="Some effect text is not automated yet — see the preview panel">NO-AUTO</i>}
           </span>
         )}
         {given > 0 && <span className="ba-given">DON!! ×{given}</span>}
@@ -768,18 +800,26 @@ function GameScreen() {
             <div className="ba-donrow" data-seat-don={pid}>
               {Array.from({ length: donActive }).map((_, i) => {
                 const dialOn = isTurn && mode.t === "don" && i < mode.count;
+                const marked = (donMarks[pid] ?? []).includes(i);
                 return (
                   <div
                     key={`a${i}`}
-                    className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}`}
+                    className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${marked ? " ba-donmark" : ""}`}
                     data-don-index={i + 1}
                     data-don-seat={pid}
+                    title={marked ? "Placeholder (visual only) — right-click to clear" : undefined}
                     onClick={(e) => {
                       e.stopPropagation();
                       onDonTap(pid, i + 1);
                     }}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleDonMark(pid, i);
+                    }}
                   >
                     <DonArt />
+                    {marked && <span className="ba-donmark-tag">HOLD</span>}
                   </div>
                 );
               })}
@@ -995,6 +1035,7 @@ function GameScreen() {
                   ? `\n\n${preview.trigger.trimStart().startsWith("[Trigger]") ? preview.trigger : `[Trigger] ${preview.trigger}`}`
                   : ""}
               </div>
+              {automationInfo(preview).note && <div className="ba-prevnote">{automationInfo(preview).note}</div>}
             </>
           ) : (
             <div className="ba-prevempty">Tap or hover a card to inspect it.</div>

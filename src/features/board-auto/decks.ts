@@ -9,7 +9,7 @@
  */
 import type { Card } from "../cards/cardsDb";
 import type { Deck } from "../../lib/api";
-import { innateKeywords } from "./compile";
+import { innateKeywords, uncompiledSetsOf } from "./compile";
 
 export interface DeckChoice {
   key: string;
@@ -19,6 +19,15 @@ export interface DeckChoice {
   /** 50 cardIds (demo decks always; user decks: whatever they saved). */
   main: string[];
   source: "demo" | "mine";
+  /** Disclosure when the deck uses sets with no compiled effects yet. */
+  warn?: string;
+}
+
+function setWarning(leaderId: string, main: string[]): string | undefined {
+  const missing = uncompiledSetsOf([leaderId, ...main]);
+  return missing.length > 0
+    ? `Effects not yet automated for: ${missing.join(", ")} (keywords, [Trigger], [Main] and [Counter] windows still work)`
+    : undefined;
 }
 
 /** Leaders the demo generator tries, in order (skips missing/non-leader ids).
@@ -42,8 +51,13 @@ function buildDemoList(leader: Card, all: Card[]): string[] | null {
   );
   if (pool.length * 4 < 50) return null;
 
+  // prefer cards whose set is batch-compiled (their effects run for real),
+  // then the leader's own set, then cheap-first
+  const noAutoSets = new Set(uncompiledSetsOf(pool.map((c) => c.id)));
+  const compiledFirst = (c: Card) => (noAutoSets.has(c.set) ? 1 : 0);
   const sameSet = (c: Card) => (c.set === leader.set ? 0 : 1);
-  const byIdAsc = (a: Card, b: Card) => sameSet(a) - sameSet(b) || (a.cost ?? 0) - (b.cost ?? 0) || a.id.localeCompare(b.id);
+  const byIdAsc = (a: Card, b: Card) =>
+    compiledFirst(a) - compiledFirst(b) || sameSet(a) - sameSet(b) || (a.cost ?? 0) - (b.cost ?? 0) || a.id.localeCompare(b.id);
 
   const blockers = pool
     .filter((c) => c.category === "Character" && innateKeywords(c.effect).includes("Blocker"))
@@ -69,11 +83,14 @@ function buildDemoList(leader: Card, all: Card[]): string[] | null {
     for (let i = 0; i < add; i++) main.push(c.id);
   };
 
-  // 2 blocker kinds ×4, 2 counter events ×4, 3 trigger characters ×4 = 28,
+  // 2 blocker kinds ×4, 2 counter events ×4, up to 3 trigger characters ×4,
   // then cheap counter bodies, then anything, until exactly 50.
+  // Trigger characters come from compiled sets when any exist there — the
+  // counter events above carry [Trigger] too, so Life still has triggers.
+  const compiledTrigs = triggerChars.filter((c) => !noAutoSets.has(c.set));
   for (const c of blockers.slice(0, 2)) take(c, 4);
   for (const c of counterEvents.slice(0, 2)) take(c, 4);
-  for (const c of triggerChars.slice(0, 3)) take(c, 4);
+  for (const c of (compiledTrigs.length > 0 ? compiledTrigs : triggerChars).slice(0, 3)) take(c, 4);
   for (const c of cheapChars) { if (main.length >= 50) break; take(c, 4); }
   for (const c of rest) { if (main.length >= 50) break; take(c, 4); }
 
@@ -96,6 +113,7 @@ export function buildDemoDecks(cardsById: Map<string, Card>): DeckChoice[] {
       leaderId,
       main,
       source: "demo",
+      warn: setWarning(leaderId, main),
     });
   }
   return out;
@@ -114,6 +132,7 @@ export function userDeckChoices(decks: Deck[]): DeckChoice[] {
         leaderId: d.leaderId!,
         main,
         source: "mine" as const,
+        warn: setWarning(d.leaderId!, main),
       };
     });
 }

@@ -5,25 +5,60 @@
    counter, trigger reveal, manual resolve, game over.
    Usage: node scripts/boardauto-shots.mjs */
 import { chromium } from "playwright";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
+
+// cards with a compiled [When Attacking] effect (to aim the DON dial at one
+// and prove the effect fires in play)
+const WA_IDS = new Set(
+  JSON.parse(readFileSync("src/autosim/data/compiled/st01-op01.json", "utf8"))
+    .filter((c) => c.effects.some((fx) => fx.timing === "whenAttacking"))
+    .map((c) => c.cardId),
+);
 
 const BASE = "http://localhost:5173";
 const OUT = "scripts/.shots";
 mkdirSync(OUT, { recursive: true });
 
+// BA_W/BA_H: viewport override · BA_TAG: shot-name suffix · BA_DECLINE: see triggers
+const W = Number(process.env.BA_W ?? 1440);
+const H = Number(process.env.BA_H ?? 900);
+const TAG = process.env.BA_TAG ? `-${process.env.BA_TAG}` : "";
+
 const consoleErrors = [];
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+// reuse the session across runs: the login route is rate-limited (10/10min)
+const AUTH = `${OUT}/.boardauto-auth.json`;
+const ctx = await browser.newContext({
+  viewport: { width: W, height: H },
+  ...(existsSync(AUTH) ? { storageState: AUTH } : {}),
+});
+// Kill Vite's HMR socket inside this context: other agents editing the repo
+// must not hot-reload the page mid-game (the driver reads state across turns).
+await ctx.addInitScript(() => {
+  const OrigWS = window.WebSocket;
+  // @ts-ignore
+  window.WebSocket = class extends OrigWS {
+    constructor(url, protocols) {
+      if (String(url).includes("localhost:5173")) super("ws://localhost:9");
+      else super(url, protocols);
+    }
+  };
+});
 const page = await ctx.newPage();
-page.on("console", (m) => { if (m.type() === "error") consoleErrors.push(m.text()); });
+page.on("console", (m) => {
+  if (m.type() !== "error") return;
+  const t = m.text();
+  if (t.includes("WebSocket") || t.includes("vite") || t.includes("ws://localhost:9")) return; // muted HMR socket
+  consoleErrors.push(t);
+});
 page.on("pageerror", (e) => consoleErrors.push(`pageerror: ${e.message}`));
 
 const taken = new Set();
 async function shot(name, force = false) {
   if (taken.has(name) && !force) return;
   taken.add(name);
-  await page.screenshot({ path: `${OUT}/boardauto-${name}.png` });
-  console.log("  shot:", name);
+  await page.screenshot({ path: `${OUT}/boardauto-${name}${TAG}.png` });
+  console.log("  shot:", name + TAG);
 }
 
 const snap = () =>
@@ -43,6 +78,7 @@ const snap = () =>
       winReason: g?.winReason ?? null,
       don: per((p) => p.don),
       chars: per((p) => p.zones.characterArea),
+      charCards: per((p) => p.zones.characterArea.map((iid) => ({ iid, cardId: p.instances[iid].cardId }))),
       leaders: per((p) => p.leaderIid),
       life: per((p) => p.zones.life.length),
       handSizes: per((p) => p.zones.hand.length),
@@ -62,7 +98,9 @@ await page.goto(BASE, { waitUntil: "networkidle" });
 await page.waitForTimeout(600);
 const testBtn = page.getByText("Enter as Test Captain");
 if (await testBtn.count()) await testBtn.click();
-await page.waitForSelector(".sn-hub", { timeout: 15000 });
+// wait for the home mode cards (home root class changes across redesigns)
+await page.waitForSelector(".hu-mode", { timeout: 15000 });
+await ctx.storageState({ path: AUTH }); // reuse this session next run
 await page.locator(".hu-mode", { hasText: "Play Auto" }).click();
 await page.waitForSelector(".ba-root", { timeout: 15000 });
 await page.waitForSelector("[data-deck-key]", { timeout: 15000 });
@@ -196,21 +234,28 @@ while (guard-- > 0) {
     continue;
   }
 
-  // 2. give 2 DON!! to the leader once per turn (dial)
+  // 2. give 2 DON!! once per turn (dial): to the first character when there is
+  //    one (so [DON!!xX] conditions on compiled effects actually fire),
+  //    otherwise to the leader
   if (flags.donGivenTurn !== s.turn && (s.don[me]?.active ?? 0) >= 3 && s.turn >= 3) {
     flags.donGivenTurn = s.turn;
     const n = 2;
     await page.locator(`[data-don-seat="${me}"][data-don-index="${n}"]`).first().click();
     await page.waitForTimeout(120);
     await shot("don-dial");
-    await clickIid(s.leaders[me]);
+    const waChar = (s.charCards[me] ?? []).find((c) => WA_IDS.has(c.cardId));
+    const donTarget = waChar?.iid ?? s.chars[me]?.[0] ?? s.leaders[me];
+    await clickIid(donTarget);
     await page.waitForTimeout(140);
     continue;
   }
 
-  // 3. attack the opponent's leader with every legal attacker
+  // 3. attack the opponent's leader with every legal attacker — a character
+  //    with a compiled [When Attacking] first, so the effect provably fires
   const attackers = (s.legal?.attackers ?? []).filter((a) => a.targets.includes(s.leaders[opp]));
   if (attackers.length > 0) {
+    const waIids = new Set((s.charCards[me] ?? []).filter((c) => WA_IDS.has(c.cardId)).map((c) => c.iid));
+    attackers.sort((a, b) => Number(waIids.has(b.iid)) - Number(waIids.has(a.iid)));
     await clickIid(attackers[0].iid);
     await page.waitForTimeout(100);
     // hover the target so the dashed arrow renders, then shoot it
@@ -230,6 +275,24 @@ while (guard-- > 0) {
 const end = await snap();
 console.log("flags:", JSON.stringify(flags));
 console.log("final:", JSON.stringify({ phase: end?.phase, turn: end?.turn, winner: end?.winner, reason: end?.winReason, life: end?.life }));
+
+// ── per-card effect report: which compiled effects actually FIRED in play ────
+const fired = await page.evaluate(() => {
+  const events = window.__auto?.events() ?? [];
+  const out = {};
+  for (const e of events) {
+    if (e.type === "effectActivated") {
+      const key = `${e.sourceCardId} [${e.timing}]`;
+      out[key] = (out[key] ?? 0) + 1;
+    }
+  }
+  const counts = {};
+  for (const e of events) counts[e.type] = (counts[e.type] ?? 0) + 1;
+  return { fired: out, counts };
+});
+console.log("effects fired (cardId [timing] × n):");
+for (const [k, n] of Object.entries(fired.fired).sort()) console.log(`  ${k} × ${n}`);
+console.log("event counts:", JSON.stringify(fired.counts));
 
 await ctx.close();
 await browser.close();

@@ -26,7 +26,7 @@
 import type { Card } from "../cards/cardsDb";
 import type { CompiledCard, Effect, Keyword } from "../../autosim/ir/types";
 import type { CardDb, EngineCard } from "../../autosim/engine/state";
-import { getCompiledCard } from "../../autosim/data/compiled";
+import { allCompiledCards, getCompiledCard } from "../../autosim/data/compiled";
 
 /** Keyword tags in match order ([Rush: Character] before [Rush]). */
 const KEYWORD_TAGS: [string, Keyword][] = [
@@ -38,6 +38,31 @@ const KEYWORD_TAGS: [string, Keyword][] = [
   ["[Unblockable]", "Unblockable"],
 ];
 
+/** Strip the keyword tags (and their reminder parentheticals) that OPEN a
+ *  line; returns the keywords found and whatever text remains. */
+function stripLeadingKeywords(rawLine: string): { kws: Keyword[]; rest: string } {
+  let line = rawLine.trim();
+  const kws: Keyword[] = [];
+  let matched = true;
+  while (matched) {
+    matched = false;
+    for (const [tag, kw] of KEYWORD_TAGS) {
+      if (line.startsWith(tag)) {
+        kws.push(kw);
+        line = line.slice(tag.length).trimStart();
+        // skip a reminder-text parenthetical right after the tag
+        if (line.startsWith("(")) {
+          const close = line.indexOf(")");
+          line = close === -1 ? "" : line.slice(close + 1).trimStart();
+        }
+        matched = true;
+        break;
+      }
+    }
+  }
+  return { kws, rest: line };
+}
+
 /**
  * Innate keywords: a keyword tag that OPENS a line of the effect text
  * (several in a row allowed: "[Rush] [Banish]"). A tag appearing later in a
@@ -47,24 +72,7 @@ export function innateKeywords(effectText: string | null | undefined): Keyword[]
   const found = new Set<Keyword>();
   if (!effectText) return [];
   for (const rawLine of effectText.split("\n")) {
-    let line = rawLine.trim();
-    let matched = true;
-    while (matched) {
-      matched = false;
-      for (const [tag, kw] of KEYWORD_TAGS) {
-        if (line.startsWith(tag)) {
-          found.add(kw);
-          line = line.slice(tag.length).trimStart();
-          // skip a reminder-text parenthetical right after the tag
-          if (line.startsWith("(")) {
-            const close = line.indexOf(")");
-            line = close === -1 ? "" : line.slice(close + 1).trimStart();
-          }
-          matched = true;
-          break;
-        }
-      }
-    }
+    for (const kw of stripLeadingKeywords(rawLine).kws) found.add(kw);
   }
   return [...found];
 }
@@ -112,6 +120,88 @@ export function deriveCompiled(card: Card): CompiledCard | null {
 /** The IR for a card: official batch first, heuristic fallback otherwise. */
 export function compiledFor(card: Card): CompiledCard | undefined {
   return getCompiledCard(card.id) ?? deriveCompiled(card) ?? undefined;
+}
+
+// ─── automation transparency (an effect that doesn't run must SAY so) ────────
+
+/** Timings the M1/M2 engine actually fires today (battle.ts enqueue points +
+ *  playCard [Main]/[Counter] windows). Everything else is stored but inert. */
+const ENGINE_RUNNABLE_TIMINGS = new Set<string>([
+  "onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger", "main", "onYourOpponentsAttack",
+]);
+
+const TIMING_LABEL: Record<string, string> = {
+  activateMain: "[Activate: Main]",
+  static: "continuous effects ([DON!!xX] auras, +power while in play)",
+  endOfYourTurn: "end-of-turn effects",
+  endOfOpponentsTurn: "end-of-turn effects",
+  startOfYourTurn: "start-of-turn effects",
+  startOfOpponentsTurn: "start-of-turn effects",
+  whenAttacked: "[When Attacked]",
+  endOfBattle: "end-of-battle effects",
+  onOpponentPlaysCharacter: "effects on the opponent's plays",
+};
+
+/** Effect text the fallback could NOT capture (anything beyond line-opening
+ *  keywords and, on Events, the [Main]/[Counter] windows). */
+function fallbackResidualLines(card: Card): string[] {
+  const text = card.effect?.trim();
+  if (!text || text === "-") return [];
+  const out: string[] = [];
+  for (const rawLine of text.split("\n")) {
+    const { rest } = stripLeadingKeywords(rawLine);
+    if (rest === "") continue;
+    if (card.category === "Event" && (rest.startsWith("[Main]") || rest.startsWith("[Counter]"))) continue;
+    out.push(rest);
+  }
+  return out;
+}
+
+export interface AutomationInfo {
+  /** Some effects resolve through the "resolve manually" panel. */
+  manual: boolean;
+  /** Some effect text does nothing automatically yet (engine debt / uncompiled set). */
+  inert: boolean;
+  /** One-line disclosure for the preview panel; null = fully automated. */
+  note: string | null;
+}
+
+const autoInfoCache = new Map<string, AutomationInfo>();
+
+export function automationInfo(card: Card): AutomationInfo {
+  const hit = autoInfoCache.get(card.id);
+  if (hit) return hit;
+  const fromBatch = getCompiledCard(card.id) !== undefined;
+  const effects = compiledFor(card)?.effects ?? [];
+  const manual = effects.some((fx) => JSON.stringify(fx.actions).includes('"kind":"manual"'));
+  const inertTimings = [...new Set(effects.map((fx) => fx.timing).filter((t) => !ENGINE_RUNNABLE_TIMINGS.has(t)))];
+  const residual = fromBatch ? [] : fallbackResidualLines(card);
+  const bits: string[] = [];
+  if (residual.length > 0) {
+    bits.push(`set ${card.set} isn't compiled yet, so effect text beyond keywords / [Trigger] / [Main] / [Counter] does nothing automatically`);
+  }
+  if (inertTimings.length > 0) {
+    bits.push(`the engine can't run ${inertTimings.map((t) => TIMING_LABEL[t] ?? t).join(", ")} yet (coming with M3+)`);
+  }
+  if (manual) bits.push('resolved by hand via the "resolve manually" panel');
+  const info: AutomationInfo = {
+    manual,
+    inert: inertTimings.length > 0 || residual.length > 0,
+    note: bits.length > 0 ? `Automation: ${bits.join(" · ")}.` : null,
+  };
+  autoInfoCache.set(card.id, info);
+  return info;
+}
+
+/** Set prefixes (e.g. "OP15") among `cardIds` that no compiled batch covers. */
+export function uncompiledSetsOf(cardIds: Iterable<string>): string[] {
+  const compiledSets = new Set(allCompiledCards().map((c) => c.cardId.split("-")[0]));
+  const missing = new Set<string>();
+  for (const id of cardIds) {
+    const set = id.split("-")[0];
+    if (!compiledSets.has(set)) missing.add(set);
+  }
+  return [...missing].sort();
 }
 
 /** Build the engine CardDb over the loaded catalog. Compilation is cached. */

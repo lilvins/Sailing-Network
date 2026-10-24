@@ -91,6 +91,10 @@
 }
 .ba-banner b { font: 800 12.5px var(--serif); }
 .ba-banner span { font: 500 11.5px var(--serif); color: rgba(255, 255, 255, 0.88); }
+/* info tone: neutral hint, not an error */
+.ba-banner.info { background: var(--night-2); border-color: var(--brass); }
+.ba-banner.info b { color: var(--brass-hi); }
+.ba-banner.info span { color: var(--ivory-muted); }
 
 /* ── turn toast ── */
 .ba-toast {
@@ -146,6 +150,7 @@
 .ba-deckmeta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .ba-deckmeta b { font: 700 13px var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ba-deckmeta i { font: 500 10.5px var(--serif); font-style: normal; color: var(--ivory-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-deckmeta .ba-deckwarn { color: #ffd98a; white-space: normal; line-height: 1.3; }
 .ba-setupfoot { flex: 0 0 auto; display: flex; justify-content: center; padding-bottom: 4px; }
 
 /* =========================== STARTING ROLL ================================= */
@@ -176,15 +181,26 @@
 /* left rail */
 .ba-left { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
 .ba-preview { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 5px; }
+/* The WHOLE card must always be visible: the box follows the image, which is
+   capped by rail width AND window height (object-fit contain, never crop). */
 .ba-prevart {
   width: 100%;
-  aspect-ratio: 100 / 140;
+  min-height: 90px;
   max-height: 30vh;
   border: 1px solid var(--brass-dim);
   background: var(--night-1);
   overflow: hidden;
+  display: grid;
+  place-items: center;
 }
-.ba-prevart img { width: 100%; height: 100%; object-fit: cover; }
+.ba-prevart img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(30vh - 2px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
 .ba-prevname { font: 800 13px var(--serif); color: var(--ivory); }
 .ba-prevline { font: 700 10px var(--serif); letter-spacing: 0.04em; color: var(--brass-hi); }
 .ba-prevfx {
@@ -197,6 +213,14 @@
   padding: 6px 8px;
   font: 500 11px/1.45 var(--serif);
   white-space: pre-wrap;
+}
+.ba-prevnote {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid #d9a441;
+  background: #241603;
+  color: #ffd98a;
+  font: 600 10px/1.4 var(--serif);
 }
 .ba-prevempty {
   flex: 1;
@@ -281,7 +305,10 @@
   letter-spacing: 0.12em;
   color: rgba(201, 151, 59, 0.5);
 }
-.ba-lsrow { display: flex; gap: 8px; align-items: center; }
+.ba-lsrow { display: flex; gap: 8px; align-items: center; padding: 0 2px; }
+/* a RESTED (rotated) leader/stage is wider than its slot: reserve the room so
+   it never spills over the LIFE / DON!! DECK piles or the stage slot */
+.ba-lsrow > .gb-card.gb-rested { margin: 0 calc(var(--bacw) * 0.2); }
 .ba-donrow {
   flex: 1 1 auto;
   min-width: 0;
@@ -302,6 +329,29 @@
 .ba-doncell:last-child { margin-right: 0; }
 .ba-doncell:hover { z-index: 5; }
 .ba-dim { opacity: 0.55; }
+/* right-click DON placeholder — PURELY VISUAL (no engine state): tilted,
+   dimmed, dashed ring + HOLD tag; resets at turn change */
+.ba-doncell.ba-donmark {
+  opacity: 0.5;
+  transform: rotate(-12deg) translateY(4px);
+  outline: 1px dashed var(--brass-hi);
+  outline-offset: 1px;
+}
+.ba-doncell.ba-donmark:hover { transform: rotate(-12deg) translateY(2px); }
+.ba-donmark-tag {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(12deg);
+  z-index: 6;
+  padding: 1px 4px;
+  background: var(--night-0);
+  border: 1px solid var(--brass-hi);
+  color: var(--brass-hi);
+  font: 800 8px var(--mono);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
 .ba-donempty { font: 700 9px var(--serif); letter-spacing: 0.14em; color: rgba(201, 151, 59, 0.45); padding: 0 6px; }
 
 /* piles */
@@ -406,6 +456,9 @@
   border: 1px solid var(--brass);
   color: var(--brass-hi);
 }
+/* automation disclosure chips */
+.ba-kw.manual { border-color: #d9a441; color: #ffd98a; background: #241603; }
+.ba-kw.noauto { border-color: #5a6578; color: #aeb8c9; background: #121722; }
 
 /* DON given chip */
 .ba-given {
