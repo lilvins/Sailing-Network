@@ -87,7 +87,9 @@
   background: var(--signal);
   border: 2px solid #8f1f17;
   color: #fff;
-  cursor: pointer;
+  /* informational and self-dismissing: it must never block a tap on the
+     cards underneath (QA bot: banner occluded the top hand) */
+  pointer-events: none;
 }
 .ba-banner b { font: 800 12.5px var(--serif); }
 .ba-banner span { font: 500 11.5px var(--serif); color: rgba(255, 255, 255, 0.88); }
@@ -244,6 +246,7 @@
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .ba-turnpill b { color: var(--brass-hi); }
 .ba-phasepill { color: var(--brass-hi); }
@@ -328,6 +331,10 @@
 }
 .ba-doncell:last-child { margin-right: 0; }
 .ba-doncell:hover { z-index: 5; }
+/* a rested (rotated) DON is 1.4× wider than its cell and hangs 0.2×bacw over
+   the previous cell — enough to cover the last ACTIVE cell's center and steal
+   its dial tap (QA bot). Push the rested group right by that overhang. */
+.ba-doncell:not(.gb-rested) + .ba-doncell.gb-rested { margin-left: calc(var(--bacw) * 0.24); }
 .ba-dim { opacity: 0.55; }
 /* right-click DON placeholder — PURELY VISUAL (no engine state): tilted,
    dimmed, dashed ring + HOLD tag; resets at turn change */
@@ -504,6 +511,10 @@
   border: 2px solid var(--brass);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
 }
+/* only the prompt's buttons take pointer events: a card that ends up under
+   the label stays tappable (QA bot: compact attacks got stuck on it) */
+.ba-actionbar { pointer-events: none; }
+.ba-actionbar .ba-btn { pointer-events: auto; }
 .ba-actlabel { font: 600 12px/1.35 var(--serif); color: var(--ivory); }
 .ba-actlabel b { color: var(--brass-hi); }
 .ba-actlabel i { font-style: normal; color: var(--ivory-muted); font-size: 11px; }
@@ -585,9 +596,11 @@
 
 /* ── [Activate: Main] chip (M3): shown ONLY when legality says usable now ── */
 .ba-activate {
+  /* top-RIGHT corner: never over the card's center, where a tap means
+     "select this attacker" (QA bot: the chip used to steal that tap) */
   position: absolute;
   right: -4px;
-  top: 40%;
+  top: 4px;
   z-index: 8;
   padding: 3px 5px;
   border: 1px solid #15100a;

@@ -53,6 +53,10 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
       };
     },
     events: () => useAutoStore.getState().events,
+    /** QA bot: subscribe to the store (e.g. to trace what raised a banner). */
+    store: useAutoStore,
+    /** QA crawler: jump to any app view (uiStore) without clicking through. */
+    setView: (v: string) => useUiStore.getState().setView(v as Parameters<ReturnType<typeof useUiStore.getState>["setView"]>[0]),
   };
 }
 
@@ -1405,7 +1409,7 @@ function GameScreen() {
 
   const battleStep = game.battle ? game.battle.step : null;
   const phaseLabel =
-    game.phase === "setup" ? "SETUP" : game.phase === "over" ? "GAME OVER" : battleStep ? `BATTLE · ${battleStep.toUpperCase()}` : "MAIN PHASE";
+    game.phase === "setup" ? "SETUP" : game.phase === "over" ? "GAME OVER" : battleStep ? `${battleStep.toUpperCase()} STEP` : "MAIN PHASE";
 
   // shared preview content (desktop rail / compact sheet)
   const previewPanel = preview ? (

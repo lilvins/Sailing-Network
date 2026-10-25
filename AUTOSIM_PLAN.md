@@ -546,6 +546,17 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     lato DESTRO. Le schermate pre-partita (pick, roll) restano portrait. Lo
     stack verticale resta come fallback interno (`.ba-stack`, non esposto).
     Il driver gioca partite complete sul tavolo ruotato (390×844, 412×915).
+36. **QA bot (2026-10-25)** — `scripts/qa-bot.mjs` (`npm run qa:bot`):
+    giocatore a mosse legali casuali con seed (ogni ChoiceRequest coperta),
+    4 config di mazzi × 3 viewport, controlli per mossa (errori, rete/art,
+    affordance↔legality con traccia del call-site dei banner di rifiuto,
+    layout/occlusioni/tap target, coerenza motore↔UI, invarianti) + crawler
+    del sito; report md/json con comando di riproduzione, exit≠0 su high.
+    Bug trovati e fixati al primo giro: chip ACTIVATE sul centro carta
+    (rubava il tap "attacca"), banner di rifiuto che bloccava i tap sulla
+    mano in alto, DON rested ruotato che copriva il centro dell'ultimo DON
+    attivo (dial impossibile; su compact anche celle sovrapposte →
+    passo positivo e rested non ruotati), phase pill tagliata.
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

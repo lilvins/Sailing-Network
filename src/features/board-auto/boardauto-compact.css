@@ -33,7 +33,14 @@
 .ba-game.compact .ba-lsrow > .gb-card.gb-rested { margin: 0 calc(var(--bacw) * 0.26); }
 .ba-game.compact .ba-lsrow { gap: 5px; }
 .ba-game.compact .ba-donrow { min-height: calc(var(--bacw) * 0.9); padding: 1px 3px; }
-.ba-game.compact .ba-doncell { width: calc(var(--bacw) * 0.62) !important; margin-right: calc(var(--bacw) * -0.26); min-height: 44px; }
+/* DON dial on small screens: positive stride (no overlap → every cell's
+   center is its own tap target) and NO rotation for rested DON — a rotated
+   cell is 44px wide and covers its neighbours (QA bot: dial taps hit the
+   wrong cell). Rested = dimmed + grayscale instead. */
+.ba-game.compact .ba-doncell { width: 20px !important; flex: 0 0 auto; margin-right: 2px; min-height: 44px; }
+.ba-game.compact .ba-doncell.gb-rested { transform: none !important; opacity: 0.4; filter: grayscale(1); }
+.ba-game.compact .ba-doncell.gb-rested:hover { transform: none !important; }
+.ba-game.compact .ba-donrow { overflow-x: auto; overflow-y: hidden; }
 .ba-game.compact .ba-sidecol { gap: 3px; }
 .ba-game.compact .ba-pcard { width: calc(var(--bacw) * 0.62); }
 .ba-game.compact .ba-plabel { font-size: 6.5px; letter-spacing: 0.08em; }
@@ -126,7 +133,7 @@
   bottom: calc(var(--strip-h) + 4px + env(safe-area-inset-bottom, 0px));
   transform: none;
   z-index: 46;
-  max-width: min(62vw, 520px);
+  max-width: min(46vw, 420px);
   padding: 4px 8px;
   gap: 8px;
 }
@@ -215,7 +222,9 @@
   .ba-root .ba-ov .ba-btn { min-height: 44px; }
   .ba-deckopt { min-height: 56px; }
 }
-.ba-game.compact .ba-activate { padding: 6px 5px; font-size: 7.5px; }
+/* small cards: the chip hangs off the top edge so it never reaches the
+   card's center (the "select attacker" tap) */
+.ba-game.compact .ba-activate { top: -7px; padding: 4px 4px; font-size: 7px; min-height: 22px; }
 .ba-game.compact .ba-peekcard { width: clamp(64px, 9vw, 90px); }
 .ba-game.compact .ba-peekcard b { font-size: 8.5px; }
 .ba-game.compact .ba-ov.ba-peek { max-height: 96vh; }

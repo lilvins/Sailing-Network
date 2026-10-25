@@ -18,7 +18,8 @@
     "db:peek": "node server/peek.mjs",
     "test": "vitest run && node tests/api-test.mjs",
     "test:unit": "vitest run",
-    "test:api": "node tests/api-test.mjs"
+    "test:api": "node tests/api-test.mjs",
+    "qa:bot": "node scripts/qa-bot.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

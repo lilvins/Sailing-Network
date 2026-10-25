@@ -220,6 +220,48 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   storageState and mutes the HMR websocket so live edits by other agents
   can't reload the page mid-game.
 
+## QA bot — automatic, repeatable bug hunter (`npm run qa:bot`)
+`scripts/qa-bot.mjs` (Playwright; dev server must be up). Two parts:
+- **Player**: plays complete board-auto games with seeded random LEGAL moves
+  (play / give DON / attack / activate / every ChoiceRequest incl. peek,
+  payDon, chooseNumber, trigger, counter, block) over 4 deck configs
+  (ST01 vs OP01, purple OP01-091, uncompiled ST02 vs ST04 = manual path,
+  OP01-002 vs ST03) × 3 viewports (desktop 1440×900, phone landscape
+  844×390, phone portrait 412×915 = forced landscape), `QA_GAMES` per config
+  (default 3). After EVERY move it checks: console/page errors + unhandled
+  rejections + Vite overlay, 4xx/5xx + broken images, affordance ↔
+  `legalMoves` (AFFORDANCE MISSING / ILLEGAL AFFORDANCE = red banner after a
+  legal move), layout (off-viewport, occluded tappables, field-card overlap,
+  prompt over a tappable card, clipped text, touch targets < 44, document
+  h-scroll), engine ↔ UI (seat counters, power chips = effective power, every
+  field/hand card rendered), invariants (50 cards per seat, 10 DON, one
+  blocker per battle), STUCK (no state change / timeout).
+- **Crawler**: every app view at 1440 / 768 / 390 with the generic checks +
+  a screenshot per page (uses the DEV hook `window.__auto.setView`).
+- Output: `scripts/.qa/report.md` + `report.json` + `scripts/.qa/shots/`;
+  findings are deduplicated, exit code 1 when a HIGH finding exists.
+- Reproduce a finding: the report's last column, e.g.
+  `QA_SEED=qa-st01-vs-op01-1 QA_CONFIG=st01-vs-op01 QA_VIEWPORT=portrait
+  QA_SKIP_CRAWL=1 npm run qa:bot` (same seed + same engine = same game).
+  Knobs: `QA_QUICK=1` (desktop only), `QA_GAMES`, `QA_SKIP_GAMES`,
+  `QA_SKIP_CRAWL`, `QA_GAME_TIMEOUT` (ms), `QA_MAX_MOVES`, `QA_TRACE=1`
+  (log pending state around attack clicks). The full matrix is long (~36
+  games): run the viewports in PARALLEL, one output dir each, then merge:
+  `QA_OUT=scripts/.qa/desktop QA_VIEWPORT=desktop QA_SKIP_CRAWL=1 npm run qa:bot`
+  (same for landscape / portrait), `QA_OUT=scripts/.qa/crawl QA_SKIP_GAMES=1
+  npm run qa:bot`, then `QA_MERGE=scripts/.qa/desktop,scripts/.qa/landscape,
+  scripts/.qa/portrait,scripts/.qa/crawl npm run qa:bot` → `scripts/.qa/
+  report.md`. Refusal banners are traced to their UI call site via the DEV
+  store hook (`window.__auto.store`), so an ILLEGAL AFFORDANCE finding names
+  the handler that raised it.
+- Bugs it has found so far (fixed): the ACTIVATE chip sat on the card's
+  center and stole the "select attacker" tap; the refusal banner blocked taps
+  on the top hand (now `pointer-events: none`); the phase pill clipped
+  "BATTLE · COUNTER" (now "COUNTER STEP" + ellipsis).
+- Hardening shared with `boardauto-shots.mjs`: session reused via
+  storageState (login is rate-limited), Vite HMR socket muted in the bot's
+  browser, seed pinned through `window.__autoSeed`.
+
 ## The non-negotiable rule (still holds)
 All game-state changes go through **named, JSON-serializable actions** appended to
 `actionLog` in `src/state/gameStore.ts`. Every store action mirrors a `GameAction`
