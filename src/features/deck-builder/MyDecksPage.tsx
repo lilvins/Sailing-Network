@@ -8,6 +8,7 @@ import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { api } from "../../lib/api";
 import { loadCardsById } from "../cards/cardsDb";
+import { Dock, HeaderDock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./mydecks.css";
@@ -113,6 +114,7 @@ function MyDecks() {
         </div>
         <div className="snp-head-r">
           <button className="md-new" onClick={() => openDeckBuilder(null)}><I n="plus" size={17} /> New Deck</button>
+          <HeaderDock />
         </div>
       </header>
 
@@ -176,11 +178,8 @@ function MyDecks() {
         )}
       </div></div>
 
-      {/* dock */}
-      <div className="snp-dock">
-        <button className="snp-iconbtn" title="Messages" onClick={() => setView("messages")}><I n="chat" /><span className="snp-dock-badge">3</span></button>
-        <button className="snp-iconbtn" title="Friends online" onClick={() => setView("friends")}><I n="friends" /></button>
-      </div>
+      {/* dock (real counts; header-mounted on narrow screens) */}
+      <Dock />
 
       {/* delete confirm modal */}
       {confirm &&

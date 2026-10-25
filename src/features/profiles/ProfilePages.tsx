@@ -96,12 +96,29 @@ export function Header({
         <h1>{title}</h1>
         {sub && <span className="sn-kicker">{sub}</span>}
       </div>
-      <div className="snp-head-r">{right}</div>
+      <div className="snp-head-r">
+        {right}
+        <HeaderDock />
+      </div>
     </header>
   );
 }
 
-export function Dock() {
+/** true below 1000px (phones + tablets) — the social dock then lives in the header instead of
+ *  floating over the content (nothing tappable is ever covered). */
+export function useNarrow(): boolean {
+  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1000px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1000px)");
+    const on = () => setNarrow(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return narrow;
+}
+
+/** Messages + Friends shortcuts with live unread/incoming counts. */
+export function DockButtons() {
   const setView = useUiStore((s) => s.setView);
   const [unread, setUnread] = useState(0);
   const [incoming, setIncoming] = useState(0);
@@ -117,7 +134,7 @@ export function Dock() {
   }, []);
 
   return (
-    <div className="snp-dock">
+    <>
       <button className="snp-iconbtn" title="Messages" onClick={() => setView("messages")}>
         <Ico n="chat" />
         {unread > 0 && <span className="snp-dock-badge">{unread}</span>}
@@ -126,6 +143,28 @@ export function Dock() {
         <Ico n="friends" />
         {incoming > 0 && <span className="snp-dock-badge">{incoming}</span>}
       </button>
+    </>
+  );
+}
+
+/** Floating bottom-left dock (desktop/tablet only). */
+export function Dock() {
+  const narrow = useNarrow();
+  if (narrow) return null;
+  return (
+    <div className="snp-dock">
+      <DockButtons />
+    </div>
+  );
+}
+
+/** The same shortcuts, inside the page header (narrow screens only). */
+export function HeaderDock() {
+  const narrow = useNarrow();
+  if (!narrow) return null;
+  return (
+    <div className="snp-head-dock">
+      <DockButtons />
     </div>
   );
 }

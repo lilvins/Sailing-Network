@@ -10,6 +10,7 @@ import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { loadCards } from "../cards/cardsDb";
 import { api } from "../../lib/api";
+import { Dock, HeaderDock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./deckbuilder.css";
@@ -421,6 +422,7 @@ function DeckBuilder() {
           <button className="db-save" disabled={!leader || mainCount === 0 || saving} onClick={saveDeck}>
             <I n="save" size={16} /> {saving ? "Saving…" : currentDeckId ? "Save" : "Save Deck"}
           </button>
+          <HeaderDock />
         </div>
       </header>
 
@@ -573,11 +575,8 @@ function DeckBuilder() {
         </section>
       </div>
 
-      {/* dock */}
-      <div className="snp-dock">
-        <button className="snp-iconbtn" title="Messages" onClick={() => setView("messages")}><I n="chat" /><span className="snp-dock-badge">3</span></button>
-        <button className="snp-iconbtn" title="Friends online" onClick={() => setView("friends")}><I n="friends" /></button>
-      </div>
+      {/* dock (real counts; header-mounted on narrow screens) */}
+      <Dock />
 
       {/* toast */}
       {toast && <div className="db-toast">{toast}</div>}
