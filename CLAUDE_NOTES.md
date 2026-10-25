@@ -142,8 +142,11 @@ Hotseat UI over the AUTOSIM engine: every move is a PlayerIntent through
 `legality.ts` / the pending ChoiceRequest; illegal intents become an
 explained red banner (EngineError message + actionable hint), never a flat no.
 - **Files**: `BoardAutoPage.tsx` (pick → roll → game screens; tap-first
-  oplay-style grammar: 1-tap play with auto-paid costs, DON quantity dial,
-  attacker→target with dashed leader-colored SVG arrow, ONE contextual
+  oplay-style grammar: 1-tap play with auto-paid costs, DON given by
+  selecting individual DON!! (tap = toggle that one, "All", then tap the
+  target — the user rejected oplay's quantity dial), attacker→target with a
+  solid leader-colored SVG arrow (points mapped through the overlay's
+  screen CTM, so it is right inside the rotated phone table too), ONE contextual
   bottom button, prompts for mulligan/block/counter/triggerDecision/
   selectTargets/mayActivate/manualResolve, live power chips "8000 (+3000)",
   keyword chips, per-seat count-up clocks, human-readable event log,
@@ -179,6 +182,13 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   in flow between field and hand (never covers DON cells or counter cards),
   and right-click on an active DON toggles a purely-visual "HOLD" placeholder
   (no intent, resets each turn, info-tone hint on first use).
+- **Turn feedback + damage micro-animations (2026-10-25)**: the turn
+  player's half is lit in the leader color (2px border, stronger tint) and
+  the other dimmed; turn pills tinted; End turn carries the turn color
+  stripe. Life taken → card-back ghost slides Life pile → hand (250ms) +
+  red flash of the hit half + life counter tick; K.O. → card ghost slides to
+  the trash (200ms). Transform/opacity only, disabled under
+  prefers-reduced-motion, no audio.
 - **Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
   (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
   compact chrome — same table geometry scaled from viewport height, hands as
@@ -257,7 +267,14 @@ explained red banner (EngineError message + actionable hint), never a flat no.
 - Bugs it has found so far (fixed): the ACTIVATE chip sat on the card's
   center and stole the "select attacker" tap; the refusal banner blocked taps
   on the top hand (now `pointer-events: none`); the phase pill clipped
-  "BATTLE · COUNTER" (now "COUNTER STEP" + ellipsis).
+  "BATTLE · COUNTER" (now "COUNTER STEP" + ellipsis); a rotated rested DON
+  covered the last active DON's center (dial taps failed on every viewport);
+  the step prompt covered tappable cards on compact (label is now
+  pointer-events none); target candidates living in a pile (e.g. "return
+  from trash") had no card to tap → dedicated picker panel.
+- Accepted / documented: compact DON cells are 20×46px (10 must share the
+  cost area) → the bot reports them as low "SMALL TAP TARGET" only if the
+  height rounds under 44; hand cards in the phone strips are 38×53.
 - Hardening shared with `boardauto-shots.mjs`: session reused via
   storageState (login is rate-limited), Vite HMR socket muted in the bot's
   browser, seed pinned through `window.__autoSeed`.

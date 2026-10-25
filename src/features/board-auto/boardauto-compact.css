@@ -37,7 +37,9 @@
    center is its own tap target) and NO rotation for rested DON — a rotated
    cell is 44px wide and covers its neighbours (QA bot: dial taps hit the
    wrong cell). Rested = dimmed + grayscale instead. */
-.ba-game.compact .ba-doncell { width: 20px !important; flex: 0 0 auto; margin-right: 2px; min-height: 44px; }
+/* 20px wide by design (10 cells must share the cost area) but 46px tall: a
+   thin, tall target — accepted trade-off, documented in CLAUDE_NOTES */
+.ba-game.compact .ba-doncell { width: 20px !important; flex: 0 0 auto; margin-right: 2px; min-height: 46px; }
 .ba-game.compact .ba-doncell.gb-rested { transform: none !important; opacity: 0.4; filter: grayscale(1); }
 .ba-game.compact .ba-doncell.gb-rested:hover { transform: none !important; }
 .ba-game.compact .ba-donrow { overflow-x: auto; overflow-y: hidden; }
@@ -91,6 +93,9 @@
 .ba-m-pill span { font: 700 9px var(--mono); color: var(--ivory-muted); white-space: nowrap; }
 .ba-m-pill.active { border-color: var(--brass-hi); background: var(--night-3); }
 .ba-m-pill.active b { color: var(--brass-hi); }
+.ba-m-pill.turn { background: color-mix(in srgb, var(--lc, #3a4a5e) 24%, var(--night-2)); border-left-width: 5px; }
+.ba-m-pill.turn b { color: var(--lc, var(--ivory)); }
+.ba-m-pill.turn span { color: var(--brass-hi); }
 /* the app's fixed ThemeToggle lives in the top-right corner: keep clear of it */
 .ba-m-turn { flex: 0 0 auto; margin-right: 62px; font: 800 9.5px var(--serif); letter-spacing: 0.08em; color: var(--brass-hi); white-space: nowrap; max-width: 26vw; overflow: hidden; text-overflow: ellipsis; }
 /* the hand inside a strip: horizontal snap scroller, cards >= 44px tall */

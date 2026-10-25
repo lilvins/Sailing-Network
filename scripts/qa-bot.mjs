@@ -426,9 +426,18 @@ async function botMove(page, s, rnd, vp, turnMoves) {
       return `play ${h.iid}`;
     } });
     if ((lm.canGiveDonTo ?? []).length && p.don.active > 0) options.push({ w: 2, run: async () => {
+      // individual selection: k single taps (random distinct DON!!), or "All"
       const n = 1 + Math.floor(rnd() * p.don.active);
-      await act(page, `[data-don-seat="${me}"][data-don-index="${n}"]`);
+      if (n === p.don.active && p.don.active > 1 && rnd() < 0.4) {
+        await act(page, `[data-don-seat="${me}"][data-don-index="1"]`);
+        await act(page, '[data-act="don-all"]');
+      } else {
+        const idx = Array.from({ length: p.don.active }, (_, i) => i + 1).sort(() => rnd() - 0.5).slice(0, n);
+        for (const i of idx) await act(page, `[data-don-seat="${me}"][data-don-index="${i}"]`);
+      }
       await page.waitForTimeout(60);
+      const selected = await page.evaluate(() => Number(document.querySelector("[data-don-selected]")?.getAttribute("data-don-selected") ?? -1));
+      if (selected !== n) throw new Error(`DON selection shows ${selected}, expected ${n}`);
       const tgt = pick(rnd, lm.canGiveDonTo);
       await act(page, `[data-iid="${tgt}"]`);
       return `giveDon ${n} → ${tgt}`;

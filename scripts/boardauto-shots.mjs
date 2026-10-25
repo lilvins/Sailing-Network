@@ -305,7 +305,7 @@ while (guard-- > 0) {
   const givenTotal = Object.values(s.don[me]?.given ?? {}).reduce((a, b) => a + b, 0);
   if (donxPlayable && givenTotal === 0 && (s.don[me]?.active ?? 0) >= 2 && flags.donGivenTurn !== s.turn) {
     flags.donGivenTurn = s.turn;
-    await page.locator(`[data-don-seat="${me}"][data-don-index="1"]`).first().click();
+    await page.locator(`[data-don-seat="${me}"][data-don-index="1"]`).first().click(); // selects that one DON!!
     await page.waitForTimeout(100);
     await clickIid(s.chars[me]?.[0] ?? s.leaders[me]);
     await page.waitForTimeout(120);
@@ -336,7 +336,8 @@ while (guard-- > 0) {
   if (flags.donGivenTurn !== s.turn && (s.don[me]?.active ?? 0) >= 3 && s.turn >= 3) {
     flags.donGivenTurn = s.turn;
     const n = 2;
-    await page.locator(`[data-don-seat="${me}"][data-don-index="${n}"]`).first().click();
+    // one tap per DON!! (individual selection, no quantity dial)
+    for (let i = 1; i <= n; i++) await page.locator(`[data-don-seat="${me}"][data-don-index="${i}"]`).first().click();
     await page.waitForTimeout(120);
     await shot("don-dial");
     const waChar = (s.charCards[me] ?? []).find((c) => WA_IDS.has(c.cardId));
@@ -371,6 +372,7 @@ while (guard-- > 0) {
     await shot("attack-arrow");
     await clickIid(s.leaders[opp]);
     await page.waitForTimeout(160);
+    await shot("arrow"); // battle in progress: persistent solid arrow attacker → target
     continue;
   }
 

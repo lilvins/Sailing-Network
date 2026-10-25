@@ -105,9 +105,14 @@ di notte / quartier di comando del capitano" vs la loro "mappa di giorno".
 
 ## 6. Cosa prendiamo / cosa facciamo meglio
 
-PRENDIAMO: tap-first con un bottone di step contestuale; dial dei DON; chip
-Activate guidati dalla legalità; potenza live con delta; frecce col colore del
-leader; rifiuti spiegati; trigger-reveal che ferma il ritmo; metà campo tinte.
+PRENDIAMO: tap-first con un bottone di step contestuale; chip Activate guidati
+dalla legalità; potenza live con delta; frecce col colore del leader; rifiuti
+spiegati; trigger-reveal che ferma il ritmo; metà campo tinte.
+NON prendiamo il **dial dei DON** ("tap sul 3° = ne dai 3"): al playtest
+l'utente lo ha trovato scomodissimo → nella board-auto ogni tap su un DON
+seleziona/deseleziona SOLO quel DON (ring + contatore "N DON!! selected",
+scorciatoia "All", Cancel/tap altrove), poi tap su leader/char assegna i
+selezionati. Scelta dell'utente, 2026-10-25.
 MIGLIORIAMO: (a) il nostro hub ha già social/amici/chat/profili veri — loro no;
 (b) rewind/undo in practice (il loro Solo Practice ce l'ha, la nostra board
 manuale già ha undo dal board overhaul — portarlo in auto);

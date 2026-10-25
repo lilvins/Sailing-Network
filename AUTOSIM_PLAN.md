@@ -557,6 +557,25 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     mano in alto, DON rested ruotato che copriva il centro dell'ultimo DON
     attivo (dial impossibile; su compact anche celle sovrapposte →
     passo positivo e rested non ruotati), phase pill tagliata.
+37. **Playtest round (2026-10-25)** — (a) turno a colpo d'occhio: metà del
+    giocatore di turno con bordo 2px + tinta più forte nel colore leader,
+    l'altra attenuata; pill/strip del turno tinte col leader; End turn con
+    striscia del colore del turno; (b) micro-animazioni funzionali
+    (transform/opacity, ≤250ms, niente con prefers-reduced-motion): Life
+    presa → dorso che scivola dalla pila Life alla mano + flash rosso della
+    metà colpita + "tick" del contatore; K.O. → fantasma della carta che
+    scivola nel trash (200ms); le posizioni usano l'ultimo rect registrato
+    prima del re-render; (c) **freccia nel tavolo ruotato**: i punti viewport
+    sono convertiti nello spazio locale dell'overlay con
+    `svg.getScreenCTM().inverse()` (include la rotazione CSS del `.ba-forced`)
+    — l'SVG resta sempre montato come "oracolo" di coordinate, stesso
+    convertitore per le animazioni; (d) freccia continua (4px, punta piena,
+    colore leader attaccante), identica per il redirect del blocker; (e) **via
+    il dial DON**: ogni tap seleziona/deseleziona SOLO quel DON (ring +
+    "N DON!! selected", scorciatoia All, Cancel/tap altrove), poi tap su
+    leader/char assegna i selezionati — il motore riceve N `giveDon`
+    (DON fungibili); il segnaposto HOLD resta separato. Driver e QA bot
+    aggiornati; nota in docs/oplay-analysis.md §6.
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

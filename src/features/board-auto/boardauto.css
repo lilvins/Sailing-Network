@@ -278,7 +278,37 @@
   border: 1px solid color-mix(in srgb, var(--lc, #3a4a5e) 30%, transparent);
   transition: border-color 140ms;
 }
-.ba-half.turn { border-color: color-mix(in srgb, var(--lc, #3a4a5e) 75%, transparent); }
+/* whose turn it is, at a glance: the turn player's half is lit in their
+   leader color (2px border + stronger tint), the other half is dimmed */
+.ba-half.turn {
+  border: 2px solid var(--lc, #3a4a5e);
+  background: color-mix(in srgb, var(--lc, #3a4a5e) 15%, var(--night-1));
+}
+.ba-half.idle { opacity: 0.78; }
+/* damage taken: short red flash of the hit half (transform/opacity-free) */
+.ba-half.ba-hit { border-color: var(--signal-hi); box-shadow: inset 0 0 0 2px var(--signal-hi); }
+/* life counter "tick" */
+.ba-pcount.ba-tick { animation: ba-tick 220ms var(--ease); }
+@keyframes ba-tick { 0% { transform: scale(1.35); } 100% { transform: scale(1); } }
+/* flying Life card / K.O.'d card: a ghost that slides toward the hand / trash */
+.ba-fx {
+  position: absolute;
+  z-index: 21;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid var(--brass);
+  background: var(--night-1);
+  animation: ba-fly 250ms var(--ease) forwards;
+}
+.ba-fx.ko { animation-duration: 200ms; }
+.ba-fx img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ba-fx .gb-back { position: absolute; inset: 0; }
+@keyframes ba-fly {
+  0% { transform: translate(0, 0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)); opacity: 0.15; }
+}
+/* End turn carries the turn player's color as a flat left stripe */
+.ba-endturn { box-shadow: inset 5px 0 0 var(--lc, var(--brass)); }
 .ba-halfmain { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .ba-half.flip .ba-halfmain { flex-direction: column-reverse; }
 .ba-sidecol { display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; }
@@ -533,6 +563,10 @@
   transition: border-color 140ms, background 140ms;
 }
 .ba-seatpanel.active { border-color: var(--brass-hi); background: var(--night-3); }
+/* turn player's pill: tinted with the leader color, name in that color */
+.ba-seatpanel.turn { background: color-mix(in srgb, var(--lc, #3a4a5e) 22%, var(--night-2)); border-left-width: 5px; }
+.ba-seatpanel.turn .ba-seatname { color: var(--lc, var(--ivory)); }
+.ba-seatpanel.turn .ba-clock { color: var(--brass-hi); font-weight: 800; }
 .ba-seatrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 /* the app's fixed ThemeToggle sits in the viewport's top-right corner */
 .ba-right > .ba-seatpanel:first-child .ba-seatrow { padding-right: 46px; }
@@ -659,5 +693,6 @@
 .ba-numbers .ba-btn { min-width: 44px; min-height: 40px; font-size: 14px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ba-root * { transition-duration: 0ms !important; }
+  .ba-root * { transition-duration: 0ms !important; animation: none !important; }
+  .ba-fx { display: none; }
 }

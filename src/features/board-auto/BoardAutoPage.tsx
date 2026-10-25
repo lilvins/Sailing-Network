@@ -325,7 +325,7 @@ function RollScreen() {
 
 type Mode =
   | { t: "idle" }
-  | { t: "don"; count: number }
+  | { t: "don"; picked: number[] } // 1-based indexes of the selected active DON!! (UI only: DON are fungible)
   | { t: "attack"; iid: Iid; targets: Iid[] }
   | { t: "replace"; handIid: Iid };
 
@@ -492,8 +492,26 @@ function GameScreen() {
 
   // attack arrow (battle in progress, or an attacker picked and a target hovered)
   const [arrow, setArrow] = useState<Arrow | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  /** Viewport (client) point → the field overlay's LOCAL coordinates. Uses the
+   *  overlay SVG's screen CTM, which includes every CSS transform above it —
+   *  so the arrow and the damage animations stay right inside the 90°-rotated
+   *  phone table (`.ba-forced`) as well as on desktop. */
+  const toLocal = (x: number, y: number): { x: number; y: number } => {
+    const svg = svgRef.current;
+    const m = svg?.getScreenCTM?.();
+    if (svg && m) {
+      const p = new DOMPoint(x, y).matrixTransform(m.inverse());
+      return { x: p.x, y: p.y };
+    }
+    const f = fieldRef.current?.getBoundingClientRect();
+    return { x: x - (f?.left ?? 0), y: y - (f?.top ?? 0) };
+  };
+  const centerOf = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return toLocal(r.left + r.width / 2, r.top + r.height / 2);
+  };
   useLayoutEffect(() => {
-    const field = fieldRef.current;
     let from: Iid | null = null;
     let to: Iid | null = null;
     let owner: PID | null = null;
@@ -506,26 +524,72 @@ function GameScreen() {
       to = hoverTarget;
       owner = game.turnPlayer;
     }
-    if (!field || !from || !to || !owner) {
+    const a = from ? nodeMap.current.get(from) : null;
+    const b = to ? nodeMap.current.get(to) : null;
+    if (!a || !b || !owner) {
       setArrow(null);
       return;
     }
-    const a = nodeMap.current.get(from)?.getBoundingClientRect();
-    const b = nodeMap.current.get(to)?.getBoundingClientRect();
-    const f = field.getBoundingClientRect();
-    if (!a || !b) {
-      setArrow(null);
-      return;
-    }
-    setArrow({
-      x1: a.left + a.width / 2 - f.left,
-      y1: a.top + a.height / 2 - f.top,
-      x2: b.left + b.width / 2 - f.left,
-      y2: b.top + b.height / 2 - f.top,
-      color: leaderHex(owner),
-    });
+    const p = centerOf(a);
+    const q = centerOf(b);
+    setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y, color: leaderHex(owner) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.battle?.attackerIid, game.battle?.targetIid, mode, hoverTarget, events.length]);
+
+  // ── functional micro-animations: Life taken / Character K.O.'d ──────────────
+  // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
+  interface Fx { id: number; kind: "life" | "ko"; x: number; y: number; w: number; h: number; dx: number; dy: number; cardId?: string }
+  const [fxList, setFxList] = useState<Fx[]>([]);
+  const [hitSeat, setHitSeat] = useState<PID | null>(null);
+  const lastRects = useRef(new Map<Iid, { cx: number; cy: number; w: number; h: number }>());
+  const seenEvents = useRef(events.length);
+  const fxSeq = useRef(0);
+  useLayoutEffect(() => {
+    const fresh = events.slice(seenEvents.current);
+    seenEvents.current = events.length;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const added: Fx[] = [];
+    let hit: PID | null = null;
+    const fly = (kind: Fx["kind"], from: { cx: number; cy: number; w: number; h: number } | null, toEl: Element | null, cardId?: string) => {
+      if (!from || !toEl) return;
+      const q = centerOf(toEl);
+      added.push({ id: ++fxSeq.current, kind, x: from.cx - from.w / 2, y: from.cy - from.h / 2, w: from.w, h: from.h, dx: q.x - from.cx, dy: q.y - from.cy, cardId });
+    };
+    const pileFrom = (sel: string) => {
+      const el = document.querySelector<HTMLElement>(sel);
+      if (!el) return null;
+      const c = centerOf(el);
+      return { cx: c.x, cy: c.y, w: el.offsetWidth, h: el.offsetHeight }; // untransformed size
+    };
+    for (const e of fresh) {
+      if (e.type === "lifeCardToHand" || e.type === "lifeCardTrashed") {
+        hit = e.player;
+        if (!reduce) {
+          fly("life", pileFrom(`[data-pile="life-${e.player}"] .ba-pcard`),
+            document.querySelector(e.type === "lifeCardToHand" ? `[data-hand="${e.player}"]` : `[data-pile="trash-${e.player}"] .ba-pcard`));
+        }
+      } else if (e.type === "characterKOd" && !reduce) {
+        fly("ko", lastRects.current.get(e.iid) ?? null, document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
+          game.players[e.player]?.instances[e.iid]?.cardId);
+      }
+    }
+    if (added.length) {
+      setFxList((l) => [...l, ...added]);
+      const ids = added.map((f) => f.id);
+      window.setTimeout(() => setFxList((l) => l.filter((f) => !ids.includes(f.id))), 700); // safety net
+    }
+    if (hit) {
+      setHitSeat(hit);
+      window.setTimeout(() => setHitSeat(null), 360);
+    }
+    // remember where every registered card is, for the NEXT diff (a K.O.'d
+    // card is gone from the DOM by the time its event is processed)
+    for (const [iid, el] of nodeMap.current) {
+      const c = centerOf(el);
+      lastRects.current.set(iid, { cx: c.x, cy: c.y, w: el.offsetWidth, h: el.offsetHeight });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events.length]);
 
   // ── tap routing ─────────────────────────────────────────────────────────────
 
@@ -650,7 +714,7 @@ function GameScreen() {
       const me = game.turnPlayer;
       const p = game.players[me];
       if (owner === me && (iid === p.leaderIid || p.zones.characterArea.includes(iid))) {
-        const n = mode.count;
+        const n = mode.picked.length;
         setMode({ t: "idle" });
         for (let i = 0; i < n; i++) {
           if (!useAutoStore.getState().dispatch({ type: "giveDon", player: me, targetIid: iid })) break;
@@ -728,10 +792,24 @@ function GameScreen() {
       explain("DON!! can be given only in your own Main Phase (6-5-5).");
       return;
     }
-    setMode(mode.t === "don" && mode.count === index ? { t: "idle" } : { t: "don", count: index });
+    // one tap = toggle THAT DON!! only (user request: no quantity dial)
+    const cur = mode.t === "don" ? mode.picked : [];
+    const next = cur.includes(index) ? cur.filter((i) => i !== index) : [...cur, index];
+    setMode(next.length === 0 ? { t: "idle" } : { t: "don", picked: next });
+  };
+  const selectAllDon = () => {
+    const active = game.players[game.turnPlayer].don.active;
+    setMode(active > 0 ? { t: "don", picked: Array.from({ length: active }, (_, i) => i + 1) } : { t: "idle" });
   };
 
   // ── action bar (ONE contextual button, bottom-center) ───────────────────────
+
+  /** selectTargets whose candidates live in a pile (trash / deck / Life):
+   *  they get the picker overlay instead of the on-table prompt. */
+  const pileCandidates = pc?.kind === "selectTargets" && pc.candidates.some((c) => {
+    const p = game.players[c.owner];
+    return !(c.iid === p.leaderIid || p.zones.characterArea.includes(c.iid) || p.zones.stage.includes(c.iid) || p.zones.hand.includes(c.iid));
+  });
 
   const actionBar = (() => {
     if (game.phase === "over") return null;
@@ -775,7 +853,7 @@ function GameScreen() {
         </div>
       );
     }
-    if (pc?.kind === "selectTargets") {
+    if (pc?.kind === "selectTargets" && !pileCandidates) {
       const max = Math.min(pc.count, pc.candidates.length);
       const ok = pc.upTo ? picked.length <= max : picked.length === max;
       // cost phase (M3: trash from hand / return to hand / rest / hand→deck
@@ -817,11 +895,15 @@ function GameScreen() {
       );
     }
     if (mode.t === "don") {
+      const active = game.players[game.turnPlayer].don.active;
       return (
         <div className="ba-actionbar">
-          <span className="ba-actlabel">
-            Give <b>{mode.count} DON!!</b> — tap your Leader or a Character. Tap elsewhere to cancel.
+          <span className="ba-actlabel" data-don-selected={mode.picked.length}>
+            <b>{mode.picked.length} DON!! selected</b> — tap your Leader or a Character to give them. Tap a DON!! again to deselect it.
           </span>
+          {mode.picked.length < active && (
+            <button className="ba-btn" data-act="don-all" onClick={(e) => { e.stopPropagation(); selectAllDon(); }}>All ({active})</button>
+          )}
           <button className="ba-btn" data-act="cancel" onClick={() => setMode({ t: "idle" })}>Cancel</button>
         </div>
       );
@@ -964,12 +1046,13 @@ function GameScreen() {
     );
   }
 
-  function PileBox({ label, count, children, faceClass }: { label: string; count: number; children?: React.ReactNode; faceClass?: string }) {
+  function PileBox({ label, count, children, faceClass, pid, tick }: { label: string; count: number; children?: React.ReactNode; faceClass?: string; pid: PID; tick?: boolean }) {
+    const key = `${label.toLowerCase().replace(/[^a-z]/g, "")}-${pid}`; // life-seatA, trash-seatA, …
     return (
-      <div className={`ba-pile ${faceClass ?? ""}`}>
+      <div className={`ba-pile ${faceClass ?? ""}`} data-pile={key}>
         <span className="ba-plabel">{label}</span>
         <div className="ba-pcard">{children ?? (count > 0 ? <div className="gb-card ba-backcard"><span className="gb-back"><span className="gb-back-emblem" /></span></div> : <div className="ba-empty" />)}</div>
-        <span className="ba-pcount">{count}</span>
+        <span className={`ba-pcount${tick ? " ba-tick" : ""}`}>{count}</span>
       </div>
     );
   }
@@ -982,10 +1065,14 @@ function GameScreen() {
     const donRested = p.don.rested;
     const isTurn = game.turnPlayer === pid;
     return (
-      <div className={`ba-half${flip ? " flip" : ""}${isTurn ? " turn" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
+      <div
+        className={`ba-half${flip ? " flip" : ""}${isTurn ? " turn" : " idle"}${hitSeat === pid ? " ba-hit" : ""}`}
+        data-half={pid}
+        style={{ ["--lc" as string]: leaderHex(pid) }}
+      >
         <div className="ba-sidecol">
-          {PileBox({ label: "LIFE", count: p.zones.life.length })}
-          {PileBox({ label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback" })}
+          {PileBox({ label: "LIFE", count: p.zones.life.length, pid, tick: hitSeat === pid })}
+          {PileBox({ label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid })}
         </div>
         <div className="ba-halfmain">
           <div className="ba-charrow">
@@ -1003,7 +1090,7 @@ function GameScreen() {
             )}
             <div className="ba-donrow" data-seat-don={pid}>
               {Array.from({ length: donActive }).map((_, i) => {
-                const dialOn = isTurn && mode.t === "don" && i < mode.count;
+                const dialOn = isTurn && mode.t === "don" && mode.picked.includes(i + 1);
                 const marked = (donMarks[pid] ?? []).includes(i);
                 return (
                   <div
@@ -1045,11 +1132,12 @@ function GameScreen() {
           {PileBox({
             label: "TRASH",
             count: p.zones.trash.length,
+            pid,
             children:
               trashTop && trashCard ? (
                 <div
                   className="gb-card ba-backcard"
-                  data-iid={trashTop}
+                  data-trash-top={trashTop}
                   onClick={(e) => {
                     e.stopPropagation();
                     inspect(trashCard.id);
@@ -1059,7 +1147,7 @@ function GameScreen() {
                 </div>
               ) : undefined,
           })}
-          {PileBox({ label: "DECK", count: p.zones.deck.length })}
+          {PileBox({ label: "DECK", count: p.zones.deck.length, pid })}
         </div>
       </div>
     );
@@ -1082,7 +1170,7 @@ function GameScreen() {
     const mm = Math.floor((clocks[pid] ?? 0) / 60);
     const ss = (clocks[pid] ?? 0) % 60;
     return (
-      <div className={`ba-seatpanel${active ? " active" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
+      <div className={`ba-seatpanel${active ? " active" : ""}${game.turnPlayer === pid && game.phase !== "over" ? " turn" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
         <div className="ba-seatrow">
           <b className="ba-seatname">{seatName(pid)}</b>
           <span className="ba-clock">{mm}:{String(ss).padStart(2, "0")}</span>
@@ -1195,6 +1283,41 @@ function GameScreen() {
           <div className="ba-ovbtns">
             <button className="ba-btn primary" data-act="manual-done" onClick={() => dispatch({ type: "ackManual", player: pc.player })}>
               Done — resolved
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  } else if (pc?.kind === "selectTargets" && pileCandidates) {
+    // candidates living in a pile (trash / deck / Life) have no card on the
+    // table to tap: show them all in a picker (QA bot: "return from trash")
+    const max = Math.min(pc.count, pc.candidates.length);
+    const ok = pc.upTo ? picked.length <= max : picked.length === max;
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov ba-peek">
+          <span className="ba-ovtag">{seatName(pc.player)} — choose {pc.upTo ? `up to ${pc.count}` : max} ({pc.actionKind})</span>
+          <div className="ba-peekgrid">
+            {pc.candidates.map((c) => {
+              const card = cards.get(game.players[c.owner].instances[c.iid].cardId);
+              const on = picked.includes(c.iid);
+              return (
+                <div
+                  key={c.iid}
+                  className={`ba-peekcard eligible ba-target${on ? " taken ba-picked" : ""}`}
+                  data-iid={c.iid}
+                  onClick={(e) => { e.stopPropagation(); toggleTarget(c.iid); }}
+                >
+                  <div className="ba-peekart">{card?.image && <img src={card.image} alt={card.name} />}</div>
+                  <b>{card?.name ?? c.iid}</b>
+                  {on && <i className="ba-peektag">PICK</i>}
+                </div>
+              );
+            })}
+          </div>
+          <div className="ba-ovbtns">
+            <button className="ba-btn primary big" data-act="confirm-targets" disabled={!ok} onClick={() => dispatch({ type: "respondTargets", player: pc.player, iids: picked })}>
+              {pc.upTo && picked.length === 0 ? "None" : `Confirm (${picked.length})`}
             </button>
           </div>
         </div>
@@ -1436,9 +1559,11 @@ function GameScreen() {
 
   const endTurnButton = (
     <button
-      className="ba-btn primary big"
+      className="ba-btn primary big ba-endturn"
       data-act="endturn"
       disabled={!lm.canEndTurn}
+      title={`${seatName(game.turnPlayer)}'s turn`}
+      style={{ ["--lc" as string]: leaderHex(game.turnPlayer) }}
       onClick={() => dispatch({ type: "endTurn", player: game.turnPlayer })}
     >
       End turn
@@ -1451,7 +1576,7 @@ function GameScreen() {
     const active = lm.actor === pid && game.phase !== "over";
     const sec = clocks[pid] ?? 0;
     return (
-      <div className={`ba-m-pill${active ? " active" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
+      <div className={`ba-m-pill${active ? " active" : ""}${game.turnPlayer === pid && game.phase !== "over" ? " turn" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
         <b>{seatName(pid)}</b>
         <span>
           {Math.floor(sec / 60)}:{String(sec % 60).padStart(2, "0")} · L{p.zones.life.length} · D{p.zones.deck.length} · H{p.zones.hand.length} · DON {p.don.active}/{p.don.rested}
@@ -1549,23 +1674,40 @@ function GameScreen() {
           {Half({ pid: SEAT_B, flip: true })}
           <div className="ba-midline" />
           {Half({ pid: SEAT_A, flip: false })}
-          {arrow && (
-            <svg className="ba-arrow" aria-hidden>
-              <defs>
-                <marker id="ba-arrowhead" markerWidth="7" markerHeight="7" refX="5.4" refY="3.5" orient="auto">
-                  <path d="M0,0 L7,3.5 L0,7 Z" fill={arrow.color} />
-                </marker>
-              </defs>
-              <path
-                d={`M${arrow.x1},${arrow.y1} Q${(arrow.x1 + arrow.x2) / 2 + 40},${(arrow.y1 + arrow.y2) / 2} ${arrow.x2},${arrow.y2}`}
-                fill="none"
-                stroke={arrow.color}
-                strokeWidth="3"
-                strokeDasharray="8 6"
-                markerEnd="url(#ba-arrowhead)"
-              />
-            </svg>
-          )}
+          {/* always mounted: its screen CTM is the field's coordinate oracle */}
+          <svg className="ba-arrow" aria-hidden ref={svgRef}>
+            {arrow && (
+              <>
+                <defs>
+                  <marker id="ba-arrowhead" markerWidth="8" markerHeight="8" refX="6.2" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                    <path d="M0,0 L8,4 L0,8 Z" fill={arrow.color} />
+                  </marker>
+                </defs>
+                {/* solid, uniform stroke in the attacker leader's color (block
+                    redirects just move the end point — same style) */}
+                <path
+                  d={`M${arrow.x1},${arrow.y1} Q${(arrow.x1 + arrow.x2) / 2 + 40},${(arrow.y1 + arrow.y2) / 2} ${arrow.x2},${arrow.y2}`}
+                  fill="none"
+                  stroke={arrow.color}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  markerEnd="url(#ba-arrowhead)"
+                />
+              </>
+            )}
+          </svg>
+          {fxList.map((f) => (
+            <div
+              key={f.id}
+              className={`ba-fx ${f.kind}`}
+              style={{ left: f.x, top: f.y, width: f.w, height: f.h, ["--dx" as string]: `${f.dx}px`, ["--dy" as string]: `${f.dy}px` }}
+              onAnimationEnd={() => setFxList((l) => l.filter((x) => x.id !== f.id))}
+            >
+              {f.kind === "ko" && f.cardId && cards.get(f.cardId)?.image
+                ? <img src={cards.get(f.cardId)!.image} alt="" />
+                : <span className="gb-back"><span className="gb-back-emblem" /></span>}
+            </div>
+          ))}
         </div>
         {actionBar}
         {!compact && HandRow({ pid: SEAT_A })}
