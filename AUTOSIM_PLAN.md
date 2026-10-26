@@ -576,6 +576,20 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     leader/char assegna i selezionati — il motore riceve N `giveDon`
     (DON fungibili); il segnaposto HOLD resta separato. Driver e QA bot
     aggiornati; nota in docs/oplay-analysis.md §6.
+38. **Stage a risoluzione fissa (2026-10-26, decisione utente: "un gioco,
+    non un sito responsivo")** — sostituisce #33/#35: un solo layout desktop
+    disegnato a 1600×900 px virtuali, scalato al viewport con letterbox
+    (`scale = min(vw/W, vh/H)`) e ruotato di 90° in portrait, nella stessa
+    matrice (`translate · scale · rotate(90deg) · translateY(-H)`). Dentro
+    lo stage niente media query né vw/vh; `--bacw` fissa (92px) per TUTTE
+    le carte del tavolo (pile e DON compresi — i 10 DON condividono la cost
+    area via stride dichiarato, rested attenuati e non ruotati). Il chrome
+    dell'app (ThemeToggle) non viene renderizzato sulle board. PLAY in-place
+    a 2 tap su ogni device; anteprima nel rail. Il QA bot verifica il
+    contratto strutturale (stessa bbox per le carte del tavolo ±1px, nessuna
+    intersezione fuori dagli stride, nessun chrome esterno sopra lo stage,
+    scala uniforme X/Y e stage dentro il viewport) a 1440×900, 844×390,
+    412×915 e 1024×768. Scala ~0.46 su telefono accettata.
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

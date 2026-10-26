@@ -176,10 +176,12 @@ export function App() {
   if (view === "login") effectiveView = "home";
   if (view === "admin" && user.role !== "admin") effectiveView = "home";
 
+  // the play tables are full-screen game stages: no app chrome over them
+  const onTable = effectiveView === "board" || effectiveView === "board2" || effectiveView === "board-auto";
   return (
     <>
       <CurrentView view={effectiveView} />
-      <ThemeToggle />
+      {!onTable && <ThemeToggle />}
     </>
   );
 }

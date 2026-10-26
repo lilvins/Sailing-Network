@@ -12,7 +12,6 @@ import { automationInfo } from "./compile";
 import { buildDemoDecks, userDeckChoices, type DeckChoice } from "./decks";
 import { fmtEvent } from "./log";
 import "./boardauto.css";
-import "./boardauto-compact.css";
 
 /* =============================================================================
    BOARD AUTO — the AUTOSIM full-rules board (AUTOSIM_PLAN.md §7).
@@ -62,22 +61,47 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
 
 // ─── viewport mode ────────────────────────────────────────────────────────────
 
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() => typeof window !== "undefined" && window.matchMedia(query).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const on = () => setMatches(mq.matches);
-    on();
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, [query]);
-  return matches;
+/** The table is a FIXED-RESOLUTION STAGE (like OPTCGSim / Master Duel): one
+ *  desktop layout drawn at STAGE_W×STAGE_H virtual px, then scaled to fit the
+ *  viewport (letterboxed) and rotated 90° when the viewport is portrait.
+ *  No media queries, no vw/vh inside the stage — by design, not responsive. */
+const STAGE_W = 1600;
+const STAGE_H = 900;
+
+interface StageFit { scale: number; rotate: boolean; ox: number; oy: number }
+
+function fitStage(vw: number, vh: number): StageFit {
+  const rotate = vh > vw; // portrait → the stage lies on its side
+  const w = rotate ? STAGE_H : STAGE_W; // device-space footprint
+  const h = rotate ? STAGE_W : STAGE_H;
+  const scale = Math.min(vw / w, vh / h);
+  return { scale, rotate, ox: (vw - w * scale) / 2, oy: (vh - h * scale) / 2 };
 }
 
-/** Compact chrome: phone landscape (short viewport) or narrow portrait. The
- *  desktop grid stays untouched above these. Mirrored by `.compact` in CSS. */
-const COMPACT_QUERY = "(max-width: 1024px) and (max-height: 560px), (max-width: 820px) and (orientation: portrait)";
-const PORTRAIT_QUERY = "(orientation: portrait)";
+function useStageFit(): StageFit {
+  const [fit, setFit] = useState<StageFit>(() =>
+    typeof window !== "undefined" ? fitStage(window.innerWidth, window.innerHeight) : { scale: 1, rotate: false, ox: 0, oy: 0 });
+  useEffect(() => {
+    const on = () => setFit(fitStage(window.innerWidth, window.innerHeight));
+    on();
+    window.addEventListener("resize", on);
+    window.addEventListener("orientationchange", on);
+    return () => {
+      window.removeEventListener("resize", on);
+      window.removeEventListener("orientationchange", on);
+    };
+  }, []);
+  return fit;
+}
+
+/** CSS transform for the stage box (origin 0 0). Portrait: rotate 90° CW
+ *  about the top-left corner after lifting the box by its own height, so the
+ *  rotated box occupies [0,STAGE_H]×[0,STAGE_W]; then scale and center. */
+function stageTransform(f: StageFit): string {
+  return f.rotate
+    ? `translate(${f.ox}px, ${f.oy}px) scale(${f.scale}) rotate(90deg) translateY(-${STAGE_H}px)`
+    : `translate(${f.ox}px, ${f.oy}px) scale(${f.scale})`;
+}
 
 /** Phone landscape, level 1 (needs a user gesture): fullscreen + orientation
  *  lock where the platform allows it (Android Chrome). Silent otherwise —
@@ -370,14 +394,10 @@ function GameScreen() {
   const [mode, setMode] = useState<Mode>({ t: "idle" });
   const [picked, setPicked] = useState<Iid[]>([]);
   const [armConcede, setArmConcede] = useState<PID | null>(null);
-  // compact (phone) chrome: sheets instead of rails, 2-tap play from hand
-  const compact = useMediaQuery(COMPACT_QUERY);
-  const portrait = useMediaQuery(PORTRAIT_QUERY);
-  /** Level-2 landscape: the viewport stayed portrait on a compact device →
-   *  the whole table is rotated 90° by CSS (`.ba-forced`). */
-  const forced = compact && portrait;
-  // while at the table: no page rubber-banding (the rotated root is fixed);
-  // leaving it (home, change decks, rematch) releases the orientation lock
+  // fixed-resolution stage, scaled (and rotated in portrait) to the viewport
+  const stage = useStageFit();
+  // while at the table: no page rubber-banding; leaving it (home, change
+  // decks, rematch) releases the orientation lock
   useEffect(() => {
     const prev = document.body.style.overscrollBehavior;
     document.body.style.overscrollBehavior = "none";
@@ -386,13 +406,9 @@ function GameScreen() {
       leaveLandscape();
     };
   }, []);
-  const [sheet, setSheet] = useState<"preview" | "log" | null>(null);
+  /** Hand card selected by a tap: shows the in-place PLAY button (if legal);
+   *  a second tap deselects. */
   const [selectedHand, setSelectedHand] = useState<Iid | null>(null);
-  /** The field card the preview sheet is showing (for its Activate button). */
-  const [previewRef, setPreviewRef] = useState<{ owner: PID; iid: Iid } | null>(null);
-  useEffect(() => {
-    if (!compact) setSheet(null);
-  }, [compact]);
   // M3 windows: local drafts of the answer being composed
   const [peekTake, setPeekTake] = useState<Iid[]>([]);
   const [peekOrder, setPeekOrder] = useState<Iid[]>([]);
@@ -598,22 +614,19 @@ function GameScreen() {
     const c = cards.get(cardId);
     if (c) setPreview(c);
   };
-  /** A tap that performs NO action: desktop = preview rail (already set by
-   *  hover); compact = open the preview sheet (no hover on touch). */
+  /** A tap that performs NO action: the preview rail shows the card (never an
+   *  automatic sheet). `ref` is kept for API symmetry with the board taps. */
   const inspect = (cardId: string | null, ref: { owner: PID; iid: Iid } | null = null) => {
+    void ref;
     hover(cardId);
-    setPreviewRef(ref);
-    if (compact && cardId) setSheet("preview");
   };
 
-  /** Play a hand card (shared by the desktop 1-tap, the compact 2nd tap and
-   *  the sheet's Play button). */
+  /** Play a hand card (from the in-place PLAY button). */
   const playFromHand = (owner: PID, iid: Iid) => {
     const playable = lm.playableFromHand.find((x) => x.iid === iid);
     if (!playable) return;
     const card = cards.get(game.players[owner].instances[iid].cardId);
     setSelectedHand(null);
-    setSheet(null);
     if (playable.needsReplace && card?.category === "Character") {
       setMode({ t: "replace", handIid: iid });
       return;
@@ -687,14 +700,10 @@ function GameScreen() {
       inspect(inst.cardId);
       return;
     }
-    if (compact && selectedHand !== iid) {
-      // touch: 1st tap selects + shows the card, 2nd tap (or the sheet's
-      // Play button) plays it — no accidental plays on a small screen
-      setSelectedHand(iid);
-      inspect(inst.cardId);
-      return;
-    }
-    playFromHand(owner, iid);
+    // tap = select (shows the in-place PLAY button); tap again = deselect.
+    // Playing happens ONLY through PLAY (no accidental plays, any device).
+    setSelectedHand(selectedHand === iid ? null : iid);
+    inspect(inst.cardId);
   };
 
   const onBoardTap = (owner: PID, iid: Iid) => {
@@ -781,7 +790,6 @@ function GameScreen() {
   /** [Activate: Main] (10-2-2, M3): only ever offered from legality.activatable. */
   const activate = (owner: PID, iid: Iid, effectIndex: number) => {
     setMode({ t: "idle" });
-    setSheet(null);
     dispatch({ type: "activateMain", player: owner, iid, effectIndex });
   };
 
@@ -1022,6 +1030,20 @@ function GameScreen() {
           </span>
         )}
         {given > 0 && <span className="ba-given">DON!! ×{given}</span>}
+        {/* in-place PLAY: the selected hand card, when the play is legal now */}
+        {inHand && selectedHand === iid && !pc && owner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === iid) && (
+          <button
+            className="ba-playbtn"
+            data-act="play"
+            data-iid={iid}
+            onClick={(e) => {
+              e.stopPropagation();
+              playFromHand(owner, iid);
+            }}
+          >
+            PLAY
+          </button>
+        )}
         {/* [Activate: Main] affordance = legality only (10-2-2, M3) */}
         {onField && !pc && owner === game.turnPlayer &&
           lm.activatable
@@ -1088,7 +1110,7 @@ function GameScreen() {
             ) : (
               <div className="ba-slot ba-stage">STAGE</div>
             )}
-            <div className="ba-donrow" data-seat-don={pid}>
+            <div className="ba-donrow" data-seat-don={pid} data-overlap="stride">
               {Array.from({ length: donActive }).map((_, i) => {
                 const dialOn = isTurn && mode.t === "don" && mode.picked.includes(i + 1);
                 const marked = (donMarks[pid] ?? []).includes(i);
@@ -1156,7 +1178,7 @@ function GameScreen() {
   function HandRow({ pid, small }: { pid: PID; small?: boolean }) {
     const p = game.players[pid];
     return (
-      <div className={`ba-hand${small ? " small" : ""}`} data-hand={pid}>
+      <div className={`ba-hand${small ? " small" : ""}`} data-hand={pid} data-overlap="stride">
         {p.zones.hand.map((iid) => BCard({ owner: pid, iid, small, inHand: true }))}
         {p.zones.hand.length === 0 && <span className="ba-donempty">EMPTY HAND</span>}
       </div>
@@ -1534,7 +1556,7 @@ function GameScreen() {
   const phaseLabel =
     game.phase === "setup" ? "SETUP" : game.phase === "over" ? "GAME OVER" : battleStep ? `${battleStep.toUpperCase()} STEP` : "MAIN PHASE";
 
-  // shared preview content (desktop rail / compact sheet)
+  // preview rail content
   const previewPanel = preview ? (
     <>
       <div className="ba-prevart">{preview.image && <img src={preview.image} alt={preview.name} />}</div>
@@ -1570,106 +1592,29 @@ function GameScreen() {
     </button>
   );
 
-  // compact chrome: minimal seat pill for the overlay strips
-  const seatPill = (pid: PID) => {
-    const p = game.players[pid];
-    const active = lm.actor === pid && game.phase !== "over";
-    const sec = clocks[pid] ?? 0;
-    return (
-      <div className={`ba-m-pill${active ? " active" : ""}${game.turnPlayer === pid && game.phase !== "over" ? " turn" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
-        <b>{seatName(pid)}</b>
-        <span>
-          {Math.floor(sec / 60)}:{String(sec % 60).padStart(2, "0")} · L{p.zones.life.length} · D{p.zones.deck.length} · H{p.zones.hand.length} · DON {p.don.active}/{p.don.rested}
-        </span>
-      </div>
-    );
-  };
-
-  const selectedHandOwner = selectedHand ? (game.players[SEAT_A].zones.hand.includes(selectedHand) ? SEAT_A : SEAT_B) : null;
-  const selectedPlayable = !!selectedHand && selectedHandOwner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === selectedHand);
-
-  const compactChrome = compact && (
-    <>
-      <div className="ba-m-strip top">
-        {seatPill(SEAT_B)}
-        {HandRow({ pid: SEAT_B, small: true })}
-        <span className="ba-m-turn">T{Math.max(1, game.turn)} · {phaseLabel}</span>
-      </div>
-      <div className="ba-m-strip bottom">
-        {seatPill(SEAT_A)}
-        {HandRow({ pid: SEAT_A })}
-        <div className="ba-m-bar">
-          {endTurnButton}
-          <button className={`ba-btn${sheet === "log" ? " on" : ""}`} data-act="sheet-log" onClick={(e) => { e.stopPropagation(); setSheet(sheet === "log" ? null : "log"); }}>Log</button>
-          <button className={`ba-btn${sheet === "preview" ? " on" : ""}`} data-act="sheet-preview" onClick={(e) => { e.stopPropagation(); setSheet(sheet === "preview" ? null : "preview"); }}>Card</button>
-        </div>
-      </div>
-      {sheet && (
-        <>
-          <div className="ba-sheet-backdrop" onClick={(e) => { e.stopPropagation(); setSheet(null); setSelectedHand(null); }} />
-          <div className={`ba-sheet ${sheet === "preview" ? "left" : "right"}`} onClick={(e) => e.stopPropagation()}>
-            <div className="ba-sheet-head">
-              <b>{sheet === "preview" ? "CARD" : "LOG & SEATS"}</b>
-              <button className="ba-btn tiny" data-act="sheet-close" onClick={() => { setSheet(null); setSelectedHand(null); }}>Close</button>
-            </div>
-            {sheet === "preview" ? (
-              <div className="ba-sheet-body ba-preview">
-                {previewPanel}
-                {selectedPlayable && selectedHand && selectedHandOwner && (
-                  <button className="ba-btn primary big" data-act="play-selected" onClick={() => playFromHand(selectedHandOwner, selectedHand)}>
-                    Play this card
-                  </button>
-                )}
-                {previewRef && !pc &&
-                  lm.activatable
-                    .filter((a) => a.iid === previewRef.iid && previewRef.owner === game.turnPlayer)
-                    .map((a) => (
-                      <button key={a.effectIndex} className="ba-btn primary big" data-act="activate-sheet" onClick={() => activate(previewRef.owner, previewRef.iid, a.effectIndex)}>
-                        Activate [Activate: Main]
-                      </button>
-                    ))}
-              </div>
-            ) : (
-              <div className="ba-sheet-body">
-                {SeatPanel({ pid: SEAT_B })}
-                <div className="ba-log ba-sheet-log">
-                  {logLines.map((l, i) => (
-                    <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
-                  ))}
-                </div>
-                {SeatPanel({ pid: SEAT_A })}
-                <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-    </>
-  );
-
   return (
+    <div className="ba-stagewrap" data-stage-scale={stage.scale.toFixed(4)} data-stage-rotate={stage.rotate ? "1" : "0"}>
     <div
-      className={`ba-root ba-game${compact ? " compact" : ""}${forced ? " ba-forced" : ""}`}
-      data-forced-landscape={forced ? "1" : undefined}
+      className="ba-root ba-game ba-stage"
+      style={{ transform: stageTransform(stage) }}
       onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
     >
       <Banner />
-      {toast && <div className="ba-toast">{toast}</div>}
 
-      {!compact && (
-        <div className="ba-left">
-          <div className="ba-preview">{previewPanel}</div>
-          <div className="ba-turnbox">
-            <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
-            <span className="ba-phasepill">{phaseLabel}</span>
-          </div>
-          {endTurnButton}
-          <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
+      <div className="ba-left">
+        {/* turn toast sits IN the rail flow (never over the table or rail) */}
+        {toast && <div className="ba-toast">{toast}</div>}
+        <div className="ba-preview">{previewPanel}</div>
+        <div className="ba-turnbox">
+          <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
+          <span className="ba-phasepill">{phaseLabel}</span>
         </div>
-      )}
+        {endTurnButton}
+        <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
+      </div>
 
       <div className="ba-centercol">
-        {!compact && HandRow({ pid: SEAT_B, small: true })}
+        {HandRow({ pid: SEAT_B, small: true })}
         <div className="ba-field" ref={fieldRef}>
           {Half({ pid: SEAT_B, flip: true })}
           <div className="ba-midline" />
@@ -1710,23 +1655,21 @@ function GameScreen() {
           ))}
         </div>
         {actionBar}
-        {!compact && HandRow({ pid: SEAT_A })}
+        {HandRow({ pid: SEAT_A })}
       </div>
 
-      {!compact && (
-        <div className="ba-right">
-          {SeatPanel({ pid: SEAT_B })}
-          <div className="ba-log" ref={logRef}>
-            {logLines.map((l, i) => (
-              <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
-            ))}
-          </div>
-          {SeatPanel({ pid: SEAT_A })}
+      <div className="ba-right">
+        {SeatPanel({ pid: SEAT_B })}
+        <div className="ba-log" ref={logRef}>
+          {logLines.map((l, i) => (
+            <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
+          ))}
         </div>
-      )}
+        {SeatPanel({ pid: SEAT_A })}
+      </div>
 
-      {compactChrome}
       {overlay}
+    </div>
     </div>
   );
 }

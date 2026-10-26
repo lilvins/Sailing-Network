@@ -42,6 +42,7 @@ const VIEWPORTS = [
   { name: "desktop", w: 1440, h: 900, mobile: false },
   { name: "landscape", w: 844, h: 390, mobile: true },
   { name: "portrait", w: 412, h: 915, mobile: true },
+  { name: "tablet", w: 1024, h: 768, mobile: true },
 ];
 /** Deck configs: compiled-set demos, OP01 leaders, and an uncompiled set
  *  (ST02/ST04: the manual-resolution path). */
@@ -303,8 +304,65 @@ const BOARD_CHECKS = (opts) => {
     // a control INSIDE the card sitting on its center steals the card's tap
     else if (hit && el.dataset.iid && hit !== el && hit.closest("button, [data-act]") && el.contains(hit)) out.push({ kind: "OCCLUDED", severity: "medium", message: `card ${el.dataset.iid}: its center is covered by its own control ${hit.closest("[data-act]")?.getAttribute("data-act") ?? hit.tagName.toLowerCase()} (tap would not select the card)` });
   }
-  // touch tap targets
-  if (opts.touch) {
+  // ── STRUCTURAL layout contract (user: "zero overlaps, same card size") ──
+  // (a) every table card (leader / characters / stage / piles / DON cells)
+  //     has the same untransformed size (±1px); hands may differ
+  // (b) no two table pieces intersect, unless both sit in the same declared
+  //     stride container ([data-overlap="stride"]: hands, cost area)
+  // (c) nothing on the table under the size floor (40px wide; hands 48px on touch)
+  // (d) no app chrome (theme toggle, dock) inside the table area
+  {
+    const size = (el) => ({ w: el.offsetWidth, h: el.offsetHeight });
+    const tableCards = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pcard > .gb-card, .ba-pcard > .ba-empty, .ba-doncell");
+    if (tableCards.length > 1) {
+      const ref = size(tableCards[0]);
+      const odd = tableCards.filter((el) => { const s = size(el); return Math.abs(s.w - ref.w) > 1 || Math.abs(s.h - ref.h) > 1; });
+      if (odd.length) out.push({ kind: "STRUCT SIZE", severity: "high", message: `${odd.length} table card(s) differ from ${ref.w}×${ref.h}: ${odd.slice(0, 4).map((el) => `${el.className.split(" ").slice(0, 2).join(".")} ${size(el).w}×${size(el).h}`).join(", ")}` });
+    }
+    const floor = 40;
+    const small = tableCards.filter((el) => size(el).w < floor);
+    if (small.length) out.push({ kind: "STRUCT SMALL", severity: "high", message: `${small.length} table card(s) narrower than ${floor}px: ${small.slice(0, 3).map((el) => `${el.className.split(" ").slice(0, 2).join(".")} ${size(el).w}px`).join(", ")}` });
+    if (opts.touch) {
+      const handSmall = q(".ba-hand .ba-card").filter((el) => size(el).w < 48);
+      if (handSmall.length) out.push({ kind: "STRUCT SMALL", severity: "high", message: `${handSmall.length} hand card(s) narrower than 48px (${size(handSmall[0]).w}px)` });
+    }
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-m-strip, .ba-m-pill, .ba-m-bar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-toast")
+      .map((el) => ({ el, r: el.getBoundingClientRect(), stride: el.closest('[data-overlap="stride"]') }))
+      .filter((p) => p.r.width > 0 && p.r.height > 0);
+    const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
+    const hits = [];
+    for (let i = 0; i < pieces.length; i++) for (let j = i + 1; j < pieces.length; j++) {
+      const a = pieces[i], b = pieces[j];
+      if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+      if (a.stride && a.stride === b.stride) continue;
+      const ix = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
+      const iy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+      if (ix > 1 && iy > 1) hits.push(`${name(a)} × ${name(b)} (${Math.round(ix)}×${Math.round(iy)}px)`);
+    }
+    if (hits.length) out.push({ kind: "STRUCT OVERLAP", severity: "high", message: `${hits.length} overlapping pair(s): ${hits.slice(0, 5).join("; ")}` });
+    // the stage: uniform X/Y scale, entirely inside the viewport (letterbox ok)
+    const stageEl = document.querySelector(".ba-stage");
+    if (stageEl) {
+      const m = new DOMMatrixReadOnly(getComputedStyle(stageEl).transform);
+      const sx = Math.hypot(m.a, m.b), sy = Math.hypot(m.c, m.d);
+      if (Math.abs(sx - sy) > 0.002) out.push({ kind: "STRUCT STAGE", severity: "high", message: `stage scale is not uniform: x ${sx.toFixed(3)} y ${sy.toFixed(3)}` });
+      const r = stageEl.getBoundingClientRect();
+      if (r.left < -1 || r.top < -1 || r.right > vw + 1 || r.bottom > vh + 1) out.push({ kind: "STRUCT STAGE", severity: "high", message: `stage spills out of the viewport (${Math.round(r.left)},${Math.round(r.top)} → ${Math.round(r.right)},${Math.round(r.bottom)} in ${vw}×${vh})` });
+    }
+    const table = document.querySelector(".ba-root");
+    if (table) {
+      const t = table.getBoundingClientRect();
+      for (const el of q(".theme-toggle, .snp-dock, [class*='dock'], [class*='theme-toggle']")) {
+        if (table.contains(el)) continue;
+        const r = el.getBoundingClientRect();
+        if (r.right > t.left && r.left < t.right && r.bottom > t.top && r.top < t.bottom) out.push({ kind: "STRUCT CHROME", severity: "high", message: `app chrome ${el.className.split(" ")[0]} sits over the table (${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}×${Math.round(r.height)})` });
+      }
+    }
+  }
+  // touch tap targets — only meaningful at scale 1: a scaled-down stage is the
+  // user's accepted trade-off ("at most zoomed out", like OPTCGSim)
+  const stageScale = Number(document.querySelector(".ba-stagewrap")?.getAttribute("data-stage-scale") ?? 1);
+  if (opts.touch && stageScale > 0.99) {
     let small = 0; const sx = [];
     for (const el of q("button:not([disabled]), [data-act], .ba-doncell")) {
       if (top && !top.contains(el) && !el.closest(".ba-overlay, .ba-sheet")) continue;
@@ -418,10 +476,12 @@ async function botMove(page, s, rnd, vp, turnMoves) {
   const options = [];
   if (turnMoves < 14) {
     for (const h of lm.playableFromHand ?? []) options.push({ w: 3, run: async () => {
+      // tap the card → it selects and shows an in-place PLAY button → tap PLAY
       await act(page, `[data-iid="${h.iid}"]`);
       await page.waitForTimeout(80);
-      const playBtn = page.locator('[data-act="play-selected"]');
+      const playBtn = page.locator(`[data-act="play"][data-iid="${h.iid}"]`);
       if (await playBtn.count()) await playBtn.click();
+      else { const legacy = page.locator('[data-act="play-selected"]'); if (await legacy.count()) await legacy.click(); }
       if (h.needsReplace) { await page.waitForTimeout(80); const tgt = pick(rnd, p.chars); if (tgt) await act(page, `[data-iid="${tgt}"]`); }
       return `play ${h.iid}`;
     } });

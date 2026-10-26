@@ -189,7 +189,23 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   red flash of the hit half + life counter tick; K.O. → card ghost slides to
   the trash (200ms). Transform/opacity only, disabled under
   prefers-reduced-motion, no audio.
-- **Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
+- **THE BOARD IS A FIXED STAGE, NOT RESPONSIVE — by design (2026-10-26,
+  user decision: "a game, like OPTCGSim / Master Duel")**: GameScreen draws
+  ONE desktop layout at 1600×900 virtual px (`.ba-stage`, `--bacw: 92px`,
+  every table card — leader, characters, stage, piles, DON — the same size)
+  and `useStageFit` scales it to the viewport (`scale = min(vw/W, vh/H)`,
+  letterboxed, centered) and rotates it 90° when the viewport is portrait
+  (`rotate(90deg) translateY(-900px)` in the same matrix). No media queries
+  and no vw/vh inside the stage; all fixed overlays (banner, prompts,
+  modals) are children of the transformed stage so they scale with it. The
+  previous compact/responsive chrome (strips, sheets, forced-landscape CSS)
+  was removed. Overlaps are structurally impossible except the declared
+  strides (`data-overlap="stride"` on hands and the DON row); rested DON are
+  dimmed, not rotated. The app's ThemeToggle is not rendered on the board
+  views (App.tsx). Hand play is 2-tap everywhere: tap = select + in-place
+  PLAY button, tap again = deselect; the preview lives in the left rail.
+  Small targets on a phone (~0.46 scale) are the accepted trade-off.
+- **(superseded) Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
   (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
   compact chrome — same table geometry scaled from viewport height, hands as
   top/bottom overlay strips (horizontal scroll), minimal seat pills,

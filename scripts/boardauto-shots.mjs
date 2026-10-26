@@ -156,11 +156,13 @@ if (process.env.BA_FIRST) {
 }
 await page.waitForSelector(".ba-field", { timeout: 8000 });
 
-// portrait phone: the table rotates itself (CSS forced landscape) — assert it
-if (PORTRAIT_ONLY || (MOBILE && H > W)) {
-  const forced = await page.locator('[data-forced-landscape="1"]').count();
-  console.log(`forced landscape active: ${forced > 0 ? "yes" : "NO"}`);
-  if (forced === 0) console.log("WARNING: portrait viewport without the rotated table");
+// the stage: report scale/rotation; a portrait viewport must rotate the stage
+{
+  const wrap = page.locator(".ba-stagewrap");
+  const scale = await wrap.getAttribute("data-stage-scale");
+  const rot = await wrap.getAttribute("data-stage-rotate");
+  console.log(`stage scale ${scale} rotate ${rot}`);
+  if ((PORTRAIT_ONLY || H > W) && rot !== "1") console.log("WARNING: portrait viewport without the rotated stage");
 }
 
 // ── game driver ───────────────────────────────────────────────────────────────
@@ -317,15 +319,11 @@ while (guard-- > 0) {
   });
   if (playable.length > 0 && (flags.playedTurnCount < 2 || PEEK_IDS.has(cardIdOf(playable[0].iid)) || DONX_IDS.has(cardIdOf(playable[0].iid))) && (s.chars[me]?.length ?? 0) < 5) {
     flags.playedTurnCount++;
-    await clickIid(playable[0].iid);
+    await clickIid(playable[0].iid); // 1st tap: select → in-place PLAY appears
     await page.waitForTimeout(140);
-    // compact chrome: 1st tap selects + opens the card sheet, Play confirms
-    const playBtn = page.locator('[data-act="play-selected"]');
-    if (await playBtn.count()) {
-      await shot("hand");
-      await playBtn.click();
-      await page.waitForTimeout(140);
-    }
+    await shot("hand-play-button");
+    await page.locator(`[data-act="play"][data-iid="${playable[0].iid}"]`).first().click();
+    await page.waitForTimeout(140);
     if (s.turn <= 3) await shot("main");
     continue;
   }
