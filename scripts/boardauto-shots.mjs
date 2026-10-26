@@ -325,6 +325,9 @@ while (guard-- > 0) {
     await page.locator(`[data-act="play"][data-iid="${playable[0].iid}"]`).first().click();
     await page.waitForTimeout(140);
     if (s.turn <= 3) await shot("main");
+    await shot("don-rested"); // the cost just paid: rested DON lie tapped in the cost area
+    await shot("hands");
+    await shot("chat");
     continue;
   }
 
@@ -338,6 +341,7 @@ while (guard-- > 0) {
     for (let i = 1; i <= n; i++) await page.locator(`[data-don-seat="${me}"][data-don-index="${i}"]`).first().click();
     await page.waitForTimeout(120);
     await shot("don-dial");
+    await shot("don-selected-overlay");
     const waChar = (s.charCards[me] ?? []).find((c) => WA_IDS.has(c.cardId));
     const donTarget = waChar?.iid ?? s.chars[me]?.[0] ?? s.leaders[me];
     await clickIid(donTarget);

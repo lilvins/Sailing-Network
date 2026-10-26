@@ -590,6 +590,12 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     intersezione fuori dagli stride, nessun chrome esterno sopra lo stage,
     scala uniforme X/Y e stage dentro il viewport) a 1440×900, 844×390,
     412×915 e 1024×768. Scala ~0.46 su telefono accettata.
+39. **Rifiniture stage (2026-10-26)**: DON rested ruotati come carte tappate
+    (padding laterale della cost area + margine prima del primo rested);
+    mani entrambe a misura tavolo con altezza fissa; margine di rotazione
+    permanente su tutte le carte di riga; prompt in sovrimpressione in uno
+    slot riservato di 58px (nessun riflusso, verificato dal check STRUCT
+    REFLOW del bot); chat locale hotseat sotto il log nel rail destro.
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

@@ -14,7 +14,7 @@
   background: var(--night-0);
   color: var(--ivory);
   font-family: var(--serif, system-ui, sans-serif);
-  --bacw: 92px;
+  --bacw: 88px;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -341,7 +341,9 @@
   min-height: calc(var(--bacw) * 1.4);
 }
 /* a rotated (rested) card is wider than its slot — give it side room */
-.ba-charrow .gb-rested { margin: 0 calc(var(--bacw) * 0.22); }
+/* rotation clearance is PERMANENT (every row card, rested or not) so resting
+   a card never shifts its neighbours */
+.ba-charrow .ba-card { margin: 0 calc(var(--bacw) * 0.22); }
 /* chips stay readable on rested cards: counter-rotate them */
 .ba-root .gb-rested .ba-power { transform: translateX(-50%) rotate(-90deg); }
 .ba-root .gb-rested .ba-given { transform: translateX(-50%) rotate(-90deg); }
@@ -360,7 +362,7 @@
 .ba-lsrow { display: flex; gap: 8px; align-items: center; padding: 0 2px; }
 /* a RESTED (rotated) leader/stage is wider than its slot: reserve the room so
    it never spills over the LIFE / DON!! DECK piles or the stage slot */
-.ba-lsrow > .gb-card.gb-rested { margin: 0 calc(var(--bacw) * 0.22); }
+.ba-lsrow > .ba-card { margin: 0 calc(var(--bacw) * 0.22); }
 .ba-donrow {
   flex: 1 1 auto;
   min-width: 0;
@@ -375,7 +377,9 @@
    them share the cost area through a declared stride (data-overlap="stride"
    on the row): each cell is a full card, later ones overlap the previous by
    34% — the centre of every cell stays its own tap target. Rested DON are
-   dimmed, not rotated (a rotated card would spill over its neighbours). */
+   ROTATED like any tapped card (as at the table); the row's side padding
+   absorbs the rotation overhang so nothing outside the row is touched. */
+.ba-donrow { padding-left: calc(var(--bacw) * 0.24); padding-right: calc(var(--bacw) * 0.24); }
 .ba-doncell {
   width: var(--bacw) !important;
   flex: 0 0 auto;
@@ -384,8 +388,9 @@
 }
 .ba-doncell:last-child { margin-right: 0; }
 .ba-doncell:hover { z-index: 5; }
-.ba-doncell.gb-rested { transform: none !important; opacity: 0.45; filter: grayscale(1); }
-.ba-doncell.gb-rested:hover { transform: none !important; }
+/* the first rested (rotated) DON hangs 0.2×bacw to the left: push the rested
+   group right so the last ACTIVE cell's centre stays its own tap target */
+.ba-doncell:not(.gb-rested) + .ba-doncell.gb-rested { margin-left: calc(var(--bacw) * 0.26); }
 .ba-dim { opacity: 0.55; }
 /* right-click DON placeholder — PURELY VISUAL (no engine state): tilted,
    dimmed, dashed ring + HOLD tag; resets at turn change */
@@ -463,8 +468,10 @@
 /* a wide hand overlaps through a declared stride (data-overlap="stride") */
 .ba-hand .gb-card { margin: 0 -9px; }
 .ba-hand .gb-card:hover { transform: translateY(-6px); z-index: 8; }
-.ba-hand.small { min-height: calc(var(--bacw) * 0.9); }
-.ba-hand.small .gb-card { width: calc(var(--bacw) * 0.72); }
+/* both hands: the same card size as the table (user: no smaller opponent
+   hand) and a FIXED height, so an emptying hand never moves the field */
+.ba-hand, .ba-hand.small { height: calc(var(--bacw) * 1.4 + 6px); min-height: 0; }
+.ba-hand.small .gb-card { width: var(--bacw); }
 
 /* ── card states: affordance only on legal actions ── */
 .ba-card { position: relative; }
@@ -562,9 +569,15 @@
 
 /* ── action bar: the ONE contextual button, between field and hand.
    In flow (not fixed) so it never covers DON cells or counter cards. ── */
+/* a permanently reserved slot between field and hand: prompts appear INSIDE
+   it as an overlay, so the table never reflows when one opens or closes */
+.ba-promptslot { flex: 0 0 auto; height: 58px; position: relative; }
 .ba-actionbar {
-  flex: 0 0 auto;
-  align-self: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-height: 56px;
   z-index: 45;
   display: flex;
   align-items: center;
@@ -621,6 +634,26 @@
   flex-direction: column;
   gap: 2px;
 }
+/* chat under the duel log — DuelingBook-style white box (local / hotseat) */
+.ba-chat {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #7a8699;
+  overflow: hidden;
+}
+.ba-chat-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; }
+.ba-chat-empty { font: 400 11px Arial; color: #777; }
+.ba-chatline { margin: 0; font: 400 11.5px Arial; color: #111; line-height: 1.35; word-break: break-word; }
+.ba-chatline b { color: #1a56a8; }
+.ba-chatline b.b { color: #a8321a; }
+.ba-chat-input { flex: 0 0 auto; display: flex; gap: 4px; padding: 5px; border-top: 1px solid #c9ced8; background: #f0f0f0; }
+.ba-chat-input input { flex: 1; min-width: 0; border: 1px solid #9aa2b1; background: #fff; padding: 6px 7px; font: 400 11.5px Arial; color: #111; outline: none; min-height: 32px; }
+.ba-chat-input input:focus { border-color: #1a56a8; }
+.ba-chat-input button { flex: 0 0 auto; padding: 0 12px; border: 1px solid #6f7787; background: #f0f0f0; color: #111; font: 700 11px Arial; cursor: pointer; min-height: 32px; }
+.ba-chat-input button:hover { background: #fff; }
+.ba-chat-seat { flex: 0 0 auto; padding: 0 6px; border: 1px solid #6f7787; background: #f0f0f0; font: 700 10px Arial; color: #111; cursor: pointer; }
 .ba-logline { margin: 0; font: 500 10.5px/1.4 var(--serif); color: var(--ivory-muted); }
 .ba-logline.turn { font-weight: 800; color: var(--brass-hi); margin-top: 3px; }
 .ba-logline.battle { color: var(--ivory); }

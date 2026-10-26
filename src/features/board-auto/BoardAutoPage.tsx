@@ -409,6 +409,15 @@ function GameScreen() {
   /** Hand card selected by a tap: shows the in-place PLAY button (if legal);
    *  a second tap deselects. */
   const [selectedHand, setSelectedHand] = useState<Iid | null>(null);
+  // table chat (local, hotseat): not game state, never reaches the engine
+  const [chat, setChat] = useState<{ seat: PID; text: string }[]>([]);
+  const [chatDraft, setChatDraft] = useState("");
+  const [chatSeat, setChatSeat] = useState<PID>(SEAT_A);
+  const chatRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = chatRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [chat.length]);
   // M3 windows: local drafts of the answer being composed
   const [peekTake, setPeekTake] = useState<Iid[]>([]);
   const [peekOrder, setPeekOrder] = useState<Iid[]>([]);
@@ -1654,7 +1663,8 @@ function GameScreen() {
             </div>
           ))}
         </div>
-        {actionBar}
+        {/* reserved slot: prompts overlay here, the table never reflows */}
+        <div className="ba-promptslot">{actionBar}</div>
         {HandRow({ pid: SEAT_A })}
       </div>
 
@@ -1664,6 +1674,30 @@ function GameScreen() {
           {logLines.map((l, i) => (
             <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
           ))}
+        </div>
+        <div className="ba-chat" data-chat>
+          <div className="ba-chat-scroll" ref={chatRef}>
+            {chat.length === 0 && <span className="ba-chat-empty">Table chat (local, hotseat).</span>}
+            {chat.map((m, i) => (
+              <p key={i} className="ba-chatline"><b className={m.seat === SEAT_B ? "b" : ""}>{seatName(m.seat)}:</b> {m.text}</p>
+            ))}
+          </div>
+          <form
+            className="ba-chat-input"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const text = chatDraft.trim();
+              if (!text) return;
+              setChat((c) => [...c, { seat: chatSeat, text }]);
+              setChatDraft("");
+            }}
+          >
+            <button type="button" className="ba-chat-seat" title="Who is typing" onClick={() => setChatSeat(chatSeat === SEAT_A ? SEAT_B : SEAT_A)}>
+              {seatName(chatSeat).slice(0, 10)}
+            </button>
+            <input value={chatDraft} onChange={(e) => setChatDraft(e.target.value)} placeholder="Say something…" maxLength={200} data-chat-input />
+            <button type="submit" data-act="chat-send" disabled={!chatDraft.trim()}>Send</button>
+          </form>
         </div>
         {SeatPanel({ pid: SEAT_A })}
       </div>

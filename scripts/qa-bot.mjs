@@ -326,6 +326,29 @@ const BOARD_CHECKS = (opts) => {
       const handSmall = q(".ba-hand .ba-card").filter((el) => size(el).w < 48);
       if (handSmall.length) out.push({ kind: "STRUCT SMALL", severity: "high", message: `${handSmall.length} hand card(s) narrower than 48px (${size(handSmall[0]).w}px)` });
     }
+    // both hands: one card size (±1px)
+    const handCards = q(".ba-hand .ba-card");
+    if (handCards.length > 1) {
+      const ref = size(handCards[0]);
+      const odd = handCards.filter((el) => { const s = size(el); return Math.abs(s.w - ref.w) > 1 || Math.abs(s.h - ref.h) > 1; });
+      if (odd.length) out.push({ kind: "STRUCT SIZE", severity: "high", message: `hand cards differ in size: ${ref.w}×${ref.h} vs ${size(odd[0]).w}×${size(odd[0]).h}` });
+    }
+    // prompts must never move the table: compare key pieces against the last
+    // "quiet" (no prompt) snapshot of this page
+    const promptOpen = !!document.querySelector(".ba-actionbar, .ba-overlay");
+    const keyRects = {};
+    const keyOf = (el) => el.dataset?.pile ? `pile:${el.dataset.pile}` : el.dataset?.iid ? `card:${el.dataset.iid}` : `box:${el.className.split(" ")[0]}`;
+    // (cards themselves rotate/lift with game state — the boxes around them
+    // are what must stay put)
+    for (const el of q("[data-pile], .ba-left, .ba-right, .ba-field, .ba-hand, .ba-charrow, .ba-donrow")) {
+      const r = el.getBoundingClientRect();
+      keyRects[keyOf(el)] = [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)];
+    }
+    if (!promptOpen) window.__qaQuiet = keyRects;
+    else if (window.__qaQuiet) {
+      const moved = Object.entries(keyRects).filter(([k, v]) => window.__qaQuiet[k] && v.some((n, i) => Math.abs(n - window.__qaQuiet[k][i]) > 1));
+      if (moved.length) out.push({ kind: "STRUCT REFLOW", severity: "high", message: `${moved.length} piece(s) moved when a prompt opened: ${moved.slice(0, 4).map(([k, v]) => `${k} ${window.__qaQuiet[k].join(",")} → ${v.join(",")}`).join("; ")}` });
+    }
     const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-m-strip, .ba-m-pill, .ba-m-bar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-toast")
       .map((el) => ({ el, r: el.getBoundingClientRect(), stride: el.closest('[data-overlap="stride"]') }))
       .filter((p) => p.r.width > 0 && p.r.height > 0);

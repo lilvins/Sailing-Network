@@ -205,6 +205,14 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   views (App.tsx). Hand play is 2-tap everywhere: tap = select + in-place
   PLAY button, tap again = deselect; the preview lives in the left rail.
   Small targets on a phone (~0.46 scale) are the accepted trade-off.
+  Follow-ups (2026-10-26): rested DON rotate like any tapped card (row side
+  padding + a margin before the first rested one absorb the overhang); both
+  hands are table-size cards (88px) with a FIXED hand height; every row card
+  carries a permanent rotation margin, so resting never shifts neighbours;
+  prompts render inside a permanently reserved 58px slot between field and
+  hand (overlay, no reflow — the QA bot's STRUCT REFLOW check compares the
+  piles/rails/field/hand boxes before and after a prompt); a local hotseat
+  chat (DuelingBook white box, seat switch + input) sits under the duel log.
 - **(superseded) Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
   (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
   compact chrome — same table geometry scaled from viewport height, hands as
