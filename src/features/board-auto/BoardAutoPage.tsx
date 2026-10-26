@@ -65,8 +65,8 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
  *  desktop layout drawn at STAGE_W×STAGE_H virtual px, then scaled to fit the
  *  viewport (letterboxed) and rotated 90° when the viewport is portrait.
  *  No media queries, no vw/vh inside the stage — by design, not responsive. */
-const STAGE_W = 1600;
-const STAGE_H = 900;
+const STAGE_W = 1920;
+const STAGE_H = 1080;
 
 interface StageFit { scale: number; rotate: boolean; ox: number; oy: number }
 
@@ -1025,7 +1025,7 @@ function GameScreen() {
         {eff != null && (
           <span className={`ba-power${delta > 0 ? " up" : delta < 0 ? " down" : ""}`}>
             {eff}
-            {delta !== 0 && <i>{` (${delta > 0 ? "+" : ""}${delta})`}</i>}
+            {delta !== 0 && <i>{` ${delta > 0 ? "+" : ""}${delta}`}</i>}
           </span>
         )}
         {inHand && card && <span className="ba-cost">{card.cost ?? 0}</span>}
@@ -1106,57 +1106,71 @@ function GameScreen() {
           {PileBox({ label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid })}
         </div>
         <div className="ba-halfmain">
+          {/* every table slot is as WIDE as a card is TALL: a rested (rotated)
+              card stays inside its own slot, so nothing ever touches a neighbour */}
           <div className="ba-charrow">
-            {p.zones.characterArea.map((iid) => BCard({ owner: pid, iid }))}
+            {p.zones.characterArea.map((iid) => (
+              <div key={iid} className="ba-tslot">{BCard({ owner: pid, iid })}</div>
+            ))}
             {Array.from({ length: Math.max(0, 5 - p.zones.characterArea.length) }).map((_, i) => (
-              <div key={`slot${i}`} className="ba-slot" />
+              <div key={`slot${i}`} className="ba-tslot"><div className="ba-slot" /></div>
             ))}
           </div>
           <div className="ba-lsrow">
-            {BCard({ owner: pid, iid: p.leaderIid })}
-            {p.zones.stage.length > 0 ? (
-              BCard({ owner: pid, iid: p.zones.stage[0] })
-            ) : (
-              <div className="ba-slot ba-stage">STAGE</div>
-            )}
-            <div className="ba-donrow" data-seat-don={pid} data-overlap="stride">
-              {Array.from({ length: donActive }).map((_, i) => {
+            <div className="ba-tslot">{BCard({ owner: pid, iid: p.leaderIid })}</div>
+            <div className="ba-tslot">
+              {p.zones.stage.length > 0 ? BCard({ owner: pid, iid: p.zones.stage[0] }) : <div className="ba-slot ba-stage">STAGE</div>}
+            </div>
+          </div>
+          {/* COST AREA: a dedicated full-width row of TEN fixed slots (one per
+              DON!!, each as wide as a card is tall) — active DON!! stand, rested
+              ones lie rotated, each in its own slot: zero overlap by construction */}
+          <div className="ba-donrow" data-seat-don={pid}>
+            {Array.from({ length: 10 }).map((_, i) => {
+              if (i < donActive) {
                 const dialOn = isTurn && mode.t === "don" && mode.picked.includes(i + 1);
                 const marked = (donMarks[pid] ?? []).includes(i);
                 return (
-                  <div
-                    key={`a${i}`}
-                    className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${marked ? " ba-donmark" : ""}`}
-                    data-don-index={i + 1}
-                    data-don-seat={pid}
-                    title={marked ? "Placeholder (visual only) — right-click to clear" : undefined}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (longPressed.current) { longPressed.current = false; return; } // the long-press already acted
-                      onDonTap(pid, i + 1);
-                    }}
-                    onPointerDown={(e) => donPressStart(pid, i, e.pointerType)}
-                    onPointerUp={donPressEnd}
-                    onPointerCancel={donPressEnd}
-                    onPointerLeave={donPressEnd}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleDonMark(pid, i);
-                    }}
-                  >
-                    <DonArt />
-                    {marked && <span className="ba-donmark-tag">HOLD</span>}
+                  <div key={`d${i}`} className="ba-tslot ba-donslot">
+                    <div
+                      className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${marked ? " ba-donmark" : ""}`}
+                      data-don-index={i + 1}
+                      data-don-seat={pid}
+                      title={marked ? "Placeholder (visual only) — right-click to clear" : undefined}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (longPressed.current) { longPressed.current = false; return; } // the long-press already acted
+                        onDonTap(pid, i + 1);
+                      }}
+                      onPointerDown={(e) => donPressStart(pid, i, e.pointerType)}
+                      onPointerUp={donPressEnd}
+                      onPointerCancel={donPressEnd}
+                      onPointerLeave={donPressEnd}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleDonMark(pid, i);
+                      }}
+                    >
+                      <DonArt />
+                      {marked && <span className="ba-donmark-tag">HOLD</span>}
+                    </div>
                   </div>
                 );
-              })}
-              {Array.from({ length: donRested }).map((_, i) => (
-                <div key={`r${i}`} className="gb-card ba-doncell gb-rested ba-dim">
-                  <DonArt />
+              }
+              if (i < donActive + donRested) {
+                return (
+                  <div key={`d${i}`} className="ba-tslot ba-donslot">
+                    <div className="gb-card ba-doncell gb-rested ba-dim"><DonArt /></div>
+                  </div>
+                );
+              }
+              return (
+                <div key={`d${i}`} className="ba-tslot ba-donslot">
+                  <div className="ba-slot ba-donvoid">{i === 0 && donActive + donRested === 0 ? "COST" : ""}</div>
                 </div>
-              ))}
-              {donActive + donRested === 0 && <span className="ba-donempty">COST AREA</span>}
-            </div>
+              );
+            })}
           </div>
         </div>
         <div className="ba-sidecol">
@@ -1187,7 +1201,7 @@ function GameScreen() {
   function HandRow({ pid, small }: { pid: PID; small?: boolean }) {
     const p = game.players[pid];
     return (
-      <div className={`ba-hand${small ? " small" : ""}`} data-hand={pid} data-overlap="stride">
+      <div className={`ba-hand${small ? " small" : ""}`} data-hand={pid}>
         {p.zones.hand.map((iid) => BCard({ owner: pid, iid, small, inHand: true }))}
         {p.zones.hand.length === 0 && <span className="ba-donempty">EMPTY HAND</span>}
       </div>

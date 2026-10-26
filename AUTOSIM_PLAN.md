@@ -596,6 +596,17 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     permanente su tutte le carte di riga; prompt in sovrimpressione in uno
     slot riservato di 58px (nessun riflusso, verificato dal check STRUCT
     REFLOW del bot); chat locale hotseat sotto il log nel rail destro.
+40. **ZERO sovrapposizioni, senza eccezioni (2026-10-26)** — supera la parte
+    "stride dichiarato" di #38/#39: nessuna intersezione tra rettangoli di
+    carte/pile/slot (campo, cost area, pile, mani), chip sempre dentro la
+    propria carta. Layout: stage 1920×1080, rail 212px, carta 80×112 per
+    tutto (80 = massimo che fa entrare 3 righe piene per metà + 2 mani +
+    slot prompt in 1080); ogni slot del tavolo largo quanto l'ALTEZZA della
+    carta (112px) così una carta rested ruotata resta nel proprio slot;
+    cost area = riga dedicata di 10 slot fissi; mani affiancate (gap 6px,
+    scroll orizzontale oltre ~17 carte). Bot: STRUCT OVERLAP senza eccezioni
+    + STRUCT CHIP; `BA_FULL=1` nel driver genera lo stato "pieno" e lo
+    verifica (`boardauto-full*.png`).
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**

@@ -165,6 +165,63 @@ await page.waitForSelector(".ba-field", { timeout: 8000 });
   if ((PORTRAIT_ONLY || H > W) && rot !== "1") console.log("WARNING: portrait viewport without the rotated stage");
 }
 
+// ── BA_FULL=1: a synthetic "crowded table" (5 characters, 2 rested; 10 DON!!,
+// 4 rested; 8 cards in hand; rested leader on one side) pushed straight into
+// the store (DEV hook) to PROVE the zero-overlap contract at its worst, then
+// the same structural check the QA bot runs — and the shot "full".
+if (process.env.BA_FULL) {
+  for (let i = 0; i < 4; i++) {
+    const s = await snap();
+    if (s?.pending?.kind === "mulligan") { await clickAct("keep"); await page.waitForTimeout(120); } else break;
+  }
+  await page.evaluate(() => {
+    const store = window.__auto.store;
+    const g = JSON.parse(JSON.stringify(store.getState().game));
+    for (const [pid, p] of Object.entries(g.players)) {
+      while (p.zones.characterArea.length < 5 && p.zones.deck.length) p.zones.characterArea.push(p.zones.deck.shift());
+      p.zones.characterArea.forEach((iid, i) => { p.instances[iid].faceUp = true; p.instances[iid].rested = i >= 3; });
+      while (p.zones.hand.length < 8 && p.zones.deck.length) p.zones.hand.push(p.zones.deck.shift());
+      p.don.active = 6; p.don.rested = 4; p.don.deck = 0;
+      if (pid !== g.turnPlayer) p.instances[p.leaderIid].rested = true;
+    }
+    store.setState({ game: g });
+  });
+  await page.waitForTimeout(250);
+  await page.evaluate(() => Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))));
+  await page.waitForTimeout(150);
+  await shot("full");
+  const struct = await page.evaluate(() => {
+    const q = (s) => Array.from(document.querySelectorAll(s));
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
+      .map((el) => ({ el, r: el.getBoundingClientRect() })).filter((p) => p.r.width > 0 && p.r.height > 0);
+    const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
+    const hits = [];
+    for (let i = 0; i < pieces.length; i++) for (let j = i + 1; j < pieces.length; j++) {
+      const a = pieces[i], b = pieces[j];
+      if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
+      const ix = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
+      const iy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
+      if (ix > 1 && iy > 1) hits.push(`${name(a)} × ${name(b)} (${Math.round(ix)}×${Math.round(iy)}px)`);
+    }
+    const spills = [];
+    for (const chip of q(".ba-power, .ba-cost, .ba-kwrow, .ba-given, .ba-activate, .ba-playbtn, .ba-donmark-tag, .ba-plabel, .ba-pcount")) {
+      const host = chip.closest(".ba-card, .ba-doncell, .ba-pile");
+      if (!host) continue;
+      const c = chip.getBoundingClientRect(), h = host.getBoundingClientRect();
+      if (c.width && (c.left < h.left - 1 || c.top < h.top - 1 || c.right > h.right + 1 || c.bottom > h.bottom + 1)) spills.push(`${chip.className.split(" ")[0]} on ${name({ el: host })}`);
+    }
+    const sizes = new Set(q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pcard > .gb-card, .ba-doncell, .ba-hand .ba-card").map((el) => `${el.offsetWidth}×${el.offsetHeight}`));
+    return { pieces: pieces.length, hits, spills, sizes: [...sizes] };
+  });
+  console.log(`FULL table: ${struct.pieces} pieces, sizes ${struct.sizes.join(" ")}, overlaps ${struct.hits.length}, chip spills ${struct.spills.length}`);
+  for (const h of struct.hits) console.log("  OVERLAP", h);
+  for (const s of struct.spills) console.log("  CHIP", s);
+  if (struct.hits.length || struct.spills.length || struct.sizes.length !== 1) process.exitCode = 1;
+  await ctx.close();
+  await browser.close();
+  process.exit();
+}
+
 // ── game driver ───────────────────────────────────────────────────────────────
 const flags = {
   blocked: false,

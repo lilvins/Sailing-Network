@@ -191,28 +191,42 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   prefers-reduced-motion, no audio.
 - **THE BOARD IS A FIXED STAGE, NOT RESPONSIVE — by design (2026-10-26,
   user decision: "a game, like OPTCGSim / Master Duel")**: GameScreen draws
-  ONE desktop layout at 1600×900 virtual px (`.ba-stage`, `--bacw: 92px`,
-  every table card — leader, characters, stage, piles, DON — the same size)
+  ONE desktop layout at 1920×1080 virtual px (`.ba-stage`, `--bacw: 80px`,
+  every table card — leader, characters, stage, piles, DON, hands — the same size)
   and `useStageFit` scales it to the viewport (`scale = min(vw/W, vh/H)`,
   letterboxed, centered) and rotates it 90° when the viewport is portrait
-  (`rotate(90deg) translateY(-900px)` in the same matrix). No media queries
+  (`rotate(90deg) translateY(-1080px)` in the same matrix). No media queries
   and no vw/vh inside the stage; all fixed overlays (banner, prompts,
   modals) are children of the transformed stage so they scale with it. The
   previous compact/responsive chrome (strips, sheets, forced-landscape CSS)
-  was removed. Overlaps are structurally impossible except the declared
-  strides (`data-overlap="stride"` on hands and the DON row); rested DON are
-  dimmed, not rotated. The app's ThemeToggle is not rendered on the board
+  was removed. The app's ThemeToggle is not rendered on the board
   views (App.tsx). Hand play is 2-tap everywhere: tap = select + in-place
   PLAY button, tap again = deselect; the preview lives in the left rail.
   Small targets on a phone (~0.46 scale) are the accepted trade-off.
-  Follow-ups (2026-10-26): rested DON rotate like any tapped card (row side
-  padding + a margin before the first rested one absorb the overhang); both
-  hands are table-size cards (88px) with a FIXED hand height; every row card
-  carries a permanent rotation margin, so resting never shifts neighbours;
-  prompts render inside a permanently reserved 58px slot between field and
-  hand (overlay, no reflow — the QA bot's STRUCT REFLOW check compares the
-  piles/rails/field/hand boxes before and after a prompt); a local hotseat
-  chat (DuelingBook white box, seat switch + input) sits under the duel log.
+  Follow-ups (2026-10-26): prompts render inside a permanently reserved
+  58px slot between field and hand (overlay, no reflow — the QA bot's STRUCT
+  REFLOW check compares the piles/rails/field/hand boxes before and after a
+  prompt); a local hotseat chat (DuelingBook white box, seat switch + input)
+  sits under the duel log.
+- **ZERO OVERLAP, no exceptions (2026-10-26, user: "ci sono tutte robe
+  sovrapposte")**: the "declared stride" escape hatch is gone. Contract: no
+  two card/pile/slot rectangles intersect anywhere (field, cost area, piles,
+  both hands) and every chip (power, cost, keywords, DON given, ACTIVATE,
+  PLAY, pile label/count) lies inside its own card. Made possible by the
+  layout: stage 1920×1080, rails 212px, card 80×112 (`--bacw` — 80 is the
+  max width whose 3 full-height rows per half + 2 hands + prompt slot fit in
+  1080: 11.2w+154 ≤ 1064), every table slot (`.ba-tslot`) is as WIDE as the
+  card is TALL (`--baslot` = 112px) so a rested card rotated 90° stays
+  inside its slot; characters = 5 slots, leader+stage = 2 slots, COST AREA =
+  a dedicated row of 10 fixed slots (active DON upright, rested rotated, one
+  per slot); hands = cards side by side with a 6px gap, horizontal scroll
+  beyond ~17 (never overlap). Table cards get no hover lift / no picked lift
+  (outline only); chips on rested cards are counter-rotated at the card's
+  centre. QA bot: STRUCT OVERLAP has no stride exception any more (slots and
+  the chat box are pieces too) and STRUCT CHIP flags a chip outside its card.
+  `BA_FULL=1 node scripts/boardauto-shots.mjs` injects a crowded table (5
+  chars/2 rested, 10 DON/4 rested, 8 in hand, rested leader) through the DEV
+  store hook, runs the same checks and saves `boardauto-full*.png`.
 - **(superseded) Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
   (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
   compact chrome — same table geometry scaled from viewport height, hands as

@@ -307,8 +307,10 @@ const BOARD_CHECKS = (opts) => {
   // ── STRUCTURAL layout contract (user: "zero overlaps, same card size") ──
   // (a) every table card (leader / characters / stage / piles / DON cells)
   //     has the same untransformed size (±1px); hands may differ
-  // (b) no two table pieces intersect, unless both sit in the same declared
-  //     stride container ([data-overlap="stride"]: hands, cost area)
+  // (b) NO two pieces intersect — cards (field, cost area, piles, hands),
+  //     slots, rails, prompt bar — no exceptions, no declared strides
+  // (b') every chip (power, cost, keywords, DON given, ACTIVATE, PLAY, pile
+  //     label/count) lies INSIDE its own card's rectangle
   // (c) nothing on the table under the size floor (40px wide; hands 48px on touch)
   // (d) no app chrome (theme toggle, dock) inside the table area
   {
@@ -349,20 +351,30 @@ const BOARD_CHECKS = (opts) => {
       const moved = Object.entries(keyRects).filter(([k, v]) => window.__qaQuiet[k] && v.some((n, i) => Math.abs(n - window.__qaQuiet[k][i]) > 1));
       if (moved.length) out.push({ kind: "STRUCT REFLOW", severity: "high", message: `${moved.length} piece(s) moved when a prompt opened: ${moved.slice(0, 4).map(([k, v]) => `${k} ${window.__qaQuiet[k].join(",")} → ${v.join(",")}`).join("; ")}` });
     }
-    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-m-strip, .ba-m-pill, .ba-m-bar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-toast")
-      .map((el) => ({ el, r: el.getBoundingClientRect(), stride: el.closest('[data-overlap="stride"]') }))
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
+      .map((el) => ({ el, r: el.getBoundingClientRect() }))
       .filter((p) => p.r.width > 0 && p.r.height > 0);
     const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
     const hits = [];
     for (let i = 0; i < pieces.length; i++) for (let j = i + 1; j < pieces.length; j++) {
       const a = pieces[i], b = pieces[j];
       if (a.el.contains(b.el) || b.el.contains(a.el)) continue;
-      if (a.stride && a.stride === b.stride) continue;
       const ix = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left);
       const iy = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top);
       if (ix > 1 && iy > 1) hits.push(`${name(a)} × ${name(b)} (${Math.round(ix)}×${Math.round(iy)}px)`);
     }
     if (hits.length) out.push({ kind: "STRUCT OVERLAP", severity: "high", message: `${hits.length} overlapping pair(s): ${hits.slice(0, 5).join("; ")}` });
+    // chips inside their own card (the hidden prompt-less state is the norm;
+    // the in-place PLAY button counts as a chip too)
+    const spills = [];
+    for (const chip of q(".ba-power, .ba-cost, .ba-kwrow, .ba-given, .ba-activate, .ba-playbtn, .ba-donmark-tag, .ba-plabel, .ba-pcount")) {
+      const host = chip.closest(".ba-card, .ba-doncell, .ba-pile");
+      if (!host) continue;
+      const c = chip.getBoundingClientRect(), h = host.getBoundingClientRect();
+      if (c.width === 0 || c.height === 0) continue;
+      if (c.left < h.left - 1 || c.top < h.top - 1 || c.right > h.right + 1 || c.bottom > h.bottom + 1) spills.push(`${chip.className.split(" ")[0]} on ${name({ el: host })} (${Math.round(c.left - h.left)},${Math.round(c.top - h.top)} ${Math.round(c.width)}×${Math.round(c.height)} in ${Math.round(h.width)}×${Math.round(h.height)})`);
+    }
+    if (spills.length) out.push({ kind: "STRUCT CHIP", severity: "high", message: `${spills.length} chip(s) outside their card: ${spills.slice(0, 5).join("; ")}` });
     // the stage: uniform X/Y scale, entirely inside the viewport (letterbox ok)
     const stageEl = document.querySelector(".ba-stage");
     if (stageEl) {

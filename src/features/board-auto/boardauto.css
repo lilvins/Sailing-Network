@@ -14,11 +14,19 @@
   background: var(--night-0);
   color: var(--ivory);
   font-family: var(--serif, system-ui, sans-serif);
-  --bacw: 88px;
+  /* ONE card size for everything on the table (field, cost area, piles, both
+     hands): 80×112 stage px. 80 is the largest width whose three full-height
+     rows per half + two hands + the prompt slot fit in 1080 (11.2w+154 ≤ 1064).
+     --baslot = the card HEIGHT: every table slot is that wide, so a rested
+     (rotated 90°) card stays inside its own slot — zero overlap by construction. */
+  --bacw: 80px;
+  --bach: calc(var(--bacw) * 1.4);
+  --baslot: var(--bach);
+  --bagap: 8px;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* ── THE STAGE: one fixed 1600×900 layout, scaled (and rotated in portrait)
+/* ── THE STAGE: one fixed 1920×1080 layout, scaled (and rotated in portrait)
    into the viewport by BoardAutoPage (transform on .ba-stage). Everything
    inside is in virtual px — no media queries, no vw/vh. ── */
 .ba-stagewrap {
@@ -32,8 +40,8 @@
   inset: auto;
   left: 0;
   top: 0;
-  width: 1600px;
-  height: 900px;
+  width: 1920px;
+  height: 1080px;
   transform-origin: 0 0;
   will-change: transform;
 }
@@ -194,7 +202,7 @@
 /* =========================== GAME LAYOUT =================================== */
 .ba-game {
   display: grid;
-  grid-template-columns: 214px minmax(0, 1fr) 200px;
+  grid-template-columns: 212px minmax(0, 1fr) 212px;
   gap: 8px;
   padding: 8px;
 }
@@ -207,7 +215,7 @@
 .ba-prevart {
   width: 100%;
   min-height: 90px;
-  max-height: 286px;
+  max-height: 300px;
   border: 1px solid var(--brass-dim);
   background: var(--night-1);
   overflow: hidden;
@@ -217,7 +225,7 @@
 .ba-prevart img {
   display: block;
   max-width: 100%;
-  max-height: 284px;
+  max-height: 298px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -294,13 +302,14 @@
   align-items: stretch;
   padding: 5px 6px;
   background: color-mix(in srgb, var(--lc, #3a4a5e) 8%, var(--night-1));
-  border: 1px solid color-mix(in srgb, var(--lc, #3a4a5e) 30%, transparent);
+  /* always 2px: the turn change must not move a single pixel of the table */
+  border: 2px solid color-mix(in srgb, var(--lc, #3a4a5e) 30%, transparent);
   transition: border-color 140ms;
 }
 /* whose turn it is, at a glance: the turn player's half is lit in their
    leader color (2px border + stronger tint), the other half is dimmed */
 .ba-half.turn {
-  border: 2px solid var(--lc, #3a4a5e);
+  border-color: var(--lc, #3a4a5e);
   background: color-mix(in srgb, var(--lc, #3a4a5e) 15%, var(--night-1));
 }
 .ba-half.idle { opacity: 0.78; }
@@ -333,23 +342,46 @@
 .ba-sidecol { display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; }
 .ba-half.flip .ba-sidecol { justify-content: flex-start; flex-direction: column-reverse; }
 
+/* ── TABLE SLOTS: the zero-overlap contract ──
+   A slot is --baslot (= card height) wide and tall; the card sits centred.
+   Upright card: 80×112 inside 112×112. Rested card (rotate 90°): its box is
+   112×80, still inside the slot. Slots are --bagap apart → no two cards can
+   ever touch, whatever their state. Chips live INSIDE the card rectangle. */
+.ba-tslot {
+  flex: 0 0 auto;
+  width: var(--baslot);
+  height: var(--baslot);
+  display: grid;
+  place-items: center;
+}
 .ba-charrow {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  gap: var(--bagap);
+  justify-content: flex-start; /* one grid with the leader row and the cost area below */
   align-items: center;
-  min-height: calc(var(--bacw) * 1.4);
+  height: var(--baslot);
 }
-/* a rotated (rested) card is wider than its slot — give it side room */
-/* rotation clearance is PERMANENT (every row card, rested or not) so resting
-   a card never shifts its neighbours */
-.ba-charrow .ba-card { margin: 0 calc(var(--bacw) * 0.22); }
-/* chips stay readable on rested cards: counter-rotate them */
-.ba-root .gb-rested .ba-power { transform: translateX(-50%) rotate(-90deg); }
-.ba-root .gb-rested .ba-given { transform: translateX(-50%) rotate(-90deg); }
+/* selection / hover never leave the slot: outline only, no lift on table cards */
+.ba-charrow .ba-picked, .ba-lsrow .ba-picked, .ba-doncell.ba-picked { transform: none; }
+.ba-charrow .gb-card:hover, .ba-lsrow .gb-card:hover { transform: none; }
+.ba-root .gb-rested:hover { transform: rotate(90deg) !important; }
+/* chips on rested cards: counter-rotated and moved to the card's centre so
+   they read upright AND stay inside the rotated card's rectangle */
+.ba-root .gb-rested .ba-power {
+  left: calc(50% + 7px);
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+.ba-root .gb-rested .ba-given {
+  left: calc(50% - 9px);
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
 .ba-slot {
   width: var(--bacw);
-  aspect-ratio: 100 / 140;
+  height: var(--bach);
   border: 1px dashed rgba(201, 151, 59, 0.28);
   background: rgba(0, 0, 0, 0.22);
   flex: 0 0 auto;
@@ -359,48 +391,32 @@
   letter-spacing: 0.12em;
   color: rgba(201, 151, 59, 0.5);
 }
-.ba-lsrow { display: flex; gap: 8px; align-items: center; padding: 0 2px; }
-/* a RESTED (rotated) leader/stage is wider than its slot: reserve the room so
-   it never spills over the LIFE / DON!! DECK piles or the stage slot */
-.ba-lsrow > .ba-card { margin: 0 calc(var(--bacw) * 0.22); }
+.ba-lsrow { display: flex; gap: var(--bagap); align-items: center; height: var(--baslot); }
+/* COST AREA: ten fixed slots in a dedicated row (full width of the mat) */
 .ba-donrow {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 auto;
   display: flex;
+  gap: var(--bagap);
   align-items: center;
-  padding: 2px 4px;
-  min-height: calc(var(--bacw) * 1.08);
-  border: 1px solid rgba(201, 151, 59, 0.16);
-  overflow: visible;
+  justify-content: flex-start;
+  height: var(--baslot);
 }
-/* DON!! cards are TABLE CARDS: same size as everything else (--bacw). Ten of
-   them share the cost area through a declared stride (data-overlap="stride"
-   on the row): each cell is a full card, later ones overlap the previous by
-   34% — the centre of every cell stays its own tap target. Rested DON are
-   ROTATED like any tapped card (as at the table); the row's side padding
-   absorbs the rotation overhang so nothing outside the row is touched. */
-.ba-donrow { padding-left: calc(var(--bacw) * 0.24); padding-right: calc(var(--bacw) * 0.24); }
 .ba-doncell {
   width: var(--bacw) !important;
   flex: 0 0 auto;
-  margin-right: calc(var(--bacw) * -0.34);
   position: relative;
 }
-.ba-doncell:last-child { margin-right: 0; }
-.ba-doncell:hover { z-index: 5; }
-/* the first rested (rotated) DON hangs 0.2×bacw to the left: push the rested
-   group right so the last ACTIVE cell's centre stays its own tap target */
-.ba-doncell:not(.gb-rested) + .ba-doncell.gb-rested { margin-left: calc(var(--bacw) * 0.26); }
+.ba-donvoid { border-color: rgba(201, 151, 59, 0.16); background: rgba(0, 0, 0, 0.12); }
 .ba-dim { opacity: 0.55; }
 /* right-click DON placeholder — PURELY VISUAL (no engine state): tilted,
    dimmed, dashed ring + HOLD tag; resets at turn change */
 .ba-doncell.ba-donmark {
   opacity: 0.5;
-  transform: rotate(-12deg) translateY(4px);
   outline: 1px dashed var(--brass-hi);
   outline-offset: 1px;
 }
-.ba-doncell.ba-donmark:hover { transform: rotate(-12deg) translateY(2px); }
+/* a DON!! never leaves its slot, hovered or marked */
+.ba-doncell:hover, .ba-doncell.ba-donmark:hover { transform: none; }
 .ba-donmark-tag {
   position: absolute;
   top: 50%;
@@ -436,7 +452,7 @@
 .ba-pcard .gb-card { width: 100% !important; cursor: pointer; }
 .ba-pcard .ba-empty {
   width: 100%;
-  aspect-ratio: 100 / 140;
+  height: var(--bach);
   border: 1px dashed rgba(201, 151, 59, 0.25);
   background: rgba(0, 0, 0, 0.18);
 }
@@ -456,21 +472,26 @@
 }
 .ba-donback .gb-back { background: #3b1210; }
 
-/* hands */
-.ba-hand {
+/* hands: cards side by side, NEVER overlapping. Up to ~17 fit the mat; beyond
+   that the row scrolls horizontally (still no overlap). Both hands: the same
+   card size as the table and a FIXED height, so an emptying hand never moves
+   the field. */
+.ba-hand, .ba-hand.small {
   flex: 0 0 auto;
   display: flex;
-  justify-content: center;
+  gap: 6px;
+  justify-content: safe center;
   align-items: flex-end;
-  padding: 3px 6px 1px;
-  min-height: calc(var(--bacw) * 1.18);
+  padding: 8px 6px 2px;
+  height: calc(var(--bach) + 10px);
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
-/* a wide hand overlaps through a declared stride (data-overlap="stride") */
-.ba-hand .gb-card { margin: 0 -9px; }
-.ba-hand .gb-card:hover { transform: translateY(-6px); z-index: 8; }
-/* both hands: the same card size as the table (user: no smaller opponent
-   hand) and a FIXED height, so an emptying hand never moves the field */
-.ba-hand, .ba-hand.small { height: calc(var(--bacw) * 1.4 + 6px); min-height: 0; }
+.ba-hand::-webkit-scrollbar { display: none; }
+.ba-hand .gb-card { flex: 0 0 auto; }
+.ba-hand .gb-card:hover { transform: translateY(-4px); z-index: 8; }
 .ba-hand.small .gb-card { width: var(--bacw); }
 
 /* ── card states: affordance only on legal actions ── */
@@ -484,14 +505,16 @@
 .ba-power {
   position: absolute;
   left: 50%;
-  bottom: -7px;
+  bottom: 3px; /* INSIDE the card rectangle: chips never reach a neighbour */
   transform: translateX(-50%);
   z-index: 7;
-  padding: 0 5px;
+  padding: 0 3px;
+  max-width: calc(100% - 2px);
+  overflow: hidden;
   background: #0b0f1a;
   border: 1px solid var(--brass);
   color: var(--ivory);
-  font: 800 10px var(--mono);
+  font: 800 9px var(--mono);
   white-space: nowrap;
   pointer-events: none; /* informational: never intercept a tap on a neighbour */
 }
@@ -502,8 +525,8 @@
 /* cost badge on hand cards */
 .ba-cost {
   position: absolute;
-  top: -5px;
-  left: -5px;
+  top: 2px;
+  left: 2px;
   z-index: 7;
   min-width: 17px;
   height: 17px;
@@ -520,12 +543,16 @@
   position: absolute;
   top: 2px;
   left: 2px;
+  max-width: calc(100% - 4px);
   z-index: 7;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 2px;
   pointer-events: none;
 }
+/* hand cards carry the cost badge top-left: keywords go under it */
+.ba-hand .ba-kwrow { top: 21px; }
 .ba-kw {
   font: 800 7.5px var(--mono);
   font-style: normal;
@@ -542,7 +569,7 @@
 /* DON given chip */
 .ba-given {
   position: absolute;
-  bottom: 14px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 7;
@@ -718,8 +745,8 @@
   /* top-RIGHT corner: never over the card's center, where a tap means
      "select this attacker" (QA bot: the chip used to steal that tap) */
   position: absolute;
-  right: -4px;
-  top: 4px;
+  right: 2px;
+  top: 2px;
   z-index: 8;
   padding: 3px 5px;
   border: 1px solid #15100a;
@@ -732,7 +759,7 @@
 }
 .ba-activate:hover { background: #fff0c2; }
 .ba-activate:active { transform: scale(0.96); }
-.ba-root .gb-rested .ba-activate { transform: rotate(-90deg); }
+.ba-root .gb-rested .ba-activate { right: auto; left: 50%; top: calc(50% - 26px); transform: translate(-50%, -50%) rotate(-90deg); }
 
 /* ── peek / search window (M3) ── */
 .ba-ov.ba-peek { max-width: 820px; }
