@@ -391,7 +391,7 @@
 .ba-charrow {
   display: flex;
   gap: var(--bagap);
-  justify-content: flex-start; /* one grid with the leader row and the cost area below */
+  justify-content: center; /* 5 slots centred in the half, as on the playmat */
   align-items: center;
   height: var(--baslot);
 }
@@ -425,7 +425,18 @@
   letter-spacing: 0.12em;
   color: rgba(201, 151, 59, 0.5);
 }
+/* leader row = [spacer] [leader][stage] [cost area]: the leader sits under the
+   2nd character slot, the cost area fills the right side (room for 10 DON!!
+   in two cascades). The opponent's half is a 180°-rotated table: the row is
+   reversed and the pile columns swap sides. */
 .ba-lsrow { display: flex; gap: var(--bagap); align-items: center; height: var(--baslot); }
+.ba-lsspacer { flex: 0.55 1 0; min-width: 0; }
+.ba-lscenter { display: flex; gap: var(--bagap); flex: 0 0 auto; }
+.ba-half.flip .ba-lsrow { flex-direction: row-reverse; }
+.ba-half.flip .ba-sidecol:first-child { order: 3; }
+.ba-half.flip .ba-halfmain { order: 2; }
+.ba-half.flip .ba-sidecol:last-child { order: 1; }
+.ba-half.flip .ba-donrow { flex-direction: row-reverse; } /* cascade grows from the leader side */
 /* COST AREA (in the leader row, as on the manual board / OPTCGSim): two
    DECLARED ORDERED STACKS — [data-stack="don-active"] upright cards and
    [data-stack="don-rested"] rotated ones — each a cascade with a constant
@@ -433,7 +444,7 @@
    its cards (width set inline), so the QA bot's piece check sees one box per
    group: the groups never touch each other, the label, or the slots. */
 .ba-donrow {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   display: flex;
   gap: 16px;

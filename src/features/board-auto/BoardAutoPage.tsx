@@ -1144,9 +1144,12 @@ function GameScreen() {
             ))}
           </div>
           <div className="ba-lsrow">
-            <div className="ba-tslot">{BCard({ owner: pid, iid: p.leaderIid })}</div>
-            <div className="ba-tslot">
-              {p.zones.stage.length > 0 ? BCard({ owner: pid, iid: p.zones.stage[0] }) : <div className="ba-slot ba-stage">STAGE</div>}
+            <div className="ba-lsspacer" />
+            <div className="ba-lscenter">
+              <div className="ba-tslot">{BCard({ owner: pid, iid: p.leaderIid })}</div>
+              <div className="ba-tslot">
+                {p.zones.stage.length > 0 ? BCard({ owner: pid, iid: p.zones.stage[0] }) : <div className="ba-slot ba-stage">STAGE</div>}
+              </div>
             </div>
             {/* COST AREA (OPTCGSim-style): two DECLARED ORDERED STACKS — active
                 DON!! upright, rested DON!! rotated — each a compact cascade with
