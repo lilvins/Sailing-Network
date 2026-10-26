@@ -246,18 +246,19 @@
   -webkit-user-drag: none;
 }
 
-/* card back — SN compass on deep red */
+/* card back — the REAL product back (public/cards/BACK.webp, 600×840);
+   leaders carry the red back of the real product (BACK-leader.webp, derived
+   from the same scan). The CSS emblem below is only the offline fallback. */
 .gb-back {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background:
-    radial-gradient(80% 60% at 50% 38%, rgba(255, 255, 255, 0.07), transparent 60%),
-    linear-gradient(160deg, #571f1c, #2a0f0e 55%, #190908);
-  border: 1px solid rgba(227, 178, 76, 0.25);
+  background: #1c2a5c url("/cards/BACK.webp") center / cover no-repeat;
   display: grid;
   place-items: center;
 }
+.gb-back-leader { background-image: url("/cards/BACK-leader.webp"); background-color: #5a1c1c; }
+.gb-back .gb-back-emblem { display: none; }
 .gb-back-emblem {
   width: 46%;
   aspect-ratio: 1;
@@ -283,13 +284,8 @@
   border-radius: 50%;
   background: rgba(227, 178, 76, 0.75);
 }
-/* DON back & face — black + gold */
-.gb-back-don {
-  background:
-    radial-gradient(80% 60% at 50% 38%, rgba(255, 255, 255, 0.05), transparent 60%),
-    linear-gradient(160deg, #20242c, #101319 55%, #07090d);
-  border-color: rgba(227, 178, 76, 0.35);
-}
+/* DON!! deck: same real back as every other card */
+.gb-back-don { background-image: url("/cards/BACK.webp"); }
 /* DON!! card — SVG manga-burst recreation */
 .gb-don-art {
   position: absolute;

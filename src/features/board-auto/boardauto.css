@@ -552,7 +552,7 @@
   text-align: center;
   border: 1px solid #15100a;
 }
-.ba-donback .gb-back { background: #3b1210; }
+/* DON!! deck pile: the same real back (BACK.webp) as every other pile */
 
 /* hands: cards side by side, NEVER overlapping. Up to ~17 fit the mat; beyond
    that the row scrolls horizontally (still no overlap). Both hands: the same
