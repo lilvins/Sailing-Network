@@ -11,6 +11,8 @@ import { getCardDb, getCardsById, useAutoStore, type SeatSetup } from "./autoSto
 import { automationInfo } from "./compile";
 import { buildDemoDecks, userDeckChoices, type DeckChoice } from "./decks";
 import { fmtEvent } from "./log";
+import { NightSea } from "../home/NightSea";
+import "../home/home.css"; // .nsea layers (shared with the Home hero)
 import "./boardauto.css";
 
 /* =============================================================================
@@ -1667,6 +1669,9 @@ function GameScreen() {
       style={{ transform: stageTransform(stage) }}
       onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
     >
+      {/* the living night-sea pixel scene behind the whole table (same real
+          layers as the Home hero: stars, cloud parallax, water shimmer) */}
+      <div className="ba-scene"><NightSea /></div>
       <Banner />
 
       <div className="ba-left">

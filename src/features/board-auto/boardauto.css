@@ -44,7 +44,14 @@
   height: 1080px;
   transform-origin: 0 0;
   will-change: transform;
+  background: #05070c;
 }
+/* the pixel scene sits under everything in the stage; the grid children
+   (rails, centre column) paint above it */
+.ba-scene { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.ba-scene .nsea { --nsea-pos: center 40%; }
+.ba-scene::after { content: ""; position: absolute; inset: 0; background: rgba(3, 5, 9, 0.28); }
+.ba-game > .ba-left, .ba-game > .ba-centercol, .ba-game > .ba-right { position: relative; z-index: 1; }
 
 /* cards keep the corner radius of the real product (≈2.5 mm on a 63 mm
    card → 4% of the width); the UI chrome around them stays square.
@@ -207,9 +214,9 @@
 /* =========================== GAME LAYOUT =================================== */
 .ba-game {
   display: grid;
-  grid-template-columns: 252px minmax(0, 1fr) 252px; /* wider rails = a narrower, taller-feeling field */
-  gap: 8px;
-  padding: 8px;
+  grid-template-columns: 340px minmax(0, 1fr) 340px; /* wide rails: the field is ~1190 wide and takes the full height */
+  gap: 12px;
+  padding: 12px;
 }
 
 /* left rail */
@@ -287,39 +294,40 @@
 .ba-centercol { display: flex; flex-direction: column; min-width: 0; min-height: 0; gap: 5px; }
 /* the field is exactly two halves tall; the hands share the rest of the
    column (equal flex shares → their boxes never move with their content) */
+/* the field takes every px the hands and the prompt slot leave: the two
+   halves split it, rows spread inside each half (space-evenly) */
 .ba-field {
   position: relative;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-  border: 1px solid var(--brass-dim);
-  background: var(--night-1);
-  padding: 6px 8px;
+  gap: 10px;
+  padding: 0;
 }
-.ba-midline { flex: 0 0 auto; border-top: 1px solid rgba(201, 151, 59, 0.22); margin: 0 10%; }
+.ba-midline { display: none; }
 
 /* one half, tinted with the seat's leader color (--lc) */
 .ba-half {
+  flex: 1 1 0;
+  min-height: 0;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 8px;
   align-items: stretch;
-  padding: 10px 8px;
-  background: color-mix(in srgb, var(--lc, #3a4a5e) 8%, var(--night-1));
+  padding: 10px 12px;
+  /* ONE quiet surface: a dark glass over the scene, no tint, no inner frames */
+  background: rgba(4, 6, 10, 0.42);
   /* always 2px: the turn change must not move a single pixel of the table */
-  border: 2px solid color-mix(in srgb, var(--lc, #3a4a5e) 30%, transparent);
-  transition: border-color 140ms;
+  border: 2px solid transparent;
+  transition: border-color 140ms, background-color 140ms;
 }
-/* whose turn it is, at a glance: the turn player's half is lit in their
-   leader color (2px border + stronger tint), the other half is dimmed */
+/* whose turn it is, at a glance: the turn player's half carries their leader
+   color as the frame (the other half stays neutral; no dimming of the art) */
 .ba-half.turn {
   border-color: var(--lc, #3a4a5e);
-  background: color-mix(in srgb, var(--lc, #3a4a5e) 15%, var(--night-1));
+  background: color-mix(in srgb, var(--lc, #3a4a5e) 10%, rgba(4, 6, 10, 0.42));
 }
-.ba-half.idle { opacity: 0.78; }
 /* damage taken: short red flash of the hit half (transform/opacity-free) */
 .ba-half.ba-hit { border-color: var(--signal-hi); box-shadow: inset 0 0 0 2px var(--signal-hi); }
 /* life counter "tick" */
@@ -371,10 +379,10 @@
 }
 /* End turn carries the turn player's color as a flat left stripe */
 .ba-endturn { box-shadow: inset 5px 0 0 var(--lc, var(--brass)); }
-.ba-halfmain { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.ba-halfmain { display: flex; flex-direction: column; justify-content: space-evenly; gap: 10px; min-width: 0; }
 .ba-half.flip .ba-halfmain { flex-direction: column-reverse; }
-.ba-sidecol { display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; }
-.ba-half.flip .ba-sidecol { justify-content: flex-start; flex-direction: column-reverse; }
+.ba-sidecol { display: flex; flex-direction: column; justify-content: space-evenly; gap: 5px; }
+.ba-half.flip .ba-sidecol { flex-direction: column-reverse; }
 
 /* ── TABLE SLOTS: the zero-overlap contract ──
    A slot is --baslot (= card height) wide and tall; the card sits centred.
@@ -416,8 +424,9 @@
 .ba-slot {
   width: var(--bacw);
   height: var(--bach);
-  border: 1px dashed rgba(201, 151, 59, 0.28);
-  background: rgba(0, 0, 0, 0.22);
+  border-radius: calc(var(--bacw) * 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(0, 0, 0, 0.28);
   flex: 0 0 auto;
   display: grid;
   place-items: center;
@@ -430,7 +439,7 @@
    in two cascades). The opponent's half is a 180°-rotated table: the row is
    reversed and the pile columns swap sides. */
 .ba-lsrow { display: flex; gap: var(--bagap); align-items: center; height: var(--baslot); }
-.ba-lsspacer { flex: 0.55 1 0; min-width: 0; }
+.ba-lsspacer { flex: 0.25 1 0; min-width: 0; } /* cost area keeps ≥ 560px: 10 DON!! in two cascades never reach the piles */
 .ba-lscenter { display: flex; gap: var(--bagap); flex: 0 0 auto; }
 .ba-half.flip .ba-lsrow { flex-direction: row-reverse; }
 .ba-half.flip .ba-sidecol:first-child { order: 3; }
@@ -452,7 +461,6 @@
   justify-content: flex-start;
   height: var(--baslot);
   padding: 0 10px;
-  border: 1px solid rgba(201, 151, 59, 0.16);
 }
 .ba-donlabel {
   flex: 0 0 auto;
@@ -526,8 +534,9 @@
 .ba-pcard .ba-empty {
   width: 100%;
   height: var(--bach);
-  border: 1px dashed rgba(201, 151, 59, 0.25);
-  background: rgba(0, 0, 0, 0.18);
+  border-radius: calc(var(--bacw) * 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(0, 0, 0, 0.28);
 }
 .ba-backcard { position: relative; aspect-ratio: 100 / 140; }
 .ba-pcount {
@@ -550,20 +559,27 @@
    card size as the table and a FIXED height, so an emptying hand never moves
    the field. */
 .ba-hand, .ba-hand.small {
-  flex: 1 1 0;
+  flex: 0 0 calc(var(--bach) + 22px); /* fixed: the field gets the rest of the height */
   display: flex;
   gap: 6px;
   justify-content: safe center;
   align-items: center;
   padding: 8px 6px 2px;
-  min-height: calc(var(--bach) + 10px);
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
 }
 .ba-hand::-webkit-scrollbar { display: none; }
-.ba-hand .gb-card { flex: 0 0 auto; }
+.ba-hand .gb-card { flex: 0 0 auto; animation: ba-draw 180ms var(--ease) backwards; }
 .ba-hand .gb-card:hover { transform: translateY(-4px); }
+/* functional micro-motion: a drawn card slides up into the hand, a played
+   card settles into its slot (mount-only, transform/opacity, ≤200ms) */
+@keyframes ba-draw { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.ba-tslot:has(> .ba-card) { animation: ba-settle 200ms var(--ease) backwards; }
+@keyframes ba-settle { from { transform: scale(0.86); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .ba-hand .gb-card, .ba-tslot:has(> .ba-card) { animation: none; }
+}
 .ba-hand.small .gb-card { width: var(--bacw); }
 /* beyond capacity: a declared ordered stack (constant --hstep, DOM order =
    paint order → the last card on top, no z-index games) */
