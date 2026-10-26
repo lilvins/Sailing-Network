@@ -197,8 +197,13 @@ if (process.env.BA_FULL) {
   await page.evaluate((fullHand) => {
     const store = window.__auto.store;
     const g = JSON.parse(JSON.stringify(store.getState().game));
+    const isCharacter = (p, iid) => window.__auto.cardCategory(p.instances[iid].cardId) === "Character";
     for (const [pid, p] of Object.entries(g.players)) {
-      while (p.zones.characterArea.length < 5 && p.zones.deck.length) p.zones.characterArea.push(p.zones.deck.shift());
+      // only CHARACTERS go to the character area (Events/Stages are skipped)
+      for (let i = 0; p.zones.characterArea.length < 5 && i < p.zones.deck.length; ) {
+        const iid = p.zones.deck[i];
+        if (isCharacter(p, iid)) { p.zones.deck.splice(i, 1); p.zones.characterArea.push(iid); } else i++;
+      }
       p.zones.characterArea.forEach((iid, i) => { p.instances[iid].faceUp = true; p.instances[iid].rested = i >= 3; });
       const want = pid === g.turnPlayer ? fullHand : 8;
       while (p.zones.hand.length < want && p.zones.deck.length) p.zones.hand.push(p.zones.deck.shift());

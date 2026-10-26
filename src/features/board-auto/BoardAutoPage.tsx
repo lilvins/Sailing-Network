@@ -52,6 +52,8 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
       };
     },
     events: () => useAutoStore.getState().events,
+    /** Drivers: card category by id (so synthetic tables only seat Characters). */
+    cardCategory: (cardId: string) => { try { return getCardDb()?.(cardId)?.category ?? null; } catch { return null; } },
     /** QA bot: subscribe to the store (e.g. to trace what raised a banner). */
     store: useAutoStore,
     /** QA crawler: jump to any app view (uiStore) without clicking through. */
