@@ -46,13 +46,18 @@
   will-change: transform;
 }
 
-/* square every reused card inside this page; neutralize the gold hover ring */
+/* cards keep the corner radius of the real product (≈2.5 mm on a 63 mm
+   card → 4% of the width); the UI chrome around them stays square.
+   User directive 2026-10-26: "non farle così spigolose, falle come quelle vere". */
 .ba-root .gb-card,
 .ba-root .gb-back,
 .ba-root .gb-img,
-.ba-root .gb-slot {
-  border-radius: 0;
+.ba-root .gb-slot,
+.ba-root .ba-pcard,
+.ba-root .ba-fx {
+  border-radius: calc(var(--bacw) * 0.04);
 }
+.ba-root .gb-card { overflow: hidden; }
 .ba-root .gb-card {
   width: var(--bacw);
   cursor: pointer;
@@ -336,6 +341,33 @@
 @keyframes ba-fly {
   0% { transform: translate(0, 0); opacity: 1; }
   100% { transform: translate(var(--dx), var(--dy)); opacity: 0.15; }
+}
+/* Event used ("spell cast"): the card rises from the hand to the middle of
+   the table, holds a beat big enough to read, then fades into the trash.
+   One element, transform+opacity only, ~900ms; the leader color frames it. */
+.ba-fx.cast {
+  z-index: 23;
+  border: 2px solid var(--lc, var(--brass));
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.55), 0 12px 30px rgba(0, 0, 0, 0.7);
+  animation: ba-cast 900ms var(--ease) forwards;
+}
+.ba-fx.cast::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--lc, var(--brass));
+  mix-blend-mode: screen;
+  animation: ba-castflash 900ms linear forwards;
+}
+@keyframes ba-cast {
+  0%   { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
+  22%  { transform: translate(0, 0) scale(1.06); opacity: 1; }
+  30%  { transform: translate(0, 0) scale(1); opacity: 1; }
+  72%  { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0.45); opacity: 0; }
+}
+@keyframes ba-castflash {
+  0% { opacity: 0; } 22% { opacity: 0.55; } 40% { opacity: 0; } 100% { opacity: 0; }
 }
 /* End turn carries the turn player's color as a flat left stripe */
 .ba-endturn { box-shadow: inset 5px 0 0 var(--lc, var(--brass)); }

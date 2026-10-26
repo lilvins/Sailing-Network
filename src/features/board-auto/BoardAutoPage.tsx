@@ -573,7 +573,9 @@ function GameScreen() {
 
   // ── functional micro-animations: Life taken / Character K.O.'d ──────────────
   // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
-  interface Fx { id: number; kind: "life" | "ko"; x: number; y: number; w: number; h: number; dx: number; dy: number; cardId?: string }
+  // "cast": an Event card used — rises from the hand to the table centre,
+  // holds for a beat (readable), then fades toward the trash (tx/ty)
+  interface Fx { id: number; kind: "life" | "ko" | "cast"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string }
   const [fxList, setFxList] = useState<Fx[]>([]);
   const [hitSeat, setHitSeat] = useState<PID | null>(null);
   const lastRects = useRef(new Map<Iid, { cx: number; cy: number; w: number; h: number }>());
@@ -606,12 +608,27 @@ function GameScreen() {
       } else if (e.type === "characterKOd" && !reduce) {
         fly("ko", lastRects.current.get(e.iid) ?? null, document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
           game.players[e.player]?.instances[e.iid]?.cardId);
+      } else if (e.type === "eventCardUsed" && !reduce) {
+        const field = fieldRef.current;
+        const cardId = game.players[e.player]?.instances[e.iid]?.cardId;
+        if (field && cardId) {
+          const w = 176, h = 246; // 2× a table card, same 100:140 proportion
+          const cx = field.offsetWidth / 2, cy = field.offsetHeight / 2;
+          const from = lastRects.current.get(e.iid) ?? null; // the hand card, as it was
+          const trashEl = document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`);
+          const t = trashEl ? centerOf(trashEl) : { x: cx, y: cy + 160 };
+          added.push({
+            id: ++fxSeq.current, kind: "cast", x: cx - w / 2, y: cy - h / 2, w, h,
+            dx: from ? from.cx - cx : 0, dy: from ? from.cy - cy : 140,
+            tx: t.x - cx, ty: t.y - cy, cardId, color: leaderHex(e.player),
+          });
+        }
       }
     }
     if (added.length) {
       setFxList((l) => [...l, ...added]);
       const ids = added.map((f) => f.id);
-      window.setTimeout(() => setFxList((l) => l.filter((f) => !ids.includes(f.id))), 700); // safety net
+      window.setTimeout(() => setFxList((l) => l.filter((f) => !ids.includes(f.id))), 1200); // safety net
     }
     if (hit) {
       setHitSeat(hit);
@@ -1691,10 +1708,15 @@ function GameScreen() {
             <div
               key={f.id}
               className={`ba-fx ${f.kind}`}
-              style={{ left: f.x, top: f.y, width: f.w, height: f.h, ["--dx" as string]: `${f.dx}px`, ["--dy" as string]: `${f.dy}px` }}
-              onAnimationEnd={() => setFxList((l) => l.filter((x) => x.id !== f.id))}
+              style={{
+                left: f.x, top: f.y, width: f.w, height: f.h,
+                ["--dx" as string]: `${f.dx}px`, ["--dy" as string]: `${f.dy}px`,
+                ["--tx" as string]: `${f.tx ?? 0}px`, ["--ty" as string]: `${f.ty ?? 0}px`,
+                ...(f.color ? { ["--lc" as string]: f.color } : {}),
+              }}
+              onAnimationEnd={(ev) => { if (ev.target === ev.currentTarget) setFxList((l) => l.filter((x) => x.id !== f.id)); }}
             >
-              {f.kind === "ko" && f.cardId && cards.get(f.cardId)?.image
+              {(f.kind === "ko" || f.kind === "cast") && f.cardId && cards.get(f.cardId)?.image
                 ? <img src={cards.get(f.cardId)!.image} alt="" />
                 : <span className="gb-back"><span className="gb-back-emblem" /></span>}
             </div>
