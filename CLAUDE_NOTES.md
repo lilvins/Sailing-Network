@@ -208,25 +208,41 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   REFLOW check compares the piles/rails/field/hand boxes before and after a
   prompt); a local hotseat chat (DuelingBook white box, seat switch + input)
   sits under the duel log.
-- **ZERO OVERLAP, no exceptions (2026-10-26, user: "ci sono tutte robe
-  sovrapposte")**: the "declared stride" escape hatch is gone. Contract: no
-  two card/pile/slot rectangles intersect anywhere (field, cost area, piles,
-  both hands) and every chip (power, cost, keywords, DON given, ACTIVATE,
-  PLAY, pile label/count) lies inside its own card. Made possible by the
-  layout: stage 1920×1080, rails 212px, card 80×112 (`--bacw` — 80 is the
-  max width whose 3 full-height rows per half + 2 hands + prompt slot fit in
-  1080: 11.2w+154 ≤ 1064), every table slot (`.ba-tslot`) is as WIDE as the
-  card is TALL (`--baslot` = 112px) so a rested card rotated 90° stays
-  inside its slot; characters = 5 slots, leader+stage = 2 slots, COST AREA =
-  a dedicated row of 10 fixed slots (active DON upright, rested rotated, one
-  per slot); hands = cards side by side with a 6px gap, horizontal scroll
-  beyond ~17 (never overlap). Table cards get no hover lift / no picked lift
-  (outline only); chips on rested cards are counter-rotated at the card's
-  centre. QA bot: STRUCT OVERLAP has no stride exception any more (slots and
-  the chat box are pieces too) and STRUCT CHIP flags a chip outside its card.
-  `BA_FULL=1 node scripts/boardauto-shots.mjs` injects a crowded table (5
-  chars/2 rested, 10 DON/4 rested, 8 in hand, rested leader) through the DEV
-  store hook, runs the same checks and saves `boardauto-full*.png`.
+- **ZERO OVERLAP + DECLARED ORDERED STACKS (2026-10-26, user: "ci sono
+  tutte robe sovrapposte" → then "i DON sono troppo separati, in OPTCGSim si
+  sovrappongono in modo sensato e ordinato")**: the old "stride" escape
+  hatch is gone. Contract: no two card/pile/slot rectangles intersect
+  anywhere (field, piles, hands while they fit) and every chip (power, cost,
+  keywords, DON given, ACTIVATE, PLAY, pile label/count) lies inside its own
+  card. The ONLY allowed overlaps are inside a declared ordered stack
+  (`[data-stack]`): the cost area's two groups (active DON!! upright, rested
+  DON!! rotated, OPTCGSim-style cascade with a constant 32px step, the last
+  card on top, 16px between the groups) and a hand beyond capacity (15 cards
+  side by side at 88+6px; beyond that a constant step ≥ 25% of a card). A
+  stack = same card size, constant step (±1px) on one axis, last on top, ≥25%
+  of each card uncovered, every card inside the stack box, the stack box
+  inside its zone and never touching anything else. Layout: stage 1920×1080,
+  rails 212px, card 88×123 (`--bacw`/`--bach`, mirrored by CARD_W/CARD_H in
+  BoardAutoPage), two rows per half (characters = 5 slots; leader + stage +
+  COST AREA row), every table slot (`.ba-tslot`) as WIDE as the card is TALL
+  (`--baslot`) so a rested card rotated 90° stays inside its slot; the field
+  is exactly two halves tall and the hands share the rest (equal flex, so
+  their boxes never move). Table cards get no hover/picked lift (outline
+  only; a picked stacked DON!! also gets an inner red tint so the ring reads
+  on its uncovered strip); chips on rested cards are counter-rotated at the
+  card's centre. Tapping a stacked DON!! = tapping its uncovered strip (the
+  bot/driver hit-test a grid of points, `clickVisible` / `clickDon`).
+  QA bot: STRUCT OVERLAP treats each stack as one box (no other exception;
+  slots, label and chat are pieces), STRUCT STACK validates the stack rules,
+  STRUCT CHIP flags a chip outside its card; once per game a CROWDED-TABLE
+  PROBE pushes the worst case into the store (5 chars/2 rested, DON 6/4, an
+  18-card hand vs 8, rested leader), runs the checks and restores the game.
+  `BA_FULL=1 [BA_FULL_HAND=18] node scripts/boardauto-shots.mjs` does the
+  same for screenshots (`boardauto-stage-full*.png`). Rested cards (DON!!,
+  leader, characters) change ONLY their rotation — never their opacity.
+  `DonArt` (BoardPage.tsx, shared by all three boards) now renders the real
+  scan `public/cards/DON.webp` (600×840, same path pattern as every card)
+  and falls back to the SVG recreation only if the image fails to load.
 - **(superseded) Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
   (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
   compact chrome — same table geometry scaled from viewport height, hands as

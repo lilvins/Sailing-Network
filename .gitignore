@@ -31,7 +31,8 @@ server/*.db-shm
 server/.art-cache/
 
 # Self-hosted card images — rebuildable asset cache (npm run art), too big for git
-public/cards/
+public/cards/*
+!public/cards/DON.webp
 
 # Local screenshots / scratch from dev tooling
 scripts/.shots/

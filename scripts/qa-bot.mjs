@@ -307,8 +307,13 @@ const BOARD_CHECKS = (opts) => {
   // ── STRUCTURAL layout contract (user: "zero overlaps, same card size") ──
   // (a) every table card (leader / characters / stage / piles / DON cells)
   //     has the same untransformed size (±1px); hands may differ
-  // (b) NO two pieces intersect — cards (field, cost area, piles, hands),
-  //     slots, rails, prompt bar — no exceptions, no declared strides
+  // (b) NO two pieces intersect — cards (field, piles, hands while they fit),
+  //     slots, rails, prompt bar, and each DECLARED ORDERED STACK as one box.
+  //     The only overlaps allowed are INSIDE a [data-stack] (cost-area active /
+  //     rested groups, a hand beyond capacity), validated by STRUCT STACK:
+  //     same card size, constant step (±1px) on one axis, last card on top,
+  //     ≥25% of every card uncovered, every card inside the stack box, the
+  //     stack box inside its zone
   // (b') every chip (power, cost, keywords, DON given, ACTIVATE, PLAY, pile
   //     label/count) lies INSIDE its own card's rectangle
   // (c) nothing on the table under the size floor (40px wide; hands 48px on touch)
@@ -351,7 +356,7 @@ const BOARD_CHECKS = (opts) => {
       const moved = Object.entries(keyRects).filter(([k, v]) => window.__qaQuiet[k] && v.some((n, i) => Math.abs(n - window.__qaQuiet[k][i]) > 1));
       if (moved.length) out.push({ kind: "STRUCT REFLOW", severity: "high", message: `${moved.length} piece(s) moved when a prompt opened: ${moved.slice(0, 4).map(([k, v]) => `${k} ${window.__qaQuiet[k].join(",")} → ${v.join(",")}`).join("; ")}` });
     }
-    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-donstack, .ba-donlabel, .ba-hand:not([data-stack]) .ba-card, .ba-hand[data-stack], .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
       .map((el) => ({ el, r: el.getBoundingClientRect() }))
       .filter((p) => p.r.width > 0 && p.r.height > 0);
     const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
@@ -364,6 +369,40 @@ const BOARD_CHECKS = (opts) => {
       if (ix > 1 && iy > 1) hits.push(`${name(a)} × ${name(b)} (${Math.round(ix)}×${Math.round(iy)}px)`);
     }
     if (hits.length) out.push({ kind: "STRUCT OVERLAP", severity: "high", message: `${hits.length} overlapping pair(s): ${hits.slice(0, 5).join("; ")}` });
+    // declared ordered stacks
+    const stackBad = [];
+    for (const st of q("[data-stack]")) {
+      const tag = st.dataset.stack;
+      const cards = q(`[data-stack="${tag}"] > .ba-doncell, [data-stack="${tag}"] > .ba-card`).filter((c) => c.parentElement === st);
+      if (cards.length === 0) { stackBad.push(`${tag}: empty stack`); continue; }
+      const sb = st.getBoundingClientRect();
+      const rs = cards.map((c) => c.getBoundingClientRect());
+      const s0 = size(cards[0]);
+      if (cards.some((c) => Math.abs(size(c).w - s0.w) > 1 || Math.abs(size(c).h - s0.h) > 1)) stackBad.push(`${tag}: mixed card sizes`);
+      for (const r of rs) if (r.left < sb.left - 1 || r.top < sb.top - 1 || r.right > sb.right + 1 || r.bottom > sb.bottom + 1) { stackBad.push(`${tag}: a card leaves the stack box`); break; }
+      const zone = st.closest(".ba-donrow, .ba-hand") ?? st.parentElement;
+      const zb = zone.getBoundingClientRect();
+      if (sb.left < zb.left - 1 || sb.top < zb.top - 1 || sb.right > zb.right + 1 || sb.bottom > zb.bottom + 1) stackBad.push(`${tag}: stack leaves its zone`);
+      if (rs.length > 1) {
+        const dx = rs.slice(1).map((r, i) => r.left - rs[i].left), dy = rs.slice(1).map((r, i) => r.top - rs[i].top);
+        const horiz = Math.abs(dx[0]) >= Math.abs(dy[0]);
+        const on = horiz ? dx : dy, off = horiz ? dy : dx;
+        if (on.some((d) => Math.abs(d - on[0]) > 1) || off.some((d) => Math.abs(d) > 1)) stackBad.push(`${tag}: step not constant (${on.map((d) => Math.round(d)).join(",")} / off-axis ${off.map((d) => Math.round(d)).join(",")})`);
+        const extent = horiz ? rs[0].width : rs[0].height;
+        if (on[0] <= 0) stackBad.push(`${tag}: stack does not grow forward (step ${Math.round(on[0])})`);
+        else if (on[0] < extent && on[0] < 0.25 * extent - 0.5) stackBad.push(`${tag}: only ${Math.round((100 * on[0]) / extent)}% of each card uncovered (<25%)`);
+        // last on top: at a point in the overlap of card i with card i−1 the
+        // hit-test must land on card i
+        if (!document.querySelector(".ba-overlay")) for (let i = 1; i < rs.length; i++) {
+          const r = rs[i];
+          const px = horiz ? r.left + 3 : r.left + r.width / 2, py = horiz ? r.top + r.height / 2 : r.top + 3;
+          if (px < 0 || py < 0 || px > vw || py > vh) continue;
+          const hit = document.elementFromPoint(px, py);
+          if (hit && !cards[i].contains(hit)) { stackBad.push(`${tag}: card ${i + 1} is not on top of card ${i} (hit ${hit.tagName.toLowerCase()}.${String(hit.className).split(" ")[0]})`); break; }
+        }
+      }
+    }
+    if (stackBad.length) out.push({ kind: "STRUCT STACK", severity: "high", message: `${stackBad.length} stack rule(s) broken: ${stackBad.slice(0, 5).join("; ")}` });
     // chips inside their own card (the hidden prompt-less state is the norm;
     // the in-place PLAY button counts as a chip too)
     const spills = [];
@@ -427,10 +466,28 @@ async function snap(page) {
 }
 
 let lastSel = "";
+/** A stacked card (cost area, wide hand) is partly covered by the next one:
+ *  find a point of it that actually hit-tests to it (what a finger would
+ *  tap on the uncovered strip) and click there. */
+async function clickVisible(page, sel) {
+  const pt = await page.evaluate((sel) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    for (let gy = 1; gy < 8; gy++) for (let gx = 1; gx < 8; gx++) {
+      const x = r.left + (r.width * gx) / 8, y = r.top + (r.height * gy) / 8;
+      const hit = document.elementFromPoint(x, y);
+      if (hit && (el === hit || el.contains(hit))) return { x, y };
+    }
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2, blind: true };
+  }, sel);
+  if (!pt) throw new Error(`${sel}: not in DOM`);
+  await page.mouse.click(pt.x, pt.y);
+}
 async function act(page, sel, label) {
   lastSel = sel;
-  const loc = page.locator(sel).first();
-  await loc.click({ timeout: 4000 });
+  if (sel.includes("data-don-index") || sel.includes("data-stack")) await clickVisible(page, sel);
+  else await page.locator(sel).first().click({ timeout: 4000 });
   return label ?? sel;
 }
 /** What sits at the center of the last clicked selector (STUCK diagnostics). */
@@ -590,7 +647,7 @@ async function playGame(browser, vp, cfg, seed) {
     await report(await page.evaluate(PAGE_CHECKS));
 
     const started = Date.now();
-    let lastSig = "", stuck = 0, turnMoves = 0, lastTurn = 0;
+    let lastSig = "", stuck = 0, turnMoves = 0, lastTurn = 0, probed = false;
     while (moves < MAX_MOVES) {
       if (Date.now() - started > GAME_TIMEOUT_MS) { await report([{ kind: "STUCK", severity: "high", message: `game timeout after ${moves} moves (turn ${lastTurn})` }]); break; }
       // close a stray card sheet (compact)
@@ -606,6 +663,33 @@ async function playGame(browser, vp, cfg, seed) {
       // checks on this state
       await report(drain());
       await report(await page.evaluate(BOARD_CHECKS, { power: POWER, touch: vp.mobile, modeActive: false }));
+      // once per game, at a quiet moment: the CROWDED-TABLE PROBE — push a
+      // synthetic worst case into the store (5 characters, 2 rested; 10 DON!!
+      // 6/4; one hand beyond capacity, the other 8; a rested leader), run the
+      // same structural checks, then restore the real game
+      if (!probed && !s.pending && s.phase !== "over") {
+        probed = true;
+        const saved = await page.evaluate(() => {
+          const store = window.__auto.store;
+          const real = store.getState().game;
+          const g = JSON.parse(JSON.stringify(real));
+          for (const [pid, p] of Object.entries(g.players)) {
+            while (p.zones.characterArea.length < 5 && p.zones.deck.length) p.zones.characterArea.push(p.zones.deck.shift());
+            p.zones.characterArea.forEach((iid, i) => { p.instances[iid].faceUp = true; p.instances[iid].rested = i >= 3; });
+            const want = pid === g.turnPlayer ? 18 : 8;
+            while (p.zones.hand.length < want && p.zones.deck.length) p.zones.hand.push(p.zones.deck.shift());
+            p.don.active = 6; p.don.rested = 4; p.don.deck = 0;
+            if (pid !== g.turnPlayer) p.instances[p.leaderIid].rested = true;
+          }
+          store.setState({ game: g });
+          return real;
+        });
+        await page.waitForTimeout(220);
+        await report(await page.evaluate(BOARD_CHECKS, { power: POWER, touch: vp.mobile, modeActive: false }), { move: "crowded-table probe" });
+        await page.evaluate((real) => { window.__auto.store.setState({ game: real }); }, saved);
+        await page.waitForTimeout(150);
+        continue;
+      }
       if (moves % 10 === 0) await report(await page.evaluate(PAGE_CHECKS));
       // dismiss any banner left by an earlier move, so a banner seen after
       // THIS move is attributed to it

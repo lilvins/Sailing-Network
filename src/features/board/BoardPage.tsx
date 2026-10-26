@@ -79,7 +79,18 @@ function playEventSound() {
 
 /** The DON!! card: white field, radiating black focus lines, big ink "ドン!!"
  *  burst and a "Your Turn +1000" bar — modeled on the official DON!! card. */
+/** The real DON!! card scan (public/cards/DON.webp, same path pattern as
+ *  every other card). Falls back to the SVG recreation below only if the
+ *  image fails to load — all three boards share this component. */
 export function DonArt() {
+  const [broken, setBroken] = useState(false);
+  if (!broken) {
+    return <img className="gb-don-art" src="/cards/DON.webp" alt="DON!! card" draggable={false} onError={() => setBroken(true)} />;
+  }
+  return <DonArtSvg />;
+}
+
+function DonArtSvg() {
   const cx = 50, cy = 56, R = 130, rays = 22;
   const wedges: string[] = [];
   for (let k = 0; k < rays; k++) {

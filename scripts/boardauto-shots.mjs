@@ -114,6 +114,25 @@ async function clickIid(iid) {
 async function clickAct(act) {
   await page.locator(`[data-act="${act}"]`).first().click({ timeout: 4000 });
 }
+/** Tap a DON!! in the cost-area cascade on its UNCOVERED strip (the next card
+ *  covers its centre): hit-test a grid of points and click the first that
+ *  lands on the cell. */
+async function clickDon(seat, index) {
+  const sel = `[data-don-seat="${seat}"][data-don-index="${index}"]`;
+  const pt = await page.evaluate((sel) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    for (let gy = 1; gy < 8; gy++) for (let gx = 1; gx < 8; gx++) {
+      const x = r.left + (r.width * gx) / 8, y = r.top + (r.height * gy) / 8;
+      const hit = document.elementFromPoint(x, y);
+      if (hit && (el === hit || el.contains(hit))) return { x, y };
+    }
+    return null;
+  }, sel);
+  if (!pt) throw new Error(`${sel}: no visible point`);
+  await page.mouse.click(pt.x, pt.y);
+}
 
 // ── reach the board ───────────────────────────────────────────────────────────
 await page.goto(BASE, { waitUntil: "networkidle" });
@@ -174,25 +193,27 @@ if (process.env.BA_FULL) {
     const s = await snap();
     if (s?.pending?.kind === "mulligan") { await clickAct("keep"); await page.waitForTimeout(120); } else break;
   }
-  await page.evaluate(() => {
+  // BA_FULL_HAND=N: hand size for the turn player (e.g. 18 → stacked hand)
+  await page.evaluate((fullHand) => {
     const store = window.__auto.store;
     const g = JSON.parse(JSON.stringify(store.getState().game));
     for (const [pid, p] of Object.entries(g.players)) {
       while (p.zones.characterArea.length < 5 && p.zones.deck.length) p.zones.characterArea.push(p.zones.deck.shift());
       p.zones.characterArea.forEach((iid, i) => { p.instances[iid].faceUp = true; p.instances[iid].rested = i >= 3; });
-      while (p.zones.hand.length < 8 && p.zones.deck.length) p.zones.hand.push(p.zones.deck.shift());
+      const want = pid === g.turnPlayer ? fullHand : 8;
+      while (p.zones.hand.length < want && p.zones.deck.length) p.zones.hand.push(p.zones.deck.shift());
       p.don.active = 6; p.don.rested = 4; p.don.deck = 0;
       if (pid !== g.turnPlayer) p.instances[p.leaderIid].rested = true;
     }
     store.setState({ game: g });
-  });
+  }, Number(process.env.BA_FULL_HAND ?? 8));
   await page.waitForTimeout(250);
   await page.evaluate(() => Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))));
   await page.waitForTimeout(150);
   await shot("full");
   const struct = await page.evaluate(() => {
     const q = (s) => Array.from(document.querySelectorAll(s));
-    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-doncell, .ba-hand .ba-card, .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-donstack, .ba-donlabel, .ba-hand:not([data-stack]) .ba-card, .ba-hand[data-stack], .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
       .map((el) => ({ el, r: el.getBoundingClientRect() })).filter((p) => p.r.width > 0 && p.r.height > 0);
     const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
     const hits = [];
@@ -364,7 +385,7 @@ while (guard-- > 0) {
   const givenTotal = Object.values(s.don[me]?.given ?? {}).reduce((a, b) => a + b, 0);
   if (donxPlayable && givenTotal === 0 && (s.don[me]?.active ?? 0) >= 2 && flags.donGivenTurn !== s.turn) {
     flags.donGivenTurn = s.turn;
-    await page.locator(`[data-don-seat="${me}"][data-don-index="1"]`).first().click(); // selects that one DON!!
+    await clickDon(me, 1); // selects that one DON!!
     await page.waitForTimeout(100);
     await clickIid(s.chars[me]?.[0] ?? s.leaders[me]);
     await page.waitForTimeout(120);
@@ -395,7 +416,7 @@ while (guard-- > 0) {
     flags.donGivenTurn = s.turn;
     const n = 2;
     // one tap per DON!! (individual selection, no quantity dial)
-    for (let i = 1; i <= n; i++) await page.locator(`[data-don-seat="${me}"][data-don-index="${i}"]`).first().click();
+    for (let i = 1; i <= n; i++) await clickDon(me, i);
     await page.waitForTimeout(120);
     await shot("don-dial");
     await shot("don-selected-overlay");

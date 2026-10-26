@@ -596,17 +596,23 @@ manca il punto di enqueue), DON!!−X da leader/characters, costi con scelta,
     permanente su tutte le carte di riga; prompt in sovrimpressione in uno
     slot riservato di 58px (nessun riflusso, verificato dal check STRUCT
     REFLOW del bot); chat locale hotseat sotto il log nel rail destro.
-40. **ZERO sovrapposizioni, senza eccezioni (2026-10-26)** — supera la parte
-    "stride dichiarato" di #38/#39: nessuna intersezione tra rettangoli di
-    carte/pile/slot (campo, cost area, pile, mani), chip sempre dentro la
-    propria carta. Layout: stage 1920×1080, rail 212px, carta 80×112 per
-    tutto (80 = massimo che fa entrare 3 righe piene per metà + 2 mani +
-    slot prompt in 1080); ogni slot del tavolo largo quanto l'ALTEZZA della
-    carta (112px) così una carta rested ruotata resta nel proprio slot;
-    cost area = riga dedicata di 10 slot fissi; mani affiancate (gap 6px,
-    scroll orizzontale oltre ~17 carte). Bot: STRUCT OVERLAP senza eccezioni
-    + STRUCT CHIP; `BA_FULL=1` nel driver genera lo stato "pieno" e lo
-    verifica (`boardauto-full*.png`).
+40. **ZERO sovrapposizioni + pile ordinate dichiarate (2026-10-26)** —
+    supera lo "stride dichiarato" di #38/#39: nessuna intersezione tra
+    rettangoli di carte/pile/slot (campo, pile, mani finché entrano), chip
+    sempre dentro la propria carta. Uniche sovrapposizioni ammesse: le PILE
+    ORDINATE dichiarate (`[data-stack]`) — cost area come in OPTCGSim (pila
+    attivi dritti + pila rested ruotati, passo costante 32px, ultima sopra,
+    stacco 16px) e la mano oltre la capacità (15 carte affiancate, poi passo
+    costante ≥25% carta). Pila ordinata = stessa misura, passo costante
+    (±1px) su un asse, z crescente, ≥25% scoperto, dentro la propria zona,
+    mai sopra altro. Layout: stage 1920×1080, rail 212px, carta 88×123, due
+    righe per metà (5 slot personaggi; leader + stage + COST AREA), slot
+    larghi quanto l'altezza carta. Bot: STRUCT OVERLAP (pila = un box) +
+    STRUCT STACK + STRUCT CHIP + sonda "tavolo pieno" una volta per partita
+    (stato sintetico via store, check, ripristino); nel driver `BA_FULL=1`
+    (`BA_FULL_HAND=18`) per gli screenshot `boardauto-stage-full*.png`.
+    Carte rested: solo rotazione, mai attenuazione. DON!! vero: `DonArt`
+    usa la scansione `public/cards/DON.webp` (fallback SVG se non carica).
 
 **M2 (2026-10-22) — completata (compilazione ST01+OP01 + API dati; il
 rimpiazzo del compile.ts euristico di board-auto è un passo successivo).**
