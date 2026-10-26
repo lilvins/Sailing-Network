@@ -207,7 +207,7 @@
 /* =========================== GAME LAYOUT =================================== */
 .ba-game {
   display: grid;
-  grid-template-columns: 212px minmax(0, 1fr) 212px;
+  grid-template-columns: 252px minmax(0, 1fr) 252px; /* wider rails = a narrower, taller-feeling field */
   gap: 8px;
   padding: 8px;
 }
@@ -294,7 +294,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 4px;
+  gap: 8px;
   border: 1px solid var(--brass-dim);
   background: var(--night-1);
   padding: 6px 8px;
@@ -307,7 +307,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 8px;
   align-items: stretch;
-  padding: 5px 6px;
+  padding: 10px 8px;
   background: color-mix(in srgb, var(--lc, #3a4a5e) 8%, var(--night-1));
   /* always 2px: the turn change must not move a single pixel of the table */
   border: 2px solid color-mix(in srgb, var(--lc, #3a4a5e) 30%, transparent);
@@ -371,7 +371,7 @@
 }
 /* End turn carries the turn player's color as a flat left stripe */
 .ba-endturn { box-shadow: inset 5px 0 0 var(--lc, var(--brass)); }
-.ba-halfmain { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ba-halfmain { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .ba-half.flip .ba-halfmain { flex-direction: column-reverse; }
 .ba-sidecol { display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; }
 .ba-half.flip .ba-sidecol { justify-content: flex-start; flex-direction: column-reverse; }
