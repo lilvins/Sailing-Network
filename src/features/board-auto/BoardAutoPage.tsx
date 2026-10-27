@@ -69,34 +69,56 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
  *  desktop layout drawn at STAGE_W×STAGE_H virtual px, then scaled to fit the
  *  viewport (letterboxed) and rotated 90° when the viewport is portrait.
  *  No media queries, no vw/vh inside the stage — by design, not responsive. */
-const STAGE_W = 1920;
+/** The stage is always 1080 tall; its WIDTH follows the viewport's aspect
+ *  (1728…2400, i.e. 16:10 … 20:9) so a 16:10 laptop or a 20:9 phone gets no
+ *  letterbox: the height is what bounds the card size, the extra width goes
+ *  to the rails (bigger inspector, wider log). */
 const STAGE_H = 1080;
-/** Table card size (stage px) — mirrors --bacw / --bach in boardauto.css. */
-const CARD_W = 88;
-const CARD_H = 123.2;
+const STAGE_W_MIN = 1728;
+const STAGE_W_MAX = 2400;
+/** Stage padding + grid gaps, the field column's max width, the rails' floor. */
+const STAGE_CHROME = 32;
+const FIELD_MAX = 1400;
+const RAIL_MIN = 280;
+/** Table card size (stage px) — mirrors --bacw / --bach in boardauto.css.
+ *  The height budget: 4 table rows + band + both hands = 1080
+ *  (user 2026-10-27: "tutte le carte sono ancora troppo piccole"). */
+const CARD_W = 116;
+const CARD_H = CARD_W * 1.4;
+/** The top hand (the other seat's, a back row online) stays compact. */
+const TOP_HAND_W = 88;
+/** DON!! cards (cost area + DON!! deck pile) — all identical, so smaller. */
+const DON_W = 80;
+const DON_H = DON_W * 1.4;
 /** Life pile: vertical cascade step (stage px) — a strip per card. */
 const LIFE_STEP = 10;
-/** Cost-area cascade step: each DON!! is uncovered for 32px (36% of a card,
- *  26% of a rotated card's footprint — the bot requires ≥25%). */
-const DON_STEP = 32;
-/** Hand row inner width (centre column 1464 − 2×6 padding) and how many
- *  side-by-side cards (88 + 6 gap) fit before the hand stacks. */
-const HAND_INNER_W = 1452;
-const HAND_CAPACITY = Math.floor((HAND_INNER_W + 6) / (CARD_W + 6));
+/** Cost-area cascade step: each DON!! is uncovered for 28px (35% of a card,
+ *  25% of a rotated card's footprint — the bot requires ≥25%). */
+const DON_STEP = 28;
 
-interface StageFit { scale: number; rotate: boolean; ox: number; oy: number }
+interface StageFit { scale: number; rotate: boolean; ox: number; oy: number; w: number; rail: number; field: number }
 
 function fitStage(vw: number, vh: number): StageFit {
   const rotate = vh > vw; // portrait → the stage lies on its side
-  const w = rotate ? STAGE_H : STAGE_W; // device-space footprint
-  const h = rotate ? STAGE_W : STAGE_H;
+  const long = rotate ? vh : vw;
+  const short = rotate ? vw : vh;
+  const sw = Math.round(Math.min(STAGE_W_MAX, Math.max(STAGE_W_MIN, (STAGE_H * long) / short)));
+  const rail = Math.max(RAIL_MIN, Math.floor((sw - STAGE_CHROME - FIELD_MAX) / 2));
+  const field = sw - STAGE_CHROME - 2 * rail;
+  const w = rotate ? STAGE_H : sw; // device-space footprint
+  const h = rotate ? sw : STAGE_H;
   const scale = Math.min(vw / w, vh / h);
-  return { scale, rotate, ox: (vw - w * scale) / 2, oy: (vh - h * scale) / 2 };
+  return { scale, rotate, ox: (vw - w * scale) / 2, oy: (vh - h * scale) / 2, w: sw, rail, field };
 }
+
+/** How many cards of width cw fit side by side in a hand row (6px gaps,
+ *  2×6 padding) before the hand turns into a declared ordered stack. */
+function handInner(field: number): number { return field - 12; }
+function handCapacity(field: number, cw: number): number { return Math.floor((handInner(field) + 6) / (cw + 6)); }
 
 function useStageFit(): StageFit {
   const [fit, setFit] = useState<StageFit>(() =>
-    typeof window !== "undefined" ? fitStage(window.innerWidth, window.innerHeight) : { scale: 1, rotate: false, ox: 0, oy: 0 });
+    typeof window !== "undefined" ? fitStage(window.innerWidth, window.innerHeight) : fitStage(1920, 1080));
   useEffect(() => {
     const on = () => setFit(fitStage(window.innerWidth, window.innerHeight));
     on();
@@ -631,7 +653,7 @@ function GameScreen() {
         const field = fieldRef.current;
         const cardId = game.players[e.player]?.instances[e.iid]?.cardId;
         if (field && cardId) {
-          const w = 176, h = 246; // 2× a table card, same 100:140 proportion
+          const w = CARD_W * 2, h = CARD_H * 2; // 2× a table card, same 100:140 proportion
           const cx = field.offsetWidth / 2, cy = field.offsetHeight / 2;
           const from = lastRects.current.get(e.iid) ?? null; // the hand card, as it was
           const trashEl = document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`);
@@ -1238,7 +1260,7 @@ function GameScreen() {
             <div className="ba-donrow" data-seat-don={pid}>
               <span className="ba-donlabel">COST AREA</span>
               {donActive > 0 && (
-                <div className="ba-donstack active" data-stack="don-active" style={{ width: CARD_W + (donActive - 1) * DON_STEP }}>
+                <div className="ba-donstack active" data-stack="don-active" style={{ width: DON_W + (donActive - 1) * DON_STEP }}>
                   {Array.from({ length: donActive }).map((_, i) => {
                     const dialOn = isTurn && mode.t === "don" && mode.picked.includes(i + 1);
                     const marked = (donMarks[pid] ?? []).includes(i);
@@ -1273,11 +1295,11 @@ function GameScreen() {
                 </div>
               )}
               {donRested > 0 && (
-                <div className="ba-donstack rested" data-stack="don-rested" style={{ width: CARD_H + (donRested - 1) * DON_STEP }}>
+                <div className="ba-donstack rested" data-stack="don-rested" style={{ width: DON_H + (donRested - 1) * DON_STEP }}>
                   {Array.from({ length: donRested }).map((_, i) => (
-                    // the rotated card's box is CARD_H wide: offset the element so
+                    // the rotated card's box is DON_H wide: offset the element so
                     // its rotated footprint starts exactly at i × step
-                    <div key={`r${i}`} className="gb-card ba-doncell gb-rested" style={{ left: i * DON_STEP + (CARD_H - CARD_W) / 2, zIndex: i + 1 }}>
+                    <div key={`r${i}`} className="gb-card ba-doncell gb-rested" style={{ left: i * DON_STEP + (DON_H - DON_W) / 2, zIndex: i + 1 }}>
                       <DonArt />
                     </div>
                   ))}
@@ -1316,8 +1338,9 @@ function GameScreen() {
     // side by side while they fit; beyond HAND_CAPACITY the hand becomes a
     // declared ordered stack (constant step, ≥25% of each card uncovered)
     const n = p.zones.hand.length;
-    const stacked = n > HAND_CAPACITY;
-    const step = stacked ? Math.max(Math.floor((HAND_INNER_W - CARD_W) / (n - 1)), Math.ceil(CARD_W * 0.25)) : 0;
+    const cw = small ? TOP_HAND_W : CARD_W;
+    const stacked = n > handCapacity(stage.field, cw);
+    const step = stacked ? Math.max(Math.floor((handInner(stage.field) - cw) / (n - 1)), Math.ceil(cw * 0.25)) : 0;
     return (
       <div
         className={`ba-hand${small ? " small" : ""}${stacked ? " stacked" : ""}`}
@@ -1716,16 +1739,19 @@ function GameScreen() {
     game.phase === "setup" ? "SETUP" : game.phase === "over" ? "GAME OVER" : battleStep ? `${battleStep.toUpperCase()} STEP` : "MAIN PHASE";
 
   // preview rail content
-  const previewPanel = preview ? (
+  // nothing inspected yet → the turn player's Leader (never an empty rail)
+  const turnLeader = game.players[game.turnPlayer] ? cards.get(game.players[game.turnPlayer].instances[game.players[game.turnPlayer].leaderIid]?.cardId ?? "") : undefined;
+  const shown = preview ?? turnLeader ?? null;
+  const previewPanel = shown ? (
     <>
       {/* the card itself, as big as the rail allows: the printed text is the
           text (no transcription under it). Only the automation disclosure stays. */}
-      <div className="ba-prevart" key={preview.id}>
-        {preview.image
-          ? <img src={preview.image} alt={`${preview.name} — ${preview.effect ?? ""}`} />
-          : <div className="ba-prevfx">{preview.name}{"\n\n"}{preview.effect}</div>}
+      <div className="ba-prevart" key={shown.id}>
+        {shown.image
+          ? <img src={shown.image} alt={`${shown.name} — ${shown.effect ?? ""}`} />
+          : <div className="ba-prevfx">{shown.name}{"\n\n"}{shown.effect}</div>}
       </div>
-      {automationInfo(preview).note && <div className="ba-prevnote">{automationInfo(preview).note}</div>}
+      {automationInfo(shown).note && <div className="ba-prevnote">{automationInfo(shown).note}</div>}
     </>
   ) : (
     <div className="ba-prevempty">Tap or hover a card to inspect it.</div>
@@ -1751,7 +1777,7 @@ function GameScreen() {
     <div className={`ba-scene${stage.rotate ? " rot" : ""}`}><NightSea /></div>
     <div
       className="ba-root ba-game ba-stage"
-      style={{ transform: stageTransform(stage) }}
+      style={{ transform: stageTransform(stage), width: stage.w, gridTemplateColumns: `${stage.rail}px ${stage.field}px ${stage.rail}px` }}
       onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
     >
       <Banner />
@@ -1775,6 +1801,8 @@ function GameScreen() {
               <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
               <span className="ba-phasepill">{phaseLabel}</span>
             </div>
+            {/* reserved slot: prompts overlay here, the table never reflows */}
+            <div className="ba-promptslot">{actionBar}</div>
             {endTurnButton}
           </div>
           {Half({ pid: SEAT_A, flip: false })}
@@ -1818,8 +1846,6 @@ function GameScreen() {
             </div>
           ))}
         </div>
-        {/* reserved slot: prompts overlay here, the table never reflows */}
-        <div className="ba-promptslot">{actionBar}</div>
         {HandRow({ pid: SEAT_A })}
       </div>
 

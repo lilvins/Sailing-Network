@@ -243,6 +243,20 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   `DonArt` (BoardPage.tsx, shared by all three boards) now renders the real
   scan `public/cards/DON.webp` (600×840, same path pattern as every card)
   and falls back to the SVG recreation only if the image fails to load.
+- **BIGGER CARDS, ADAPTIVE STAGE WIDTH (2026-10-27, user: "tutte le carte
+  sono ancora troppo piccole, c'è ancora moooolto spazio vuoto")**: the
+  stage is 1080 tall and `STAGE_W_MIN…MAX` (1728…2400) wide following the
+  viewport aspect (no letterbox from 16:10 to 20:9); rails = max(280,
+  (W−32−1400)/2), field ≤1400, columns set inline. The HEIGHT bounds card
+  size, so three size classes: table + bottom hand `--bacw` 116×162, top hand
+  `--bahw` 88×123 (the other seat; a back row online), DON!! (cost-area cells
+  + DON!! deck pile, under the Life cascade) `--badw` 80×112, DON_STEP 28.
+  Prompts moved into the band between the halves (reserved `.ba-promptslot`,
+  overlay, no reflow); the 58px slot above the hand is gone. Inspector shows
+  the turn player's Leader when nothing is hovered. Stage + wrap are
+  `overflow: clip` (a focus scrolled the edge-to-edge stage). QA bot: STRUCT
+  SIZE per class (table / DON!! / each hand), stacked-hand cards exempt from
+  the centre-occlusion check, Life pile exempt from STRUCT REFLOW.
 - **(superseded) Phone chrome (2026-10-24)**: `boardauto-compact.css` + `COMPACT_QUERY`
   (phone landscape ≤1024×560, or portrait ≤820px) switch GameScreen to a
   compact chrome — same table geometry scaled from viewport height, hands as

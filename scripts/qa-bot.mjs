@@ -296,7 +296,9 @@ const BOARD_CHECKS = (opts) => {
   }
   // occlusion of tappable cards by anything else (top layer aware)
   const top = document.querySelector(".ba-overlay, .ba-sheet-backdrop");
-  if (!top) for (const el of q("[data-iid].ba-legal, [data-iid].ba-target, [data-act=\"activate\"]")) {
+  // (cards inside a declared ordered stack cover each other's centre by
+  // design — STRUCT STACK validates them: last on top, ≥25% uncovered)
+  if (!top) for (const el of q("[data-iid].ba-legal, [data-iid].ba-target, [data-act=\"activate\"]").filter((el) => !el.closest("[data-stack]"))) {
     const r = el.getBoundingClientRect(); const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     if (cx < 0 || cy < 0 || cx > vw || cy > vh) continue;
     const hit = document.elementFromPoint(cx, cy);
@@ -320,11 +322,17 @@ const BOARD_CHECKS = (opts) => {
   // (d) no app chrome (theme toggle, dock) inside the table area
   {
     const size = (el) => ({ w: el.offsetWidth, h: el.offsetHeight });
-    const tableCards = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pcard > .gb-card, .ba-pcard > .ba-empty, .ba-doncell");
-    if (tableCards.length > 1) {
-      const ref = size(tableCards[0]);
-      const odd = tableCards.filter((el) => { const s = size(el); return Math.abs(s.w - ref.w) > 1 || Math.abs(s.h - ref.h) > 1; });
-      if (odd.length) out.push({ kind: "STRUCT SIZE", severity: "high", message: `${odd.length} table card(s) differ from ${ref.w}×${ref.h}: ${odd.slice(0, 4).map((el) => `${el.className.split(" ").slice(0, 2).join(".")} ${size(el).w}×${size(el).h}`).join(", ")}` });
+    // two size classes on the table (2026-10-27, bigger cards): the playing
+    // cards (leader, characters, stage, Life/Trash/Deck piles) and the DON!!
+    // (cost-area cells + the DON!! deck pile) — each class one size (±1px)
+    const isDon = (el) => el.classList.contains("ba-doncell") || !!el.closest(".ba-donback");
+    const allTable = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-pcard > .gb-card, .ba-pcard > .ba-empty, .ba-doncell");
+    const tableCards = allTable;
+    for (const [label, group] of [["table", allTable.filter((el) => !isDon(el))], ["DON!!", allTable.filter(isDon)]]) {
+      if (group.length < 2) continue;
+      const ref = size(group[0]);
+      const odd = group.filter((el) => { const s = size(el); return Math.abs(s.w - ref.w) > 1 || Math.abs(s.h - ref.h) > 1; });
+      if (odd.length) out.push({ kind: "STRUCT SIZE", severity: "high", message: `${odd.length} ${label} card(s) differ from ${ref.w}×${ref.h}: ${odd.slice(0, 4).map((el) => `${el.className.split(" ").slice(0, 2).join(".")} ${size(el).w}×${size(el).h}`).join(", ")}` });
     }
     const floor = 40;
     const small = tableCards.filter((el) => size(el).w < floor);
@@ -333,12 +341,13 @@ const BOARD_CHECKS = (opts) => {
       const handSmall = q(".ba-hand .ba-card").filter((el) => size(el).w < 48);
       if (handSmall.length) out.push({ kind: "STRUCT SMALL", severity: "high", message: `${handSmall.length} hand card(s) narrower than 48px (${size(handSmall[0]).w}px)` });
     }
-    // both hands: one card size (±1px)
-    const handCards = q(".ba-hand .ba-card");
-    if (handCards.length > 1) {
+    // each hand: one card size (±1px) — the top hand is compact by design
+    for (const hand of q(".ba-hand")) {
+      const handCards = [...hand.querySelectorAll(".ba-card")];
+      if (handCards.length < 2) continue;
       const ref = size(handCards[0]);
       const odd = handCards.filter((el) => { const s = size(el); return Math.abs(s.w - ref.w) > 1 || Math.abs(s.h - ref.h) > 1; });
-      if (odd.length) out.push({ kind: "STRUCT SIZE", severity: "high", message: `hand cards differ in size: ${ref.w}×${ref.h} vs ${size(odd[0]).w}×${size(odd[0]).h}` });
+      if (odd.length) out.push({ kind: "STRUCT SIZE", severity: "high", message: `hand ${hand.dataset.hand}: cards differ in size: ${ref.w}×${ref.h} vs ${size(odd[0]).w}×${size(odd[0]).h}` });
     }
     // prompts must never move the table: compare key pieces against the last
     // "quiet" (no prompt) snapshot of this page
@@ -347,7 +356,9 @@ const BOARD_CHECKS = (opts) => {
     const keyOf = (el) => el.dataset?.pile ? `pile:${el.dataset.pile}` : el.dataset?.iid ? `card:${el.dataset.iid}` : `box:${el.className.split(" ")[0]}`;
     // (cards themselves rotate/lift with game state — the boxes around them
     // are what must stay put)
-    for (const el of q("[data-pile], .ba-left, .ba-right, .ba-field, .ba-hand, .ba-charrow, .ba-donrow")) {
+    // (the Life cascade's height follows the Life count by design: a Life
+    // taken while a prompt is open is not a reflow)
+    for (const el of q("[data-pile]:not([data-pile^=\"life-\"]), .ba-left, .ba-right, .ba-field, .ba-hand, .ba-charrow, .ba-donrow")) {
       const r = el.getBoundingClientRect();
       keyRects[keyOf(el)] = [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)];
     }
@@ -389,15 +400,24 @@ const BOARD_CHECKS = (opts) => {
         const on = horiz ? dx : dy, off = horiz ? dy : dx;
         if (on.some((d) => Math.abs(d - on[0]) > 1) || off.some((d) => Math.abs(d) > 1)) stackBad.push(`${tag}: step not constant (${on.map((d) => Math.round(d)).join(",")} / off-axis ${off.map((d) => Math.round(d)).join(",")})`);
         const extent = horiz ? rs[0].width : rs[0].height;
-        if (on[0] <= 0) stackBad.push(`${tag}: stack does not grow forward (step ${Math.round(on[0])})`);
-        // face-down Life cards only need a countable strip (≥ 8px); face-up
-        // cascades (DON!!, hand) must leave a quarter of each card readable
-        else if (tag === "life" ? on[0] < 8 : on[0] < extent && on[0] < 0.25 * extent - 0.5) stackBad.push(`${tag}: only ${Math.round((100 * on[0]) / extent)}% of each card uncovered (<${tag === "life" ? "8px" : "25%"})`);
+        // screen-space step: in the portrait (90°-rotated) stage a stack that
+        // grows DOWN the stage grows LEFT on screen, so the sign follows the
+        // rotation — what matters is a non-zero constant step (the order is
+        // checked by the hit-test below). Sizes are compared in STAGE px.
+        const wrap = document.querySelector(".ba-stagewrap");
+        const sc = Number(wrap?.dataset.stageScale) || 1;
+        const step = Math.abs(on[0]);
+        if (step < 0.5) stackBad.push(`${tag}: stack does not grow (step ${Math.round(on[0])})`);
+        // face-down Life cards only need a countable strip (≥ 8 stage px);
+        // face-up cascades (DON!!, hand) must leave a quarter of each card readable
+        else if (tag === "life" ? step / sc < 8 : step < extent && step < 0.25 * extent - 0.5) stackBad.push(`${tag}: only ${Math.round((100 * step) / extent)}% of each card uncovered (<${tag === "life" ? "8 stage px" : "25%"})`);
         // last on top: at a point in the overlap of card i with card i−1 the
-        // hit-test must land on card i
+        // hit-test must land on card i (the overlap is on the side the stack
+        // grows FROM: left/top for a positive screen step, right/bottom else)
+        const back = on[0] < 0;
         if (!document.querySelector(".ba-overlay")) for (let i = 1; i < rs.length; i++) {
           const r = rs[i];
-          const px = horiz ? r.left + 3 : r.left + r.width / 2, py = horiz ? r.top + r.height / 2 : r.top + 3;
+          const px = horiz ? (back ? r.right - 3 : r.left + 3) : r.left + r.width / 2, py = horiz ? r.top + r.height / 2 : (back ? r.bottom - 3 : r.top + 3);
           if (px < 0 || py < 0 || px > vw || py > vh) continue;
           const hit = document.elementFromPoint(px, py);
           if (hit && !cards[i].contains(hit)) { stackBad.push(`${tag}: card ${i + 1} is not on top of card ${i} (hit ${hit.tagName.toLowerCase()}.${String(hit.className).split(" ")[0]})`); break; }
