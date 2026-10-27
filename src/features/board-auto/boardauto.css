@@ -230,24 +230,17 @@
 .ba-railfill { flex: 1 1 auto; min-height: 0; }
 /* The WHOLE card must always be visible: the box follows the image, which is
    capped by rail width AND window height (object-fit contain, never crop). */
+/* the inspected card at full rail width (340 → ~475 tall), real proportions */
 .ba-prevart {
   width: 100%;
-  min-height: 90px;
-  max-height: 300px;
-  border: 1px solid var(--brass-dim);
-  background: var(--night-1);
+  aspect-ratio: 600 / 838;
   overflow: hidden;
-  display: grid;
-  place-items: center;
+  border-radius: calc(340px * 0.04);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
+  animation: ba-previn 160ms var(--ease);
 }
-.ba-prevart img {
-  display: block;
-  max-width: 100%;
-  max-height: 298px;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-}
+.ba-prevart img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@keyframes ba-previn { from { transform: translateY(6px); opacity: 0.4; } to { transform: none; opacity: 1; } }
 .ba-prevname { font: 800 16px var(--serif); color: var(--ivory); }
 .ba-prevline { font: 700 12px var(--serif); letter-spacing: 0.04em; color: var(--brass-hi); }
 .ba-prevfx {
@@ -267,7 +260,7 @@
   border: 1px solid #d9a441;
   background: #241603;
   color: #ffd98a;
-  font: 600 12px/1.4 var(--serif);
+  font: 600 13px/1.4 var(--serif);
 }
 .ba-prevempty {
   min-height: 120px;
@@ -282,12 +275,12 @@
 .ba-turnbox { display: flex; gap: 6px; }
 .ba-turnpill, .ba-phasepill {
   flex: 1;
-  padding: 5px 8px;
+  padding: 6px 10px;
   border: 1px solid var(--brass-dim);
   background: var(--night-2);
-  font: 800 11px var(--serif);
-  letter-spacing: 0.08em;
-  color: var(--ivory-muted);
+  font: 800 15px var(--serif);
+  letter-spacing: 0.06em;
+  color: #fff;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -320,8 +313,8 @@
   justify-content: space-between;
   padding: 0 150px 0 120px;
 }
-.ba-band .ba-turnbox { width: 260px; }
-.ba-band .ba-endturn { min-width: 170px; }
+.ba-band .ba-turnbox { width: 340px; }
+.ba-band .ba-endturn { min-width: 190px; font-size: 17px; }
 /* drag-to-play: the owner's half is the drop zone */
 .ba-half.ba-dropok { border-color: var(--brass-hi); background: rgba(201, 151, 59, 0.12); }
 .ba-root .gb-card.ba-dragging { opacity: 0.35; }
@@ -564,10 +557,10 @@
   top: 3px;
   left: 5px;
   z-index: 6;
-  padding: 0 3px;
-  background: rgba(6, 10, 18, 0.75);
-  font: 800 8px var(--serif);
-  letter-spacing: 0.12em;
+  padding: 1px 4px;
+  background: rgba(6, 10, 18, 0.85);
+  font: 800 11px var(--serif);
+  letter-spacing: 0.08em;
   color: var(--brass-hi);
   pointer-events: none;
 }
@@ -590,11 +583,11 @@
   right: 3px;
   bottom: 3px;
   z-index: 6;
-  min-width: 20px;
-  padding: 1px 4px;
+  min-width: 30px;
+  padding: 2px 5px;
   background: var(--brass);
   color: #15100a;
-  font: 800 10.5px var(--mono);
+  font: 800 17px var(--mono);
   text-align: center;
   border: 1px solid #15100a;
 }
@@ -647,17 +640,19 @@
   bottom: 3px; /* INSIDE the card rectangle: chips never reach a neighbour */
   transform: translateX(-50%);
   z-index: 7;
-  padding: 0 3px;
+  padding: 1px 4px;
   max-width: calc(100% - 2px);
   overflow: hidden;
   background: #0b0f1a;
   border: 1px solid var(--brass);
-  color: var(--ivory);
-  font: 800 9px var(--mono);
+  color: #fff;
+  /* readable at phone scale (~0.38): 15px stage ≈ 6px on screen was the old
+     9px → user: "i numeri sono troppo piccoli" */
+  font: 800 15px/1.1 var(--mono);
   white-space: nowrap;
   pointer-events: none; /* informational: never intercept a tap on a neighbour */
 }
-.ba-power i { font-style: normal; }
+.ba-power i { font-style: normal; font-size: 11px; }
 .ba-power.up i { color: #4fd27a; }
 .ba-power.down i { color: var(--signal-hi); }
 
@@ -667,13 +662,13 @@
   top: 2px;
   left: 2px;
   z-index: 7;
-  min-width: 17px;
-  height: 17px;
+  min-width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   background: var(--brass);
   color: #15100a;
-  font: 800 10.5px var(--mono);
+  font: 800 16px var(--mono);
   border: 1px solid #15100a;
 }
 
@@ -691,9 +686,9 @@
   pointer-events: none;
 }
 /* hand cards carry the cost badge top-left: keywords go under it */
-.ba-hand .ba-kwrow { top: 21px; }
+.ba-hand .ba-kwrow { top: 28px; }
 .ba-kw {
-  font: 800 7.5px var(--mono);
+  font: 800 10px var(--mono);
   font-style: normal;
   letter-spacing: 0.04em;
   padding: 1px 3px;
@@ -782,12 +777,12 @@
 .ba-seatpanel.turn .ba-seatname { color: var(--lc, var(--ivory)); }
 .ba-seatpanel.turn .ba-clock { color: var(--brass-hi); font-weight: 800; }
 .ba-seatrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ba-seatname { font: 800 13px var(--serif); color: var(--ivory); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-seatname { font: 800 17px var(--serif); color: var(--ivory); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ba-seatpanel.active .ba-seatname { color: var(--brass-hi); }
-.ba-clock { font: 700 11.5px var(--mono); color: var(--ivory-muted); }
+.ba-clock { font: 700 15px var(--mono); color: var(--ivory-muted); }
 .ba-seatpanel.active .ba-clock { color: var(--brass-hi); }
-.ba-seatstats { display: flex; flex-wrap: wrap; gap: 4px 10px; font: 600 9.5px var(--serif); letter-spacing: 0.06em; color: var(--ivory-muted); }
-.ba-seatstats b { color: var(--ivory); font-family: var(--mono); }
+.ba-seatstats { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 700 13px var(--serif); letter-spacing: 0.04em; color: var(--ivory-muted); }
+.ba-seatstats b { color: #fff; font: 800 17px var(--mono); }
 
 /* ONE box on the right: the duel log with the table chat typed at the bottom */
 .ba-log {

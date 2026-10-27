@@ -70,14 +70,56 @@ describe("deriveCompiled", () => {
     ]);
   });
 
-  it("Event with [Main] and [Counter] lines → both manual effects", () => {
+  it("Event with [Main] and [Counter] lines → main stays manual, the exact power template is compiled", () => {
     const c = deriveCompiled(card({
       id: "T-04",
       category: "Event",
       effect: "[Main] K.O. up to 1 of your opponent's Characters.\n[Counter] Your Leader gains +2000 power during this battle.",
     }))!;
     expect(c.effects.map((e) => e.timing).sort()).toEqual(["counter", "main"]);
-    for (const fx of c.effects) expect(fx.actions[0].kind).toBe("manual");
+    expect(c.effects.find((e) => e.timing === "main")!.actions[0].kind).toBe("manual");
+    expect(c.effects.find((e) => e.timing === "counter")!.actions).toEqual([
+      { kind: "powerMod", amount: 2000, duration: "thisBattle", sel: { owner: "self", zone: "leader", count: 1, upTo: false, chooser: "controller" } },
+    ]);
+    expect(c.classification).toBe("partial");
+  });
+
+  it("[Counter] −N to the opponent (playtest bug 2026-10-27) is compiled, not manual", () => {
+    const c = deriveCompiled(card({
+      id: "T-07", category: "Event",
+      effect: "[Counter] Give up to 1 of your opponent's Leader or Character cards −2000 power during this turn.",
+    }))!;
+    expect(c.classification).toBe("compiled");
+    expect(c.effects[0]).toEqual({
+      timing: "counter",
+      actions: [{ kind: "powerMod", amount: -2000, duration: "thisTurn", sel: { owner: "opponent", zone: "leaderOrCharacter", count: 1, upTo: true, chooser: "controller" } }],
+    });
+  });
+
+  it("optional trash cost + trailing text → cost compiled, first sentence automated, rest manual", () => {
+    const c = deriveCompiled(card({
+      id: "T-08", category: "Event",
+      effect: "[Counter] You may trash 1 card from your hand: Up to 1 of your Leader or Character cards gains +3000 power during this battle. Then, draw 1 card.",
+    }))!;
+    const fx = c.effects[0];
+    expect(fx.optional).toBe(true);
+    expect(fx.cost).toEqual([{ kind: "trashFromHand", sel: { owner: "self", zone: "hand", count: 1, chooser: "controller" } }]);
+    expect(fx.actions[0]).toMatchObject({ kind: "powerMod", amount: 3000, duration: "thisBattle" });
+    expect(fx.actions[1]).toEqual({ kind: "manual", text: "Then, draw 1 card." });
+    expect(c.classification).toBe("partial");
+  });
+
+  it("{Type} and [Name] filters are carried into the selector", () => {
+    const t = deriveCompiled(card({ id: "T-09", category: "Event", effect: "[Counter] Up to 1 of your {Minks} type Leader or Character cards gains +4000 power during this battle." }))!;
+    expect(t.effects[0].actions[0]).toMatchObject({ sel: { filter: { typeIncludes: ["Minks"] } } });
+    const n = deriveCompiled(card({ id: "T-10", category: "Event", effect: "[Counter] Up to 1 of your [Enel] cards gains +2000 power during this battle." }))!;
+    expect(n.effects[0].actions[0]).toMatchObject({ sel: { filter: { nameIncludes: ["Enel"] } } });
+  });
+
+  it("anything off-template stays fully manual", () => {
+    const c = deriveCompiled(card({ id: "T-11", category: "Event", effect: "[Counter] Reveal 1 card from the top of your deck. If it costs 2 or more, K.O. it." }))!;
+    expect(c.effects[0].actions).toEqual([{ kind: "manual", text: "[Counter] Reveal 1 card from the top of your deck. If it costs 2 or more, K.O. it." }]);
+    expect(c.classification).toBe("unsupported");
   });
 
   it("Event with only [Counter] → NOT playable in main (no main effect)", () => {

@@ -14,17 +14,19 @@
  *  · [Trigger] text    → a `manual` trigger effect: the engine suspends damage
  *    and offers the reveal/decision (10-1-5); activating opens the
  *    "resolve manually" panel, then the card is trashed (10-1-5-3).
- *  · Event [Main]      → a `manual` main effect: playable, cost paid by the
- *    engine, effect resolved by hand in the manual panel.
- *  · Event [Counter]   → a `manual` counter effect: usable in the Counter
- *    Step, card cost paid by the engine (7-1-3-2-2), resolved by hand.
+ *  · Event [Main] / [Counter] → when the line's FIRST sentence is one of the
+ *    word-for-word power templates (POWER_TEMPLATES: "+N … during this
+ *    battle", "Give … −N power during this turn", optional "You may trash 1
+ *    card from your hand:" cost), it is compiled for real and only the rest of
+ *    the line stays `manual`; otherwise the whole effect is `manual` (cost
+ *    paid by the engine, effect resolved by hand in the manual panel).
  *
  * In the fallback, everything else (On Play, Activate: Main, …) stays
  * uncompiled = vanilla, by design, until its set is batch-compiled.
  * NO rules logic lives here — this is card data preparation only.
  */
 import type { Card } from "../cards/cardsDb";
-import type { CompiledCard, Effect, Keyword } from "../../autosim/ir/types";
+import type { Action, CompiledCard, CostItem, Effect, Keyword, Selector } from "../../autosim/ir/types";
 import type { CardDb, EngineCard } from "../../autosim/engine/state";
 import { allCompiledCards, getCompiledCard } from "../../autosim/data/compiled";
 import coverageReport from "../../autosim/data/compiled/coverage-report.json";
@@ -84,6 +86,81 @@ function hasLineTag(text: string | null | undefined, tag: string): boolean {
   return text.split("\n").some((l) => l.trim().startsWith(tag));
 }
 
+// ─── exact-pattern power changes on Event [Counter]/[Main] lines ─────────────
+// The most common Event texts in every set are a single power change. The
+// fallback compiles ONLY the first sentence and ONLY when it matches one of
+// these templates word for word (official wording); whatever follows stays a
+// `manual` action. Anything else → the whole line stays manual (plan §1.3).
+
+const N = "(\\d+)";
+const MINUS = "[−-]";
+const self = (zone: Selector["zone"], upTo: boolean, filter?: Selector["filter"]): Selector =>
+  ({ owner: "self", zone, count: 1, upTo, chooser: "controller", ...(filter ? { filter } : {}) });
+const opp = (zone: Selector["zone"]): Selector =>
+  ({ owner: "opponent", zone, count: 1, upTo: true, chooser: "controller" });
+
+const POWER_TEMPLATES: { re: RegExp; build: (m: RegExpMatchArray) => Action }[] = [
+  { re: new RegExp(`^Up to 1 of your Leader or Character cards gains \\+${N} power during this battle\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: +m[1], duration: "thisBattle", sel: self("leaderOrCharacter", true) }) },
+  { re: new RegExp(`^Your Leader gains \\+${N} power during this battle\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: +m[1], duration: "thisBattle", sel: self("leader", false) }) },
+  { re: new RegExp(`^Up to 1 of your Leader gains \\+${N} power during this battle\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: +m[1], duration: "thisBattle", sel: self("leader", true) }) },
+  { re: new RegExp(`^Up to 1 of your Characters gains \\+${N} power during this battle\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: +m[1], duration: "thisBattle", sel: self("characterArea", true) }) },
+  { re: new RegExp(`^Up to 1 of your \\{([^}]+)\\} type Leader or Character cards gains \\+${N} power during this battle\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: +m[2], duration: "thisBattle", sel: self("leaderOrCharacter", true, { typeIncludes: [m[1]] }) }) },
+  { re: new RegExp(`^Up to 1 of your \\[([^\\]]+)\\] cards gains \\+${N} power during this battle\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: +m[2], duration: "thisBattle", sel: self("leaderOrCharacter", true, { nameIncludes: [m[1]] }) }) },
+  { re: new RegExp(`^Give up to 1 of your opponent's Leader or Character cards ${MINUS}${N} power during this turn\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: -m[1], duration: "thisTurn", sel: opp("leaderOrCharacter") }) },
+  { re: new RegExp(`^Give up to 1 of your opponent's Characters ${MINUS}${N} power during this turn\\.$`),
+    build: (m) => ({ kind: "powerMod", amount: -m[1], duration: "thisTurn", sel: opp("characterArea") }) },
+];
+
+/** "You may trash 1 card from your hand: …" — the common optional cost. */
+const TRASH_COST = /^You may trash 1 card from your hand:\s*/;
+
+/** Compile the text of ONE [Counter]/[Main] line (tag already removed).
+ *  Returns the automated effect, or a fully manual one when nothing matches. */
+export function compileEventLine(timing: "counter" | "main", body: string, fullText: string): Effect {
+  let text = body.trim();
+  let optional = false;
+  let cost: CostItem[] | undefined;
+  const c = text.match(TRASH_COST);
+  if (c) {
+    optional = true;
+    cost = [{ kind: "trashFromHand", sel: { owner: "self", zone: "hand", count: 1, chooser: "controller" } }];
+    text = text.slice(c[0].length);
+  }
+  // first sentence = up to the first ". " (a period followed by a space/end)
+  const cut = text.search(/\.(\s|$)/);
+  const first = cut === -1 ? text : text.slice(0, cut + 1);
+  const rest = cut === -1 ? "" : text.slice(cut + 1).trim();
+  for (const t of POWER_TEMPLATES) {
+    const m = first.match(t.re);
+    if (!m) continue;
+    const actions: Action[] = [t.build(m)];
+    if (rest) actions.push({ kind: "manual", text: rest });
+    return { timing, ...(optional ? { optional } : {}), ...(cost ? { cost } : {}), actions };
+  }
+  return { timing, actions: [{ kind: "manual", text: fullText }] };
+}
+
+/** The body of the first line opening with `tag` (e.g. "[Counter]"), or null.
+ *  Lines with a combined tag ("[Main]/[Counter]", "[Counter][Main]") → null
+ *  body (the caller keeps them manual). */
+function lineBody(text: string | null | undefined, tag: string): string | null {
+  if (!text) return null;
+  for (const l of text.split("\n")) {
+    const t = l.trim();
+    if (!t.startsWith(tag)) continue;
+    const body = t.slice(tag.length).trim();
+    return body.startsWith("/") || body.startsWith("[") ? "" : body;
+  }
+  return null;
+}
+
 /** FALLBACK ONLY (uncompiled sets): derive the conservative CompiledCard for
  *  a catalog card (or null = vanilla). Batch-covered ids never reach this. */
 export function deriveCompiled(card: Card): CompiledCard | null {
@@ -91,11 +168,12 @@ export function deriveCompiled(card: Card): CompiledCard | null {
   const effects: Effect[] = [];
 
   if (card.category === "Event") {
-    if (hasLineTag(card.effect, "[Main]")) {
-      effects.push({ timing: "main", actions: [{ kind: "manual", text: card.effect }] });
-    }
-    if (hasLineTag(card.effect, "[Counter]")) {
-      effects.push({ timing: "counter", actions: [{ kind: "manual", text: card.effect }] });
+    for (const [tag, timing] of [["[Main]", "main"], ["[Counter]", "counter"]] as const) {
+      if (!hasLineTag(card.effect, tag)) continue;
+      const body = lineBody(card.effect, tag);
+      effects.push(body
+        ? compileEventLine(timing, body, card.effect ?? "")
+        : { timing, actions: [{ kind: "manual", text: card.effect ?? "" }] });
     }
   }
 
@@ -106,11 +184,15 @@ export function deriveCompiled(card: Card): CompiledCard | null {
 
   if (keywords.length === 0 && effects.length === 0) return null; // vanilla
 
+  const isManual = (fx: Effect) => fx.actions.some((a) => a.kind === "manual");
+  const automated = effects.filter((fx) => !isManual(fx) || fx.actions.length > 1).length;
   return {
     cardId: card.id,
     version: 1,
     confidence: effects.length > 0 ? 0.5 : 0.9,
-    classification: effects.length > 0 ? "unsupported" : "keyword-only",
+    classification: effects.length === 0 ? "keyword-only"
+      : effects.every((fx) => !isManual(fx)) ? "compiled"
+      : automated > 0 ? "partial" : "unsupported",
     keywords,
     counterValue: card.counter ?? undefined,
     effects,

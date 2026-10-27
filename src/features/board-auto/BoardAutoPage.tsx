@@ -1718,19 +1718,12 @@ function GameScreen() {
   // preview rail content
   const previewPanel = preview ? (
     <>
-      <div className="ba-prevart">{preview.image && <img src={preview.image} alt={preview.name} />}</div>
-      <b className="ba-prevname">{preview.name}</b>
-      <span className="ba-prevline">
-        {preview.category.toUpperCase()} · {preview.category === "Leader" ? `LIFE ${preview.cost ?? 0}` : `COST ${preview.cost ?? 0}`}
-        {preview.power != null && ` · POW ${preview.power}`}
-        {preview.counter ? ` · CTR +${preview.counter}` : ""}
-      </span>
-      <span className="ba-prevline">{preview.colors.join("/")} · {preview.types.join(", ")}</span>
-      <div className="ba-prevfx">
-        {preview.effect && preview.effect !== "-" ? preview.effect : "(no effect text)"}
-        {preview.trigger
-          ? `\n\n${preview.trigger.trimStart().startsWith("[Trigger]") ? preview.trigger : `[Trigger] ${preview.trigger}`}`
-          : ""}
+      {/* the card itself, as big as the rail allows: the printed text is the
+          text (no transcription under it). Only the automation disclosure stays. */}
+      <div className="ba-prevart" key={preview.id}>
+        {preview.image
+          ? <img src={preview.image} alt={`${preview.name} — ${preview.effect ?? ""}`} />
+          : <div className="ba-prevfx">{preview.name}{"\n\n"}{preview.effect}</div>}
       </div>
       {automationInfo(preview).note && <div className="ba-prevnote">{automationInfo(preview).note}</div>}
     </>
