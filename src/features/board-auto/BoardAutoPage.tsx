@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CardArt, DonArt } from "../board/BoardPage";
 import { cardColorHex, type Card } from "../cards/cardsDb";
 import { api, type DirectoryUser } from "../../lib/api";
-import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { useAuthStore } from "../../app/authStore";
 import { useUiStore } from "../../app/uiStore";
 import { legalMoves } from "../../autosim/engine/legality";
@@ -1375,29 +1374,61 @@ function GameScreen() {
   function SeatPanel({ pid }: { pid: PID }) {
     const p = game.players[pid];
     const active = lm.actor === pid && game.phase !== "over";
-    const arm = armConcede === pid;
     const mm = Math.floor((clocks[pid] ?? 0) / 60);
     const ss = (clocks[pid] ?? 0) % 60;
+    // DuelingBook layout, mirrored around the log: the top seat reads
+    // life bar → avatar → stats, the bottom seat stats → avatar → life bar
+    const top = pid === SEAT_B;
+    const life = p.zones.life.length;
+    const maxLife = Math.max(life, cards.get(p.instances[p.leaderIid].cardId)?.cost ?? 5, 1);
+    const fill = life / maxLife;
+    const av = avatarOf(pid);
+    const lifeBar = (
+      <div className="ba-lifebar" data-lifebar={pid}>
+        <div className="ba-lifetrack">
+          <div className="ba-lifefill" style={{ width: `${fill * 100}%`, backgroundSize: fill > 0 ? `${100 / fill}% 100%` : undefined }} />
+          <span className="ba-lifelabel">LIFE</span>
+          <b className="ba-lifenum">{life}</b>
+        </div>
+        {" " /* keeps "LIFE 5" and the clock apart in the panel's text */}
+        <span className="ba-clock">{mm}:{String(ss).padStart(2, "0")}</span>
+        {ConcedeButton({ pid })}
+      </div>
+    );
+    const avatar = (
+      <div className="ba-pfpbox" data-avatar={pid}>
+        <b className="ba-pfpname">{seatName(pid)}</b>
+        <div className="ba-pfpimg" style={{ background: av.color }}>
+          {av.image
+            ? <img src={av.image} alt="" draggable={false} />
+            : <img className="moon" src="/assets/bg/avatar-moon.png" alt="" draggable={false} />}
+        </div>
+      </div>
+    );
     return (
-      <div className={`ba-seatpanel${active ? " active" : ""}${game.turnPlayer === pid && game.phase !== "over" ? " turn" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
-        <div className="ba-seatpfp" data-avatar={pid}>
-          <LeaderAvatar name={seatName(pid)} {...avatarOf(pid)} fill />
-        </div>
-        <div className="ba-seatbody">
-        <div className="ba-seatrow">
-          <b className="ba-seatname">{seatName(pid)}</b>
-          <span className="ba-clock">{mm}:{String(ss).padStart(2, "0")}</span>
-        </div>
+      <div className={`ba-seatpanel ${top ? "top" : "bottom"}${active ? " active" : ""}${game.turnPlayer === pid && game.phase !== "over" ? " turn" : ""}`}>
+        {top ? lifeBar : null}
+        {top ? avatar : null}
         <div className="ba-seatstats">
-          <span>LIFE <b>{p.zones.life.length}</b></span>
           <span>DECK <b>{p.zones.deck.length}</b></span>
           <span>HAND <b>{p.zones.hand.length}</b></span>
           <span>DON <b>{p.don.active}</b>/{p.don.rested}r</span>
         </div>
-        {game.phase !== "over" && (
+        {top ? null : avatar}
+        {top ? null : lifeBar}
+      </div>
+    );
+  }
+
+  function ConcedeButton({ pid }: { pid: PID }) {
+    if (game.phase === "over") return null;
+    const arm = armConcede === pid;
+    return (
           <button
-            className={`ba-btn ghost tiny${arm ? " danger" : ""}`}
+            className={`ba-concede${arm ? " armed" : ""}`}
             data-act={`concede-${pid}`}
+            title="Concede"
+            aria-label="Concede"
             onClick={(e) => {
               e.stopPropagation();
               if (!arm) {
@@ -1409,11 +1440,8 @@ function GameScreen() {
               dispatch({ type: "concede", player: pid });
             }}
           >
-            {arm ? "Confirm concede?" : "Concede"}
+            {arm ? "Sure?" : "Concede"}
           </button>
-        )}
-        </div>
-      </div>
     );
   }
 

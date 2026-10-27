@@ -244,9 +244,17 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   scan `public/cards/DON.webp` (600×840, same path pattern as every card)
   and falls back to the SVG recreation only if the image fails to load.
 - **SEAT PANEL PROFILE PICTURES (2026-10-27, user: "includi la foto profilo
-  nei giocatori a dx come su duelingbook.com")**: each right-rail
-  `.ba-seatpanel` opens with a 96px `.ba-seatpfp` (`data-avatar`) using the
-  shared `LeaderAvatar`. A seat whose name matches a captain in
+  nei giocatori a dx come su duelingbook.com"; then "deve essere proprio come
+  su duelingbook")**: each right-rail `.ba-seatpanel` copies DuelingBook's
+  avatar box, mirrored around the log. The top seat reads LIFE bar → avatar →
+  counters, the bottom seat reads counters → avatar → LIFE bar.
+  - `.ba-lifebar`: a gradient pill (blue side top, warm side bottom) whose
+    fill is Life / leader Life, with the number on the right, then the clock
+    and a small `.ba-concede` (click twice).
+  - `.ba-pfpbox` (`data-avatar`): 200px tall, with the name written
+    vertically on a side-coloured strip (`--side`: blue top, pink bottom) and
+    the art cropped to the illustration.
+  A seat whose name matches a captain in
   `api.directory()` (username or display name) shows that captain's favourite
   leader + avatar colour; otherwise the seat's deck Leader art. qa-bot's
   "last on top" hit probe now sits mid-strip (`min(3, step/2)`): on the phone a

@@ -784,40 +784,56 @@
 
 /* right rail */
 .ba-right { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-.ba-seatpanel {
-  flex: 0 0 auto;
-  padding: 8px 10px;
-  background: var(--night-2);
-  border: 1px solid var(--brass-dim);
-  border-left: 3px solid var(--lc, #3a4a5e);
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-  transition: border-color 140ms, background 140ms;
+/* seat panels = DuelingBook's avatar boxes: a LIFE bar (gradient pill, number
+   on the right, clock beside it), the avatar with the name on a vertical
+   side-coloured strip, and the counters. Mirrored around the log. */
+.ba-seatpanel { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; --side: #2348d8; --side-hi: #5b7cff; }
+.ba-seatpanel.bottom { --side: #d41f63; --side-hi: #ff5c95; }
+.ba-lifebar { display: flex; align-items: center; gap: 8px; height: 34px; }
+.ba-lifetrack {
+  position: relative; flex: 1 1 auto; height: 100%;
+  border-radius: 17px; overflow: hidden;
+  background: #05080f; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.18);
 }
-/* profile picture, DuelingBook-style: a big square left of name + numbers */
-.ba-seatpfp {
-  flex: 0 0 96px;
-  height: 96px;
-  align-self: center;
-  border: 2px solid var(--lc, #3a4a5e);
-  background: var(--night-1, #0b1220);
+.ba-lifefill {
+  position: absolute; inset: 0 auto 0 0;
+  border-radius: 17px;
+  background-image: linear-gradient(90deg, #2be37a, #19d3e0 45%, #2f5bff);
+  transition: width 260ms ease-out;
 }
-.ba-seatpanel.active .ba-seatpfp { border-color: var(--brass-hi); }
-.ba-seatbody { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
-.ba-seatbody .ba-btn { align-self: flex-start; }
-.ba-seatpanel.active { border-color: var(--brass-hi); background: var(--night-3); }
-/* turn player's pill: tinted with the leader color, name in that color */
-.ba-seatpanel.turn { background: color-mix(in srgb, var(--lc, #3a4a5e) 22%, var(--night-2)); border-left-width: 5px; }
-.ba-seatpanel.turn .ba-seatname { color: var(--lc, var(--ivory)); }
+.ba-seatpanel.bottom .ba-lifefill { background-image: linear-gradient(90deg, #ffe03d, #ff9a1f 45%, #ff2f6d); }
+.ba-lifelabel { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font: 800 13px var(--serif); letter-spacing: 0.08em; color: #fff; text-shadow: 0 1px 2px #000, 0 0 3px #000; }
+.ba-lifenum { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font: 800 24px var(--mono); color: #fff; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
+.ba-clock { flex: 0 0 auto; min-width: 46px; text-align: right; font: 700 16px var(--mono); color: var(--ivory-muted); }
 .ba-seatpanel.turn .ba-clock { color: var(--brass-hi); font-weight: 800; }
-.ba-seatrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ba-seatname { font: 800 17px var(--serif); color: var(--ivory); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ba-seatpanel.active .ba-seatname { color: var(--brass-hi); }
-.ba-clock { font: 700 15px var(--mono); color: var(--ivory-muted); }
-.ba-seatpanel.active .ba-clock { color: var(--brass-hi); }
-.ba-seatstats { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 700 13px var(--serif); letter-spacing: 0.04em; color: var(--ivory-muted); }
-.ba-seatstats b { color: #fff; font: 800 17px var(--mono); }
+.ba-pfpbox {
+  display: flex; height: 200px;
+  border: 2px solid var(--side);
+  background: #05080f;
+  transition: box-shadow 140ms;
+}
+.ba-seatpanel.active .ba-pfpbox { box-shadow: 0 0 0 2px var(--brass-hi); }
+.ba-pfpname {
+  flex: 0 0 32px; display: flex; align-items: center; justify-content: center;
+  background: var(--side);
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font: 800 18px var(--serif); color: #fff; letter-spacing: 0.02em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ba-pfpimg { position: relative; flex: 1 1 auto; min-width: 0; overflow: hidden; }
+/* leader art cropped to the illustration (no card frame), like a DB avatar */
+.ba-pfpimg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; transform: scale(1.12); transform-origin: 50% 20%; }
+.ba-pfpimg img.moon { object-position: 50% 50%; transform: none; image-rendering: pixelated; }
+.ba-seatstats { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; padding: 0 4px; font: 700 14px var(--serif); letter-spacing: 0.04em; color: var(--ivory-muted); }
+.ba-seatstats b { color: #fff; font: 800 19px var(--mono); }
+.ba-concede {
+  flex: 0 0 auto; height: 26px; padding: 0 8px;
+  font: 700 12px var(--serif); letter-spacing: 0.04em;
+  color: var(--ivory-muted); background: transparent;
+  border: 1px solid var(--brass-dim); cursor: pointer;
+}
+.ba-concede:hover { color: var(--ivory); border-color: var(--brass-hi); }
+.ba-concede.armed { color: #fff; background: #b3261e; border-color: #ff6b5e; }
 
 /* ONE box on the right: the duel log with the table chat typed at the bottom */
 .ba-log {

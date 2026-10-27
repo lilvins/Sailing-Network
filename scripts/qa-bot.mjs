@@ -687,6 +687,13 @@ async function playGame(browser, vp, cfg, seed) {
       if (stuck >= 6) { await report([{ kind: "STUCK", severity: "high", message: `no state change after 6 moves; last move "${lastMove}"; pending ${s.pending?.kind ?? "none"}; phase ${s.phase}; last click: ${await hitDiag(page)}` }]); break; }
       // checks on this state
       await report(drain());
+      // measure the RESTING layout: let finite CSS animations (count tick
+      // scale, toast slide-in, DON!! fly) finish first — a mid-animation frame
+      // is not a layout bug, and timing jitter made those findings flaky
+      await page.evaluate(() => Promise.race([
+        Promise.all(document.getAnimations().filter((a) => a.playState === "running" && Number.isFinite(a.effect?.getComputedTiming?.().endTime)).map((a) => a.finished.catch(() => {}))),
+        new Promise((r) => setTimeout(r, 800)),
+      ]));
       await report(await page.evaluate(BOARD_CHECKS, { power: POWER, touch: vp.mobile, modeActive: false }));
       // once per game, at a quiet moment: the CROWDED-TABLE PROBE — push a
       // synthetic worst case into the store (5 characters, 2 rested; 10 DON!!
