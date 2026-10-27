@@ -822,7 +822,7 @@
 }
 .ba-pfpimg { position: relative; flex: 1 1 auto; min-width: 0; overflow: hidden; }
 /* leader art cropped to the illustration (no card frame), like a DB avatar */
-.ba-pfpimg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; transform: scale(1.12); transform-origin: 50% 20%; }
+.ba-pfpimg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 24%; transform: scale(1.14); transform-origin: 50% 30%; }
 .ba-pfpimg img.moon { object-position: 50% 50%; transform: none; image-rendering: pixelated; }
 .ba-seatstats { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; padding: 0 4px; font: 700 14px var(--serif); letter-spacing: 0.04em; color: var(--ivory-muted); }
 .ba-seatstats b { color: #fff; font: 800 19px var(--mono); }
