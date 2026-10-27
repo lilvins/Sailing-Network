@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CardArt, DonArt } from "../board/BoardPage";
 import { cardColorHex, type Card } from "../cards/cardsDb";
-import { api } from "../../lib/api";
+import { api, type DirectoryUser } from "../../lib/api";
+import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { useAuthStore } from "../../app/authStore";
 import { useUiStore } from "../../app/uiStore";
 import { legalMoves } from "../../autosim/engine/legality";
@@ -426,6 +427,23 @@ function GameScreen() {
   const leaderHex = (pid: PID) => {
     const leaderCard = cards.get(game.players[pid].instances[game.players[pid].leaderIid].cardId);
     return leaderCard ? cardColorHex(leaderCard) : "#3a4a5e";
+  };
+
+  // profile pictures (DuelingBook): a seat named like a captain shows that
+  // captain's avatar (favourite leader + colour); anyone else shows their
+  // deck's Leader art
+  const [captains, setCaptains] = useState<DirectoryUser[]>([]);
+  useEffect(() => {
+    let alive = true;
+    api.directory().then(({ users }) => { if (alive) setCaptains(users); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  const avatarOf = (pid: PID) => {
+    const name = seatName(pid).toLowerCase();
+    const u = captains.find((c) => c.username.toLowerCase() === name || c.displayName.toLowerCase() === name);
+    const fav = u?.favoriteLeader ? cards.get(u.favoriteLeader)?.image : null;
+    const leader = cards.get(game.players[pid].instances[game.players[pid].leaderIid].cardId);
+    return { image: fav || leader?.image || null, color: u?.avatarColor || leaderHex(pid) };
   };
 
   const [preview, setPreview] = useState<Card | null>(null);
@@ -1362,6 +1380,10 @@ function GameScreen() {
     const ss = (clocks[pid] ?? 0) % 60;
     return (
       <div className={`ba-seatpanel${active ? " active" : ""}${game.turnPlayer === pid && game.phase !== "over" ? " turn" : ""}`} style={{ ["--lc" as string]: leaderHex(pid) }}>
+        <div className="ba-seatpfp" data-avatar={pid}>
+          <LeaderAvatar name={seatName(pid)} {...avatarOf(pid)} fill />
+        </div>
+        <div className="ba-seatbody">
         <div className="ba-seatrow">
           <b className="ba-seatname">{seatName(pid)}</b>
           <span className="ba-clock">{mm}:{String(ss).padStart(2, "0")}</span>
@@ -1390,6 +1412,7 @@ function GameScreen() {
             {arm ? "Confirm concede?" : "Concede"}
           </button>
         )}
+        </div>
       </div>
     );
   }

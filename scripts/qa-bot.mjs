@@ -415,9 +415,12 @@ const BOARD_CHECKS = (opts) => {
         // hit-test must land on card i (the overlap is on the side the stack
         // grows FROM: left/top for a positive screen step, right/bottom else)
         const back = on[0] < 0;
+        // probe mid-strip: on a phone a 10-stage-px Life step is ~3.6 screen
+        // px, so a fixed 3px inset lands on the NEXT card after pixel snapping
+        const ins = Math.min(3, step / 2);
         if (!document.querySelector(".ba-overlay")) for (let i = 1; i < rs.length; i++) {
           const r = rs[i];
-          const px = horiz ? (back ? r.right - 3 : r.left + 3) : r.left + r.width / 2, py = horiz ? r.top + r.height / 2 : (back ? r.bottom - 3 : r.top + 3);
+          const px = horiz ? (back ? r.right - ins : r.left + ins) : r.left + r.width / 2, py = horiz ? r.top + r.height / 2 : (back ? r.bottom - ins : r.top + ins);
           if (px < 0 || py < 0 || px > vw || py > vh) continue;
           const hit = document.elementFromPoint(px, py);
           if (hit && !cards[i].contains(hit)) { stackBad.push(`${tag}: card ${i + 1} is not on top of card ${i} (hit ${hit.tagName.toLowerCase()}.${String(hit.className).split(" ")[0]})`); break; }

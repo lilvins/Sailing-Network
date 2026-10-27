@@ -243,6 +243,14 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   `DonArt` (BoardPage.tsx, shared by all three boards) now renders the real
   scan `public/cards/DON.webp` (600×840, same path pattern as every card)
   and falls back to the SVG recreation only if the image fails to load.
+- **SEAT PANEL PROFILE PICTURES (2026-10-27, user: "includi la foto profilo
+  nei giocatori a dx come su duelingbook.com")**: each right-rail
+  `.ba-seatpanel` opens with a 96px `.ba-seatpfp` (`data-avatar`) using the
+  shared `LeaderAvatar`. A seat whose name matches a captain in
+  `api.directory()` (username or display name) shows that captain's favourite
+  leader + avatar colour; otherwise the seat's deck Leader art. qa-bot's
+  "last on top" hit probe now sits mid-strip (`min(3, step/2)`): on the phone a
+  Life step is ~3.6 screen px and the fixed 3px probe snapped onto the next card.
 - **BIGGER CARDS, ADAPTIVE STAGE WIDTH (2026-10-27, user: "tutte le carte
   sono ancora troppo piccole, c'è ancora moooolto spazio vuoto")**: the
   stage is 1080 tall and `STAGE_W_MIN…MAX` (1728…2400) wide following the

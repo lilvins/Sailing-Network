@@ -791,10 +791,21 @@
   border: 1px solid var(--brass-dim);
   border-left: 3px solid var(--lc, #3a4a5e);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: stretch;
+  gap: 10px;
   transition: border-color 140ms, background 140ms;
 }
+/* profile picture, DuelingBook-style: a big square left of name + numbers */
+.ba-seatpfp {
+  flex: 0 0 96px;
+  height: 96px;
+  align-self: center;
+  border: 2px solid var(--lc, #3a4a5e);
+  background: var(--night-1, #0b1220);
+}
+.ba-seatpanel.active .ba-seatpfp { border-color: var(--brass-hi); }
+.ba-seatbody { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.ba-seatbody .ba-btn { align-self: flex-start; }
 .ba-seatpanel.active { border-color: var(--brass-hi); background: var(--night-3); }
 /* turn player's pill: tinted with the leader color, name in that color */
 .ba-seatpanel.turn { background: color-mix(in srgb, var(--lc, #3a4a5e) 22%, var(--night-2)); border-left-width: 5px; }
