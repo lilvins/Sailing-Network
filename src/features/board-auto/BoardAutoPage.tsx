@@ -1753,14 +1753,14 @@ function GameScreen() {
 
   return (
     <div className="ba-stagewrap" data-stage-scale={stage.scale.toFixed(4)} data-stage-rotate={stage.rotate ? "1" : "0"}>
+    {/* the living night-sea pixel scene behind the table (same real layers as
+        the Home hero), at viewport size OUTSIDE the scaled stage */}
+    <div className={`ba-scene${stage.rotate ? " rot" : ""}`}><NightSea /></div>
     <div
       className="ba-root ba-game ba-stage"
       style={{ transform: stageTransform(stage) }}
       onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
     >
-      {/* the living night-sea pixel scene behind the whole table (same real
-          layers as the Home hero: stars, cloud parallax, water shimmer) */}
-      <div className="ba-scene"><NightSea /></div>
       <Banner />
 
       <div className="ba-left">
