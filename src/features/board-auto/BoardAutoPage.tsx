@@ -74,6 +74,8 @@ const STAGE_H = 1080;
 /** Table card size (stage px) — mirrors --bacw / --bach in boardauto.css. */
 const CARD_W = 88;
 const CARD_H = 123.2;
+/** Life pile: vertical cascade step (stage px) — a strip per card. */
+const LIFE_STEP = 10;
 /** Cost-area cascade step: each DON!! is uncovered for 32px (36% of a card,
  *  26% of a rotated card's footprint — the bot requires ≥25%). */
 const DON_STEP = 32;
@@ -424,14 +426,18 @@ function GameScreen() {
    *  a second tap deselects. */
   const [selectedHand, setSelectedHand] = useState<Iid | null>(null);
   // table chat (local, hotseat): not game state, never reaches the engine
-  const [chat, setChat] = useState<{ seat: PID; text: string }[]>([]);
+  // `at` = events.length when sent: the message is interleaved into the duel
+  // log feed right after the event that was last at that moment
+  const [chat, setChat] = useState<{ seat: PID; text: string; at: number }[]>([]);
+  // transient per-card flashes (DON!! attached, attacked, countered, effect
+  // activated): a class for ≤450ms, no state in the engine
+  const [flash, setFlash] = useState<Record<Iid, string>>({});
+  // drag-to-play: a hand card dragged over the owner's half is played there
+  const dragRef = useRef<{ iid: Iid; owner: PID; x0: number; y0: number; active: boolean } | null>(null);
+  const [drag, setDrag] = useState<{ iid: Iid; owner: PID; cardId: string; x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
   const [chatDraft, setChatDraft] = useState("");
   const [chatSeat, setChatSeat] = useState<PID>(SEAT_A);
-  const chatRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = chatRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [chat.length]);
   // M3 windows: local drafts of the answer being composed
   const [peekTake, setPeekTake] = useState<Iid[]>([]);
   const [peekOrder, setPeekOrder] = useState<Iid[]>([]);
@@ -591,6 +597,7 @@ function GameScreen() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const added: Fx[] = [];
     let hit: PID | null = null;
+    const flashes: Record<Iid, string> = {};
     const fly = (kind: Fx["kind"], from: { cx: number; cy: number; w: number; h: number } | null, toEl: Element | null, cardId?: string) => {
       if (!from || !toEl) return;
       const q = centerOf(toEl);
@@ -606,12 +613,20 @@ function GameScreen() {
       if (e.type === "lifeCardToHand" || e.type === "lifeCardTrashed") {
         hit = e.player;
         if (!reduce) {
-          fly("life", pileFrom(`[data-pile="life-${e.player}"] .ba-pcard`),
+          fly("life", pileFrom(`[data-pile="life-${e.player}"] .ba-lifecard:last-child`) ?? pileFrom(`[data-pile="life-${e.player}"] .ba-pcard`),
             document.querySelector(e.type === "lifeCardToHand" ? `[data-hand="${e.player}"]` : `[data-pile="trash-${e.player}"] .ba-pcard`));
         }
       } else if (e.type === "characterKOd" && !reduce) {
         fly("ko", lastRects.current.get(e.iid) ?? null, document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
           game.players[e.player]?.instances[e.iid]?.cardId);
+      } else if (e.type === "donGiven" || e.type === "donGivenFromRested") {
+        flashes[e.targetIid] = "pulse";
+      } else if (e.type === "attackDeclared") {
+        flashes[e.targetIid] = "hit";
+      } else if (e.type === "counterApplied") {
+        flashes[e.targetIid] = "up";
+      } else if (e.type === "effectActivated" || e.type === "triggerActivated") {
+        flashes[e.type === "effectActivated" ? e.sourceIid : e.iid] = "glow";
       } else if (e.type === "eventCardUsed" && !reduce) {
         const field = fieldRef.current;
         const cardId = game.players[e.player]?.instances[e.iid]?.cardId;
@@ -637,6 +652,15 @@ function GameScreen() {
     if (hit) {
       setHitSeat(hit);
       window.setTimeout(() => setHitSeat(null), 360);
+    }
+    const flashed = Object.keys(flashes);
+    if (flashed.length && !reduce) {
+      setFlash((f) => ({ ...f, ...flashes }));
+      window.setTimeout(() => setFlash((f) => {
+        const n = { ...f };
+        for (const k of flashed) delete n[k];
+        return n;
+      }), 460);
     }
     // remember where every registered card is, for the NEXT diff (a K.O.'d
     // card is gone from the DOM by the time its event is processed)
@@ -1030,17 +1054,57 @@ function GameScreen() {
       highlightSets.target.has(iid) ? "ba-target" : "",
       picked.includes(iid) || (inHand && selectedHand === iid) ? "ba-picked" : "",
       mode.t === "attack" && mode.iid === iid ? "ba-attacker" : "",
+      flash[iid] ? `ba-fl-${flash[iid]}` : "",
+      drag?.iid === iid ? "ba-dragging" : "",
     ]
       .filter(Boolean)
       .join(" ");
+    // drag-to-play (hand, own turn, no prompt): the card follows the pointer
+    // as a ghost; dropping it over the owner's half plays it (legality-checked
+    // by playFromHand — an illegal drop just explains why, like a tap would)
+    const canDrag = inHand && !pc && owner === game.turnPlayer && game.phase === "main" && !game.battle;
+    const dragHandlers = canDrag
+      ? {
+          onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+            if (e.button !== 0) return;
+            dragRef.current = { iid, owner, x0: e.clientX, y0: e.clientY, active: false };
+          },
+          onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
+            const d = dragRef.current;
+            if (!d || d.iid !== iid) return;
+            if (!d.active) {
+              if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 10) return;
+              d.active = true;
+              e.currentTarget.setPointerCapture(e.pointerId);
+              setSelectedHand(null);
+            }
+            setDrag({ iid, owner, cardId: inst.cardId, x: e.clientX, y: e.clientY });
+          },
+          onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => {
+            const d = dragRef.current;
+            dragRef.current = null;
+            if (!d || !d.active) return;
+            suppressClick.current = true;
+            setDrag(null);
+            const half = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[data-half]");
+            if (half?.dataset.half === owner) {
+              if (lm.playableFromHand.some((x) => x.iid === iid)) playFromHand(owner, iid);
+              else whyNotPlayable(owner, iid);
+            }
+          },
+          onPointerCancel: () => { dragRef.current = null; setDrag(null); },
+        }
+      : {};
     return (
       <div
         key={iid}
         className={cls}
         data-iid={iid}
         ref={reg(iid)}
+        {...dragHandlers}
         onClick={(e) => {
           e.stopPropagation();
+          if (suppressClick.current) { suppressClick.current = false; return; }
           if (inHand) onHandTap(owner, iid);
           else onBoardTap(owner, iid);
         }}
@@ -1113,7 +1177,19 @@ function GameScreen() {
     return (
       <div className={`ba-pile ${faceClass ?? ""}`} data-pile={key}>
         <span className="ba-plabel">{label}</span>
-        <div className="ba-pcard">{children ?? (count > 0 ? <div className="gb-card ba-backcard"><span className="gb-back"><span className="gb-back-emblem" /></span></div> : <div className="ba-empty" />)}</div>
+        {label === "LIFE" && count > 0 ? (
+          // Life: every card visible as a strip, a declared vertical stack
+          // (constant LIFE_STEP, last on top) — countable at a glance
+          <div className="ba-pcard ba-lifestack" data-stack="life" style={{ height: CARD_H + (count - 1) * LIFE_STEP }}>
+            {Array.from({ length: count }).map((_, i) => (
+              <div key={i} className="gb-card ba-card ba-backcard ba-lifecard" style={{ top: i * LIFE_STEP, zIndex: i + 1 }}>
+                <span className="gb-back"><span className="gb-back-emblem" /></span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="ba-pcard">{children ?? (count > 0 ? <div className="gb-card ba-backcard"><span className="gb-back"><span className="gb-back-emblem" /></span></div> : <div className="ba-empty" />)}</div>
+        )}
         <span className={`ba-pcount${tick ? " ba-tick" : ""}`}>{count}</span>
       </div>
     );
@@ -1128,7 +1204,7 @@ function GameScreen() {
     const isTurn = game.turnPlayer === pid;
     return (
       <div
-        className={`ba-half${flip ? " flip" : ""}${isTurn ? " turn" : " idle"}${hitSeat === pid ? " ba-hit" : ""}`}
+        className={`ba-half${flip ? " flip" : ""}${isTurn ? " turn" : " idle"}${hitSeat === pid ? " ba-hit" : ""}${drag?.owner === pid ? " ba-dropok" : ""}`}
         data-half={pid}
         style={{ ["--lc" as string]: leaderHex(pid) }}
       >
@@ -1297,10 +1373,23 @@ function GameScreen() {
 
   // ── log ─────────────────────────────────────────────────────────────────────
   const logRef = useRef<HTMLDivElement | null>(null);
-  const logLines = useMemo(
-    () => events.map((e) => fmtEvent(e, game, cards, seatName)).filter((l) => l !== null),
+  // ONE feed: duel log lines and table chat interleaved in time order (a chat
+  // message sent after event N-1 shows right after that line)
+  type FeedLine = { kind: string; text: string } | { seat: PID; text: string };
+  const logLines = useMemo(() => {
+    const out: FeedLine[] = [];
+    let ci = 0;
+    for (let i = 0; i <= events.length; i++) {
+      while (ci < chat.length && chat[ci].at <= i) out.push(chat[ci++]);
+      if (i < events.length) {
+        const l = fmtEvent(events[i], game, cards, seatName);
+        if (l) out.push(l);
+      }
+    }
+    return out;
+  },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [events, game],
+    [events, game, chat],
   );
   useEffect(() => {
     const el = logRef.current;
@@ -1678,11 +1767,7 @@ function GameScreen() {
         {/* turn toast sits IN the rail flow (never over the table or rail) */}
         {toast && <div className="ba-toast">{toast}</div>}
         <div className="ba-preview">{previewPanel}</div>
-        <div className="ba-turnbox">
-          <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
-          <span className="ba-phasepill">{phaseLabel}</span>
-        </div>
-        {endTurnButton}
+        <div className="ba-railfill" />
         <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
       </div>
 
@@ -1690,7 +1775,15 @@ function GameScreen() {
         {HandRow({ pid: SEAT_B, small: true })}
         <div className="ba-field" ref={fieldRef}>
           {Half({ pid: SEAT_B, flip: true })}
-          <div className="ba-midline" />
+          {/* the band between the halves: turn/phase at the left, End turn at
+              the right edge (where the hand rests at a real table) */}
+          <div className="ba-band">
+            <div className="ba-turnbox">
+              <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
+              <span className="ba-phasepill">{phaseLabel}</span>
+            </div>
+            {endTurnButton}
+          </div>
           {Half({ pid: SEAT_A, flip: false })}
           {/* always mounted: its screen CTM is the field's coordinate oracle */}
           <svg className="ba-arrow" aria-hidden ref={svgRef}>
@@ -1739,17 +1832,14 @@ function GameScreen() {
 
       <div className="ba-right">
         {SeatPanel({ pid: SEAT_B })}
-        <div className="ba-log" ref={logRef}>
-          {logLines.map((l, i) => (
-            <p key={i} className={`ba-logline ${l!.kind}`}>{l!.text}</p>
-          ))}
-        </div>
-        <div className="ba-chat" data-chat>
-          <div className="ba-chat-scroll" ref={chatRef}>
-            {chat.length === 0 && <span className="ba-chat-empty">Table chat (local, hotseat).</span>}
-            {chat.map((m, i) => (
-              <p key={i} className="ba-chatline"><b className={m.seat === SEAT_B ? "b" : ""}>{seatName(m.seat)}:</b> {m.text}</p>
-            ))}
+        {/* ONE box: duel log + table chat, typed at the bottom (DuelingBook) */}
+        <div className="ba-log" data-chat>
+          <div className="ba-log-scroll" ref={logRef}>
+            {logLines.map((l, i) =>
+              "seat" in l
+                ? <p key={i} className="ba-chatline"><b className={l.seat === SEAT_B ? "b" : ""}>{seatName(l.seat)}:</b> {l.text}</p>
+                : <p key={i} className={`ba-logline ${l.kind}`}>{l.text}</p>,
+            )}
           </div>
           <form
             className="ba-chat-input"
@@ -1757,7 +1847,7 @@ function GameScreen() {
               e.preventDefault();
               const text = chatDraft.trim();
               if (!text) return;
-              setChat((c) => [...c, { seat: chatSeat, text }]);
+              setChat((c) => [...c, { seat: chatSeat, text, at: events.length }]);
               setChatDraft("");
             }}
           >
@@ -1773,6 +1863,15 @@ function GameScreen() {
 
       {overlay}
     </div>
+    {/* drag-to-play ghost: viewport coordinates, card size at the stage scale */}
+    {drag && cards.get(drag.cardId)?.image && (
+      <img
+        className="ba-dragghost"
+        src={cards.get(drag.cardId)!.image}
+        alt=""
+        style={{ left: drag.x, top: drag.y, width: CARD_W * stage.scale * 1.08 }}
+      />
+    )}
     </div>
   );
 }

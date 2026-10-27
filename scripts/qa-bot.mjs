@@ -356,7 +356,7 @@ const BOARD_CHECKS = (opts) => {
       const moved = Object.entries(keyRects).filter(([k, v]) => window.__qaQuiet[k] && v.some((n, i) => Math.abs(n - window.__qaQuiet[k][i]) > 1));
       if (moved.length) out.push({ kind: "STRUCT REFLOW", severity: "high", message: `${moved.length} piece(s) moved when a prompt opened: ${moved.slice(0, 4).map(([k, v]) => `${k} ${window.__qaQuiet[k].join(",")} → ${v.join(",")}`).join("; ")}` });
     }
-    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-donstack, .ba-donlabel, .ba-hand:not([data-stack]) .ba-card, .ba-hand[data-stack], .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-donstack, .ba-donlabel, .ba-hand:not([data-stack]) .ba-card, .ba-hand[data-stack], .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-band > *, .ba-log, .ba-chat, .ba-toast")
       .map((el) => ({ el, r: el.getBoundingClientRect() }))
       .filter((p) => p.r.width > 0 && p.r.height > 0);
     const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
@@ -390,7 +390,9 @@ const BOARD_CHECKS = (opts) => {
         if (on.some((d) => Math.abs(d - on[0]) > 1) || off.some((d) => Math.abs(d) > 1)) stackBad.push(`${tag}: step not constant (${on.map((d) => Math.round(d)).join(",")} / off-axis ${off.map((d) => Math.round(d)).join(",")})`);
         const extent = horiz ? rs[0].width : rs[0].height;
         if (on[0] <= 0) stackBad.push(`${tag}: stack does not grow forward (step ${Math.round(on[0])})`);
-        else if (on[0] < extent && on[0] < 0.25 * extent - 0.5) stackBad.push(`${tag}: only ${Math.round((100 * on[0]) / extent)}% of each card uncovered (<25%)`);
+        // face-down Life cards only need a countable strip (≥ 8px); face-up
+        // cascades (DON!!, hand) must leave a quarter of each card readable
+        else if (tag === "life" ? on[0] < 8 : on[0] < extent && on[0] < 0.25 * extent - 0.5) stackBad.push(`${tag}: only ${Math.round((100 * on[0]) / extent)}% of each card uncovered (<${tag === "life" ? "8px" : "25%"})`);
         // last on top: at a point in the overlap of card i with card i−1 the
         // hit-test must land on card i
         if (!document.querySelector(".ba-overlay")) for (let i = 1; i < rs.length; i++) {

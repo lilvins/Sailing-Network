@@ -218,7 +218,7 @@ if (process.env.BA_FULL) {
   await shot("full");
   const struct = await page.evaluate(() => {
     const q = (s) => Array.from(document.querySelectorAll(s));
-    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-donstack, .ba-donlabel, .ba-hand:not([data-stack]) .ba-card, .ba-hand[data-stack], .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-log, .ba-chat, .ba-toast")
+    const pieces = q(".ba-charrow .ba-card, .ba-lsrow .ba-card, .ba-slot, .ba-pile, .ba-donstack, .ba-donlabel, .ba-hand:not([data-stack]) .ba-card, .ba-hand[data-stack], .ba-actionbar, .ba-seatpanel, .ba-left > *, .ba-band > *, .ba-log, .ba-chat, .ba-toast")
       .map((el) => ({ el, r: el.getBoundingClientRect() })).filter((p) => p.r.width > 0 && p.r.height > 0);
     const name = (p) => `${p.el.className.split(" ").slice(0, 2).join(".")}${p.el.dataset?.iid ? `[${p.el.dataset.iid}]` : ""}`;
     const hits = [];

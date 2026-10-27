@@ -143,6 +143,7 @@
 /* turn toast: a flat block at the top of the left rail (in flow) */
 .ba-toast {
   flex: 0 0 auto;
+  animation: ba-toastin 220ms var(--ease) backwards;
   text-align: center;
   padding: 8px 10px;
   background: var(--night-2);
@@ -221,7 +222,9 @@
 
 /* left rail */
 .ba-left { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-.ba-preview { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 5px; }
+/* the inspector is as tall as its content (art + text), never the whole rail */
+.ba-preview { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+.ba-railfill { flex: 1 1 auto; min-height: 0; }
 /* The WHOLE card must always be visible: the box follows the image, which is
    capped by rail width AND window height (object-fit contain, never crop). */
 .ba-prevart {
@@ -242,34 +245,34 @@
   height: auto;
   object-fit: contain;
 }
-.ba-prevname { font: 800 13px var(--serif); color: var(--ivory); }
-.ba-prevline { font: 700 10px var(--serif); letter-spacing: 0.04em; color: var(--brass-hi); }
+.ba-prevname { font: 800 16px var(--serif); color: var(--ivory); }
+.ba-prevline { font: 700 12px var(--serif); letter-spacing: 0.04em; color: var(--brass-hi); }
 .ba-prevfx {
-  flex: 1 1 auto;
-  min-height: 46px;
+  flex: 0 1 auto;
+  max-height: 250px; /* readable text, a compact box; scrolls past that */
   overflow-y: auto;
   background: var(--night-1);
   border: 1px solid var(--brass-dim);
   color: var(--ivory);
-  padding: 6px 8px;
-  font: 500 11px/1.45 var(--serif);
+  padding: 8px 10px;
+  font: 500 14px/1.5 var(--serif);
   white-space: pre-wrap;
 }
 .ba-prevnote {
   flex: 0 0 auto;
-  padding: 5px 8px;
+  padding: 6px 10px;
   border: 1px solid #d9a441;
   background: #241603;
   color: #ffd98a;
-  font: 600 10px/1.4 var(--serif);
+  font: 600 12px/1.4 var(--serif);
 }
 .ba-prevempty {
-  flex: 1;
+  min-height: 120px;
   display: grid;
   place-items: center;
   border: 1px dashed var(--brass-dim);
   color: var(--ivory-muted);
-  font: 500 11px var(--serif);
+  font: 500 13px var(--serif);
   padding: 12px;
   text-align: center;
 }
@@ -306,6 +309,28 @@
   padding: 0;
 }
 .ba-midline { display: none; }
+/* the band between the halves: turn/phase pills left, End turn right */
+.ba-band {
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 150px 0 120px;
+}
+.ba-band .ba-turnbox { width: 260px; }
+.ba-band .ba-endturn { min-width: 170px; }
+/* drag-to-play: the owner's half is the drop zone */
+.ba-half.ba-dropok { border-color: var(--brass-hi); background: rgba(201, 151, 59, 0.12); }
+.ba-root .gb-card.ba-dragging { opacity: 0.35; }
+.ba-dragghost {
+  position: fixed;
+  z-index: 95;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-3deg);
+  border-radius: 4px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7);
+  image-rendering: auto;
+}
 
 /* one half, tinted with the seat's leader color (--lc) */
 .ba-half {
@@ -315,7 +340,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 8px;
   align-items: stretch;
-  padding: 10px 12px;
+  padding: 6px 12px;
   /* ONE quiet surface: a dark glass over the scene, no tint, no inner frames */
   background: rgba(4, 6, 10, 0.42);
   /* always 2px: the turn change must not move a single pixel of the table */
@@ -476,6 +501,20 @@
   position: absolute;
   top: 0;
   width: var(--bacw) !important;
+  animation: ba-settle 200ms var(--ease) backwards; /* a DON!! placed/stood settles in */
+}
+/* per-card flashes from engine events (≤450ms, outline/box-shadow only: safe
+   on rested cards whose transform is the rotation) */
+.ba-fl-pulse { animation: ba-flpulse 420ms var(--ease); }
+.ba-fl-hit { animation: ba-flhit 420ms var(--ease); }
+.ba-fl-up { animation: ba-flup 420ms var(--ease); }
+.ba-fl-glow { animation: ba-flglow 450ms var(--ease); }
+@keyframes ba-flpulse { 0% { box-shadow: 0 0 0 0 rgba(201, 151, 59, 0.9); } 100% { box-shadow: 0 0 0 14px rgba(201, 151, 59, 0); } }
+@keyframes ba-flhit { 0%, 100% { box-shadow: none; } 30% { box-shadow: 0 0 0 4px var(--signal-hi), 0 0 18px var(--signal-hi); } }
+@keyframes ba-flup { 0% { box-shadow: 0 0 0 0 rgba(79, 210, 122, 0.9); } 100% { box-shadow: 0 0 0 12px rgba(79, 210, 122, 0); } }
+@keyframes ba-flglow { 0%, 100% { box-shadow: none; } 40% { box-shadow: 0 0 0 3px #fff, 0 0 22px #fff; } }
+@media (prefers-reduced-motion: reduce) {
+  .ba-doncell, .ba-fl-pulse, .ba-fl-hit, .ba-fl-up, .ba-fl-glow, .ba-logline, .ba-chatline { animation: none; }
 }
 /* the selection ring must read on the UNCOVERED strip of a stacked DON!!: an
    inner tint on top of the outline */
@@ -539,6 +578,10 @@
   background: rgba(0, 0, 0, 0.28);
 }
 .ba-backcard { position: relative; aspect-ratio: 100 / 140; }
+/* Life: a vertical cascade of real backs, one strip per card */
+.ba-lifestack { position: relative; width: var(--bacw); }
+.ba-lifestack > .ba-lifecard { position: absolute; left: 0; width: 100% !important; height: var(--bach); cursor: default; }
+.ba-lifestack > .ba-lifecard:hover { transform: none; }
 .ba-pcount {
   position: absolute;
   right: 3px;
@@ -570,7 +613,8 @@
   scrollbar-width: none;
 }
 .ba-hand::-webkit-scrollbar { display: none; }
-.ba-hand .gb-card { flex: 0 0 auto; animation: ba-draw 180ms var(--ease) backwards; }
+.ba-hand .gb-card { flex: 0 0 auto; animation: ba-draw 180ms var(--ease) backwards; touch-action: none; /* drag-to-play on touch */ }
+@keyframes ba-toastin { from { transform: translateX(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
 .ba-hand .gb-card:hover { transform: translateY(-4px); }
 /* functional micro-motion: a drawn card slides up into the hand, a played
    card settles into its slot (mount-only, transform/opacity, ≤200ms) */
@@ -665,11 +709,11 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 7;
-  padding: 0 4px;
+  padding: 1px 6px;
   background: #3b1210;
   border: 1px solid var(--signal);
   color: #ffd9c9;
-  font: 800 8.5px var(--mono);
+  font: 800 11.5px var(--mono); /* readable at phone scale (user: "DON x1 should be bigger") */
   white-space: nowrap;
   pointer-events: none;
 }
@@ -742,38 +786,32 @@
 .ba-seatstats { display: flex; flex-wrap: wrap; gap: 4px 10px; font: 600 9.5px var(--serif); letter-spacing: 0.06em; color: var(--ivory-muted); }
 .ba-seatstats b { color: var(--ivory); font-family: var(--mono); }
 
+/* ONE box on the right: the duel log with the table chat typed at the bottom */
 .ba-log {
   flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   background: var(--night-1);
   border: 1px solid var(--brass-dim);
-  padding: 6px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-/* chat under the duel log — DuelingBook-style white box (local / hotseat) */
-.ba-chat {
-  flex: 0 0 200px;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  border: 1px solid #7a8699;
   overflow: hidden;
 }
-.ba-chat-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; gap: 2px; }
-.ba-chat-empty { font: 400 11px Arial; color: #777; }
-.ba-chatline { margin: 0; font: 400 11.5px Arial; color: #111; line-height: 1.35; word-break: break-word; }
-.ba-chatline b { color: #1a56a8; }
-.ba-chatline b.b { color: #a8321a; }
-.ba-chat-input { flex: 0 0 auto; display: flex; gap: 4px; padding: 5px; border-top: 1px solid #c9ced8; background: #f0f0f0; }
-.ba-chat-input input { flex: 1; min-width: 0; border: 1px solid #9aa2b1; background: #fff; padding: 6px 7px; font: 400 11.5px Arial; color: #111; outline: none; min-height: 32px; }
-.ba-chat-input input:focus { border-color: #1a56a8; }
-.ba-chat-input button { flex: 0 0 auto; padding: 0 12px; border: 1px solid #6f7787; background: #f0f0f0; color: #111; font: 700 11px Arial; cursor: pointer; min-height: 32px; }
-.ba-chat-input button:hover { background: #fff; }
-.ba-chat-seat { flex: 0 0 auto; padding: 0 6px; border: 1px solid #6f7787; background: #f0f0f0; font: 700 10px Arial; color: #111; cursor: pointer; }
-.ba-logline { margin: 0; font: 500 10.5px/1.4 var(--serif); color: var(--ivory-muted); }
+.ba-log-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; }
+/* chat under the duel log — DuelingBook-style white box (local / hotseat) */
+/* chat lines sit in the same feed as the log, in white with the seat's name */
+.ba-chatline { margin: 0; font: 600 12px/1.4 var(--serif); color: var(--ivory); word-break: break-word; animation: ba-linein 160ms var(--ease) backwards; }
+.ba-chatline b { color: #8fc1ff; }
+.ba-chatline b.b { color: #ff9a8a; }
+.ba-chat-input { flex: 0 0 auto; display: flex; gap: 4px; padding: 6px; border-top: 1px solid var(--brass-dim); background: var(--night-2); }
+.ba-chat-input input { flex: 1; min-width: 0; border: 1px solid var(--brass-dim); background: var(--night-0); padding: 6px 8px; font: 500 12px var(--serif); color: var(--ivory); outline: none; min-height: 34px; }
+.ba-chat-input input::placeholder { color: var(--ivory-muted); }
+.ba-chat-input input:focus { border-color: var(--brass-hi); }
+.ba-chat-input button { flex: 0 0 auto; padding: 0 12px; border: 1px solid var(--brass-dim); background: var(--night-3); color: var(--ivory); font: 800 11px var(--serif); cursor: pointer; min-height: 34px; }
+.ba-chat-input button:hover:not(:disabled) { border-color: var(--brass-hi); }
+.ba-chat-input button:disabled { opacity: 0.45; cursor: default; }
+.ba-chat-seat { flex: 0 0 auto; padding: 0 8px; font-size: 10px; }
+.ba-logline { margin: 0; font: 500 11.5px/1.4 var(--serif); color: var(--ivory-muted); animation: ba-linein 160ms var(--ease) backwards; }
+@keyframes ba-linein { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
 .ba-logline.turn { font-weight: 800; color: var(--brass-hi); margin-top: 3px; }
 .ba-logline.battle { color: var(--ivory); }
 .ba-logline.danger { color: var(--signal-hi); font-weight: 700; }
