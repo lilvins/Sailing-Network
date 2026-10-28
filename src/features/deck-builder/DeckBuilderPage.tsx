@@ -97,11 +97,14 @@ function counterKind(card) {
 }
 
 /* ---------- the card tile (placeholder art) ---------- */
-function CardTile({ card, count, onClick, onHover, onDoubleClick, faded, mini, dim, locked }) {
+/* left click = add one copy, right click = take one out (list AND deck panel) */
+function CardTile({ card, count, onClick, onRemove, onHover, onDoubleClick, faded, mini, dim, locked }) {
   const c = hueColor(card.col);
   return (
     <button className={"db-card t-" + card.t + (faded ? " faded" : "") + (mini ? " mini" : "") + (dim ? " dim" : "") + (locked ? " locked" : "")}
-      style={{ "--cc": c }} onClick={onClick} onDoubleClick={onDoubleClick} onMouseEnter={onHover} onFocus={onHover} title={card.name + (onDoubleClick ? " (double-click to star)" : "")}>
+      style={{ "--cc": c }} onClick={onClick} onDoubleClick={onDoubleClick} onMouseEnter={onHover} onFocus={onHover}
+      onContextMenu={onRemove ? (e) => { e.preventDefault(); onRemove(); } : undefined}
+      title={card.name + (onRemove ? " — left click: add · right click: remove" : "") + (onDoubleClick ? " · double-click to star" : "")}>
       <span className="db-card-art">
         <span className="db-card-glow" style={{ background:`radial-gradient(120% 80% at 50% 12%, ${c}dd, ${c}55 46%, #0a0f17 88%)` }}></span>
         {card.image && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
@@ -285,6 +288,7 @@ function DeckBuilder() {
     setSel(card);
   };
   const remove = (card) => {
+    if (card.t === "L") { if (leader && leader.id === card.id) setLeader(null); setSel(card); return; }
     setDeck((d) => {
       const cur = d[card.id] || 0;
       if (cur <= 0) return d;
@@ -458,7 +462,7 @@ function DeckBuilder() {
             <div className="db-section-h"><span>Leader</span><span className="db-sec-count">{leader ? 1 : 0} / 1</span></div>
             <div className="db-leader-row">
               {leader
-                ? <div className="db-leader-card"><CardTile card={leader} onClick={() => setSel(leader)} onHover={() => setSel(leader)} /></div>
+                ? <div className="db-leader-card"><CardTile card={leader} onClick={() => setSel(leader)} onRemove={() => remove(leader)} onHover={() => setSel(leader)} /></div>
                 : <div className="db-leader-empty">Select a leader from the list →</div>}
               {leader &&
                 <div className="db-leader-info">
@@ -474,10 +478,10 @@ function DeckBuilder() {
               <span className={"db-sec-count" + (mainCount === MAIN_MAX ? " full" : "")}>{mainCount} / {MAIN_MAX}</span>
             </div>
             {deckCards.length === 0
-              ? <div className="db-deck-empty"><I n="cards" size={30} /><p>Add cards from the list on the right.<br/>A legal deck has exactly 50 cards.</p></div>
+              ? <div className="db-deck-empty"><I n="cards" size={30} /><p>Left click a card on the right to add it, right click to take it out.<br/>A legal deck has exactly 50 cards.</p></div>
               : <div className="db-deck-grid">
                   {deckCards.map(({ card, n }) => (
-                    <CardTile key={card.id} card={card} count={n} mini onClick={() => { setSel(card); remove(card); }} onHover={() => setSel(card)} />
+                    <CardTile key={card.id} card={card} count={n} mini onClick={() => add(card)} onRemove={() => remove(card)} onHover={() => setSel(card)} />
                   ))}
                 </div>}
           </div>
@@ -553,6 +557,7 @@ function DeckBuilder() {
                     dim={card.t !== "L" && (deck[card.id] || 0) >= card.max}
                     locked={card.t !== "L" && !colorOK(card)}
                     onClick={() => add(card)}
+                    onRemove={() => remove(card)}
                     onHover={() => setSel(card)} />
                 ))
               )}
@@ -565,6 +570,7 @@ function DeckBuilder() {
                   dim={card.t !== "L" && (deck[card.id] || 0) >= card.max}
                   locked={card.t !== "L" && !colorOK(card)}
                   onClick={() => add(card)}
+                  onRemove={() => remove(card)}
                   onHover={() => setSel(card)}
                   onDoubleClick={() => toggleFav(card.id)} />
               ))}
