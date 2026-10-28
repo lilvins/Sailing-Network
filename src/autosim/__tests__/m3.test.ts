@@ -541,7 +541,7 @@ describe("tier-2 zone movement", () => {
       .toThrow(/RESTED/);
     run(ctx, [{ type: "playCard", player: "alice", iid: handIid(ctx, "alice", "NC-CANATK")! }]);
     run(ctx, [{ type: "respondTargets", player: "alice", iids: [atk] }]);
-    expect(hasRestriction(ctx.s, "alice", atk, "canAttackActiveCharacters")).toBe(true);
+    expect(hasRestriction(ctx.db, ctx.s, "alice", atk, "canAttackActiveCharacters")).toBe(true);
     expect(legalMoves(ctx.db, ctx.s).attackers.find((a) => a.iid === atk)?.targets).toContain(bChar);
     run(ctx, [{ type: "attack", player: "alice", attackerIid: atk, targetIid: bChar }]);
     expect(ctx.s.battle?.targetIid).toBe(bChar);

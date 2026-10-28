@@ -153,7 +153,53 @@ optcg-ai project (`C:/Users/Admin/Desktop/optcg-ai`).
   Every finished game is stored as a full record (seed, decks, actions).
 - Learning: optcg-ai `npm run learn -- --sn <this folder>` reads the DB,
   re-tunes the bot per leader and writes public/data/optcg/learned.json.
-- AUTOSIM and board-auto are untouched.
+- AUTOSIM's engine and rules are untouched; since the M5 compiler (below)
+  AUTOSIM reads optcg-ai's card EFFECTS as IR data.
+
+## AUTOSIM M5 — card IR generated from optcg-ai (THIS COPY ONLY, 2026-10-28)
+User decision: keep AUTOSIM as the engine and bring optcg-ai's effect data
+into it through a compiler (option 2 of docs/INTEGRATION in optcg-ai), not
+swap engines.
+- `src/autosim/compiler/fromOptcg.ts`: pure compiler optcgwebsim actionV3
+  (`proc`+`steps`) → `CompiledCard`. Never invents semantics: what the IR
+  can't say becomes `manual` with the card's own text (a translatable first
+  part still runs, then "Continue by hand …"); abilities with no IR timing
+  (Pre* replacements, MyDonIsReturned, OnRest, …) become an inert `static`
+  manual so board-auto still flags them. Text cross-checks degrade to manual
+  when the data contradicts the printed text (Leader condition missing,
+  opponent targets the text doesn't name, "Leader or Character" lost,
+  [Trigger] not on the card). [Once Per Turn] follows the printed text.
+- Output: `src/autosim/data/compiled/generated/optcg.json` + `report.json`,
+  read through `getGeneratedCard()` (kept OUT of `BATCHES`, so M2/M3 suites
+  still measure the hand batch). board-auto `compiledFor`: hand batch →
+  generated → text heuristic.
+- Regenerate after optcg-ai `npm run sync-sn`: `npm run compile:optcg`
+  (= `UPDATE_OPTCG=1 vitest run m5-optcg`, then the checks again).
+- Tests `src/autosim/__tests__/m5-optcg.test.ts`: drift (committed JSON =
+  fresh compile), schema+lint, dry-run of every non-static effect of every
+  catalog card in the engine, agreement with the hand ST01/OP01 batch
+  (120/138 identical; the rest equivalent or IR-limited), full games with
+  the real meta decks that the catalog contains.
+- Numbers (old catalog, 2634 cards): board-auto cards with no automation
+  disclaimer 421 → 1554; cards whose text silently did nothing 1803 → 430.
+  Two independent text-vs-IR reviews of 70 random cards each drove the
+  fixes (13 → 9 WRONG, all patterns fixed after the second).
+- Catalog refreshed 2026-10-28 (`npm run cards`): 2634 → 2850 cards (OP17,
+  EB05, ST31-36, more promos). punk-records changed format upstream (no more
+  <br> between abilities, attributes as raw "<Slash>"): `build-cards.mjs`
+  now keeps the five attribute names and restores one ability per line
+  (breaks before ability tags after a sentence end / a keyword tag, before
+  "•" options and before a reminder after a full sentence). 2615/2634 old
+  texts come out identical; the 19 left are untagged statics now on one line.
+  After it: `npm run seed:cards` (the app reads cards from SQLite) and
+  `npm run art` (images of the new sets; the /api/card-art proxy covers the
+  gap meanwhile). 28/29 meta decks are now legal board-auto decks (the 29th
+  has 9 copies of OP16-042 in optcg-ai's list) and all play to a result.
+- Known limits: OP18 (36 cards) and 49 promos are not in punk-records yet;
+  continuous effects: M4 first step done (`engine/continuous.ts`, statics
+  recomputed per query to a fixpoint: power/cost/keyword/restriction; board-auto
+  clean cards 1667 → 1797) — immunities, hand-cost, "+X per …" still manual; "If X, do A.
+  Then, B" follows optcg-ai's data (B also gated).
 
 ## Board Auto — "Play Auto · Full Rules" (view `board-auto`)
 `src/features/board-auto/` (+ the `board-auto` case in `src/app/App.tsx`).

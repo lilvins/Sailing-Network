@@ -1,0 +1,595 @@
+{
+ "fullyAutomaticNow": 1582,
+ "effectsInCatalog": 3437,
+ "effectsManual": 1163,
+ "source": "optcg-ai public/data/optcg/bundle.json (actionV3) → src/autosim/compiler/fromOptcg.ts",
+ "cards": 2934,
+ "inCatalog": 2849,
+ "counts": {
+  "vanilla": 298,
+  "keyword-only": 53,
+  "compiled": 1570,
+  "partial": 405,
+  "unsupported": 608,
+  "total": 2934,
+  "coveredPct": 65.5
+ },
+ "catalogCounts": {
+  "vanilla": 288,
+  "keyword-only": 49,
+  "compiled": 1533,
+  "partial": 397,
+  "unsupported": 582,
+  "total": 2849,
+  "coveredPct": 65.6
+ },
+ "bySet": {
+  "EB01": {
+   "vanilla": 6,
+   "keyword-only": 1,
+   "compiled": 36,
+   "partial": 7,
+   "unsupported": 11,
+   "total": 61,
+   "coveredPct": 70.5
+  },
+  "ALL": {
+   "vanilla": 298,
+   "keyword-only": 53,
+   "compiled": 1570,
+   "partial": 405,
+   "unsupported": 608,
+   "total": 2934,
+   "coveredPct": 65.5
+  },
+  "EB02": {
+   "vanilla": 6,
+   "keyword-only": 0,
+   "compiled": 36,
+   "partial": 5,
+   "unsupported": 14,
+   "total": 61,
+   "coveredPct": 68.9
+  },
+  "EB03": {
+   "vanilla": 3,
+   "keyword-only": 1,
+   "compiled": 34,
+   "partial": 15,
+   "unsupported": 9,
+   "total": 62,
+   "coveredPct": 61.3
+  },
+  "EB04": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 27,
+   "partial": 27,
+   "unsupported": 7,
+   "total": 61,
+   "coveredPct": 44.3
+  },
+  "EB05": {
+   "vanilla": 6,
+   "keyword-only": 0,
+   "compiled": 28,
+   "partial": 15,
+   "unsupported": 12,
+   "total": 61,
+   "coveredPct": 55.7
+  },
+  "OP01": {
+   "vanilla": 16,
+   "keyword-only": 4,
+   "compiled": 93,
+   "partial": 3,
+   "unsupported": 4,
+   "total": 120,
+   "coveredPct": 94.2
+  },
+  "OP02": {
+   "vanilla": 20,
+   "keyword-only": 4,
+   "compiled": 78,
+   "partial": 8,
+   "unsupported": 11,
+   "total": 121,
+   "coveredPct": 84.3
+  },
+  "OP03": {
+   "vanilla": 15,
+   "keyword-only": 4,
+   "compiled": 72,
+   "partial": 12,
+   "unsupported": 20,
+   "total": 123,
+   "coveredPct": 74
+  },
+  "OP04": {
+   "vanilla": 8,
+   "keyword-only": 3,
+   "compiled": 76,
+   "partial": 13,
+   "unsupported": 19,
+   "total": 119,
+   "coveredPct": 73.1
+  },
+  "OP05": {
+   "vanilla": 7,
+   "keyword-only": 4,
+   "compiled": 66,
+   "partial": 8,
+   "unsupported": 34,
+   "total": 119,
+   "coveredPct": 64.7
+  },
+  "OP06": {
+   "vanilla": 7,
+   "keyword-only": 2,
+   "compiled": 62,
+   "partial": 16,
+   "unsupported": 32,
+   "total": 119,
+   "coveredPct": 59.7
+  },
+  "OP07": {
+   "vanilla": 6,
+   "keyword-only": 1,
+   "compiled": 77,
+   "partial": 9,
+   "unsupported": 26,
+   "total": 119,
+   "coveredPct": 70.6
+  },
+  "OP08": {
+   "vanilla": 10,
+   "keyword-only": 2,
+   "compiled": 63,
+   "partial": 11,
+   "unsupported": 33,
+   "total": 119,
+   "coveredPct": 63
+  },
+  "OP09": {
+   "vanilla": 10,
+   "keyword-only": 3,
+   "compiled": 67,
+   "partial": 11,
+   "unsupported": 28,
+   "total": 119,
+   "coveredPct": 67.2
+  },
+  "OP10": {
+   "vanilla": 11,
+   "keyword-only": 2,
+   "compiled": 60,
+   "partial": 12,
+   "unsupported": 34,
+   "total": 119,
+   "coveredPct": 61.3
+  },
+  "OP11": {
+   "vanilla": 21,
+   "keyword-only": 1,
+   "compiled": 47,
+   "partial": 25,
+   "unsupported": 25,
+   "total": 119,
+   "coveredPct": 58
+  },
+  "OP12": {
+   "vanilla": 24,
+   "keyword-only": 2,
+   "compiled": 44,
+   "partial": 13,
+   "unsupported": 36,
+   "total": 119,
+   "coveredPct": 58.8
+  },
+  "OP13": {
+   "vanilla": 16,
+   "keyword-only": 0,
+   "compiled": 51,
+   "partial": 27,
+   "unsupported": 26,
+   "total": 120,
+   "coveredPct": 55.8
+  },
+  "OP14": {
+   "vanilla": 8,
+   "keyword-only": 0,
+   "compiled": 58,
+   "partial": 29,
+   "unsupported": 25,
+   "total": 120,
+   "coveredPct": 55
+  },
+  "OP15": {
+   "vanilla": 6,
+   "keyword-only": 0,
+   "compiled": 52,
+   "partial": 25,
+   "unsupported": 36,
+   "total": 119,
+   "coveredPct": 48.7
+  },
+  "OP16": {
+   "vanilla": 9,
+   "keyword-only": 2,
+   "compiled": 67,
+   "partial": 24,
+   "unsupported": 17,
+   "total": 119,
+   "coveredPct": 65.5
+  },
+  "OP17": {
+   "vanilla": 6,
+   "keyword-only": 0,
+   "compiled": 68,
+   "partial": 19,
+   "unsupported": 26,
+   "total": 119,
+   "coveredPct": 62.2
+  },
+  "OP18": {
+   "vanilla": 1,
+   "keyword-only": 4,
+   "compiled": 19,
+   "partial": 5,
+   "unsupported": 7,
+   "total": 36,
+   "coveredPct": 66.7
+  },
+  "P": {
+   "vanilla": 20,
+   "keyword-only": 4,
+   "compiled": 75,
+   "partial": 13,
+   "unsupported": 47,
+   "total": 159,
+   "coveredPct": 62.3
+  },
+  "PRB01": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 0,
+   "partial": 0,
+   "unsupported": 1,
+   "total": 1,
+   "coveredPct": 0
+  },
+  "PRB02": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 10,
+   "partial": 6,
+   "unsupported": 2,
+   "total": 18,
+   "coveredPct": 55.6
+  },
+  "ST01": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 12,
+   "partial": 0,
+   "unsupported": 0,
+   "total": 17,
+   "coveredPct": 100
+  },
+  "ST02": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 9,
+   "partial": 0,
+   "unsupported": 3,
+   "total": 17,
+   "coveredPct": 82.4
+  },
+  "ST03": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 12,
+   "partial": 0,
+   "unsupported": 0,
+   "total": 17,
+   "coveredPct": 100
+  },
+  "ST04": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 12,
+   "partial": 0,
+   "unsupported": 0,
+   "total": 17,
+   "coveredPct": 100
+  },
+  "ST05": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 10,
+   "partial": 1,
+   "unsupported": 1,
+   "total": 17,
+   "coveredPct": 88.2
+  },
+  "ST06": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 11,
+   "partial": 0,
+   "unsupported": 1,
+   "total": 17,
+   "coveredPct": 94.1
+  },
+  "ST07": {
+   "vanilla": 4,
+   "keyword-only": 0,
+   "compiled": 5,
+   "partial": 2,
+   "unsupported": 6,
+   "total": 17,
+   "coveredPct": 52.9
+  },
+  "ST08": {
+   "vanilla": 4,
+   "keyword-only": 0,
+   "compiled": 7,
+   "partial": 1,
+   "unsupported": 3,
+   "total": 15,
+   "coveredPct": 73.3
+  },
+  "ST09": {
+   "vanilla": 4,
+   "keyword-only": 0,
+   "compiled": 9,
+   "partial": 1,
+   "unsupported": 1,
+   "total": 15,
+   "coveredPct": 86.7
+  },
+  "ST10": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 9,
+   "partial": 2,
+   "unsupported": 6,
+   "total": 17,
+   "coveredPct": 52.9
+  },
+  "ST11": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 4,
+   "partial": 0,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 80
+  },
+  "ST12": {
+   "vanilla": 4,
+   "keyword-only": 0,
+   "compiled": 10,
+   "partial": 0,
+   "unsupported": 3,
+   "total": 17,
+   "coveredPct": 82.4
+  },
+  "ST13": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 6,
+   "partial": 3,
+   "unsupported": 10,
+   "total": 19,
+   "coveredPct": 31.6
+  },
+  "ST14": {
+   "vanilla": 3,
+   "keyword-only": 0,
+   "compiled": 11,
+   "partial": 2,
+   "unsupported": 1,
+   "total": 17,
+   "coveredPct": 82.4
+  },
+  "ST15": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 2,
+   "partial": 2,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 40
+  },
+  "ST16": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 0,
+   "unsupported": 2,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST17": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 0,
+   "unsupported": 2,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST18": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 5,
+   "partial": 0,
+   "unsupported": 0,
+   "total": 5,
+   "coveredPct": 100
+  },
+  "ST19": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 2,
+   "partial": 3,
+   "unsupported": 0,
+   "total": 5,
+   "coveredPct": 40
+  },
+  "ST20": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 2,
+   "partial": 2,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 40
+  },
+  "ST21": {
+   "vanilla": 4,
+   "keyword-only": 1,
+   "compiled": 9,
+   "partial": 0,
+   "unsupported": 3,
+   "total": 17,
+   "coveredPct": 82.4
+  },
+  "ST22": {
+   "vanilla": 5,
+   "keyword-only": 1,
+   "compiled": 1,
+   "partial": 4,
+   "unsupported": 6,
+   "total": 17,
+   "coveredPct": 41.2
+  },
+  "ST23": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 1,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST24": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 1,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST25": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 1,
+   "partial": 3,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 20
+  },
+  "ST26": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 2,
+   "partial": 2,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 40
+  },
+  "ST27": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 2,
+   "unsupported": 0,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST28": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 4,
+   "partial": 1,
+   "unsupported": 0,
+   "total": 5,
+   "coveredPct": 80
+  },
+  "ST29": {
+   "vanilla": 2,
+   "keyword-only": 1,
+   "compiled": 8,
+   "partial": 4,
+   "unsupported": 2,
+   "total": 17,
+   "coveredPct": 64.7
+  },
+  "ST30": {
+   "vanilla": 2,
+   "keyword-only": 0,
+   "compiled": 8,
+   "partial": 5,
+   "unsupported": 2,
+   "total": 17,
+   "coveredPct": 58.8
+  },
+  "ST31": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 0,
+   "unsupported": 2,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST32": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 1,
+   "partial": 2,
+   "unsupported": 2,
+   "total": 5,
+   "coveredPct": 20
+  },
+  "ST33": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 2,
+   "unsupported": 0,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST34": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 3,
+   "partial": 1,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 60
+  },
+  "ST35": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 4,
+   "partial": 0,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 80
+  },
+  "ST36": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 4,
+   "partial": 0,
+   "unsupported": 1,
+   "total": 5,
+   "coveredPct": 80
+  }
+ }
+}

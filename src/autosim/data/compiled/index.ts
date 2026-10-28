@@ -9,6 +9,8 @@
  */
 import type { CompiledCard } from "../../ir/types";
 import st01op01 from "./st01-op01.json";
+import generated from "./generated/optcg.json";
+import generatedReportJson from "./generated/report.json";
 
 /** All compiled batches, newest last (later sets land here in M3+). */
 const BATCHES = [st01op01 as unknown as CompiledCard[]];
@@ -58,4 +60,30 @@ export function coverage(): Record<string, CoverageRow> {
     row.coveredPct = Math.round(((row.vanilla + row["keyword-only"] + row.compiled) / row.total) * 1000) / 10;
   }
   return rows;
+}
+
+// ─── M5: the batch GENERATED from optcg-ai (compiler/fromOptcg.ts) ─────────
+//
+// Kept apart from BATCHES on purpose: the hand-curated batches stay the
+// source of truth (and what the M2/M3 suites measure); the generated batch
+// covers every other card. board-auto's `compiledFor` reads hand batch →
+// generated → text heuristic, in that order.
+
+const GENERATED = generated as unknown as CompiledCard[];
+const generatedById: Record<string, CompiledCard> = {};
+for (const card of GENERATED) generatedById[card.cardId] = card;
+
+/** The IR generated from optcg-ai's effect data, or undefined. */
+export function getGeneratedCard(cardId: string): CompiledCard | undefined {
+  return generatedById[cardId];
+}
+
+/** Every generated card (sorted by id). */
+export function generatedCards(): CompiledCard[] {
+  return GENERATED;
+}
+
+/** Coverage summary of the generated batch (asserted against a recompute). */
+export function generatedReport(): typeof generatedReportJson {
+  return generatedReportJson;
 }

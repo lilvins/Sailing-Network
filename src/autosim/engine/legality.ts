@@ -99,9 +99,9 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
     for (const iid of candidates) {
       const inst = p.instances[iid];
       if (inst.rested) continue;
-      if (hasRestriction(state, player, iid, "cannotAttack")) continue;
+      if (hasRestriction(db, state, player, iid, "cannotAttack")) continue;
       // 7-1-1-2 (+ "can also attack active Characters" permission, M3)
-      const canHitActive = hasRestriction(state, player, iid, "canAttackActiveCharacters");
+      const canHitActive = hasRestriction(db, state, player, iid, "canAttackActiveCharacters");
       const charTargets = opp.zones.characterArea.filter(
         (t) => opp.instances[t].rested || canHitActive,
       );

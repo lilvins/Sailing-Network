@@ -496,7 +496,7 @@ export function declareAttack(db: CardDb, state: AutoGameState, log: GameEvent[]
   if (!isLeader && !isChar) throw new EngineError("attacker must be your Leader or a Character");
   const attacker = p.instances[attackerIid];
   if (attacker.rested) throw new EngineError("attacker is rested");
-  if (hasRestriction(state, player, attackerIid, "cannotAttack")) {
+  if (hasRestriction(db, state, player, attackerIid, "cannotAttack")) {
     throw new EngineError("this card cannot attack (effect restriction)");
   }
 
@@ -506,7 +506,7 @@ export function declareAttack(db: CardDb, state: AutoGameState, log: GameEvent[]
   const targetIsChar = opp.zones.characterArea.includes(targetIid);
   if (!targetIsLeader && !targetIsChar) throw new EngineError("target must be the opponent's Leader or Character");
   if (targetIsChar && !opp.instances[targetIid].rested
-      && !hasRestriction(state, player, attackerIid, "canAttackActiveCharacters")) {
+      && !hasRestriction(db, state, player, attackerIid, "canAttackActiveCharacters")) {
     throw new EngineError("only RESTED characters can be attacked (7-1-1-2)");
   }
 
@@ -635,8 +635,8 @@ export function startDamageStep(db: CardDb, state: AutoGameState, log: GameEvent
     const exec = ensureExec(state, { at: "damage", remaining: damage });
     exec.flow = { at: "damage", remaining: damage };
     pump(db, state, log);
-  } else if (hasRestriction(state, battle.defenderOwner, battle.targetIid, "cannotBeKOd")
-          || hasRestriction(state, battle.defenderOwner, battle.targetIid, "cannotBeKOdInBattle")) {
+  } else if (hasRestriction(db, state, battle.defenderOwner, battle.targetIid, "cannotBeKOd")
+          || hasRestriction(db, state, battle.defenderOwner, battle.targetIid, "cannotBeKOdInBattle")) {
     // 10-2-1-3: the Character is not K.O.'d by the battle — nothing happens
     endBattle(db, state, log);
     pump(db, state, log);

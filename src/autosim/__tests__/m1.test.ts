@@ -354,13 +354,13 @@ describe("[Blocker] (10-1-4, 7-1-2) and [Unblockable] (10-1-7)", () => {
     // [On Play] restriction targets bob's Blocker (single candidate + upTo → still a choice)
     expect(ctx.s.pendingChoice).toMatchObject({ kind: "selectTargets", player: "alice" });
     run(ctx, [{ type: "respondTargets", player: "alice", iids: [blk] }]);
-    expect(hasRestriction(ctx.s, "bob", blk, "cannotBlock")).toBe(true);
+    expect(hasRestriction(db, ctx.s, "bob", blk, "cannotBlock")).toBe(true);
     run(ctx, [{ type: "attack", player: "alice", attackerIid: leader(ctx, "alice"), targetIid: leader(ctx, "bob") }]);
     expect(ctx.s.pendingChoice?.kind).toBe("counterWindow"); // blocker not offered
     drainToDamage(ctx);
     // thisTurn restriction expires at the End Phase (6-6-1-3)
     run(ctx, [{ type: "endTurn", player: "alice" }]);
-    expect(hasRestriction(ctx.s, "bob", blk, "cannotBlock")).toBe(false);
+    expect(hasRestriction(db, ctx.s, "bob", blk, "cannotBlock")).toBe(false);
   });
 });
 
@@ -622,13 +622,13 @@ describe("tier-1 action executor", () => {
       && ctx.s.players.alice.don.active >= 2);
     run(ctx, [{ type: "playCard", player: "alice", iid: handIid(ctx, "alice", "MC-OPRES")! }]);
     run(ctx, [{ type: "respondTargets", player: "alice", iids: [bChar] }]);
-    expect(hasRestriction(ctx.s, "bob", bChar, "cannotAttack")).toBe(true);
+    expect(hasRestriction(db, ctx.s, "bob", bChar, "cannotAttack")).toBe(true);
     run(ctx, [{ type: "endTurn", player: "alice" }]); // → bob's turn (his char stood + no sickness)
     expect(() => applyIntent(db, ctx.s, { type: "attack", player: "bob", attackerIid: bChar, targetIid: leader(ctx, "alice") }))
       .toThrow(/cannot attack/);
     expect(legalMoves(db, ctx.s).attackers.some((a) => a.iid === bChar)).toBe(false);
     run(ctx, [{ type: "endTurn", player: "bob" }]); // restriction expires with bob's End Phase
-    expect(hasRestriction(ctx.s, "bob", bChar, "cannotAttack")).toBe(false);
+    expect(hasRestriction(db, ctx.s, "bob", bChar, "cannotAttack")).toBe(false);
     until(ctx, () => ctx.s.turnPlayer === "bob");
     run(ctx, [{ type: "attack", player: "bob", attackerIid: bChar, targetIid: leader(ctx, "alice") }]);
     expect(ctx.s.battle).not.toBeNull();

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Card } from "../cards/cardsDb";
-import { getCompiledCard } from "../../autosim/data/compiled";
+import { getCompiledCard, getGeneratedCard } from "../../autosim/data/compiled";
 import { automationInfo, compiledFor, deriveCompiled, innateKeywords, makeCardDb } from "./compile";
 
 /** Minimal catalog card factory. */
@@ -154,6 +154,14 @@ describe("official M2 batch takes precedence over the fallback", () => {
     expect(ir.classification).toBe("unsupported");
   });
 
+  it("an id outside the hand batch uses the batch generated from optcg-ai (M5)", () => {
+    // OP05-060 Monkey.D.Luffy leader: generated, not the text heuristic
+    const ir = compiledFor(card({ id: "OP05-060", category: "Leader" }))!;
+    expect(getCompiledCard("OP05-060")).toBeUndefined();
+    expect(ir).toBe(getGeneratedCard("OP05-060"));
+    expect(ir.notes).toMatch(/GENERATED from optcg-ai/);
+  });
+
   it("the batch covers all of ST01", () => {
     for (let i = 1; i <= 17; i++) {
       const id = `ST01-${String(i).padStart(3, "0")}`;
@@ -168,11 +176,11 @@ describe("automationInfo (M3 metric)", () => {
     expect(info).toEqual({ manual: false, inert: false, note: null });
   });
 
-  it("a static-only card (OP01-001, fullyAutoExecutable=false) gets the M4 continuous-effect note", () => {
+  it("a static-only card (OP01-001) is fully automatic since M4 continuous effects", () => {
     const info = automationInfo(card({ id: "OP01-001", category: "Leader", effect: "[DON!! x1] [Your Turn] …" }));
-    expect(info.inert).toBe(true);
+    expect(info.inert).toBe(false);
     expect(info.manual).toBe(false);
-    expect(info.note).toMatch(/continuous effect not yet automatic \(M4\)/);
+    expect(info.note).toBeNull();
   });
 
   it("a peek/search card (OP01-016 Nami) is fully automated", () => {

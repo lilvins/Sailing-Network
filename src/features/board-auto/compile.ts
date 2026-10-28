@@ -4,7 +4,10 @@
  * Source of truth, in order:
  *  1. The OFFICIAL M2 compilation batch (`src/autosim/data/compiled`,
  *     getCompiledCard) — ST01 + OP01 today, more sets as M3+ lands.
- *  2. For ids NOT covered by a batch: a CONSERVATIVE heuristic FALLBACK
+ *  2. The batch GENERATED from optcg-ai's effect data (M5,
+ *     `src/autosim/compiler/fromOptcg.ts`, getGeneratedCard) — every other
+ *     card optcg-ai knows; abilities the IR can't express are `manual`.
+ *  3. For ids covered by neither: a CONSERVATIVE heuristic FALLBACK
  *     derived from the card text (below). It never invents semantics — when
  *     in doubt it degrades to `unsupported`/manual (plan §1.3):
  *
@@ -28,8 +31,8 @@
 import type { Card } from "../cards/cardsDb";
 import type { Action, CompiledCard, CostItem, Effect, Keyword, Selector } from "../../autosim/ir/types";
 import type { CardDb, EngineCard } from "../../autosim/engine/state";
-import { allCompiledCards, getCompiledCard } from "../../autosim/data/compiled";
-import coverageReport from "../../autosim/data/compiled/coverage-report.json";
+import { allCompiledCards, getCompiledCard, getGeneratedCard } from "../../autosim/data/compiled";
+import { isAutomaticStatic } from "../../autosim/engine/continuous";
 
 /** Keyword tags in match order ([Rush: Character] before [Rush]). */
 const KEYWORD_TAGS: [string, Keyword][] = [
@@ -200,9 +203,10 @@ export function deriveCompiled(card: Card): CompiledCard | null {
   };
 }
 
-/** The IR for a card: official batch first, heuristic fallback otherwise. */
+/** The IR for a card: official batch first, then the batch generated from
+ *  optcg-ai, then the heuristic fallback. */
 export function compiledFor(card: Card): CompiledCard | undefined {
-  return getCompiledCard(card.id) ?? deriveCompiled(card) ?? undefined;
+  return getCompiledCard(card.id) ?? getGeneratedCard(card.id) ?? deriveCompiled(card) ?? undefined;
 }
 
 // ─── automation transparency (an effect that doesn't run must SAY so) ────────
@@ -217,21 +221,12 @@ const ENGINE_RUNNABLE_TIMINGS = new Set<string>([
 ]);
 
 const TIMING_LABEL: Record<string, string> = {
-  static: "continuous effect not yet automatic (M4)",
+  static: "this continuous effect",
   startOfYourTurn: "start-of-turn effects",
   startOfOpponentsTurn: "start-of-turn effects",
   whenAttacked: "[When Attacked]",
   onOpponentPlaysCharacter: "effects on the opponent's plays",
 };
-
-/** Cards the coverage report marks as compiled but degrading ONLY because of
- *  `static` effects (the "fullyAutoExecutable" metric, M3). */
-const STATIC_ONLY = new Set(
-  (coverageReport as { compiledButDegradingToManual: { cardId: string; needs: string[] }[] })
-    .compiledButDegradingToManual
-    .filter((row) => row.needs.every((n) => n.startsWith("static")))
-    .map((row) => row.cardId),
-);
 
 /** Effect text the fallback could NOT capture (anything beyond line-opening
  *  keywords and, on Events, the [Main]/[Counter] windows). */
@@ -262,17 +257,19 @@ const autoInfoCache = new Map<string, AutomationInfo>();
 export function automationInfo(card: Card): AutomationInfo {
   const hit = autoInfoCache.get(card.id);
   if (hit) return hit;
-  const fromBatch = getCompiledCard(card.id) !== undefined;
+  const fromBatch = getCompiledCard(card.id) !== undefined || getGeneratedCard(card.id) !== undefined;
   const effects = compiledFor(card)?.effects ?? [];
   const manual = effects.some((fx) => JSON.stringify(fx.actions).includes('"kind":"manual"'));
-  const inertTimings = [...new Set(effects.map((fx) => fx.timing).filter((t) => !ENGINE_RUNNABLE_TIMINGS.has(t)))];
+  // M4: a `static` effect made only of continuous power/cost/keyword/restriction
+  // changes runs (engine/continuous.ts); other statics are still inert
+  const inertTimings = [...new Set(effects.filter((fx) => !isAutomaticStatic(fx)).map((fx) => fx.timing).filter((t) => !ENGINE_RUNNABLE_TIMINGS.has(t)))];
   const residual = fromBatch ? [] : fallbackResidualLines(card);
   const bits: string[] = [];
   if (residual.length > 0) {
     bits.push(`set ${card.set} isn't compiled yet, so effect text beyond keywords / [Trigger] / [Main] / [Counter] does nothing automatically`);
   }
-  if (STATIC_ONLY.has(card.id) || (inertTimings.length === 1 && inertTimings[0] === "static")) {
-    bits.push("continuous effect not yet automatic (M4) — everything else on this card runs");
+  if (inertTimings.length === 1 && inertTimings[0] === "static") {
+    bits.push("this continuous effect is not automatic yet — everything else on this card runs");
   } else if (inertTimings.length > 0) {
     bits.push(`the engine can't run ${inertTimings.map((t) => TIMING_LABEL[t] ?? t).join(", ")} yet`);
   }
@@ -292,7 +289,7 @@ export function uncompiledSetsOf(cardIds: Iterable<string>): string[] {
   const missing = new Set<string>();
   for (const id of cardIds) {
     const set = id.split("-")[0];
-    if (!compiledSets.has(set)) missing.add(set);
+    if (!compiledSets.has(set) && !getGeneratedCard(id)) missing.add(set);
   }
   return [...missing].sort();
 }

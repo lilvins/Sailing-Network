@@ -6,6 +6,7 @@
  * docs/rules/op_comprehensive_rules_v1.2.0.txt.
  */
 import type { Action, CompiledCard, CostItem, Duration, Keyword } from "../ir/types";
+import { activeModifiers } from "./continuous";
 
 export type PID = string;
 export type Iid = string; // deterministic instance id: `${seat}#${n}`
@@ -224,7 +225,7 @@ export function effectivePower(db: CardDb, state: AutoGameState, owner: PID, iid
   const inst = p.instances[iid];
   const base = db(inst.cardId).power ?? 0;
   const donBonus = owner === state.turnPlayer ? (p.don.given[iid] ?? 0) * 1000 : 0;
-  const modBonus = state.modifiers
+  const modBonus = activeModifiers(db, state)
     .filter((m) => m.kind === "powerMod" && m.targetOwner === owner && m.targetIid === iid)
     .reduce((s, m) => s + (m.amount ?? 0), 0);
   return base + donBonus + modBonus;
@@ -235,7 +236,7 @@ export function effectivePower(db: CardDb, state: AutoGameState, owner: PID, iid
 export function keywordsOf(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): Set<Keyword> {
   const inst = state.players[owner].instances[iid];
   const kws = new Set<Keyword>(db(inst.cardId).compiled?.keywords ?? []);
-  for (const m of state.modifiers) {
+  for (const m of activeModifiers(db, state)) {
     if (m.kind === "keywordGrant" && m.targetOwner === owner && m.targetIid === iid && m.keyword) {
       kws.add(m.keyword);
     }
@@ -243,10 +244,10 @@ export function keywordsOf(db: CardDb, state: AutoGameState, owner: PID, iid: Ii
   return kws;
 }
 
-/** Whether an active restriction modifier applies to the card. M1 enforces
- *  cannotAttack and cannotBlock; other kinds are stored but unenforced (M4). */
-export function hasRestriction(state: AutoGameState, owner: PID, iid: Iid, what: RestrictionKind): boolean {
-  return state.modifiers.some(
+/** Whether a restriction applies to the card: stored modifiers plus the
+ *  continuous effects on the field (M4, continuous.ts). */
+export function hasRestriction(db: CardDb, state: AutoGameState, owner: PID, iid: Iid, what: RestrictionKind): boolean {
+  return activeModifiers(db, state).some(
     (m) => m.kind === "restriction" && m.targetOwner === owner && m.targetIid === iid && m.restriction === what,
   );
 }
@@ -255,7 +256,7 @@ export function hasRestriction(state: AutoGameState, owner: PID, iid: Iid, what:
 export function effectiveCost(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
   const inst = state.players[owner].instances[iid];
   const base = db(inst.cardId).cost ?? 0;
-  const mod = state.modifiers
+  const mod = activeModifiers(db, state)
     .filter((m) => m.kind === "costMod" && m.targetOwner === owner && m.targetIid === iid)
     .reduce((s, m) => s + (m.amount ?? 0), 0);
   return Math.max(0, base + mod);

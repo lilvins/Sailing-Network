@@ -19,7 +19,8 @@
     "test": "vitest run && node tests/api-test.mjs",
     "test:unit": "vitest run",
     "test:api": "node tests/api-test.mjs",
-    "qa:bot": "node scripts/qa-bot.mjs"
+    "qa:bot": "node scripts/qa-bot.mjs",
+    "compile:optcg": "node scripts/compile-optcg.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

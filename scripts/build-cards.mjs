@@ -52,12 +52,33 @@ const BASE_ID = /^[A-Z0-9]+-\d+$/;
 
 // effect text carries <br> and a few inline tags + {Type} braces (kept, they're
 // meaningful). Convert breaks to newlines, strip any other tags, tidy whitespace.
+//
+// 2026-10 upstream format change: punk-records no longer writes <br> between
+// abilities (one long line) and writes attributes as raw "<Slash>" instead of
+// "&lt;Slash&gt;". So: keep the five attribute names (they are Capitalized,
+// unlike real HTML tags), and restore one ability per line by breaking before
+// an ability tag that follows a sentence end.
+const ATTR = /<(Strike|Slash|Ranged|Special|Wisdom)>/g;
+const ABILITY_TAG = String.raw`\[(?:On Play|When Attacking|Activate: ?Main|Main|Counter|On K\.O\.|On Block|End of Your Turn|On Your Opponent's Attack|Your Turn|Opponent's Turn|Once Per Turn|DON!! ?[x×]\d+|Blocker|Rush(?:: Character)?|Double Attack|Banish|Unblockable)\]`;
+const BREAK_BEFORE_TAG = new RegExp(String.raw`(?<=[.)」])[ \t]+(?=${ABILITY_TAG})`, "g");
+// "[Blocker] [On Play] …": a keyword line, then the next ability
+const BREAK_AFTER_KEYWORD = new RegExp(String.raw`(?<=\[(?:Blocker|Rush|Rush: Character|Double Attack|Banish|Unblockable)\])[ \t]+(?=${ABILITY_TAG})`, "g");
+
 function cleanEffect(s) {
   if (!s) return "";
   return s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(ATTR, "\u0000$1\u0001")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<[^>]+>/g, "")
+    .replace(/\u0000/g, "<")
+    .replace(/\u0001/g, ">")
     .replace(/\r/g, "")
+    .replace(BREAK_BEFORE_TAG, "\n")
+    .replace(BREAK_AFTER_KEYWORD, "\n")
+    .replace(/[ \t]+(?=•)/g, "\n") // "Choose one:" options, one per line
+    .replace(/(?<=\.)[ \t]+(?=\()/g, "\n") // a reminder after a full sentence
     .replace(/[ \t]+\n/g, "\n")
     .trim();
 }

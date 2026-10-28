@@ -297,7 +297,9 @@ Golden examples (da compilare A MANO come primi test):
   DON manip, mill, bounce, costMod. *Exit: ≥90% ST01+OP01, ≥75% OP02-OP05.*
 - **M4 — Continuous & meta** · permanents a fixpoint, negate, replacement,
   setBasePower, redirect/endBattle, [Once Per Turn] edge (10-2-13-5).
-- **M5 — Copertura totale** · pipeline su tutti i set; report copertura;
+- **M5 — Copertura totale** · (passo 1 fatto 2026-10-28, solo nella copia
+  Sailing-Network-bot: IR generato da optcg-ai per tutte le carte, vedi
+  decisioni 45-50) · pipeline su tutti i set; report copertura;
   triage code; fallback manuale rifinito.
 - **M6 (opz.)** · bot avversario (facile: risponde alle stesse ChoiceRequest).
 
@@ -734,8 +736,50 @@ ricompilazione ST01+OP01 al 94.2% IR-complete).** Scelte fatte:
     ST01+OP01 e il vocabolario/esecutore ora copre i pattern necessari
     (stesso §6 a 3 livelli quando si farà).
 
-Debiti M4+: effetti `static` a fixpoint (8-1-3-3-5) — unica causa di
-degrado rimasta tra i compiled —, replacement/negate (8-1-3-4, 8-2),
+**M5 passo 1 (2026-10-28) — IR generato dai dati effetti di optcg-ai.**
+45. Invece della compilazione AI carta-per-carta (§6.1), la sorgente è il
+    linguaggio a passi di optcgwebsim (actionV3) che optcg-ai già interpreta
+    per 2935 carte: `compiler/fromOptcg.ts` lo traduce in IR in modo
+    deterministico. Precedenza: batch a mano (ST01+OP01) → generato →
+    euristica testuale di board-auto.
+46. Il batch generato NON entra in `BATCHES`: `getCompiledCard` resta la
+    fonte curata (e quella che le suite M2/M3 misurano); `getGeneratedCard`
+    è un livello separato, con drift-test (JSON committato = ricompilazione).
+47. Degradazione (§1.3): ciò che l'IR non esprime → `manual` col testo
+    della carta; se la prima parte di un'abilità è traducibile gira in
+    automatico e il resto va a mano ("Continue by hand …"). Timing assenti
+    dall'IR (replacement Pre*, MyDonIsReturned, OnRest, QueuedEndOfTurn, …)
+    → effetto `static` manuale inerte, così l'UI lo dichiara.
+48. Controlli incrociati col testo stampato: condizione sul Leader mancante,
+    bersagli avversari che il testo non nomina, "Leader or Character"
+    perso, [Trigger] inesistente → manual. [Once Per Turn] segue il testo.
+49. Approssimazioni accettate e annotate per carta in `notes`: costo
+    stampato vs corrente, base power letto come power corrente, "up to N"
+    DON/draw sempre presi, "if you do" dopo un passo opzionale non tracciato.
+50. Misure: 66% delle carte del catalogo IR-complete (vanilla+keyword+
+    compiled); carte senza alcuna avvertenza di automazione in board-auto
+    421 → 1554; 2682 effetti eseguiti nel dry-run senza errori; 120/138
+    identiche al batch a mano.
+
+### M4 (primo passo, 2026-10-28) — effetti continui
+
+51. Gli effetti `static` delle carte in campo (Leader, characterArea, stage)
+    non vengono memorizzati come Modifier: `engine/continuous.ts` li ricalcola
+    a ogni query (effectivePower/effectiveCost/keywordsOf/hasRestriction via
+    `activeModifiers`), con le loro condizioni, fino a un fixpoint (max 6
+    passi, 8-1-3-3-5). Iniziano e finiscono con la carta e le condizioni
+    (8-1-3-3-1/2), niente scadenze da gestire.
+52. Tipi applicati in continuo: powerMod, costMod, grantKeyword, restriction
+    con `duration: permanentWhileInPlay`. board-auto (`isAutomaticStatic`)
+    toglie l'avvertenza solo se TUTTE le azioni dello static sono di questi tipi.
+53. `hasRestriction` ora prende `db` (serve per leggere gli static).
+54. Misure (catalogo 2850): carte senza avvertenza in board-auto 1667 → 1797;
+    carte con un effetto inerte 475 → 323. Test `m4-continuous.test.ts` (7).
+    Restano ~320 static manual: Immune*/FieldCostChange/Passive1KPerX/
+    OpponentCanOnlyAttack…/FieldRush (passive optcg-ai senza IR).
+
+Debiti M4+: static non coperti sopra (immunità, costo in mano, +X per ogni …,
+rush a tutto il campo), replacement/negate (8-1-3-4, 8-2),
 setBasePower/redirectAttack/endBattle/addToLife/chooseOne, reveal della mano
 avversaria, amount scalari ("+X per ogni ..."), peek del mazzo avversario,
 [Once Per Turn] edge 10-2-13-5 con pagamento interrotto a metà (oggi il

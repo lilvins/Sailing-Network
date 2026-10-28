@@ -301,7 +301,7 @@ export function planAction(
   if (action.kind === "koTarget") {
     candidates = candidates.filter(({ owner, iid }) =>
       state.players[owner].zones.characterArea.includes(iid)
-      && !hasRestriction(state, owner, iid, "cannotBeKOd"));
+      && !hasRestriction(db, state, owner, iid, "cannotBeKOd"));
   }
   // playing by effect needs room in the character area (3-7-6; no replace-by-
   // rule for effect plays — M1 decision, "to the extent possible" 8-1-2)
@@ -544,6 +544,6 @@ export function canBlock(db: CardDb, state: AutoGameState, owner: PID, iid: Iid)
   const inst = state.players[owner].instances[iid];
   if (!inst || inst.rested) return false; // 10-1-4-1: activated by resting
   if (!keywordsOf(db, state, owner, iid).has("Blocker")) return false;
-  if (hasRestriction(state, owner, iid, "cannotBlock")) return false;
+  if (hasRestriction(db, state, owner, iid, "cannotBlock")) return false;
   return true;
 }
