@@ -21,6 +21,7 @@ import { AdminPage } from "../features/admin/AdminPage";
 import { BoardPage } from "../features/board/BoardPage";
 import { BoardPage2 } from "../features/board/BoardPage2";
 import { BoardAutoPage } from "../features/board-auto/BoardAutoPage";
+import { BoardBotPage } from "../features/board-bot/BoardBotPage";
 
 /**
  * App shell. Each ported page is full-screen (its own chrome), so there is no
@@ -124,6 +125,8 @@ function CurrentView({ view }: { view: View }) {
       return <BoardPage2 />;
     case "board-auto":
       return <BoardAutoPage />;
+    case "board-bot":
+      return <BoardBotPage />;
     default:
       return <ComingSoon view={view} />;
   }
@@ -177,7 +180,7 @@ export function App() {
   if (view === "admin" && user.role !== "admin") effectiveView = "home";
 
   // the play tables are full-screen game stages: no app chrome over them
-  const onTable = effectiveView === "board" || effectiveView === "board2" || effectiveView === "board-auto";
+  const onTable = effectiveView === "board" || effectiveView === "board2" || effectiveView === "board-auto" || effectiveView === "board-bot";
   return (
     <>
       <CurrentView view={effectiveView} />

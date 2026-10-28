@@ -9,6 +9,7 @@ import rateLimit from "@fastify/rate-limit";
 import { z } from "zod";
 import { initDb, all, run, get } from "./db.mjs";
 import { registerCardArt } from "./card-art.mjs";
+import { registerBotGames } from "./bot-games.mjs";
 import {
   hashPassword, verifyPassword, createUser, getUserById, getUserByEmail,
   getUserByUsername, getUserByLogin, createSession, getSessionUser,
@@ -33,7 +34,8 @@ import {
   computeMeta,
 } from "./store.mjs";
 
-const PORT = Number(process.env.PORT || 8797); // bot copy: 8797 (the main checkout uses 8787)
+// bot copy: own variable + 8797, so a PORT meant for Vite (preview tools set it) never moves the API
+const PORT = Number(process.env.SN_API_PORT || 8797);
 const COOKIE = "sn_session";
 const isProd = process.env.NODE_ENV === "production";
 
@@ -856,6 +858,9 @@ if (process.env.MATCHMAKING_OFF !== "1") {
   const timer = setInterval(runMatchmakingTick, MATCHMAKING_INTERVAL_MS);
   timer.unref();
 }
+
+// games against the optcg-ai bot (Play vs Bot) + feedback, for replays and learning
+registerBotGames(app, currentUser);
 
 app
   .listen({ port: PORT, host: "127.0.0.1" })

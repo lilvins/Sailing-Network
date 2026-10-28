@@ -25,7 +25,8 @@ export type View =
   | "admin"
   | "board" // the playmat (current layout)
   | "board2" // layout lab — OPTCGSim-style table
-  | "board-auto"; // AUTOSIM full-rules board (engine-driven)
+  | "board-auto" // AUTOSIM full-rules board (engine-driven)
+  | "board-bot"; // optcg-ai engine + bot (Play vs Bot)
 
 export type Theme = "dark" | "light";
 

@@ -122,6 +122,15 @@ const MODES: Mode[] = [
     cls: "m-auto",
   },
   {
+    id: "board-bot",
+    badge: "Full rules · optcg-ai",
+    name: "Play vs Bot",
+    sub: "Every card's effect. A bot that learns from your games.",
+    go: "Play",
+    view: "board-bot",
+    cls: "m-auto",
+  },
+  {
     id: "duel-room",
     badge: "Multiplayer",
     name: "Duel Room",
