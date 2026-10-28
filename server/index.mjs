@@ -33,7 +33,7 @@ import {
   computeMeta,
 } from "./store.mjs";
 
-const PORT = Number(process.env.PORT || 8787);
+const PORT = Number(process.env.PORT || 8797); // bot copy: 8797 (the main checkout uses 8787)
 const COOKIE = "sn_session";
 const isProd = process.env.NODE_ENV === "production";
 

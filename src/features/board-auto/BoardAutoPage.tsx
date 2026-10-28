@@ -13,6 +13,12 @@ import { buildDemoDecks, userDeckChoices, type DeckChoice } from "./decks";
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
 import "../home/home.css"; // .nsea layers (shared with the Home hero)
+import "@fontsource/pixelify-sans/400.css"; // in-game pixel type (--serif/--mono in boardauto.css)
+import "@fontsource/pixelify-sans/500.css";
+import "@fontsource/pixelify-sans/600.css";
+import "@fontsource/pixelify-sans/700.css";
+import "@fontsource/silkscreen/400.css"; // HUD labels (--hud)
+import "@fontsource/silkscreen/700.css";
 import "./boardauto.css";
 
 /* =============================================================================

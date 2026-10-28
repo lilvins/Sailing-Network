@@ -1,10 +1,12 @@
 /* The living night-sea pixel scene, shared by the Home hero and the Login
    pane. Real PNG layers + tiny pixel sprites (scripts/build-mode-cards.mjs):
    twinkling stars, two cloud layers in parallax, double water shimmer,
-   the occasional shooting star, slow sea sparks. All transform/opacity CSS,
-   no canvas, everything off under prefers-reduced-motion (see home.css). */
+   the occasional shooting star, slow sea sparks; plus the CC0 animated water
+   texture on the sea, gulls and a far-off brig (scripts/build-pixel-fx.mjs).
+   All CSS, no canvas, everything off under prefers-reduced-motion (home.css). */
+import type { CSSProperties } from "react";
 
-type Star = [left: number, top: number, kind: "a" | "b", dur: number, delay: number];
+type Star =[left: number, top: number, kind: "a" | "b", dur: number, delay: number];
 
 const STARS: Star[] = [
   [5, 9, "a", 2.6, 0],
@@ -21,6 +23,19 @@ const STARS: Star[] = [
   [87, 10, "b", 3.7, 2.0],
   [93, 22, "a", 3.0, 1.0],
   [52, 30, "b", 4.0, 2.9],
+];
+
+/* water rows from the horizon down: [tile height, tile width, drift] in
+   cqw of the painting. Smaller + flatter tiles far away = cheap perspective;
+   each row is ONE tile tall, so repeat-x shows a single frame of the sheet. */
+const WATER: [number, number, "normal" | "reverse"][] = [
+  [0.5, 1.4, "normal"],
+  [0.9, 2.2, "reverse"],
+  [1.4, 3.2, "normal"],
+  [2.1, 4.4, "reverse"],
+  [2.9, 5.6, "normal"],
+  [3.4, 6.8, "reverse"],
+  [4.15, 8.3, "normal"],
 ];
 
 export function NightSea() {
@@ -49,6 +64,21 @@ export function NightSea() {
       <div className="nsea-layer nsea-clouds" />
       <div className="nsea-layer nsea-refl" />
       <div className="nsea-layer nsea-refl nsea-refl2" />
+      {/* sprites pinned to the painting itself (same box as background-size:
+          cover), so the ship sits ON the horizon at every aspect ratio */}
+      <div className="nsea-art">
+        <div className="nsea-water">
+          {WATER.map(([h, w, drift], i) => (
+            <span
+              key={i}
+              style={{ "--h": `${h}cqw`, "--w": `${w}cqw`, animationDelay: `${-i * 0.37}s, 0s`, animationDirection: `normal, ${drift}` } as CSSProperties}
+            />
+          ))}
+        </div>
+        <div className="nsea-ship"><img src="/assets/bg/fx/ship.png" alt="" /></div>
+        <div className="nsea-gull g1"><i /></div>
+        <div className="nsea-gull g2"><i /></div>
+      </div>
       <img className="nsea-shoot nsea-shoot1" src="/assets/bg/star-shoot.png" alt="" />
       <img className="nsea-shoot nsea-shoot2" src="/assets/bg/star-shoot.png" alt="" />
       <span className="nsea-spark s1" />
