@@ -40,7 +40,25 @@ const WB = ["Whitebeard Pirates", "Former Whitebeard Pirates", "Whitebeard Pirat
 const cost5ToLife = (zone: "hand" | "trash"): Effect["actions"][number] => ({ kind: "addToLife", faceUp: true,
   sel: self1(zone, { category: ["Character"], costAtLeast: 5, costAtMost: 5 }, { upTo: true }) });
 
+/** "give up to N rested DON!! cards to 1 of your Characters": how many (0…N) first, then to whom. */
+const giveUpToRested = (max: number): Effect["actions"][number] => ({
+  kind: "chooseOne",
+  labels: Array.from({ length: max + 1 }, (_, n) => (n === 0 ? "Give no DON!!" : `Give ${n} rested DON!!`)),
+  options: Array.from({ length: max + 1 }, (_, n) => (n === 0 ? [] : [{ kind: "giveRestedDon" as const, count: n, sel: self1("characterArea") }])),
+});
+
 export const TEXT_IR: Record<string, TextIr> = {
+  "OP15-058": {
+    text: /\[Activate: Main\] \[Once Per Turn\] If it is your second turn or later, add up to 1 DON!! card from your DON!! deck and set it as active, and add up to 4 additional DON!! cards and rest them\. Then, give up to 4 rested DON!! cards to 1 of your Characters\./,
+    reason: "optcg-ai always gives the 4 rested DON!!; the printed text says up to 4",
+    effects: [
+      { timing: "activateMain", oncePerTurn: true, conditions: [{ kind: "ownTurnAtLeast", count: 2 }], actions: [
+        { kind: "placeDonInCostArea", count: 1, upTo: true },
+        { kind: "placeDonInCostArea", count: 4, rested: true, upTo: true },
+        giveUpToRested(4),
+      ] },
+    ],
+  },
   "EB05-052": {
     text: "If you would take damage, you may trash this Character instead.",
     reason: "the damage replacement does not map onto optcg-ai's steps; battle damage only",
