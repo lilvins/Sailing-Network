@@ -1112,3 +1112,35 @@
 
 /* take-back request: bottom-left of the rail, above Exit */
 .ba-undo { width: 100%; margin-bottom: 6px; }
+
+/* ─── affordances: what you can do, shown on the table ───────────────────────
+   A ready attacker glows in your leader colour with a ⚔ badge; the selected
+   card is lifted; the band shows the selected card's actions as big buttons
+   (OPTCGSim-style) or, with nothing selected, what is left to do. */
+.ba-root .gb-card.ba-ready { outline: 2px solid var(--brass-hi); outline-offset: 1px; animation: ba-readyglow 1.6s steps(8) infinite; }
+@keyframes ba-readyglow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 210, 63, 0), 0 2px 6px rgba(0, 0, 0, 0.55); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 210, 63, 0.55), 0 2px 6px rgba(0, 0, 0, 0.55); }
+}
+@media (prefers-reduced-motion: reduce) { .ba-root .gb-card.ba-ready { animation: none; box-shadow: 0 0 0 3px rgba(255, 210, 63, 0.55); } }
+.ba-readybadge {
+  position: absolute; top: 4px; left: 4px; z-index: 5;
+  width: 26px; height: 26px; display: grid; place-items: center;
+  background: #ffd23f; color: #1a1300; font: 700 15px/1 var(--hud);
+  border: 2px solid #1a1300; box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6); pointer-events: none;
+}
+.ba-root .gb-card.ba-selected, .ba-root .gb-card.ba-attacker { outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-6px); }
+.ba-root .gb-card.gb-rested.ba-selected, .ba-root .gb-card.gb-rested.ba-attacker { transform: rotate(90deg) translateX(-6px); }
+.ba-cardbar .ba-bigact { min-height: 48px; padding: 0 18px; font: 700 15px var(--hud); letter-spacing: 0.04em; border-width: 2px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.55); }
+.ba-cardbar .ba-bigact:active { transform: translateY(4px); box-shadow: none; }
+.ba-cardbar .ba-bigact.act { background: #ffd23f; color: #1a1300; border-color: #1a1300; }
+.ba-cardbar .ba-bigact.don { background: #e9e7e1; color: #1c2446; border-color: #1c2446; }
+.ba-cardbar .ba-bigact.play { background: var(--signal); color: #fff; }
+.ba-atkhint { color: #ffd23f; font-weight: 700; }
+.ba-actionbar .ba-btn i { font-style: normal; opacity: 0.6; font-size: 11px; }
+.ba-hintbar { gap: 18px; justify-content: center; }
+.ba-hint { font: 500 14px var(--serif); color: var(--ivory); white-space: nowrap; }
+.ba-hint b { font: 700 16px var(--hud); color: #ffd23f; }
+.ba-hint i { font-style: normal; color: var(--ivory-muted); font-size: 12.5px; }
+.ba-hint.play b { color: #ff9a8a; }
+.ba-hint.don b { color: #e9e7e1; }

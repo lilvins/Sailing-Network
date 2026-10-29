@@ -473,6 +473,8 @@ type Mode =
   | { t: "idle" }
   | { t: "don"; picked: number[] } // 1-based indexes of the selected active DON!! (UI only: DON are fungible)
   | { t: "attack"; iid: Iid; targets: Iid[] }
+  /** one of your cards selected in the Main Phase (no attack possible): its actions in the bar */
+  | { t: "card"; iid: Iid }
   | { t: "replace"; handIid: Iid };
 
 interface Arrow {
@@ -627,6 +629,20 @@ function GameScreen() {
     setPayPick({ active: [], rested: [], given: {} });
     setNumberPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
+
+  // keyboard: Esc drops the current selection, E ends the turn (not while typing)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (e.key === "Escape") { setMode({ t: "idle" }); setSelectedHand(null); }
+      else if ((e.key === "e" || e.key === "E") && !e.ctrlKey && !e.metaKey && !e.altKey && lm.canEndTurn && !aiActing) {
+        dispatch({ type: "endTurn", player: game.turnPlayer });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lm.canEndTurn, aiActing, dispatch, game.turnPlayer]);
 
   // DON groups reset at every turn change (they are thinking aids)
   useEffect(() => {
@@ -1085,13 +1101,14 @@ function GameScreen() {
         setMode({ t: "attack", iid, targets: a.targets });
         return;
       }
-      if (mode.t === "attack") {
-        setMode({ t: "idle" });
+      if ((mode.t === "attack" || mode.t === "card") && mode.iid === iid) {
+        setMode({ t: "idle" }); // a second tap deselects
         return;
       }
       const inst = game.players[owner].instances[iid];
       const p = game.players[owner];
       const isBoard = iid === p.leaderIid || p.zones.characterArea.includes(iid) || p.zones.stage.includes(iid);
+      if (isBoard) setMode({ t: "card", iid });
       // an [Activate: Main] that is NOT legal now gets its reason explained
       const compiled = cardId ? db(cardId).compiled : undefined;
       const amIdx = compiled?.effects.findIndex((fx) => fx.timing === "activateMain") ?? -1;
@@ -1108,8 +1125,13 @@ function GameScreen() {
       inspect(cardId, { owner, iid });
       return;
     }
-    if (mode.t === "attack") { setMode({ t: "idle" }); return; }
+    if (mode.t === "attack" || mode.t === "card") { setMode({ t: "idle" }); return; }
     inspect(cardId, { owner, iid });
+  };
+
+  /** One DON!! from the cost area to a card (the bar's "+1 DON!!"). */
+  const giveOneDon = (iid: Iid) => {
+    dispatch({ type: "giveDon", player: game.turnPlayer, targetIid: iid }); // the donGiven event pulses the card
   };
 
   /** [Activate: Main] (10-2-2, M3): only ever offered from legality.activatable. */
@@ -1289,13 +1311,22 @@ function GameScreen() {
         </div>
       );
     }
-    if (mode.t === "attack") {
+    if (mode.t === "attack" || mode.t === "card") {
+      const me = game.turnPlayer;
+      const name = cards.get(findCardId(game, mode.iid) ?? "")?.name ?? "Card";
+      const acts = lm.activatable.filter((a) => a.iid === mode.iid);
+      const canDon = game.players[me].don.active > 0 && (mode.iid === game.players[me].leaderIid || game.players[me].zones.characterArea.includes(mode.iid));
       return (
-        <div className="ba-actionbar">
+        <div className="ba-actionbar ba-cardbar" data-cardbar={mode.t}>
           <span className="ba-actlabel">
-            <b>{cards.get(findCardId(game, mode.iid) ?? "")?.name ?? "Attacker"}</b> — tap a highlighted target.
+            <b>{name}</b>{" "}
+            {mode.t === "attack" ? <>— <span className="ba-atkhint">⚔ drag it onto a glowing target, or tap the target</span></> : <i>— {cardIdleReason(me, mode.iid)}</i>}
           </span>
-          <button className="ba-btn" data-act="cancel" onClick={() => setMode({ t: "idle" })}>Cancel</button>
+          {acts.map((a) => (
+            <button key={a.effectIndex} className="ba-btn ba-bigact act" data-act="bar-activate" onClick={() => activate(me, mode.iid, a.effectIndex)}>⚡ Activate</button>
+          ))}
+          {canDon && <button className="ba-btn ba-bigact don" data-act="bar-don" onClick={() => giveOneDon(mode.iid)}>+1 DON!!</button>}
+          <button className="ba-btn" data-act="cancel" onClick={() => setMode({ t: "idle" })}>Cancel <i>(Esc)</i></button>
         </div>
       );
     }
@@ -1307,14 +1338,50 @@ function GameScreen() {
         </div>
       );
     }
+    // nothing selected in your Main Phase: say what you can do right now
+    if (!pc && game.phase === "main" && !game.battle && selectedHand) {
+      const can = lm.playableFromHand.some((x) => x.iid === selectedHand);
+      return (
+        <div className="ba-actionbar ba-cardbar">
+          <span className="ba-actlabel"><b>{cards.get(findCardId(game, selectedHand) ?? "")?.name}</b> <i>— {can ? "drag it onto your side, or" : "can't be played now"}</i></span>
+          {can && <button className="ba-btn ba-bigact play" data-act="bar-play" onClick={() => playFromHand(game.turnPlayer, selectedHand)}>▶ Play</button>}
+          <button className="ba-btn" data-act="cancel" onClick={() => setSelectedHand(null)}>Cancel <i>(Esc)</i></button>
+        </div>
+      );
+    }
+    if (!pc && game.phase === "main" && !game.battle && !isAiSeat(seats, game.turnPlayer)) {
+      const ready = lm.attackers.length;
+      const playable = lm.playableFromHand.length;
+      const don = game.players[game.turnPlayer].don.active;
+      return (
+        <div className="ba-actionbar ba-hintbar" data-hintbar>
+          {ready > 0 && <span className="ba-hint atk">⚔ <b>{ready}</b> ready to attack <i>— tap or drag a glowing card</i></span>}
+          {playable > 0 && <span className="ba-hint play">▶ <b>{playable}</b> playable <i>— drag from your hand</i></span>}
+          {don > 0 && <span className="ba-hint don">DON!! <b>{don}</b> <i>— tap them, then a card</i></span>}
+          {ready === 0 && playable === 0 && don === 0 && <span className="ba-hint">Nothing left to do — <b>End turn</b> <i>(E)</i></span>}
+        </div>
+      );
+    }
     return null;
   })();
+
+  /** Why a selected card of yours has no attack right now (shown in the bar). */
+  function cardIdleReason(owner: PID, iid: Iid): string {
+    const p = game.players[owner];
+    if (p.zones.stage.includes(iid)) return "Stage";
+    if (p.instances[iid].rested) return "rested: it already acted this turn";
+    if (game.turn <= 2) return "no battles on either player's first turn";
+    if (iid !== p.leaderIid && p.instances[iid].playedOnTurn === game.turn) return "just played: it can attack next turn (no [Rush])";
+    return "can't attack right now";
+  }
 
   // ── board pieces ────────────────────────────────────────────────────────────
 
   const highlightSets = useMemo(() => {
     const legal = new Set<Iid>();
     const target = new Set<Iid>();
+    /** ready attackers in your Main Phase: a pulsing glow + a ⚔ badge */
+    const ready = new Set<Iid>();
     if (pc?.kind === "blockWindow") for (const b of pc.blockers) legal.add(b);
     if (pc?.kind === "counterWindow") {
       for (const c of lm.counterCards) legal.add(c.iid);
@@ -1330,11 +1397,11 @@ function GameScreen() {
       } else if (mode.t === "replace") {
         for (const c of game.players[game.turnPlayer].zones.characterArea) target.add(c);
       } else {
-        for (const a of lm.attackers) legal.add(a.iid);
+        for (const a of lm.attackers) ready.add(a.iid);
         for (const h of lm.playableFromHand) legal.add(h.iid);
       }
     }
-    return { legal, target };
+    return { legal, target, ready };
   }, [pc, lm, mode, game]);
 
   // NOTE: the pieces below are RENDER FUNCTIONS, not components — GameScreen
@@ -1367,6 +1434,8 @@ function GameScreen() {
       highlightSets.target.has(iid) ? "ba-target" : "",
       picked.includes(iid) || (inHand && selectedHand === iid) ? "ba-picked" : "",
       mode.t === "attack" && mode.iid === iid ? "ba-attacker" : "",
+      mode.t === "card" && mode.iid === iid ? "ba-selected" : "",
+      highlightSets.ready.has(iid) && !isAiSeat(seats, owner) ? "ba-ready" : "",
       flash[iid] ? `ba-fl-${flash[iid]}` : "",
       drag?.iid === iid ? "ba-dragging" : "",
     ]
@@ -1497,6 +1566,7 @@ function GameScreen() {
             DON!! ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
           </span>
         )}
+        {highlightSets.ready.has(iid) && !isAiSeat(seats, owner) && <span className="ba-readybadge" title="Ready to attack — tap or drag">⚔</span>}
         {/* in-place PLAY: the selected hand card, when the play is legal now */}
         {inHand && selectedHand === iid && !pc && owner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === iid) && (
           <button
@@ -2260,7 +2330,7 @@ function GameScreen() {
       className="ba-btn primary big ba-endturn"
       data-act="endturn"
       disabled={!lm.canEndTurn || aiActing}
-      title={`${seatName(game.turnPlayer)}'s turn`}
+      title={`${seatName(game.turnPlayer)}'s turn — end it (E)`}
       style={{ ["--lc" as string]: leaderHex(game.turnPlayer) }}
       onClick={() => dispatch({ type: "endTurn", player: game.turnPlayer })}
     >
