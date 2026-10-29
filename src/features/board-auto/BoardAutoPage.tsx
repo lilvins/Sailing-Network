@@ -978,6 +978,19 @@ function GameScreen() {
     explain("This card can't be played right now.");
   };
 
+  /** Counter Step: a hand card used as a counter (tapped or dragged onto the board). */
+  const counterWith = (owner: PID, iid: Iid) => {
+    if (lm.counterCards.some((c) => c.iid === iid) && game.battle) {
+      dispatch({ type: "useCounter", player: owner, cardIid: iid, targetIid: game.battle.targetIid });
+      return;
+    }
+    if (lm.counterEvents.some((c) => c.iid === iid)) {
+      dispatch({ type: "useCounterEvent", player: owner, cardIid: iid });
+      return;
+    }
+    explain("This card can't counter.", "Usable now: cards with a counter value, or [Counter] Events you can pay.");
+  };
+
   const onHandTap = (owner: PID, iid: Iid) => {
     const inst = game.players[owner].instances[iid];
     hover(inst.cardId);
@@ -986,17 +999,7 @@ function GameScreen() {
       return;
     }
     if (pc?.kind === "counterWindow" && pc.player === owner) {
-      const cc = lm.counterCards.find((c) => c.iid === iid);
-      if (cc && game.battle) {
-        dispatch({ type: "useCounter", player: owner, cardIid: iid, targetIid: game.battle.targetIid });
-        return;
-      }
-      const ce = lm.counterEvents.find((c) => c.iid === iid);
-      if (ce) {
-        dispatch({ type: "useCounterEvent", player: owner, cardIid: iid });
-        return;
-      }
-      explain("This card can't counter.", "Usable now: cards with a counter value, or [Counter] Events you can pay.");
+      counterWith(owner, iid);
       return;
     }
     if (pc) { inspect(inst.cardId); return; } // other prompts: tap = preview only
@@ -1365,8 +1368,10 @@ function GameScreen() {
       .join(" ");
     // drag-to-play (hand, own turn, no prompt): the card follows the pointer
     // as a ghost; dropping it over the owner's half plays it (legality-checked
-    // by playFromHand — an illegal drop just explains why, like a tap would)
-    const canDrag = inHand && !pc && owner === game.turnPlayer && game.phase === "main" && !game.battle;
+    // by playFromHand — an illegal drop just explains why, like a tap would).
+    // Counter Step: a hand card dropped anywhere on the table counters with it.
+    const counterDrag = inHand && pc?.kind === "counterWindow" && pc.player === owner;
+    const canDrag = counterDrag || (inHand && !pc && owner === game.turnPlayer && game.phase === "main" && !game.battle);
     // drag-to-attack (a ready attacker on the field): the arrow follows the
     // pointer, legal targets light up; dropping on one declares the attack
     const attackOpt = !inHand && !pc && owner === game.turnPlayer && game.phase === "main" && !game.battle
@@ -1431,7 +1436,9 @@ function GameScreen() {
             suppressClick.current = true;
             setDrag(null);
             const half = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[data-half]");
-            if (half?.dataset.half === owner) {
+            if (counterDrag) {
+              if (half) counterWith(owner, iid);
+            } else if (half?.dataset.half === owner) {
               if (lm.playableFromHand.some((x) => x.iid === iid)) playFromHand(owner, iid);
               else whyNotPlayable(owner, iid);
             }
