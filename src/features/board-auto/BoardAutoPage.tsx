@@ -106,6 +106,8 @@ const LIFE_STEP = 10;
 /** Cost-area cascade step: each DON!! is uncovered for 28px (35% of a card,
  *  25% of a rotated card's footprint — the bot requires ≥25%). */
 const DON_STEP = 28;
+/** How far a split DON!! group rises per level (visual thinking aid). */
+const DON_RAISE = 26;
 
 interface StageFit { scale: number; rotate: boolean; ox: number; oy: number; w: number; rail: number; field: number }
 
@@ -586,9 +588,13 @@ function GameScreen() {
     fromActive: 0, fromRested: 0, fromGiven: {},
   });
   const [numberPick, setNumberPick] = useState<number | null>(null);
-  // DON placeholders: PURELY VISUAL, per-seat marked active-DON indexes.
-  // Never an intent — the engine's DON state is untouched (plan §1 rule).
-  const [donMarks, setDonMarks] = useState<Record<PID, number[]>>({});
+  // DON groups: PURELY VISUAL thinking aid. Per seat, the 0-based indexes of
+  // the active DON!! where a new group starts (right-click splits there and
+  // raises the rest one level). Never an intent — the engine's DON state is
+  // untouched (plan §1 rule); a group dragged onto a card gives that many.
+  const [donSplits, setDonSplits] = useState<Record<PID, number[]>>({});
+  const donDragRef = useRef<{ pid: PID; count: number; groups: number[]; group: number; x0: number; y0: number; active: boolean } | null>(null);
+  const [donDrag, setDonDrag] = useState<{ count: number; x: number; y: number } | null>(null);
   const donHintShown = useRef(false);
   const [hoverTarget, setHoverTarget] = useState<Iid | null>(null);
   const nodeMap = useRef(new Map<Iid, HTMLElement>());
@@ -610,9 +616,9 @@ function GameScreen() {
     setNumberPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
 
-  // DON placeholders reset at every turn change (they are thinking aids)
+  // DON groups reset at every turn change (they are thinking aids)
   useEffect(() => {
-    setDonMarks({});
+    setDonSplits({});
   }, [game.turn]);
 
   // compact: a selected hand card that left the hand (played / discarded /
@@ -623,7 +629,7 @@ function GameScreen() {
     if (!inHand || game.pendingChoice) setSelectedHand(null);
   }, [game, selectedHand]);
 
-  // touch: long-press on an active DON toggles the placeholder (no right-click)
+  // touch: long-press on an active DON splits there (no right-click)
   const pressTimer = useRef<number | null>(null);
   const longPressed = useRef(false);
   const donPressStart = (pid: PID, index: number, pointerType: string) => {
@@ -631,7 +637,8 @@ function GameScreen() {
     longPressed.current = false;
     pressTimer.current = window.setTimeout(() => {
       longPressed.current = true;
-      toggleDonMark(pid, index);
+      donDragRef.current = null;
+      splitDonAt(pid, index);
     }, 480);
   };
   const donPressEnd = () => {
@@ -641,19 +648,72 @@ function GameScreen() {
     }
   };
 
-  const toggleDonMark = (pid: PID, index: number) => {
-    setDonMarks((prev) => {
-      const cur = prev[pid] ?? [];
-      return { ...prev, [pid]: cur.includes(index) ? cur.filter((x) => x !== index) : [...cur, index] };
+  /** Right-click on the n-th active DON!!: it and the ones after it (in its
+   *  group) rise one level. On the first DON!! of a raised group: it drops
+   *  back (merge). On the very first DON!!: every group is merged. */
+  const splitDonAt = (pid: PID, index: number) => {
+    setDonSplits((prev) => {
+      const cur = (prev[pid] ?? []).filter((s) => s < game.players[pid].don.active);
+      const next = index === 0 ? [] : cur.includes(index) ? cur.filter((s) => s !== index) : [...cur, index].sort((a, b) => a - b);
+      return { ...prev, [pid]: next };
     });
     if (!donHintShown.current) {
       donHintShown.current = true;
       explain(
-        "DON!! placeholder — visual only, the game state does not change.",
-        "Right-click (long-press on touch) toggles it off; all marks clear at the turn change.",
+        "DON!! split — visual only, the game state does not change.",
+        "Right-click (long-press on touch) splits; again on a group's first DON!! merges it. Drag a group onto your Leader or a Character to give it.",
         "info",
       );
     }
+  };
+
+  /** Group sizes of a seat's active DON!! (left to right) from its split points. */
+  const donGroups = (pid: PID): number[] => {
+    const active = game.players[pid].don.active;
+    const starts = [0, ...(donSplits[pid] ?? []).filter((s) => s > 0 && s < active)];
+    return starts.map((s, k) => (starts[k + 1] ?? active) - s);
+  };
+
+  /** Drag a DON!! group: pointer down on any DON!! of it, drop on your Leader or a Character. */
+  const donDragStart = (pid: PID, index: number, e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || pc || pid !== game.turnPlayer || game.phase !== "main" || game.battle) return;
+    const groups = donGroups(pid);
+    let group = 0;
+    for (let start = 0; group < groups.length - 1 && index >= start + groups[group]; group++) start += groups[group];
+    donDragRef.current = { pid, count: groups[group], groups, group, x0: e.clientX, y0: e.clientY, active: false };
+  };
+  const donDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = donDragRef.current;
+    if (!d) return;
+    if (!d.active) {
+      if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 10) return;
+      d.active = true;
+      donPressEnd();
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setMode({ t: "idle" });
+    }
+    setDonDrag({ count: d.count, x: e.clientX, y: e.clientY });
+  };
+  const donDragEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = donDragRef.current;
+    donDragRef.current = null;
+    if (!d || !d.active) return;
+    longPressed.current = true; // swallow the click that follows the drop
+    setDonDrag(null);
+    const iid = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[data-iid]")?.dataset.iid;
+    const p = game.players[d.pid];
+    if (!iid || (iid !== p.leaderIid && !p.zones.characterArea.includes(iid))) return;
+    let given = 0;
+    for (; given < d.count; given++) {
+      if (!useAutoStore.getState().dispatch({ type: "giveDon", player: d.pid, targetIid: iid })) break;
+    }
+    if (given === 0) return;
+    // the other groups keep their shape
+    const left = [...d.groups];
+    left[d.group] -= given;
+    const sizes = left.filter((n) => n > 0);
+    const starts = sizes.slice(0, -1).map((_, k) => sizes.slice(0, k + 1).reduce((a, b) => a + b, 0));
+    setDonSplits((prev) => ({ ...prev, [d.pid]: starts }));
   };
 
   // per-seat chess-style clocks (count up while that seat must act)
@@ -1400,32 +1460,34 @@ function GameScreen() {
                 <div className="ba-donstack active" data-stack="don-active" style={{ width: DON_W + (donActive - 1) * DON_STEP }}>
                   {Array.from({ length: donActive }).map((_, i) => {
                     const dialOn = isTurn && mode.t === "don" && mode.picked.includes(i + 1);
-                    const marked = (donMarks[pid] ?? []).includes(i);
+                    // raised one level per split at or before this DON!! (visual only)
+                    const level = (donSplits[pid] ?? []).filter((s) => s > 0 && s <= i && s < donActive).length;
+                    const groupStart = level > 0 && (donSplits[pid] ?? []).includes(i);
                     return (
                       <div
                         key={`a${i}`}
-                        className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${marked ? " ba-donmark" : ""}`}
-                        style={{ left: i * DON_STEP, zIndex: i + 1 }}
+                        className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${groupStart ? " ba-dongroup" : ""}`}
+                        style={{ left: i * DON_STEP, zIndex: i + 1, ...(level ? { transform: `translateY(${-level * DON_RAISE}px)` } : {}) }}
                         data-don-index={i + 1}
                         data-don-seat={pid}
-                        title={marked ? "Placeholder (visual only) — right-click to clear" : undefined}
+                        data-don-level={level}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (longPressed.current) { longPressed.current = false; return; } // the long-press already acted
+                          if (longPressed.current) { longPressed.current = false; return; } // a long-press or a drag already acted
                           onDonTap(pid, i + 1);
                         }}
-                        onPointerDown={(e) => donPressStart(pid, i, e.pointerType)}
-                        onPointerUp={donPressEnd}
-                        onPointerCancel={donPressEnd}
-                        onPointerLeave={donPressEnd}
+                        onPointerDown={(e) => { donPressStart(pid, i, e.pointerType); donDragStart(pid, i, e); }}
+                        onPointerMove={donDragMove}
+                        onPointerUp={(e) => { donPressEnd(); donDragEnd(e); }}
+                        onPointerCancel={() => { donPressEnd(); donDragRef.current = null; setDonDrag(null); }}
+                        onPointerLeave={() => { if (!donDragRef.current?.active) donPressEnd(); }}
                         onContextMenu={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          toggleDonMark(pid, i);
+                          splitDonAt(pid, i);
                         }}
                       >
                         <DonArt />
-                        {marked && <span className="ba-donmark-tag">HOLD</span>}
                       </div>
                     );
                   })}
@@ -2188,6 +2250,20 @@ function GameScreen() {
       {overlay}
     </div>
     {/* drag-to-play ghost: viewport coordinates, card size at the stage scale */}
+    {/* DON!! group drag ghost: the group as a small cascade + its count */}
+    {donDrag && (
+      <div
+        className="ba-dondrag"
+        style={{ left: donDrag.x, top: donDrag.y, width: (DON_W + (donDrag.count - 1) * DON_STEP) * stage.scale, height: DON_H * stage.scale }}
+      >
+        {Array.from({ length: donDrag.count }).map((_, i) => (
+          <div key={i} className="gb-card" style={{ left: i * DON_STEP * stage.scale, width: DON_W * stage.scale, height: DON_H * stage.scale, zIndex: i + 1 }}>
+            <DonArt />
+          </div>
+        ))}
+        <span className="ba-dondrag-count">×{donDrag.count}</span>
+      </div>
+    )}
     {drag && cards.get(drag.cardId)?.image && (
       <img
         className="ba-dragghost"

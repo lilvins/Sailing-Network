@@ -565,28 +565,32 @@
 /* a rested card (DON!!, leader, character) changes ONLY its rotation — never
    its opacity (user: tapped at the table is just tapped) */
 .ba-root .gb-rested { opacity: 1; }
-/* right-click DON placeholder — PURELY VISUAL (no engine state): tilted,
-   dimmed, dashed ring + HOLD tag; resets at turn change */
-.ba-doncell.ba-donmark {
-  opacity: 0.5;
-  outline: 1px dashed var(--brass-hi);
-  outline-offset: 1px;
-}
-/* a DON!! never leaves its slot, hovered or marked */
-.ba-doncell:hover, .ba-doncell.ba-donmark:hover { transform: none; }
-.ba-donmark-tag {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(12deg);
-  z-index: 6;
-  padding: 1px 4px;
-  background: var(--night-0);
-  border: 1px solid var(--brass-hi);
-  color: var(--brass-hi);
-  font: 800 8px var(--mono);
-  letter-spacing: 0.08em;
+/* right-click DON!! split — PURELY VISUAL (no engine state): each group sits
+   one level higher (inline translateY), its first card edged in brass;
+   resets at turn change */
+.ba-doncell.ba-dongroup { box-shadow: -3px 0 0 var(--brass-hi); }
+.ba-doncell { transition: transform 140ms var(--ease); cursor: grab; }
+/* a DON!! never leaves its slot when hovered */
+.ba-doncell:hover { transform: none; }
+/* a DON!! group being dragged onto a card */
+.ba-dondrag {
+  position: fixed;
+  z-index: 95;
   pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-3deg);
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.7));
+}
+.ba-dondrag .gb-card { position: absolute; top: 0; }
+.ba-dondrag-count {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  z-index: 20;
+  padding: 2px 7px;
+  background: var(--signal);
+  border: 1px solid #fff;
+  color: #fff;
+  font: 700 15px var(--hud);
 }
 .ba-donempty { font: 700 9px var(--serif); letter-spacing: 0.14em; color: rgba(201, 151, 59, 0.45); padding: 0 6px; }
 
