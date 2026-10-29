@@ -803,7 +803,7 @@ function GameScreen() {
   // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
   // "cast": an Event card used — rises from the hand to the table centre,
   // holds for a beat (readable), then fades toward the trash (tx/ty)
-  interface Fx { id: number; kind: "life" | "ko" | "cast"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string }
+  interface Fx { id: number; kind: "life" | "ko" | "cast" | "reveal"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
   const [fxList, setFxList] = useState<Fx[]>([]);
   const [hitSeat, setHitSeat] = useState<PID | null>(null);
   const lastRects = useRef(new Map<Iid, { cx: number; cy: number; w: number; h: number }>());
@@ -845,6 +845,22 @@ function GameScreen() {
         flashes[e.targetIid] = "up";
       } else if (e.type === "effectActivated" || e.type === "triggerActivated") {
         flashes[e.type === "effectActivated" ? e.sourceIid : e.iid] = "glow";
+      } else if (e.type === "peekResolved" && e.toHand.length && !reduce) {
+        const field = fieldRef.current;
+        const deckEl = document.querySelector(`[data-pile="deck-${e.player}"] .ba-pcard`);
+        const handEl = document.querySelector(`[data-hand="${e.player}"]`);
+        if (field && deckEl && handEl) {
+          const w = CARD_W * 1.5, h = CARD_H * 1.5;
+          const d = centerOf(deckEl), t = centerOf(handEl);
+          e.toHand.forEach((iid, k) => {
+            const cx = field.offsetWidth / 2 + (k - (e.toHand.length - 1) / 2) * (w + 16), cy = field.offsetHeight / 2;
+            added.push({
+              id: ++fxSeq.current, kind: "reveal", x: cx - w / 2, y: cy - h / 2, w, h,
+              dx: d.x - cx, dy: d.y - cy, tx: t.x - cx, ty: t.y - cy,
+              cardId: game.players[e.player]?.instances[iid]?.cardId, color: leaderHex(e.player), flip: hiddenHand(e.player),
+            });
+          });
+        }
       } else if (e.type === "eventCardUsed" && !reduce) {
         const field = fieldRef.current;
         const cardId = game.players[e.player]?.instances[e.iid]?.cardId;
@@ -865,7 +881,7 @@ function GameScreen() {
     if (added.length) {
       setFxList((l) => [...l, ...added]);
       const ids = added.map((f) => f.id);
-      window.setTimeout(() => setFxList((l) => l.filter((f) => !ids.includes(f.id))), 1200); // safety net
+      window.setTimeout(() => setFxList((l) => l.filter((f) => !ids.includes(f.id))), 2200); // safety net
     }
     if (hit) {
       setHitSeat(hit);
@@ -891,6 +907,18 @@ function GameScreen() {
 
   // ── tap routing ─────────────────────────────────────────────────────────────
 
+  /** A log line with every card name it mentions hoverable (→ preview rail). */
+  const withCardNames = (text: string, named?: { name: string; cardId: string }[]): React.ReactNode => {
+    if (!named?.length) return text;
+    const byName = new Map(named.map((c) => [c.name, c.cardId]));
+    const escaped = [...byName.keys()].sort((a, b) => b.length - a.length).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    return text.split(new RegExp(`(${escaped.join("|")})`)).map((part, k) => {
+      const cardId = byName.get(part);
+      return cardId
+        ? <span key={k} className="ba-logcard" onMouseEnter={() => hover(cardId)} onClick={() => hover(cardId)}>{part}</span>
+        : part;
+    });
+  };
   const hover = (cardId: string | null) => {
     if (!cardId) return;
     const c = cards.get(cardId);
@@ -1747,7 +1775,7 @@ function GameScreen() {
   const logRef = useRef<HTMLDivElement | null>(null);
   // ONE feed: duel log lines and table chat interleaved in time order (a chat
   // message sent after event N-1 shows right after that line)
-  type FeedLine = { kind: string; text: string } | { seat: PID; text: string };
+  type FeedLine = { kind: string; text: string; cards?: { name: string; cardId: string }[] } | { seat: PID; text: string };
   const logLines = useMemo(() => {
     const out: FeedLine[] = [];
     let ci = 0;
@@ -2286,7 +2314,12 @@ function GameScreen() {
               }}
               onAnimationEnd={(ev) => { if (ev.target === ev.currentTarget) setFxList((l) => l.filter((x) => x.id !== f.id)); }}
             >
-              {(f.kind === "ko" || f.kind === "cast") && f.cardId && cards.get(f.cardId)?.image
+              {f.kind === "reveal" ? (
+                <div className={`ba-fx-flip${f.flip ? " flip" : ""}`}>
+                  <div className="ba-fx-face">{f.cardId && cards.get(f.cardId)?.image && <img src={cards.get(f.cardId)!.image} alt="" />}</div>
+                  <div className="ba-fx-face back"><span className="gb-back"><span className="gb-back-emblem" /></span></div>
+                </div>
+              ) : (f.kind === "ko" || f.kind === "cast") && f.cardId && cards.get(f.cardId)?.image
                 ? <img src={cards.get(f.cardId)!.image} alt="" />
                 : <span className="gb-back"><span className="gb-back-emblem" /></span>}
             </div>
@@ -2303,7 +2336,7 @@ function GameScreen() {
             {logLines.map((l, i) =>
               "seat" in l
                 ? <p key={i} className="ba-chatline"><b className={l.seat === SEAT_B ? "b" : ""}>{seatName(l.seat)}:</b> {l.text}</p>
-                : <p key={i} className={`ba-logline ${l.kind}`}>{l.text}</p>,
+                : <p key={i} className={`ba-logline ${l.kind}`}>{withCardNames(l.text, l.cards)}</p>,
             )}
           </div>
           <form

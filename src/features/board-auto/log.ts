@@ -12,14 +12,23 @@ import type { Card } from "../cards/cardsDb";
 export interface LogLine {
   text: string;
   kind: "turn" | "battle" | "effect" | "system" | "danger";
+  /** The cards the line names, so the feed can show each one on hover. */
+  cards?: { name: string; cardId: string }[];
 }
 
-function makeNamer(game: AutoGameState | null, cards: Map<string, Card> | null) {
+/** Card names come from the catalog with HTML entities ("Luffy &amp; Ace"). */
+const plain = (name: string) => name.replace(/&amp;/g, "&");
+
+function makeNamer(game: AutoGameState | null, cards: Map<string, Card> | null, named: { name: string; cardId: string }[]) {
   return (iid: Iid): string => {
     if (!game) return iid;
     for (const p of Object.values(game.players)) {
       const inst = p.instances[iid];
-      if (inst) return cards?.get(inst.cardId)?.name ?? inst.cardId;
+      if (inst) {
+        const name = plain(cards?.get(inst.cardId)?.name ?? inst.cardId);
+        if (!named.some((c) => c.cardId === inst.cardId)) named.push({ name, cardId: inst.cardId });
+        return name;
+      }
     }
     return iid;
   };
@@ -31,7 +40,12 @@ export function fmtEvent(
   cards: Map<string, Card> | null,
   seatName: (pid: PID) => string,
 ): LogLine | null {
-  const n = makeNamer(game, cards);
+  const named: { name: string; cardId: string }[] = [];
+  const line = fmtLine(e, makeNamer(game, cards, named), seatName);
+  return line && named.length ? { ...line, cards: named } : line;
+}
+
+function fmtLine(e: GameEvent, n: (iid: Iid) => string, seatName: (pid: PID) => string): LogLine | null {
   switch (e.type) {
     case "gameStarted":
       return { text: `Game started — ${seatName(e.order[0])} goes first.`, kind: "system" };
