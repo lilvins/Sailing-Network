@@ -584,8 +584,10 @@ function GameScreen() {
   const [peekTake, setPeekTake] = useState<Iid[]>([]);
   const [peekOrder, setPeekOrder] = useState<Iid[]>([]);
   const [peekSide, setPeekSide] = useState<Record<Iid, "top" | "bottom">>({});
-  const [payPlan, setPayPlan] = useState<{ fromActive: number; fromRested: number; fromGiven: Record<Iid, number> }>({
-    fromActive: 0, fromRested: 0, fromGiven: {},
+  // DON!!−X (8-3-1-6): the DON!! clicked on the table to return — cost-area
+  // indexes (active / rested) and a count per card with DON!! given to it
+  const [payPick, setPayPick] = useState<{ active: number[]; rested: number[]; given: Record<Iid, number> }>({
+    active: [], rested: [], given: {},
   });
   const [numberPick, setNumberPick] = useState<number | null>(null);
   // DON groups: PURELY VISUAL thinking aid. Per seat, the 0-based indexes of
@@ -612,7 +614,7 @@ function GameScreen() {
     setPeekTake([]);
     setPeekOrder([]);
     setPeekSide({});
-    setPayPlan({ fromActive: 0, fromRested: 0, fromGiven: {} });
+    setPayPick({ active: [], rested: [], given: {} });
     setNumberPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
 
@@ -981,6 +983,10 @@ function GameScreen() {
       dispatch({ type: "respondBlock", player: owner, blockerIid: iid });
       return;
     }
+    if (pc?.kind === "payDon" && owner === pc.player && (game.players[owner].don.given[iid] ?? 0) > 0) {
+      pickPayDon(owner, iid);
+      return;
+    }
     if (pc) { inspect(cardId, { owner, iid }); return; }
 
     if (mode.t === "don") {
@@ -1057,7 +1063,31 @@ function GameScreen() {
     dispatch({ type: "activateMain", player: owner, iid, effectIndex });
   };
 
+  /** DON!!−X: one click = one DON!! picked (again = unpicked); the last one pays. */
+  const pickPayDon = (owner: PID, where: "active" | "rested" | Iid, index = 0) => {
+    if (pc?.kind !== "payDon" || owner !== pc.player) return;
+    const p = game.players[owner];
+    const next = { active: [...payPick.active], rested: [...payPick.rested], given: { ...payPick.given } };
+    if (where === "active" || where === "rested") {
+      const list = next[where];
+      const at = list.indexOf(index);
+      if (at >= 0) list.splice(at, 1); else list.push(index);
+    } else {
+      // a card's given DON!!: each click takes one more, past the last it puts them all back
+      const cur = next.given[where] ?? 0;
+      next.given[where] = cur >= (p.don.given[where] ?? 0) ? 0 : cur + 1;
+    }
+    const total = next.active.length + next.rested.length + Object.values(next.given).reduce((a, b) => a + b, 0);
+    if (total > pc.amount) return;
+    setPayPick(next);
+    if (total === pc.amount) {
+      const fromGiven = Object.fromEntries(Object.entries(next.given).filter(([, n]) => n > 0));
+      dispatch({ type: "respondPayDon", player: pc.player, fromActive: next.active.length, fromRested: next.rested.length, fromGiven });
+    }
+  };
+
   const onDonTap = (owner: PID, index: number) => {
+    if (pc?.kind === "payDon") { pickPayDon(owner, "active", index); return; }
     if (pc) return;
     if (game.phase !== "main" || game.battle) return;
     if (owner !== game.turnPlayer) {
@@ -1097,6 +1127,20 @@ function GameScreen() {
           <button className="ba-btn" data-act="mulligan" onClick={() => dispatch({ type: "respondMulligan", player: pc.player, take: true })}>
             Mulligan
           </button>
+        </div>
+      );
+    }
+    if (pc?.kind === "payDon") {
+      const picked = payPick.active.length + payPick.rested.length + Object.values(payPick.given).reduce((a, b) => a + b, 0);
+      return (
+        <div className="ba-actionbar" data-paydon>
+          <span className="ba-actlabel">
+            <b>{seatName(pc.player)}</b> — DON!!−{pc.amount}: click {pc.amount === 1 ? "the DON!!" : `${pc.amount} DON!!`} to return
+            (cost area, or a card with DON!! given) <i>{picked}/{pc.amount}</i>
+          </span>
+          {picked > 0 && (
+            <button className="ba-btn" data-act="paydon-clear" onClick={() => setPayPick({ active: [], rested: [], given: {} })}>Clear</button>
+          )}
         </div>
       );
     }
@@ -1343,7 +1387,11 @@ function GameScreen() {
             {autoInfo?.inert && <i className="ba-kw noauto" title="Some effect text is not automated yet — see the preview panel">NO-AUTO</i>}
           </span>
         )}
-        {given > 0 && <span className="ba-given">DON!! ×{given}</span>}
+        {given > 0 && (
+          <span className={`ba-given${pc?.kind === "payDon" && payPick.given[iid] ? " ba-paying" : ""}`}>
+            DON!! ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
+          </span>
+        )}
         {/* in-place PLAY: the selected hand card, when the play is legal now */}
         {inHand && selectedHand === iid && !pc && owner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === iid) && (
           <button
@@ -1459,7 +1507,8 @@ function GameScreen() {
               {donActive > 0 && (
                 <div className="ba-donstack active" data-stack="don-active" style={{ width: DON_W + (donActive - 1) * DON_STEP }}>
                   {Array.from({ length: donActive }).map((_, i) => {
-                    const dialOn = isTurn && mode.t === "don" && mode.picked.includes(i + 1);
+                    const dialOn = (isTurn && mode.t === "don" && mode.picked.includes(i + 1))
+                      || (pc?.kind === "payDon" && pc.player === pid && payPick.active.includes(i + 1));
                     // raised one level per split at or before this DON!! (visual only)
                     const level = (donSplits[pid] ?? []).filter((s) => s > 0 && s <= i && s < donActive).length;
                     const groupStart = level > 0 && (donSplits[pid] ?? []).includes(i);
@@ -1498,7 +1547,13 @@ function GameScreen() {
                   {Array.from({ length: donRested }).map((_, i) => (
                     // the rotated card's box is DON_H wide: offset the element so
                     // its rotated footprint starts exactly at i × step
-                    <div key={`r${i}`} className="gb-card ba-doncell gb-rested" style={{ left: i * DON_STEP + (DON_H - DON_W) / 2, zIndex: i + 1 }}>
+                    <div
+                      key={`r${i}`}
+                      className={`gb-card ba-doncell gb-rested${pc?.kind === "payDon" && pc.player === pid && payPick.rested.includes(i + 1) ? " ba-picked" : ""}`}
+                      style={{ left: i * DON_STEP + (DON_H - DON_W) / 2, zIndex: i + 1 }}
+                      data-don-rested={i + 1}
+                      onClick={(e) => { e.stopPropagation(); pickPayDon(pid, "rested", i + 1); }}
+                    >
                       <DonArt />
                     </div>
                   ))}
@@ -1858,67 +1913,6 @@ function GameScreen() {
             )}
             <button className="ba-btn primary big" data-act="peek-confirm" onClick={confirmPeek}>
               Confirm{peekTake.length ? ` (${peekTake.length})` : " — take none"}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  } else if (pc?.kind === "payDon") {
-    // M3 — DON!!−X (8-3-1-6): compose the payment from the cost area and the
-    // attached DON!!; "Auto" = rested first, then active, then attached
-    const p = game.players[pc.player];
-    const total = payPlan.fromActive + payPlan.fromRested + Object.values(payPlan.fromGiven).reduce((s, n) => s + n, 0);
-    const bump = (key: "fromActive" | "fromRested" | Iid, max: number, delta: number) =>
-      setPayPlan((prev) => {
-        if (key === "fromActive" || key === "fromRested") {
-          return { ...prev, [key]: Math.max(0, Math.min(max, prev[key] + delta)) };
-        }
-        const cur = prev.fromGiven[key] ?? 0;
-        return { ...prev, fromGiven: { ...prev.fromGiven, [key]: Math.max(0, Math.min(max, cur + delta)) } };
-      });
-    const auto = () => {
-      let left = pc.amount;
-      const plan = { fromActive: 0, fromRested: 0, fromGiven: {} as Record<Iid, number> };
-      plan.fromRested = Math.min(left, p.don.rested); left -= plan.fromRested;
-      plan.fromActive = Math.min(left, p.don.active); left -= plan.fromActive;
-      for (const [iid, n] of Object.entries(p.don.given)) {
-        if (left <= 0) break;
-        const take = Math.min(left, n);
-        if (take > 0) { plan.fromGiven[iid] = take; left -= take; }
-      }
-      setPayPlan(plan);
-    };
-    const row = (label: string, key: "fromActive" | "fromRested" | Iid, max: number, value: number) => (
-      <div className="ba-payrow" key={key}>
-        <span className="ba-paylabel">{label} <i>({max} available)</i></span>
-        <span className="ba-stepper">
-          <button className="ba-btn tiny" data-act={`paydon-minus-${key}`} disabled={value <= 0} onClick={() => bump(key, max, -1)}>−</button>
-          <b>{value}</b>
-          <button className="ba-btn tiny" data-act={`paydon-plus-${key}`} disabled={value >= max || total >= pc.amount} onClick={() => bump(key, max, +1)}>+</button>
-        </span>
-      </div>
-    );
-    overlay = (
-      <div className="ba-overlay">
-        <div className="ba-panel ba-ov ba-paydon">
-          <span className="ba-ovtag">{seatName(pc.player)} — DON!!−{pc.amount}</span>
-          <p className="ba-ovtext">Return <b>{pc.amount}</b> DON!! to your DON!! deck. Choose where they come from (8-3-1-6).</p>
-          <div className="ba-payrows">
-            {row("Cost area — rested DON!!", "fromRested", p.don.rested, payPlan.fromRested)}
-            {row("Cost area — active DON!!", "fromActive", p.don.active, payPlan.fromActive)}
-            {Object.entries(p.don.given).map(([iid, n]) =>
-              row(`On ${cards.get(p.instances[iid].cardId)?.name ?? iid}`, iid, n, payPlan.fromGiven[iid] ?? 0))}
-          </div>
-          <p className={`ba-paytotal${total === pc.amount ? " ok" : ""}`}>{total} / {pc.amount}</p>
-          <div className="ba-ovbtns">
-            <button className="ba-btn" data-act="paydon-auto" onClick={auto}>Auto (rested first)</button>
-            <button
-              className="ba-btn primary big"
-              data-act="paydon-confirm"
-              disabled={total !== pc.amount}
-              onClick={() => dispatch({ type: "respondPayDon", player: pc.player, ...payPlan })}
-            >
-              Confirm
             </button>
           </div>
         </div>

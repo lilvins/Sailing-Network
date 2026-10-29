@@ -1045,3 +1045,7 @@
   height: 100%; display: flex; align-items: center; justify-content: center;
   font: 600 13px var(--serif); color: var(--brass-hi); letter-spacing: 0.04em;
 }
+
+/* DON!!−X: DON!! given to a card being returned, and the clickable cost area */
+.ba-given.ba-paying { background: var(--signal); color: #fff; }
+.ba-doncell[data-don-rested] { cursor: pointer; }
