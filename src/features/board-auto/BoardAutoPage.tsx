@@ -691,7 +691,7 @@ function GameScreen() {
       if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 10) return;
       d.active = true;
       donPressEnd();
-      e.currentTarget.setPointerCapture(e.pointerId);
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
       setMode({ t: "idle" });
     }
     setDonDrag({ count: d.count, x: e.clientX, y: e.clientY });
@@ -739,6 +739,9 @@ function GameScreen() {
 
   // attack arrow (battle in progress, or an attacker picked and a target hovered)
   const [arrow, setArrow] = useState<Arrow | null>(null);
+  // drag-to-attack: the attacker being dragged and where the pointer is (viewport px)
+  const atkDragRef = useRef<{ iid: Iid; x0: number; y0: number; active: boolean } | null>(null);
+  const [atkPoint, setAtkPoint] = useState<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   /** Viewport (client) point → the field overlay's LOCAL coordinates. Uses the
    *  overlay SVG's screen CTM, which includes every CSS transform above it —
@@ -770,6 +773,15 @@ function GameScreen() {
       from = mode.iid;
       to = hoverTarget;
       owner = game.turnPlayer;
+    } else if (mode.t === "attack" && atkPoint) {
+      // dragging an attacker over nothing in particular: the arrow follows the pointer
+      const a = nodeMap.current.get(mode.iid);
+      if (a) {
+        const p = centerOf(a);
+        const q = toLocal(atkPoint.x, atkPoint.y);
+        setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y, color: leaderHex(game.turnPlayer) });
+        return;
+      }
     }
     const a = from ? nodeMap.current.get(from) : null;
     const b = to ? nodeMap.current.get(to) : null;
@@ -781,7 +793,7 @@ function GameScreen() {
     const q = centerOf(b);
     setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y, color: leaderHex(owner) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game.battle?.attackerIid, game.battle?.targetIid, mode, hoverTarget, events.length]);
+  }, [game.battle?.attackerIid, game.battle?.targetIid, mode, hoverTarget, atkPoint, events.length]);
 
   // ── functional micro-animations: Life taken / Character K.O.'d ──────────────
   // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
@@ -1317,6 +1329,46 @@ function GameScreen() {
     // as a ghost; dropping it over the owner's half plays it (legality-checked
     // by playFromHand — an illegal drop just explains why, like a tap would)
     const canDrag = inHand && !pc && owner === game.turnPlayer && game.phase === "main" && !game.battle;
+    // drag-to-attack (a ready attacker on the field): the arrow follows the
+    // pointer, legal targets light up; dropping on one declares the attack
+    const attackOpt = !inHand && !pc && owner === game.turnPlayer && game.phase === "main" && !game.battle
+      ? lm.attackers.find((a) => a.iid === iid) : undefined;
+    const targetUnder = (x: number, y: number, targets: Iid[]): Iid | null => {
+      const t = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-iid]")?.dataset.iid;
+      return t && targets.includes(t) ? t : null;
+    };
+    const attackDragHandlers = attackOpt
+      ? {
+          onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+            if (e.button !== 0) return;
+            atkDragRef.current = { iid, x0: e.clientX, y0: e.clientY, active: false };
+          },
+          onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => {
+            const d = atkDragRef.current;
+            if (!d || d.iid !== iid) return;
+            if (!d.active) {
+              if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 10) return;
+              d.active = true;
+              try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+              setMode({ t: "attack", iid, targets: attackOpt.targets });
+            }
+            setHoverTarget(targetUnder(e.clientX, e.clientY, attackOpt.targets));
+            setAtkPoint({ x: e.clientX, y: e.clientY });
+          },
+          onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => {
+            const d = atkDragRef.current;
+            atkDragRef.current = null;
+            if (!d || !d.active) return;
+            suppressClick.current = true;
+            setAtkPoint(null);
+            setHoverTarget(null);
+            setMode({ t: "idle" });
+            const target = targetUnder(e.clientX, e.clientY, attackOpt.targets);
+            if (target) dispatch({ type: "attack", player: owner, attackerIid: iid, targetIid: target });
+          },
+          onPointerCancel: () => { atkDragRef.current = null; setAtkPoint(null); setMode({ t: "idle" }); },
+        }
+      : {};
     const dragHandlers = canDrag
       ? {
           onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
@@ -1329,7 +1381,7 @@ function GameScreen() {
             if (!d.active) {
               if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 10) return;
               d.active = true;
-              e.currentTarget.setPointerCapture(e.pointerId);
+              try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
               setSelectedHand(null);
             }
             setDrag({ iid, owner, cardId: inst.cardId, x: e.clientX, y: e.clientY });
@@ -1356,6 +1408,7 @@ function GameScreen() {
         data-iid={iid}
         ref={reg(iid)}
         {...dragHandlers}
+        {...attackDragHandlers}
         onClick={(e) => {
           e.stopPropagation();
           if (suppressClick.current) { suppressClick.current = false; return; }
