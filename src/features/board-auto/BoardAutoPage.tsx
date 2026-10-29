@@ -8,6 +8,7 @@ import { legalMoves } from "../../autosim/engine/legality";
 import { fitChoice } from "../../autosim/engine/effects";
 import { effectivePower, keywordsOf, type AutoGameState, type Iid, type PID } from "../../autosim/engine/state";
 import type { Keyword } from "../../autosim/ir/types";
+import type { PlayerIntent } from "../../autosim/engine/intents";
 import { getCardDb, getCardsById, isAiSeat, useAutoStore, type SeatSetup } from "./autoStore";
 import { automationInfo } from "./compile";
 import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type MetaDeckFile } from "./decks";
@@ -106,6 +107,18 @@ const LIFE_STEP = 10;
 /** Cost-area cascade step: each DON!! is uncovered for 28px (35% of a card,
  *  25% of a rotated card's footprint — the bot requires ≥25%). */
 const DON_STEP = 28;
+/** What a DON!!-moving effect asks for, answered by clicks on the table. */
+interface DonChoice {
+  from: "active" | "rested" | "deck";
+  verb: string;
+  max: number;
+  min: number;
+  sourceIid: Iid;
+  answer: (n: number) => PlayerIntent;
+}
+/** The "give up to N rested DON!!" options (compiler/textIr.ts, giveUpToRested). */
+const GIVE_DON_OPTION = /^Give (no DON!!|\d+ rested DON!!)$/;
+
 /** An AI answer inside a battle never comes faster than this (ms), and the
  *  outcome of a battle stays on screen this long before play goes on. */
 const BATTLE_BEAT = 900;
@@ -517,6 +530,25 @@ function GameScreen() {
   const lm = useMemo(() => legalMoves(db, game), [db, game]);
   const pc = game.pendingChoice;
 
+  /** Effects that move DON!! (set active, rest, add from the DON!! deck, give
+   *  rested ones): answered by clicking the DON!! on the table — the clicks
+   *  are counted and sent as the number / option the engine asks for. */
+  const donChoice = ((): DonChoice | null => {
+    if (!pc || isAiSeat(seats, pc.player)) return null;
+    const player = pc.player;
+    if (pc.kind === "chooseNumber" && (pc.purpose === "standDon" || pc.purpose === "restDon" || pc.purpose === "addDon")) {
+      const from = pc.purpose === "standDon" ? "rested" : pc.purpose === "restDon" ? "active" : "deck";
+      const verb = pc.purpose === "standDon" ? "set as active" : pc.purpose === "restDon" ? "rest" : "add";
+      return { from, verb, max: pc.max, min: pc.min, sourceIid: pc.sourceIid, answer: (n) => ({ type: "respondNumber", player, value: n }) };
+    }
+    if (pc.kind === "chooseOption" && pc.options.length > 1 && pc.options.every((o) => GIVE_DON_OPTION.test(o))) {
+      const counts = pc.options.map((o) => Number(/\d+/.exec(o)?.[0] ?? 0));
+      const max = Math.min(Math.max(...counts), game.players[player].don.rested);
+      return { from: "rested", verb: "give", max, min: 0, sourceIid: pc.sourceIid, answer: (n) => ({ type: "respondOption", player, index: counts.indexOf(n) }) };
+    }
+    return null;
+  })();
+
   /** How the last battle ended, shown for a beat after it (HIT / REPELLED / K.O.). */
   const [recap, setRecap] = useState<{ text: string; sub: string; tone: "hit" | "miss" } | null>(null);
   // AI seats: one move per tick while it is their move
@@ -607,6 +639,8 @@ function GameScreen() {
   const peekDragRef = useRef<Iid | null>(null);
   // DON!!−X (8-3-1-6): the DON!! clicked on the table to return — cost-area
   // indexes (active / rested) and a count per card with DON!! given to it
+  /** DON!! clicked to answer a DON!!-moving effect (cost-area indexes, or one per DON!! deck click) */
+  const [donPick, setDonPick] = useState<number[]>([]);
   const [payPick, setPayPick] = useState<{ active: number[]; rested: number[]; given: Record<Iid, number> }>({
     active: [], rested: [], given: {},
   });
@@ -637,6 +671,7 @@ function GameScreen() {
     setPeekSide({});
     setPeekArranging(false);
     setPayPick({ active: [], rested: [], given: {} });
+    setDonPick([]);
     setNumberPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
 
@@ -1207,7 +1242,21 @@ function GameScreen() {
     }
   };
 
+  /** One click on a DON!! (or the DON!! deck) toward a DON!!-moving effect;
+   *  reaching the maximum resolves it. False when no such effect wants it. */
+  const pickDon = (owner: PID, where: DonChoice["from"], index: number): boolean => {
+    if (!donChoice || owner !== pc?.player || where !== donChoice.from) return false;
+    const full = donPick.length >= donChoice.max;
+    const next = where === "deck"
+      ? (full ? [] : [...donPick, donPick.length + 1])
+      : donPick.includes(index) ? donPick.filter((i) => i !== index) : full ? donPick : [...donPick, index];
+    setDonPick(next);
+    if (next.length === donChoice.max && donChoice.max > 0) dispatch(donChoice.answer(next.length));
+    return true;
+  };
+
   const onDonTap = (owner: PID, index: number) => {
+    if (pickDon(owner, "active", index)) return;
     if (pc?.kind === "payDon") { pickPayDon(owner, "active", index); return; }
     if (pc) return;
     if (game.phase !== "main" || game.battle) return;
@@ -1247,6 +1296,23 @@ function GameScreen() {
           </button>
           <button className="ba-btn" data-act="mulligan" onClick={() => dispatch({ type: "respondMulligan", player: pc.player, take: true })}>
             Mulligan
+          </button>
+        </div>
+      );
+    }
+    if (donChoice && pc) {
+      const n = donPick.length;
+      const src = cards.get(findCardId(game, donChoice.sourceIid) ?? "")?.name;
+      const where = donChoice.from === "active" ? "active DON!! in your cost area" : donChoice.from === "rested" ? "rested DON!! in your cost area" : "your DON!! deck";
+      return (
+        <div className="ba-actionbar" data-donpick={donChoice.from}>
+          <span className="ba-actlabel">
+            {src && <b>{src}</b>} — click {donChoice.from === "deck" ? "" : `up to ${donChoice.max} `}{where} to {donChoice.verb}
+            {donChoice.from === "deck" ? ` (up to ${donChoice.max})` : ""} <i>{n}/{donChoice.max}</i>
+          </span>
+          {n > 0 && <button className="ba-btn" data-act="donpick-clear" onClick={() => setDonPick([])}>Clear</button>}
+          <button className="ba-btn primary" data-act="donpick-confirm" disabled={n < donChoice.min} onClick={() => dispatch(donChoice.answer(n))}>
+            {n === 0 ? "None" : `Confirm (${n})`}
           </button>
         </div>
       );
@@ -1700,10 +1766,17 @@ function GameScreen() {
     );
   }
 
-  function PileBox({ label, count, children, faceClass, pid, tick, faces }: { label: string; count: number; children?: React.ReactNode; faceClass?: string; pid: PID; tick?: boolean; faces?: (Card | null)[] }) {
+  function PileBox({ label, count, children, faceClass, pid, tick, faces, picking, onPick }: { label: string; count: number; children?: React.ReactNode; faceClass?: string; pid: PID; tick?: boolean; faces?: (Card | null)[];
+    /** an effect takes cards from this pile by clicks: how many are picked so far */
+    picking?: number; onPick?: () => void }) {
     const key = `${label.toLowerCase().replace(/[^a-z]/g, "")}-${pid}`; // life-seatA, trash-seatA, …
     return (
-      <div className={`ba-pile ${faceClass ?? ""}`} data-pile={key}>
+      <div
+        className={`ba-pile ${faceClass ?? ""}${picking !== undefined ? " ba-pickpile" : ""}`}
+        data-pile={key}
+        onClick={picking !== undefined ? (e) => { e.stopPropagation(); onPick?.(); } : undefined}
+      >
+        {picking !== undefined && picking > 0 && <span className="ba-pickcount">+{picking}</span>}
         <span className="ba-plabel">{label}</span>
         {label === "LIFE" && count > 0 ? (
           // Life: every card visible as a strip, a declared vertical stack
@@ -1747,7 +1820,11 @@ function GameScreen() {
             label: "LIFE", count: p.zones.life.length, pid, tick: hitSeat === pid,
             faces: p.zones.life.map((iid) => (p.instances[iid].faceUp ? cards.get(p.instances[iid].cardId) ?? null : null)),
           })}
-          {PileBox({ label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid })}
+          {PileBox({
+            label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid,
+            picking: donChoice?.from === "deck" && pc?.player === pid ? donPick.length : undefined,
+            onPick: () => pickDon(pid, "deck", 0),
+          })}
         </div>
         <div className="ba-halfmain">
           {/* every table slot is as WIDE as a card is TALL: a rested (rotated)
@@ -1778,7 +1855,8 @@ function GameScreen() {
                 <div className="ba-donstack active" data-stack="don-active" style={{ width: DON_W + (donActive - 1) * DON_STEP }}>
                   {Array.from({ length: donActive }).map((_, i) => {
                     const dialOn = (isTurn && mode.t === "don" && mode.picked.includes(i + 1))
-                      || (pc?.kind === "payDon" && pc.player === pid && payPick.active.includes(i + 1));
+                      || (pc?.kind === "payDon" && pc.player === pid && payPick.active.includes(i + 1))
+                      || (donChoice?.from === "active" && pc?.player === pid && donPick.includes(i + 1));
                     // raised one level per split at or before this DON!! (visual only)
                     const level = (donSplits[pid] ?? []).filter((s) => s > 0 && s <= i && s < donActive).length;
                     const groupStart = level > 0 && (donSplits[pid] ?? []).includes(i);
@@ -1819,10 +1897,10 @@ function GameScreen() {
                     // its rotated footprint starts exactly at i × step
                     <div
                       key={`r${i}`}
-                      className={`gb-card ba-doncell gb-rested${pc?.kind === "payDon" && pc.player === pid && payPick.rested.includes(i + 1) ? " ba-picked" : ""}`}
+                      className={`gb-card ba-doncell gb-rested${(pc?.kind === "payDon" && pc.player === pid && payPick.rested.includes(i + 1)) || (donChoice?.from === "rested" && pc?.player === pid && donPick.includes(i + 1)) ? " ba-picked" : ""}${donChoice?.from === "rested" && pc?.player === pid ? " ba-pickable" : ""}`}
                       style={{ left: i * DON_STEP + (DON_H - DON_W) / 2, zIndex: i + 1 }}
                       data-don-rested={i + 1}
-                      onClick={(e) => { e.stopPropagation(); pickPayDon(pid, "rested", i + 1); }}
+                      onClick={(e) => { e.stopPropagation(); if (!pickDon(pid, "rested", i + 1)) pickPayDon(pid, "rested", i + 1); }}
                     >
                       <DonArt />
                     </div>
@@ -1873,9 +1951,21 @@ function GameScreen() {
         style={stacked ? ({ ["--hstep" as string]: `${step}px` } as React.CSSProperties) : undefined}
       >
         {hiddenHand(pid)
-          ? p.zones.hand.map((iid) => (
-            <div key={iid} className={`gb-card ba-card ba-backcard${small ? " ba-small" : ""}`}><span className="gb-back"><span className="gb-back-emblem" /></span></div>
-          ))
+          ? p.zones.hand.map((iid) => {
+            // still face down, but an effect can target them ("trash 2 cards
+            // from your opponent's hand"): pick blind, like at a real table
+            const targetable = pc?.kind === "selectTargets" && pc.candidates.some((c) => c.iid === iid);
+            return (
+              <div
+                key={iid}
+                className={`gb-card ba-card ba-backcard${small ? " ba-small" : ""}${targetable ? " ba-target" : ""}${picked.includes(iid) ? " ba-picked" : ""}`}
+                data-iid={iid}
+                onClick={targetable ? (e) => { e.stopPropagation(); toggleTarget(iid); } : undefined}
+              >
+                <span className="gb-back"><span className="gb-back-emblem" /></span>
+              </div>
+            );
+          })
           : p.zones.hand.map((iid) => BCard({ owner: pid, iid, small, inHand: true }))}
         {p.zones.hand.length === 0 && <span className="ba-donempty">EMPTY HAND</span>}
       </div>
@@ -2376,6 +2466,8 @@ function GameScreen() {
 
   // the AI answers its own prompts: no panels for a seat nobody here plays
   if (aiActing) overlay = null;
+  // DON!!-moving effects are answered on the table (the band explains)
+  if (donChoice) overlay = null;
   // a take-back request waits for the opponent before anything else
   if (undoRequest) {
     const entry = [...history].reverse().find((h) => h.actor === undoRequest.by);

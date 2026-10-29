@@ -754,7 +754,7 @@
 /* DON given chip */
 .ba-given {
   position: absolute;
-  bottom: 20px;
+  top: 24%; /* up in the art, clear of the power badge at the bottom (user: "più alto") */
   left: 50%;
   transform: translateX(-50%);
   z-index: 7;
@@ -1241,3 +1241,12 @@
 .ba-overlay.dock .ba-ovbtns { justify-content: flex-start; }
 @keyframes ba-dockin { from { transform: translateY(16px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .ba-overlay.dock .ba-ov { animation: none; } }
+
+/* DON!!-moving effects: the DON!! you can click glow, the DON!! deck counts your clicks */
+.ba-doncell.ba-pickable { outline: 2px dashed #ffd23f; outline-offset: 1px; cursor: pointer; }
+.ba-pile.ba-pickpile { cursor: pointer; }
+.ba-pile.ba-pickpile .ba-pcard { outline: 3px solid #ffd23f; outline-offset: 2px; animation: ba-readyglow 1.6s steps(8) infinite; }
+.ba-pickcount {
+  position: absolute; top: 18px; right: 2px; z-index: 8;
+  font: 700 16px var(--hud); color: #1a1300; background: #ffd23f; border: 2px solid #1a1300; padding: 1px 6px;
+}
