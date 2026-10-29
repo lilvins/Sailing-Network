@@ -300,7 +300,7 @@ describe("M5 §6c: engine dry-run of every generated effect", () => {
     }
     console.log(`[M5] dry-run: ${ran} effects executed, ${failures.length} failures`);
     expect(failures).toEqual([]);
-  });
+  }, 60_000); // ~2.5k cards × every effect: seconds, more on a busy machine
 });
 
 // ─── playability: full games with the real meta decks ───────────────────────
