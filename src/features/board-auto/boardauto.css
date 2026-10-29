@@ -1109,3 +1109,6 @@
   pointer-events: none;
 }
 .ba-small .ba-stunned { font-size: 11px; padding: 5px 0; }
+
+/* take-back request: bottom-left of the rail, above Exit */
+.ba-undo { width: 100%; margin-bottom: 6px; }

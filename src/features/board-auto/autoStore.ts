@@ -37,6 +37,19 @@ export interface SeatSetup {
 export const isAiSeat = (seats: SeatSetup[] | null, pid: PID): boolean =>
   !!seats?.some((s) => s.pid === pid && s.controller === "ai");
 
+/** One move as it was before it was played — what a take-back restores. */
+export interface HistoryEntry {
+  /** The state before the move (applyIntent never changes it: kept as is). */
+  game: AutoGameState;
+  /** How many events the log had before the move. */
+  eventsLen: number;
+  /** Who made the move. */
+  actor: PID;
+}
+
+/** Moves kept for take-backs. */
+const HISTORY_LIMIT = 60;
+
 export interface Banner {
   id: number;
   text: string;
@@ -91,6 +104,10 @@ interface AutoStoreState {
   /** AI seats: paused, and the pause between their moves (ms). */
   aiPaused: boolean;
   aiDelay: number;
+  /** Every move of this game, oldest first (take-backs). */
+  history: HistoryEntry[];
+  /** A player asked to take back their last move; the opponent must answer. */
+  undoRequest: { by: PID } | null;
 
   init: () => Promise<void>;
   /** pick → roll */
@@ -104,6 +121,9 @@ interface AutoStoreState {
   aiStep: () => void;
   /** Open the deck pick fresh, seat B to the AI or both seats human. */
   newGame: (aiOpponent: boolean) => void;
+  /** Ask to take back the last move a person made (an AI opponent accepts at once). */
+  requestUndo: () => void;
+  answerUndo: (accept: boolean) => void;
   setAiPaused: (paused: boolean) => void;
   setAiDelay: (ms: number) => void;
   explain: (text: string, hint?: string, tone?: Banner["tone"]) => void;
@@ -125,6 +145,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   aiOpponent: false,
   aiPaused: false,
   aiDelay: 700,
+  history: [],
+  undoRequest: null,
 
   init: async () => {
     if (cardsById) {
@@ -170,7 +192,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
         firstPlayer: seats[firstIdx].pid,
       });
       agents = Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createGreedyAgent(`${state.seed}:${s.pid}`)]));
-      set({ game: state, events, stage: "play", banner: null, aiPaused: false });
+      set({ game: state, events, stage: "play", banner: null, aiPaused: false, history: [], undoRequest: null });
     } catch (e) {
       // deck construction failed (user decks can be illegal) → back to pick
       const msg = e instanceof Error ? e.message : String(e);
@@ -190,7 +212,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     }
     try {
       const r = applyIntent(cardDb, game, intent);
-      set({ game: r.state, events: [...events, ...r.events] });
+      const actor = actorOf(cardDb, game);
+      set({ game: r.state, events: [...events, ...r.events], undoRequest: null, history: remember(get().history, { game, eventsLen: events.length, actor }) });
       return true;
     } catch (e) {
       if (e instanceof EngineError) {
@@ -205,16 +228,45 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   aiStep: () => {
     const { game, events } = get();
     if (!game || !cardDb || game.phase === "over") return;
-    const agent = agents[actorOf(cardDb, game)];
+    if (get().undoRequest) return; // a take-back is being decided
+    const actor = actorOf(cardDb, game);
+    const agent = agents[actor];
     if (!agent) return;
     try {
       const r = agentStep(cardDb, game, agent);
-      set({ game: r.state, events: [...events, ...r.events] });
+      set({ game: r.state, events: [...events, ...r.events], history: remember(get().history, { game, eventsLen: events.length, actor }) });
     } catch (e) {
       // the agent and every fallback were refused: stop and say so
       set({ aiPaused: true, banner: { id: bannerSeq++, text: `AI stuck: ${e instanceof Error ? e.message : String(e)}`, hint: "The AI is paused. Concede for that seat, or change decks." } });
     }
   },
+  requestUndo: () => {
+    const { history, seats } = get();
+    const last = [...history].reverse().find((h) => !isAiSeat(seats, h.actor));
+    if (!last) return;
+    const opponent = seats?.find((s) => s.pid !== last.actor);
+    set({ undoRequest: { by: last.actor } });
+    if (opponent?.controller === "ai") get().answerUndo(true); // the AI never says no
+  },
+
+  answerUndo: (accept) => {
+    const { history, seats, undoRequest, events } = get();
+    if (!undoRequest) return;
+    if (!accept) {
+      set({ undoRequest: null, banner: { id: bannerSeq++, text: "Take-back declined.", tone: "info" } });
+      return;
+    }
+    // back to before the requester's last move (and whatever came after it)
+    let at = -1;
+    for (let i = history.length - 1; i >= 0; i--) if (history[i].actor === undoRequest.by && !isAiSeat(seats, history[i].actor)) { at = i; break; }
+    if (at < 0) { set({ undoRequest: null }); return; }
+    const h = history[at];
+    set({
+      game: h.game, events: events.slice(0, h.eventsLen), history: history.slice(0, at), undoRequest: null,
+      banner: { id: bannerSeq++, text: "Move taken back.", tone: "info" },
+    });
+  },
+
   newGame: (aiOpponent) => set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }),
   setAiPaused: (aiPaused) => set({ aiPaused }),
   setAiDelay: (aiDelay) => set({ aiDelay }),
@@ -222,6 +274,9 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   explain: (text, hint, tone) => set({ banner: { id: bannerSeq++, text, hint, tone } }),
   dismissBanner: () => set({ banner: null }),
 
-  rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null }),
-  reset: () => set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }),
+  rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null, history: [], undoRequest: null }),
+  reset: () => set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null, history: [], undoRequest: null }),
 }));
+
+const remember = (history: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] =>
+  [...history, entry].slice(-HISTORY_LIMIT);

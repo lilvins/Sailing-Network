@@ -516,6 +516,12 @@ function GameScreen() {
   const setAiPaused = useAutoStore((s) => s.setAiPaused);
   const setAiDelay = useAutoStore((s) => s.setAiDelay);
   const hasAi = seats.some((s) => s.controller === "ai");
+  // take-backs: the last move a person made, and the open request (if any)
+  const history = useAutoStore((s) => s.history);
+  const undoRequest = useAutoStore((s) => s.undoRequest);
+  const requestUndo = useAutoStore((s) => s.requestUndo);
+  const answerUndo = useAutoStore((s) => s.answerUndo);
+  const lastHumanMove = [...history].reverse().find((h) => !isAiSeat(seats, h.actor)) ?? null;
   const aiActing = game.phase !== "over" && isAiSeat(seats, lm.actor);
   /** Human against AI: the AI's hand stays face down (AI vs AI shows both to the spectator). */
   const hiddenHand = (pid: PID) => game.phase !== "over" && isAiSeat(seats, pid) && !seats.every((s) => s.controller === "ai");
@@ -2205,6 +2211,26 @@ function GameScreen() {
 
   // the AI answers its own prompts: no panels for a seat nobody here plays
   if (aiActing) overlay = null;
+  // a take-back request waits for the opponent before anything else
+  if (undoRequest) {
+    const entry = [...history].reverse().find((h) => h.actor === undoRequest.by);
+    const what = entry ? events.slice(entry.eventsLen).map((e) => fmtEvent(e, game, cards, seatName)).find(Boolean)?.text : null;
+    const opponent = seats.find((s) => s.pid !== undoRequest.by)!;
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov" data-undo-request>
+          <span className="ba-ovtag">TAKE-BACK</span>
+          <b className="ba-ovname">{seatName(undoRequest.by)} asks to take back their last move</b>
+          {what && <p className="ba-ovtext">“{what}”</p>}
+          <p className="ba-ovtext"><b>{opponent.name}</b>, do you accept? Everything after that move is undone too.</p>
+          <div className="ba-ovbtns">
+            <button className="ba-btn primary big" data-act="undo-accept" onClick={() => answerUndo(true)}>Accept</button>
+            <button className="ba-btn big" data-act="undo-decline" onClick={() => answerUndo(false)}>Decline</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const battleStep = game.battle ? game.battle.step : null;
   const phaseLabel =
@@ -2273,6 +2299,15 @@ function GameScreen() {
           </div>
         )}
         <div className="ba-railfill" />
+        <button
+          className="ba-btn ba-undo"
+          data-act="undo"
+          disabled={!lastHumanMove || !!undoRequest}
+          title={lastHumanMove ? `Ask to take back ${seatName(lastHumanMove.actor)}'s last move` : "No move to take back yet"}
+          onClick={requestUndo}
+        >
+          ↶ Take back last move
+        </button>
         <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
       </div>
 
