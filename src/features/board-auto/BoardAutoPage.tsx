@@ -667,7 +667,7 @@ function GameScreen() {
       donHintShown.current = true;
       explain(
         "DON!! split — visual only, the game state does not change.",
-        "Right-click (long-press on touch) splits; again on a group's first DON!! merges it. Drag a group onto your Leader or a Character to give it.",
+        "Right-click (long-press on touch) splits; again on a group's first DON!! merges it. Once split, drag a group onto your Leader or a Character to give it.",
         "info",
       );
     }
@@ -684,6 +684,8 @@ function GameScreen() {
   const donDragStart = (pid: PID, index: number, e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 || pc || pid !== game.turnPlayer || game.phase !== "main" || game.battle) return;
     const groups = donGroups(pid);
+    // only a split stack drags: an unsplit one would hand over every DON!! at once
+    if (groups.length < 2) return;
     let group = 0;
     for (let start = 0; group < groups.length - 1 && index >= start + groups[group]; group++) start += groups[group];
     donDragRef.current = { pid, count: groups[group], groups, group, x0: e.clientX, y0: e.clientY, active: false };
