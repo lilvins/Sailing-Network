@@ -8,7 +8,9 @@
  * JSON-serializable at all times.
  *
  * Hotseat: both seats live on this page; whoever `legalMoves().actor` names
- * answers the current prompt.
+ * answers the current prompt. A seat can be played by an AI agent
+ * (src/autosim/ai): the page calls aiStep() on a timer while it is that
+ * seat's move — two AI seats make a game to watch.
  */
 import { create } from "zustand";
 import type { Card } from "../cards/cardsDb";
@@ -17,6 +19,8 @@ import { applyIntent, createGame } from "../../autosim/engine/engine";
 import { EngineError, type PlayerIntent } from "../../autosim/engine/intents";
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, CardDb, PID } from "../../autosim/engine/state";
+import { agentStep, actorOf, type Agent } from "../../autosim/ai/agent";
+import { createGreedyAgent } from "../../autosim/ai/greedy";
 import { makeCardDb } from "./compile";
 import type { DeckChoice } from "./decks";
 
@@ -26,7 +30,12 @@ export interface SeatSetup {
   pid: PID;
   name: string;
   deck: DeckChoice;
+  /** Who plays this seat: a person at this screen, or the greedy AI. */
+  controller?: "human" | "ai";
 }
+
+export const isAiSeat = (seats: SeatSetup[] | null, pid: PID): boolean =>
+  !!seats?.some((s) => s.pid === pid && s.controller === "ai");
 
 export interface Banner {
   id: number;
@@ -40,6 +49,8 @@ export interface Banner {
  *  state: the store holds plain data only. */
 let cardsById: Map<string, Card> | null = null;
 let cardDb: CardDb | null = null;
+/** One agent per AI seat, made when the game starts (they keep their own RNG). */
+let agents: Record<PID, Agent> = {};
 
 export function getCardsById(): Map<string, Card> | null {
   return cardsById;
@@ -75,6 +86,9 @@ interface AutoStoreState {
   game: AutoGameState | null;
   events: GameEvent[];
   banner: Banner | null;
+  /** AI seats: paused, and the pause between their moves (ms). */
+  aiPaused: boolean;
+  aiDelay: number;
 
   init: () => Promise<void>;
   /** pick → roll */
@@ -84,6 +98,10 @@ interface AutoStoreState {
   chooseFirst: (firstIdx: 0 | 1) => void;
   /** The single gate every UI move goes through. Returns true when applied. */
   dispatch: (intent: PlayerIntent) => boolean;
+  /** One move by the AI whose turn it is to act (no-op when a human must act). */
+  aiStep: () => void;
+  setAiPaused: (paused: boolean) => void;
+  setAiDelay: (ms: number) => void;
   explain: (text: string, hint?: string, tone?: Banner["tone"]) => void;
   dismissBanner: () => void;
   /** Back to the roll with the same decks (rematch) or to the deck pick. */
@@ -100,6 +118,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   game: null,
   events: [],
   banner: null,
+  aiPaused: false,
+  aiDelay: 700,
 
   init: async () => {
     if (cardsById) {
@@ -144,7 +164,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
         ],
         firstPlayer: seats[firstIdx].pid,
       });
-      set({ game: state, events, stage: "play", banner: null });
+      agents = Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createGreedyAgent(`${state.seed}:${s.pid}`)]));
+      set({ game: state, events, stage: "play", banner: null, aiPaused: false });
     } catch (e) {
       // deck construction failed (user decks can be illegal) → back to pick
       const msg = e instanceof Error ? e.message : String(e);
@@ -156,8 +177,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   dispatch: (intent) => {
-    const { game, events } = get();
+    const { game, events, seats } = get();
     if (!game || !cardDb) return false;
+    if (intent.type !== "concede" && game.phase !== "over" && isAiSeat(seats, actorOf(cardDb, game))) {
+      set({ banner: { id: bannerSeq++, text: "The AI is playing this move.", hint: "Wait for it — or concede for that seat.", tone: "info" } });
+      return false;
+    }
     try {
       const r = applyIntent(cardDb, game, intent);
       set({ game: r.state, events: [...events, ...r.events] });
@@ -171,6 +196,22 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
       return false;
     }
   },
+
+  aiStep: () => {
+    const { game, events } = get();
+    if (!game || !cardDb || game.phase === "over") return;
+    const agent = agents[actorOf(cardDb, game)];
+    if (!agent) return;
+    try {
+      const r = agentStep(cardDb, game, agent);
+      set({ game: r.state, events: [...events, ...r.events] });
+    } catch (e) {
+      // the agent and every fallback were refused: stop and say so
+      set({ aiPaused: true, banner: { id: bannerSeq++, text: `AI stuck: ${e instanceof Error ? e.message : String(e)}`, hint: "The AI is paused. Concede for that seat, or change decks." } });
+    }
+  },
+  setAiPaused: (aiPaused) => set({ aiPaused }),
+  setAiDelay: (aiDelay) => set({ aiDelay }),
 
   explain: (text, hint, tone) => set({ banner: { id: bannerSeq++, text, hint, tone } }),
   dismissBanner: () => set({ banner: null }),

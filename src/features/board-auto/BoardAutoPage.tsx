@@ -8,9 +8,9 @@ import { legalMoves } from "../../autosim/engine/legality";
 import { fitChoice } from "../../autosim/engine/effects";
 import { effectivePower, keywordsOf, type AutoGameState, type Iid, type PID } from "../../autosim/engine/state";
 import type { Keyword } from "../../autosim/ir/types";
-import { getCardDb, getCardsById, useAutoStore, type SeatSetup } from "./autoStore";
+import { getCardDb, getCardsById, isAiSeat, useAutoStore, type SeatSetup } from "./autoStore";
 import { automationInfo } from "./compile";
-import { buildDemoDecks, userDeckChoices, type DeckChoice } from "./decks";
+import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type MetaDeckFile } from "./decks";
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
 import "../home/home.css"; // .nsea layers (shared with the Home hero)
@@ -32,6 +32,11 @@ import "./boardauto.css";
 
 const SEAT_A: PID = "seatA";
 const SEAT_B: PID = "seatB";
+
+type Controller = "human" | "ai";
+const AI_NAMES: [string, string] = ["Greedy AI", "Greedy AI 2"];
+/** Pause between two AI moves. */
+const AI_SPEEDS = [{ label: "Slow", ms: 1400 }, { label: "Normal", ms: 700 }, { label: "Fast", ms: 150 }];
 
 const KW_LABEL: Record<Keyword, string> = {
   Rush: "RUSH",
@@ -244,8 +249,13 @@ function PickScreen() {
 
   const demoDecks = useMemo(() => buildDemoDecks(cards), [cards]);
   const [mine, setMine] = useState<DeckChoice[]>([]);
+  const [meta, setMeta] = useState<DeckChoice[]>([]);
   useEffect(() => {
     let alive = true;
+    fetch("/data/meta-decks.json")
+      .then((r) => (r.ok ? (r.json() as Promise<MetaDeckFile>) : Promise.reject(new Error(String(r.status)))))
+      .then((file) => { if (alive) setMeta(metaDeckChoices(file)); })
+      .catch(() => {});
     api
       .myDecks()
       .then((r) => {
@@ -259,12 +269,60 @@ function PickScreen() {
 
   const [names, setNames] = useState<[string, string]>([user?.username ?? "Player 1", "Player 2"]);
   const [sel, setSel] = useState<[DeckChoice | null, DeckChoice | null]>([null, null]);
-  const options = [...demoDecks, ...mine];
+  const [ctrl, setCtrl] = useState<[Controller, Controller]>(["human", "human"]);
+  const options = [...meta, ...demoDecks, ...mine];
+
+  const setController = (idx: 0 | 1, c: Controller) => {
+    const nextCtrl: [Controller, Controller] = [...ctrl];
+    nextCtrl[idx] = c;
+    setCtrl(nextCtrl);
+    // a default name follows the controller; a typed one is kept
+    const humanName = idx === 0 ? user?.username ?? "Player 1" : "Player 2";
+    if (names[idx] === humanName || names[idx] === AI_NAMES[idx]) {
+      const next: [string, string] = [...names];
+      next[idx] = c === "ai" ? AI_NAMES[idx] : humanName;
+      setNames(next);
+    }
+  };
+
+  const start = (seatsCtrl: [Controller, Controller], decks: [DeckChoice, DeckChoice], seatNames: [string, string]) => {
+    tryEnterLandscape(); // user gesture: the table is landscape-first
+    const seats: [SeatSetup, SeatSetup] = [
+      { pid: SEAT_A, name: seatNames[0].trim(), deck: decks[0], controller: seatsCtrl[0] },
+      { pid: SEAT_B, name: seatNames[1].trim(), deck: decks[1], controller: seatsCtrl[1] },
+    ];
+    confirmSeats(seats);
+  };
+
+  /** Both seats to the AI, any missing deck drawn from the meta lists, straight to the roll. */
+  const watchAiVsAi = () => {
+    const pool = meta.length >= 2 ? meta : options;
+    const draw = (not?: DeckChoice | null) => {
+      const rest = pool.filter((d) => d.key !== not?.key);
+      return rest[Math.floor(Math.random() * rest.length)];
+    };
+    const a = sel[0] ?? draw(sel[1]);
+    const b = sel[1] ?? draw(a);
+    start(["ai", "ai"], [a, b], [AI_NAMES[0], AI_NAMES[1]]);
+  };
 
   const seatCol = (idx: 0 | 1) => (
     <div className="ba-seatcol">
       <div className="ba-seathead">
         <span className="ba-seattag">{idx === 0 ? "SEAT A — bottom" : "SEAT B — top"}</span>
+        <span className="ba-ctrl" role="group" aria-label="Who plays this seat">
+          {(["human", "ai"] as const).map((c) => (
+            <button
+              key={c}
+              className={`ba-ctrlopt${ctrl[idx] === c ? " on" : ""}`}
+              data-act={`ctrl-${c}`}
+              data-seat={idx}
+              onClick={() => setController(idx, c)}
+            >
+              {c === "human" ? "Human" : "AI"}
+            </button>
+          ))}
+        </span>
         <input
           className="ba-nameinput"
           value={names[idx]}
@@ -315,7 +373,7 @@ function PickScreen() {
       <header className="ba-setuphead">
         <button className="ba-btn" data-act="home" onClick={() => setView("home")}>← Home</button>
         <h1>PLAY AUTO — FULL RULES</h1>
-        <span className="ba-sub">Hotseat · every rule enforced by the AUTOSIM engine</span>
+        <span className="ba-sub">Hotseat or against the AI · every rule enforced by the AUTOSIM engine</span>
       </header>
       <div className="ba-pickgrid">
         {seatCol(0)}
@@ -323,17 +381,20 @@ function PickScreen() {
       </div>
       <footer className="ba-setupfoot">
         <button
+          className="ba-btn big"
+          data-act="watch-ai"
+          disabled={options.length < 2}
+          title="Two AI players, the decks you picked (or two random meta decks)"
+          onClick={watchAiVsAi}
+        >
+          Watch AI vs AI
+        </button>
+        <button
           className="ba-btn primary big"
           data-act="start"
           disabled={!ready}
           onClick={() => {
-            if (!ready) return;
-            tryEnterLandscape(); // user gesture: the table is landscape-first
-            const seats: [SeatSetup, SeatSetup] = [
-              { pid: SEAT_A, name: names[0].trim(), deck: sel[0]! },
-              { pid: SEAT_B, name: names[1].trim(), deck: sel[1]! },
-            ];
-            confirmSeats(seats);
+            if (ready) start(ctrl, [sel[0]!, sel[1]!], names);
           }}
         >
           To the starting roll →
@@ -353,6 +414,18 @@ function RollScreen() {
   const reset = useAutoStore((s) => s.reset);
 
   const winner = roll ? seats[roll.winnerIdx] : null;
+  const allAi = seats.every((s) => s.controller === "ai");
+  // AI vs AI rolls by itself; an AI that wins the roll goes first
+  useEffect(() => {
+    if (!roll && allAi) {
+      const t = setTimeout(doRoll, 700);
+      return () => clearTimeout(t);
+    }
+    if (roll && seats[roll.winnerIdx].controller === "ai") {
+      const t = setTimeout(() => chooseFirst(roll.winnerIdx), 1100);
+      return () => clearTimeout(t);
+    }
+  }, [roll, allAi, seats, doRoll, chooseFirst]);
   return (
     <div className="ba-root ba-center-screen">
       <Banner />
@@ -433,6 +506,22 @@ function GameScreen() {
   const cards = getCardsById()!;
   const lm = useMemo(() => legalMoves(db, game), [db, game]);
   const pc = game.pendingChoice;
+
+  // AI seats: one move per tick while it is their move
+  const aiStep = useAutoStore((s) => s.aiStep);
+  const aiPaused = useAutoStore((s) => s.aiPaused);
+  const aiDelay = useAutoStore((s) => s.aiDelay);
+  const setAiPaused = useAutoStore((s) => s.setAiPaused);
+  const setAiDelay = useAutoStore((s) => s.setAiDelay);
+  const hasAi = seats.some((s) => s.controller === "ai");
+  const aiActing = game.phase !== "over" && isAiSeat(seats, lm.actor);
+  /** Human against AI: the AI's hand stays face down (AI vs AI shows both to the spectator). */
+  const hiddenHand = (pid: PID) => game.phase !== "over" && isAiSeat(seats, pid) && !seats.every((s) => s.controller === "ai");
+  useEffect(() => {
+    if (!aiActing || aiPaused) return;
+    const t = setTimeout(aiStep, aiDelay);
+    return () => clearTimeout(t);
+  }, [game, aiActing, aiPaused, aiDelay, aiStep]);
 
   const seatName = (pid: PID) => seats.find((s) => s.pid === pid)?.name ?? pid;
   const leaderHex = (pid: PID) => {
@@ -1396,7 +1485,11 @@ function GameScreen() {
         data-stack={stacked ? "hand" : undefined}
         style={stacked ? ({ ["--hstep" as string]: `${step}px` } as React.CSSProperties) : undefined}
       >
-        {p.zones.hand.map((iid) => BCard({ owner: pid, iid, small, inHand: true }))}
+        {hiddenHand(pid)
+          ? p.zones.hand.map((iid) => (
+            <div key={iid} className={`gb-card ba-card ba-backcard${small ? " ba-small" : ""}`}><span className="gb-back"><span className="gb-back-emblem" /></span></div>
+          ))
+          : p.zones.hand.map((iid) => BCard({ owner: pid, iid, small, inHand: true }))}
         {p.zones.hand.length === 0 && <span className="ba-donempty">EMPTY HAND</span>}
       </div>
     );
@@ -1927,6 +2020,9 @@ function GameScreen() {
     );
   }
 
+  // the AI answers its own prompts: no panels for a seat nobody here plays
+  if (aiActing) overlay = null;
+
   const battleStep = game.battle ? game.battle.step : null;
   const phaseLabel =
     game.phase === "setup" ? "SETUP" : game.phase === "over" ? "GAME OVER" : battleStep ? `${battleStep.toUpperCase()} STEP` : "MAIN PHASE";
@@ -1954,7 +2050,7 @@ function GameScreen() {
     <button
       className="ba-btn primary big ba-endturn"
       data-act="endturn"
-      disabled={!lm.canEndTurn}
+      disabled={!lm.canEndTurn || aiActing}
       title={`${seatName(game.turnPlayer)}'s turn`}
       style={{ ["--lc" as string]: leaderHex(game.turnPlayer) }}
       onClick={() => dispatch({ type: "endTurn", player: game.turnPlayer })}
@@ -1979,6 +2075,20 @@ function GameScreen() {
         {/* turn toast sits IN the rail flow (never over the table or rail) */}
         {toast && <div className="ba-toast">{toast}</div>}
         <div className="ba-preview">{previewPanel}</div>
+        {hasAi && (
+          <div className="ba-aictl" data-ai-controls>
+            <span className="ba-aictl-tag">AI · Greedy</span>
+            <div className="ba-aictl-row">
+              <button className="ba-btn" data-act="ai-pause" onClick={() => setAiPaused(!aiPaused)}>{aiPaused ? "▶ Play" : "❚❚ Pause"}</button>
+              <button className="ba-btn" data-act="ai-step" disabled={!aiPaused || !aiActing} onClick={aiStep}>Step</button>
+            </div>
+            <div className="ba-aictl-row">
+              {AI_SPEEDS.map((sp) => (
+                <button key={sp.ms} className={`ba-btn${aiDelay === sp.ms ? " primary" : ""}`} data-act={`ai-speed-${sp.label.toLowerCase()}`} onClick={() => setAiDelay(sp.ms)}>{sp.label}</button>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="ba-railfill" />
         <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
       </div>
@@ -1995,7 +2105,9 @@ function GameScreen() {
               <span className="ba-phasepill">{phaseLabel}</span>
             </div>
             {/* reserved slot: prompts overlay here, the table never reflows */}
-            <div className="ba-promptslot">{actionBar}</div>
+            <div className="ba-promptslot">
+              {aiActing ? <div className="ba-aithinking" data-ai-thinking>{seatName(lm.actor)} {aiPaused ? "— paused" : "is thinking…"}</div> : actionBar}
+            </div>
             {endTurnButton}
           </div>
           {Half({ pid: SEAT_A, flip: false })}

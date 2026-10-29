@@ -18,7 +18,7 @@ export interface DeckChoice {
   leaderId: string;
   /** 50 cardIds (demo decks always; user decks: whatever they saved). */
   main: string[];
-  source: "demo" | "mine";
+  source: "demo" | "mine" | "meta";
   /** Disclosure when the deck uses sets with no compiled effects yet. */
   warn?: string;
 }
@@ -136,3 +136,21 @@ export function userDeckChoices(decks: Deck[]): DeckChoice[] {
       };
     });
 }
+
+/** One tournament list per meta Leader (public/data/meta-decks.json, from `npm run fetch:meta`). */
+export interface MetaDeckFile {
+  decks: { leaderId: string; leaderName: string; cards: { id: string; count: number }[]; event: string; placement: number }[];
+}
+
+export function metaDeckChoices(file: MetaDeckFile): DeckChoice[] {
+  return file.decks.map((d) => ({
+    key: `meta:${d.leaderId}`,
+    name: `Meta — ${d.leaderName}`,
+    sub: `${d.leaderId} · ${ordinal(d.placement)} at ${d.event}`,
+    leaderId: d.leaderId,
+    main: d.cards.flatMap((c) => Array<string>(c.count).fill(c.id)),
+    source: "meta" as const,
+  }));
+}
+
+const ordinal = (n: number) => `${n}${n % 10 === 1 && n % 100 !== 11 ? "st" : n % 10 === 2 && n % 100 !== 12 ? "nd" : n % 10 === 3 && n % 100 !== 13 ? "rd" : "th"}`;

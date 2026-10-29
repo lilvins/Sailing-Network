@@ -216,7 +216,7 @@
 .ba-deckmeta b { font: 700 13px var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ba-deckmeta i { font: 500 10.5px var(--serif); font-style: normal; color: var(--ivory-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ba-deckmeta .ba-deckwarn { color: #ffd98a; white-space: normal; line-height: 1.3; }
-.ba-setupfoot { flex: 0 0 auto; display: flex; justify-content: center; padding-bottom: 4px; }
+.ba-setupfoot { flex: 0 0 auto; display: flex; justify-content: center; gap: 12px; padding-bottom: 4px; }
 
 /* =========================== STARTING ROLL ================================= */
 .ba-roll { display: flex; flex-direction: column; align-items: center; gap: 16px; min-width: min(480px, 92vw); }
@@ -1003,4 +1003,24 @@
 @media (prefers-reduced-motion: reduce) {
   .ba-root * { transition-duration: 0ms !important; animation: none !important; }
   .ba-fx { display: none; }
+}
+
+/* ─── AI seats ──────────────────────────────────────────────────────────────
+   Human / AI switch on each seat of the pick screen, the AI rail panel
+   (pause, step, speed) and the "is thinking" pill in the prompt slot. */
+.ba-ctrl { display: inline-flex; flex: 0 0 auto; border: 1px solid var(--brass-dim); }
+.ba-ctrlopt {
+  padding: 4px 10px; min-height: 30px;
+  font: 700 10.5px var(--hud); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--brass); background: transparent; border: 0; cursor: pointer;
+}
+.ba-ctrlopt + .ba-ctrlopt { border-left: 1px solid var(--brass-dim); }
+.ba-ctrlopt.on { background: var(--brass); color: var(--night-0); }
+.ba-aictl { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--brass-dim); background: var(--night-1); }
+.ba-aictl-tag { font: 700 10.5px var(--hud); letter-spacing: 0.12em; color: var(--brass-hi); }
+.ba-aictl-row { display: flex; gap: 6px; }
+.ba-aictl-row .ba-btn { flex: 1 1 0; padding: 6px 4px; font-size: 11px; }
+.ba-aithinking {
+  height: 100%; display: flex; align-items: center; justify-content: center;
+  font: 600 13px var(--serif); color: var(--brass-hi); letter-spacing: 0.04em;
 }
