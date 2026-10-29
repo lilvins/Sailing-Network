@@ -311,6 +311,23 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   `DonArt` (BoardPage.tsx, shared by all three boards) now renders the real
   scan `public/cards/DON.webp` (600×840, same path pattern as every card)
   and falls back to the SVG recreation only if the image fails to load.
+- **PIXEL FX + PIXEL TYPE + DECK-BUILDER CLICKS (2026-10-28, user: "scarica
+  gli asset dell'acqua, metti altre animazioni in pixel art in giro, cambia lo
+  stile dei testi in game in pixel art, tipo i log e la chat"; "nel deck
+  builder se premi sinistro su una carta la addi e dx la togli").
+  NightSea (home hero, login, board) now has `.nsea-art`: a container-unit
+  box rebuilt to match the PNGs' `background-size: cover` (set `--nsea-py`
+  next to `--nsea-pos`!), so sprites sit on the painting: CC0 animated water
+  (YCbCr) as 7 repeat-x rows of a vertical frame sheet (one frame per row,
+  smaller rows near the horizon = perspective), a brig sailing the horizon,
+  two gulls. Sprites/sheet: `node scripts/build-pixel-fx.mjs [frames dir]`.
+  Play Auto deck pick has ansimuz "Ocean View" night parallax (`.ba-ocean`).
+  Type: log + chat in VT323 (`--pixel`), big HUD labels (LIFE, seat name
+  strip, turn/phase pills, log turn separators) in Silkscreen (`--hud`).
+  Pixelify Sans was tried on everything and REJECTED: on the scaled stage
+  digits/letters blur (5→S, 3→9, c→o). Numbers and buttons stay Sora/mono.
+  Deck builder: left click adds a copy, right click removes one (list AND
+  deck panel; right click on the Leader clears it).
 - **SEAT PANEL PROFILE PICTURES (2026-10-27, user: "includi la foto profilo
   nei giocatori a dx come su duelingbook.com"; then "deve essere proprio come
   su duelingbook")**: each right-rail `.ba-seatpanel` copies DuelingBook's

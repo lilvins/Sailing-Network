@@ -33,12 +33,13 @@
   --baslot: var(--bach);
   --bagap: 8px;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
-  /* in-game type is pixel art (user 2026-10-28: "testi in game in pixel
-     art, tipo i log e la chat"): Pixelify Sans for running text and numbers,
-     Silkscreen for the few HUD labels (--hud). Both OFL, self-hosted. */
-  --serif: "Pixelify Sans", system-ui, sans-serif;
-  --mono: "Pixelify Sans", ui-monospace, monospace;
-  --hud: "Silkscreen", "Pixelify Sans", system-ui, sans-serif;
+  /* pixel type (user 2026-10-28: "testi in game in pixel art, tipo i log e
+     la chat"): VT323 for the log + chat (--pixel), Silkscreen for the big HUD
+     labels (--hud). Both OFL, self-hosted. Kept OFF buttons, numbers and
+     small labels: the stage is scaled (0.36 on a phone) and a pixel font
+     under ~16px turns to mush (Pixelify tried: 5→S, 3→9, c→o). */
+  --pixel: "VT323", ui-monospace, monospace;
+  --hud: "Silkscreen", system-ui, sans-serif;
 }
 
 /* ── THE STAGE: one fixed 1920×1080 layout, scaled (and rotated in portrait)
@@ -217,6 +218,22 @@
 .ba-deckmeta i { font: 500 10.5px var(--serif); font-style: normal; color: var(--ivory-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ba-deckmeta .ba-deckwarn { color: #ffd98a; white-space: normal; line-height: 1.3; }
 .ba-setupfoot { flex: 0 0 auto; display: flex; justify-content: center; gap: 12px; padding-bottom: 4px; }
+.ba-setuphead, .ba-pickgrid, .ba-setupfoot { position: relative; z-index: 1; }
+/* pixel ocean behind the deck pick: 240px-tall CC0 layers scaled to the
+   viewport height, repeat-x, each a different speed (parallax) */
+.ba-ocean { position: absolute; inset: 0; z-index: 0; container-type: size; pointer-events: none; }
+.ba-ocean i { position: absolute; inset: 0; background-repeat: repeat-x; background-size: auto 100%; image-rendering: pixelated; }
+.ba-ocean .back { background-image: url("/assets/bg/ocean-view/back.png"); background-color: #0f3a4f; }
+.ba-ocean .clouds { background-image: url("/assets/bg/ocean-view/clouds.png"); opacity: 0.85; }
+.ba-ocean .waves { background-image: url("/assets/bg/ocean-view/waves.png"); }
+.ba-ocean::after { content: ""; position: absolute; inset: 0; background: rgba(4, 7, 14, 0.35); }
+@media (prefers-reduced-motion: no-preference) {
+  /* one native pixel at a time (steps = layer width in px) so nothing blurs */
+  .ba-ocean .clouds { animation: ba-oc-clouds 160s steps(320) infinite; }
+  .ba-ocean .waves { animation: ba-oc-waves 12s steps(144) infinite; }
+  @keyframes ba-oc-clouds { to { background-position-x: calc(-320 / 240 * 100cqh); } }
+  @keyframes ba-oc-waves { to { background-position-x: calc(-144 / 240 * 100cqh); } }
+}
 
 /* =========================== STARTING ROLL ================================= */
 .ba-roll { display: flex; flex-direction: column; align-items: center; gap: 16px; min-width: min(480px, 92vw); }
@@ -299,7 +316,7 @@
   padding: 6px 10px;
   border: 1px solid var(--brass-dim);
   background: var(--night-2);
-  font: 700 15px var(--hud);
+  font: 700 13px var(--hud);
   letter-spacing: 0.02em;
   color: #fff;
   text-align: center;
@@ -855,20 +872,20 @@
 .ba-log-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; }
 /* chat under the duel log — DuelingBook-style white box (local / hotseat) */
 /* chat lines sit in the same feed as the log, in white with the seat's name */
-.ba-chatline { margin: 0; font: 500 14px/1.35 var(--serif); color: var(--ivory); word-break: break-word; animation: ba-linein 160ms var(--ease) backwards; }
+.ba-chatline { margin: 0; font: 400 21px/1.05 var(--pixel); color: var(--ivory); word-break: break-word; animation: ba-linein 160ms var(--ease) backwards; }
 .ba-chatline b { color: #8fc1ff; }
 .ba-chatline b.b { color: #ff9a8a; }
 .ba-chat-input { flex: 0 0 auto; display: flex; gap: 4px; padding: 6px; border-top: 1px solid var(--brass-dim); background: var(--night-2); }
-.ba-chat-input input { flex: 1; min-width: 0; border: 1px solid var(--brass-dim); background: var(--night-0); padding: 6px 8px; font: 400 14px var(--serif); color: var(--ivory); outline: none; min-height: 34px; }
+.ba-chat-input input { flex: 1; min-width: 0; border: 1px solid var(--brass-dim); background: var(--night-0); padding: 4px 8px; font: 400 20px var(--pixel); color: var(--ivory); outline: none; min-height: 34px; }
 .ba-chat-input input::placeholder { color: var(--ivory-muted); }
 .ba-chat-input input:focus { border-color: var(--brass-hi); }
 .ba-chat-input button { flex: 0 0 auto; padding: 0 12px; border: 1px solid var(--brass-dim); background: var(--night-3); color: var(--ivory); font: 800 11px var(--serif); cursor: pointer; min-height: 34px; }
 .ba-chat-input button:hover:not(:disabled) { border-color: var(--brass-hi); }
 .ba-chat-input button:disabled { opacity: 0.45; cursor: default; }
 .ba-chat-seat { flex: 0 0 auto; padding: 0 8px; font-size: 10px; }
-.ba-logline { margin: 0; font: 400 13.5px/1.35 var(--serif); color: var(--ivory-muted); animation: ba-linein 160ms var(--ease) backwards; }
+.ba-logline { margin: 0; font: 400 21px/1.05 var(--pixel); color: var(--ivory-muted); animation: ba-linein 160ms var(--ease) backwards; }
 @keyframes ba-linein { from { transform: translateY(6px); opacity: 0; } to { transform: none; opacity: 1; } }
-.ba-logline.turn { font: 700 12px/1.6 var(--hud); color: var(--brass-hi); margin-top: 3px; }
+.ba-logline.turn { font: 700 13px/1.6 var(--hud); color: var(--brass-hi); margin-top: 3px; }
 .ba-logline.battle { color: var(--ivory); }
 .ba-logline.danger { color: var(--signal-hi); font-weight: 700; }
 .ba-logline.effect { color: #9fb0cc; }

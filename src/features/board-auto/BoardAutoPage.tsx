@@ -14,10 +14,7 @@ import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
 import "../home/home.css"; // .nsea layers (shared with the Home hero)
-import "@fontsource/pixelify-sans/400.css"; // in-game pixel type (--serif/--mono in boardauto.css)
-import "@fontsource/pixelify-sans/500.css";
-import "@fontsource/pixelify-sans/600.css";
-import "@fontsource/pixelify-sans/700.css";
+import "@fontsource/vt323/400.css"; // pixel type for the log + chat (--pixel in boardauto.css)
 import "@fontsource/silkscreen/400.css"; // HUD labels (--hud)
 import "@fontsource/silkscreen/700.css";
 import "./boardauto.css";
@@ -369,6 +366,8 @@ function PickScreen() {
   const ready = sel[0] && sel[1] && names[0].trim() && names[1].trim();
   return (
     <div className="ba-root ba-setup">
+      {/* ansimuz "Ocean View" night layers (CC0): sky, drifting clouds, waves */}
+      <div className="ba-ocean" aria-hidden="true"><i className="back" /><i className="clouds" /><i className="waves" /></div>
       <Banner />
       <header className="ba-setuphead">
         <button className="ba-btn" data-act="home" onClick={() => setView("home")}>← Home</button>
