@@ -63,7 +63,8 @@ let cache: Promise<Card[]> | null = null;
 /** Fetch the full catalog once; subsequent calls reuse the in-flight/resolved promise. */
 export function loadCards(): Promise<Card[]> {
   if (!cache) {
-    cache = fetch(DATA_URL).then(async (r) => {
+    // no-cache: a copy cached under the old max-age=3600 must not hide new sets
+    cache = fetch(DATA_URL, { cache: "no-cache" }).then(async (r) => {
       if (!r.ok) throw new Error(`Failed to load card database (${r.status})`);
       const body = (await r.json()) as { cards: Card[] };
       const cards = body.cards;

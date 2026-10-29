@@ -611,7 +611,9 @@ app.get("/api/cards", async (req, reply) => {
       ? a.set_code < b.set_code ? -1 : 1
       : Number(a.id.split("-")[1]) - Number(b.id.split("-")[1])
   );
-  reply.header("Cache-Control", "public, max-age=3600");
+  // revalidate every load: after `npm run seed:cards` the new sets must show up at once
+  // (an hour of max-age kept serving the old catalog — "unknown card OP17-089")
+  reply.header("Cache-Control", "no-cache");
   return reply.send({ cards: rows.map(cardRowToClient) });
 });
 
