@@ -1049,3 +1049,8 @@
 /* DON!!−X: DON!! given to a card being returned, and the clickable cost area */
 .ba-given.ba-paying { background: var(--signal); color: #fff; }
 .ba-doncell[data-don-rested] { cursor: pointer; }
+
+/* search, step 2: the rest in a row, dragged into order */
+.ba-arrange .ba-peekcard { cursor: grab; touch-action: none; user-select: none; transition: transform 120ms var(--ease); }
+.ba-arrange .ba-peekcard.dragging { cursor: grabbing; transform: scale(1.06); outline: 2px solid var(--brass-hi); z-index: 2; }
+.ba-arrange .ba-peekcard img { pointer-events: none; }

@@ -584,6 +584,9 @@ function GameScreen() {
   const [peekTake, setPeekTake] = useState<Iid[]>([]);
   const [peekOrder, setPeekOrder] = useState<Iid[]>([]);
   const [peekSide, setPeekSide] = useState<Record<Iid, "top" | "bottom">>({});
+  /** Search, step 2: the cards left are laid out in a row to drag into order. */
+  const [peekArranging, setPeekArranging] = useState(false);
+  const peekDragRef = useRef<Iid | null>(null);
   // DON!!−X (8-3-1-6): the DON!! clicked on the table to return — cost-area
   // indexes (active / rested) and a count per card with DON!! given to it
   const [payPick, setPayPick] = useState<{ active: number[]; rested: number[]; given: Record<Iid, number> }>({
@@ -614,6 +617,7 @@ function GameScreen() {
     setPeekTake([]);
     setPeekOrder([]);
     setPeekSide({});
+    setPeekArranging(false);
     setPayPick({ active: [], rested: [], given: {} });
     setNumberPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
@@ -1873,37 +1877,92 @@ function GameScreen() {
       </div>
     );
   } else if (pc?.kind === "peekSelect") {
-    // M3 — look at the top N (8-4-4-4, 11-2-1): take up to takeCount among the
-    // eligible, then arrange the rest as the card's disposition says
+    // M3 — look at the top N (8-4-4-4, 11-2-1). Step 1: take up to takeCount
+    // among the eligible. Step 2 (when the rest goes back in any order): the
+    // rest stays on screen in a row, dragged into order, then one button.
     const p = game.players[pc.player];
     const cardOf = (iid: Iid) => cards.get(p.instances[iid].cardId);
     const remaining = pc.cards.filter((iid) => !peekTake.includes(iid));
     const ordered = pc.rest === "topAnyOrder" || pc.rest === "bottomAnyOrder" || pc.rest === "topOrBottomAnyOrder";
     const sideOf = (iid: Iid): "top" | "bottom" => peekSide[iid] ?? (pc.rest === "bottomAnyOrder" ? "bottom" : "top");
-    const inOrder = (list: Iid[]) => {
-      const idx = (iid: Iid) => { const i = peekOrder.indexOf(iid); return i === -1 ? 999 + pc.cards.indexOf(iid) : i; };
-      return [...list].sort((a, b) => idx(a) - idx(b));
-    };
     const modeLabel = pc.mode === "hand" ? "add to your hand" : pc.mode === "play" ? `play${pc.playRested ? " (rested)" : ""}` : pc.mode === "life" ? "add to the top of your Life" : pc.mode === "trash" ? "trash" : "look";
     const restLabel: Record<typeof pc.rest, string> = {
-      topAnyOrder: "the rest goes back ON TOP, in the order you choose (1 = top)",
-      bottomAnyOrder: "the rest goes to the BOTTOM, in the order you choose (1 = first placed)",
-      topOrBottomAnyOrder: "split the rest between TOP and BOTTOM (tap Top/Bottom), ordered by your taps",
+      topAnyOrder: "the rest goes back on top, in the order you choose",
+      bottomAnyOrder: "the rest goes to the bottom, in the order you choose",
+      topOrBottomAnyOrder: "the rest goes on top or at the bottom, in the order you choose",
       shuffle: "the rest is shuffled back into the deck",
       trash: "the rest is trashed",
     };
-    const confirmPeek = () => {
-      let restTop: Iid[] = [];
-      let restBottom: Iid[] = [];
-      if (pc.rest === "topAnyOrder") restTop = peekOrder.length === remaining.length ? inOrder(remaining) : [];
-      else if (pc.rest === "bottomAnyOrder") restBottom = peekOrder.length === remaining.length ? inOrder(remaining) : [];
-      else if (pc.rest === "topOrBottomAnyOrder") {
-        restTop = inOrder(remaining.filter((iid) => sideOf(iid) === "top"));
-        restBottom = inOrder(remaining.filter((iid) => sideOf(iid) === "bottom"));
-      }
-      dispatch({ type: "respondPeek", player: pc.player, take: peekTake, restTop, restBottom });
+    // the row, left to right = higher to lower in the deck
+    const row = peekOrder.length === remaining.length && remaining.every((iid) => peekOrder.includes(iid)) ? peekOrder : remaining;
+    const send = (order: Iid[]) => dispatch({
+      type: "respondPeek", player: pc.player, take: peekTake,
+      restTop: order.filter((iid) => pc.rest === "topAnyOrder" || (pc.rest === "topOrBottomAnyOrder" && sideOf(iid) === "top")),
+      restBottom: order.filter((iid) => pc.rest === "bottomAnyOrder" || (pc.rest === "topOrBottomAnyOrder" && sideOf(iid) === "bottom")),
+    });
+    const afterTake = () => {
+      if (ordered && remaining.length > 1) {
+        setPeekOrder(remaining);
+        setPeekArranging(true);
+      } else send(remaining);
     };
-    overlay = (
+    /** Drag in the row: the card follows the pointer to the slot it is over. */
+    const moveTo = (x: number, y: number) => {
+      const dragged = peekDragRef.current;
+      const over = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-arrange-iid]")?.dataset.arrangeIid;
+      if (!dragged || !over || over === dragged) return;
+      const next = row.filter((iid) => iid !== dragged);
+      next.splice(row.indexOf(over), 0, dragged);
+      setPeekOrder(next);
+    };
+    const doneLabel = pc.rest === "bottomAnyOrder" ? "Put on bottom" : pc.rest === "topAnyOrder" ? "Put on top" : "Put back";
+    overlay = peekArranging ? (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov ba-peek">
+          <span className="ba-ovtag">{seatName(pc.player)} — {pc.rest === "bottomAnyOrder" ? "to the bottom of the deck" : pc.rest === "topAnyOrder" ? "back on top of the deck" : "top or bottom of the deck"}</span>
+          <p className="ba-ovtext">Drag the cards to change their order. <b>Left = higher in the deck</b>, right = lower.</p>
+          <div className="ba-peekgrid ba-arrange" data-arrange>
+            {row.map((iid, i) => {
+              const c = cardOf(iid);
+              return (
+                <div
+                  key={iid}
+                  className={`ba-peekcard eligible${peekDragRef.current === iid ? " dragging" : ""}`}
+                  data-arrange-iid={iid}
+                  onPointerDown={(e) => {
+                    if (e.button !== 0) return;
+                    peekDragRef.current = iid;
+                    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+                  }}
+                  onPointerMove={(e) => { if (peekDragRef.current === iid) moveTo(e.clientX, e.clientY); }}
+                  onPointerUp={() => { peekDragRef.current = null; setPeekOrder((o) => [...o]); }}
+                  onPointerCancel={() => { peekDragRef.current = null; }}
+                >
+                  <span className="ba-peekpos">{i + 1}</span>
+                  <div className="ba-peekart">{c?.image && <img src={c.image} alt={c.name} draggable={false} />}</div>
+                  <b>{c?.name ?? iid}</b>
+                  {pc.rest === "topOrBottomAnyOrder" && (
+                    <button
+                      className="ba-btn tiny"
+                      data-act="peek-side"
+                      data-peek-iid={iid}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={() => setPeekSide((prev) => ({ ...prev, [iid]: sideOf(iid) === "top" ? "bottom" : "top" }))}
+                    >
+                      {sideOf(iid) === "top" ? "Top" : "Bottom"}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="ba-ovbtns">
+            <button className="ba-btn" data-act="peek-back" onClick={() => setPeekArranging(false)}>← Back</button>
+            <button className="ba-btn primary big" data-act="peek-confirm" onClick={() => send(row)}>{doneLabel}</button>
+          </div>
+        </div>
+      </div>
+    ) : (
       <div className="ba-overlay">
         <div className="ba-panel ba-ov ba-peek">
           <span className="ba-ovtag">{seatName(pc.player)} — look at the top {pc.cards.length}</span>
@@ -1916,7 +1975,6 @@ function GameScreen() {
               const c = cardOf(iid);
               const eligible = pc.eligible.includes(iid);
               const taken = peekTake.includes(iid);
-              const pos = peekOrder.indexOf(iid);
               return (
                 <div
                   key={iid}
@@ -1927,45 +1985,19 @@ function GameScreen() {
                     setPeekTake((prev) =>
                       prev.includes(iid) ? prev.filter((x) => x !== iid)
                         : prev.length >= pc.takeCount ? prev : [...prev, iid]);
-                    setPeekOrder((prev) => prev.filter((x) => x !== iid));
                   }}
                 >
                   <span className="ba-peekpos">#{i + 1}</span>
                   <div className="ba-peekart">{c?.image && <img src={c.image} alt={c.name} />}</div>
                   <b>{c?.name ?? iid}</b>
                   {taken && <i className="ba-peektag">{pc.mode === "play" ? "PLAY" : pc.mode === "life" ? "LIFE" : "TAKE"}</i>}
-                  {!taken && ordered && (
-                    <span className="ba-peekorder" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        className={`ba-btn tiny${pos >= 0 ? " on" : ""}`}
-                        data-act="peek-order"
-                        data-peek-iid={iid}
-                        onClick={() => setPeekOrder((prev) => (prev.includes(iid) ? prev.filter((x) => x !== iid) : [...prev, iid]))}
-                      >
-                        {pos >= 0 ? `${pos + 1}` : "order"}
-                      </button>
-                      {pc.rest === "topOrBottomAnyOrder" && (
-                        <button
-                          className="ba-btn tiny"
-                          data-act="peek-side"
-                          data-peek-iid={iid}
-                          onClick={() => setPeekSide((prev) => ({ ...prev, [iid]: sideOf(iid) === "top" ? "bottom" : "top" }))}
-                        >
-                          {sideOf(iid) === "top" ? "Top" : "Bottom"}
-                        </button>
-                      )}
-                    </span>
-                  )}
                 </div>
               );
             })}
           </div>
           <div className="ba-ovbtns">
-            {ordered && peekOrder.length > 0 && (
-              <button className="ba-btn" data-act="peek-reset" onClick={() => setPeekOrder([])}>Reset order</button>
-            )}
-            <button className="ba-btn primary big" data-act="peek-confirm" onClick={confirmPeek}>
-              Confirm{peekTake.length ? ` (${peekTake.length})` : " — take none"}
+            <button className="ba-btn primary big" data-act="peek-confirm" onClick={afterTake}>
+              {peekTake.length ? `Take ${peekTake.length}` : "Take none"}{ordered && remaining.length > 1 ? " →" : ""}
             </button>
           </div>
         </div>
