@@ -1087,3 +1087,25 @@
 /* card names in the duel log: hover shows the card in the preview rail */
 .ba-logcard { color: var(--brass-hi); text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
 .ba-logcard:hover { color: #fff; }
+
+/* a stunned card (frozen, or kept from attacking by the opponent): the word
+   across the middle of the card, big enough to read from the other seat */
+.ba-stunned {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  z-index: 6;
+  transform: translateY(-50%);
+  padding: 7px 0;
+  background: rgba(10, 14, 26, 0.88);
+  border-top: 2px solid #ffd23f;
+  border-bottom: 2px solid #ffd23f;
+  color: #ffd23f;
+  font: 700 15px/1 var(--hud);
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.ba-small .ba-stunned { font-size: 11px; padding: 5px 0; }

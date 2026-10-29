@@ -1343,6 +1343,10 @@ function GameScreen() {
     const eff = onField && basePower != null ? effectivePower(db, game, owner, iid) : null;
     const delta = eff != null && basePower != null ? eff - basePower : 0;
     const given = p.don.given[iid] ?? 0;
+    // stunned: frozen (won't become active next Refresh) or kept from
+    // attacking by the opponent's effect — shown big across the card
+    const stunned = onField && game.modifiers.some((m) => m.kind === "restriction" && m.targetOwner === owner && m.targetIid === iid
+      && (m.restriction === "skipNextRefresh" || (m.restriction === "cannotAttack" && m.controller !== owner)));
     const cls = [
       "gb-card",
       "ba-card",
@@ -1472,6 +1476,7 @@ function GameScreen() {
             {autoInfo?.inert && <i className="ba-kw noauto" title="Some effect text is not automated yet — see the preview panel">NO-AUTO</i>}
           </span>
         )}
+        {stunned && <span className="ba-stunned" data-stunned>STUNNED</span>}
         {given > 0 && (
           <span className={`ba-given${pc?.kind === "payDon" && payPick.given[iid] ? " ba-paying" : ""}`}>
             DON!! ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
