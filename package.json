@@ -16,13 +16,14 @@
     "seed:demo": "node server/seed-demo.mjs",
     "seed:meta": "node server/seed-meta-decks.mjs",
     "fetch:meta": "node scripts/fetch-meta-decks.mjs",
-    "seed:avatars":"node server/seed-avatars.mjs",
+    "seed:avatars": "node server/seed-avatars.mjs",
     "db:peek": "node server/peek.mjs",
     "test": "vitest run && node tests/api-test.mjs",
     "test:unit": "vitest run",
     "test:api": "node tests/api-test.mjs",
     "qa:bot": "node scripts/qa-bot.mjs",
-    "compile:optcg": "node scripts/compile-optcg.mjs"
+    "compile:optcg": "node scripts/compile-optcg.mjs",
+    "bench:autosim": "node scripts/bench-autosim.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
