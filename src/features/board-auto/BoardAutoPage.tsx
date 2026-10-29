@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CardArt, DonArt } from "../board/BoardPage";
 import { cardColorHex, type Card } from "../cards/cardsDb";
 import { api, type DirectoryUser } from "../../lib/api";
@@ -112,6 +112,8 @@ const BATTLE_BEAT = 900;
 const RECAP_MS = 1600;
 /** How far a split DON!! group rises per level (visual thinking aid). */
 const DON_RAISE = 26;
+/** DON!! drawn under a card they are given to (the badge still says the exact number). */
+const MAX_DON_PEEKS = 4;
 
 interface StageFit { scale: number; rotate: boolean; ox: number; oy: number; w: number; rail: number; field: number }
 
@@ -835,7 +837,7 @@ function GameScreen() {
   // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
   // "cast": an Event card used — rises from the hand to the table centre,
   // holds for a beat (readable), then fades toward the trash (tx/ty)
-  interface Fx { id: number; label?: string; kind: "life" | "ko" | "cast" | "reveal" | "counter"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
+  interface Fx { id: number; label?: string; kind: "life" | "ko" | "cast" | "reveal" | "counter" | "don"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
   const [fxList, setFxList] = useState<Fx[]>([]);
   const battleOutcome = (fresh: typeof events): { text: string; sub: string; tone: "hit" | "miss" } | null => {
     const won = fresh.find((e) => e.type === "battleWon");
@@ -882,6 +884,13 @@ function GameScreen() {
           game.players[e.player]?.instances[e.iid]?.cardId);
       } else if (e.type === "donGiven" || e.type === "donGivenFromRested") {
         flashes[e.targetIid] = "pulse";
+        const costArea = document.querySelector(`[data-seat-don="${e.player}"] .ba-donstack`) ?? document.querySelector(`[data-seat-don="${e.player}"]`);
+        const targetEl = nodeMap.current.get(e.targetIid) ?? null;
+        if (costArea && targetEl && !reduce) {
+          const c = centerOf(costArea);
+          const n = e.type === "donGivenFromRested" ? Math.min(e.count, MAX_DON_PEEKS) : 1;
+          for (let k = 0; k < n; k++) fly("don", { cx: c.x + k * 8, cy: c.y, w: DON_W, h: DON_H }, targetEl);
+        }
       } else if (e.type === "attackDeclared") {
         flashes[e.targetIid] = "hit";
       } else if (e.type === "counterApplied") {
@@ -1594,7 +1603,7 @@ function GameScreen() {
           onPointerCancel: () => { dragRef.current = null; setDrag(null); },
         }
       : {};
-    return (
+    const cardEl = (
       <div
         key={iid}
         className={cls}
@@ -1675,6 +1684,19 @@ function GameScreen() {
               </button>
             ))}
       </div>
+    );
+    // DON!! given to a card sit UNDER it, a few px apart, like at a real
+    // table: you see how many, and that they belong to that card
+    if (!onField || given === 0) return cardEl;
+    return (
+      <Fragment key={iid}>
+        {Array.from({ length: Math.min(given, MAX_DON_PEEKS) }).map((_, k) => (
+          <span key={`don${k}`} className={`ba-donpeek${inst.rested ? " rested" : ""}`} style={{ ["--k" as string]: k }} aria-hidden>
+            <DonArt />
+          </span>
+        ))}
+        {cardEl}
+      </Fragment>
     );
   }
 
@@ -2517,6 +2539,8 @@ function GameScreen() {
                   <div className="ba-fx-face">{f.cardId && cards.get(f.cardId)?.image && <img src={cards.get(f.cardId)!.image} alt="" />}</div>
                   <div className="ba-fx-face back"><span className="gb-back"><span className="gb-back-emblem" /></span></div>
                 </div>
+              ) : f.kind === "don" ? (
+                <DonArt />
               ) : (f.kind === "ko" || f.kind === "cast") && f.cardId && cards.get(f.cardId)?.image
                 ? <img src={cards.get(f.cardId)!.image} alt="" />
                 : <span className="gb-back"><span className="gb-back-emblem" /></span>}

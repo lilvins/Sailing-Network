@@ -1129,8 +1129,7 @@
   background: #ffd23f; color: #1a1300; font: 700 15px/1 var(--hud);
   border: 2px solid #1a1300; box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6); pointer-events: none;
 }
-.ba-root .gb-card.ba-selected, .ba-root .gb-card.ba-attacker { outline: 3px solid #fff; outline-offset: 2px; transform: translateY(-6px); }
-.ba-root .gb-card.gb-rested.ba-selected, .ba-root .gb-card.gb-rested.ba-attacker { transform: rotate(90deg) translateX(-6px); }
+.ba-root .gb-card.ba-selected, .ba-root .gb-card.ba-attacker { outline: 3px solid #fff; outline-offset: 2px; }
 .ba-cardbar .ba-bigact { min-height: 48px; padding: 0 18px; font: 700 15px var(--hud); letter-spacing: 0.04em; border-width: 2px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.55); }
 .ba-cardbar .ba-bigact:active { transform: translateY(4px); box-shadow: none; }
 .ba-cardbar .ba-bigact.act { background: #ffd23f; color: #1a1300; border-color: #1a1300; }
@@ -1204,3 +1203,18 @@
 @media (prefers-reduced-motion: reduce) {
   .ba-battlehud, .ba-battlehud.recap { animation: none; }
 }
+
+/* DON!! given to a card: tucked under it, each a few px further right and
+   down (rotated with the card when it is rested), inside its slot. */
+.ba-tslot { position: relative; }
+.ba-tslot > .gb-card { z-index: 1; }
+.ba-donpeek {
+  position: absolute; left: 50%; top: 50%; z-index: 0;
+  width: var(--bacw); aspect-ratio: 100 / 140; overflow: hidden;
+  border-radius: calc(var(--bacw) * 0.04); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  transform: translate(-50%, -50%) translate(calc(5px + var(--k) * 4px), calc(3px + var(--k) * 3px));
+  pointer-events: none;
+}
+.ba-donpeek.rested { transform: translate(-50%, -50%) rotate(90deg) translate(calc(5px + var(--k) * 4px), calc(3px + var(--k) * 3px)); }
+.ba-donpeek > * { width: 100%; height: 100%; }
+.ba-fx.don { z-index: 22; animation-duration: 320ms; }
