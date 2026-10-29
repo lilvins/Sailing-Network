@@ -52,9 +52,14 @@ export function abilityText(card: OptcgCard, cat: CatalogCard | undefined, timin
   return text.trim() || `${card.id}: resolve this effect manually`;
 }
 
+/** "you may X to activate this effect. Y" is the cost form "you may X: Y" (OP17-040). */
+export function costWording(text: string): string {
+  return text.replace(/\s+to activate this effect\./gi, ":");
+}
+
 /** Text before the ability's ":" (its activation cost, 8-3-1). */
 export function hasCostColon(text: string): boolean {
   // "Choose one:" introduces options, it is not a cost
-  const body = text.replace(/\([^)]*\)/g, "").replace(/\[[^\]]*\]/g, "").replace(/\b(Choose one|Your opponent chooses one):/gi, "");
+  const body = costWording(text).replace(/\([^)]*\)/g, "").replace(/\[[^\]]*\]/g, "").replace(/\b(Choose one|Your opponent chooses one):/gi, "");
   return /:/.test(body);
 }

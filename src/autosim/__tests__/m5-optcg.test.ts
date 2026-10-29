@@ -405,3 +405,14 @@ describe("M5 exit: the real meta decks play to a result with the generated IR", 
   }
 });
 
+
+describe("M5 generated batch: 'you may' stays a choice", () => {
+  it("OP17-040 Newgate: 'you may trash 1 card from your hand to activate this effect' is an optional cost", () => {
+    const card = fresh.find((c) => c.cardId === "OP17-040")!;
+    for (const fx of card.effects.filter((f) => f.timing === "onLeaderAttacks" || f.timing === "onLeaderAttacked")) {
+      expect(fx.optional).toBe(true);
+      expect(fx.cost).toEqual([expect.objectContaining({ kind: "trashFromHand" })]);
+      expect(fx.actions.map((a) => a.kind)).toEqual(["powerMod"]);
+    }
+  });
+});

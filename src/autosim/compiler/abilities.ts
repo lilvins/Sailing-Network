@@ -7,7 +7,7 @@ import { costOf, lifeChoiceCost } from "./costs";
 import { Unsupported, fail, keysOn, list, num, on } from "./dsl";
 import { filterOf, selectorOf, selfZone } from "./selectors";
 import { sequence } from "./sequence";
-import { abilityText, hasCostColon } from "./text";
+import { abilityText, costWording, hasCostColon } from "./text";
 import type { AbilityCtx, AbilityResult, CatalogCard, Json, OptcgAbility, OptcgCard, OptcgStep } from "./types";
 
 // ─── abilities → effects ────────────────────────────────────────────────────
@@ -378,7 +378,7 @@ function readCost(steps: OptcgStep[], text: string, ab: OptcgAbility, a: Ability
 }
 
 /** The text before the cost colon (reminders and [tags] removed). */
-const beforeColon = (text: string): string => text.replace(/\([^)]*\)/g, "").replace(/\[[^\]]*\]/g, "").split(":")[0] ?? "";
+const beforeColon = (text: string): string => costWording(text).replace(/\([^)]*\)/g, "").replace(/\[[^\]]*\]/g, "").split(":")[0] ?? "";
 
 /** How a cost item is worded before the ":" (a cost the text doesn't name is not one). */
 const COST_WORDS: Partial<Record<string, RegExp>> = {
