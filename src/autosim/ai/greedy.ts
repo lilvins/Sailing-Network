@@ -39,7 +39,7 @@ function decide(db: CardDb, state: AutoGameState, pid: PID, rng: () => number): 
 }
 
 /** Quick rules only (no lookahead): how both seats answer inside a lookahead. */
-function quickIntent(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent {
+export function quickIntent(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent {
   return choiceOptions(db, state, pc)[0];
 }
 
@@ -47,7 +47,7 @@ function quickIntent(db: CardDb, state: AutoGameState, pc: ChoiceRequest): Playe
 // Choices: the first option is the quick rule's answer; the others are the
 // alternatives the lookahead compares it with.
 
-function choiceOptions(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent[] {
+export function choiceOptions(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent[] {
   const player = pc.player;
   switch (pc.kind) {
     case "mulligan": return [{ type: "respondMulligan", player, take: !keepHand(db, state, player) }];
@@ -82,7 +82,7 @@ function keepHand(db: CardDb, state: AutoGameState, pid: PID): boolean {
 }
 
 /** Value of a card in play: cost first, power as tie-break. */
-function cardValue(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
+export function cardValue(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
   const card = db(state.players[owner].instances[iid].cardId);
   const onField = state.players[owner].zones.characterArea.includes(iid) || state.players[owner].leaderIid === iid;
   return (card.cost ?? 0) * 1000 + (onField ? effectivePower(db, state, owner, iid) : card.power ?? 0);
@@ -111,7 +111,7 @@ function bestBlocker(db: CardDb, state: AutoGameState, pid: PID, blockers: Iid[]
  * and when the cards in hand can actually stop the attack: the smallest card
  * that covers the gap, else the biggest one (the window reopens for the next).
  */
-function counterIntent(db: CardDb, state: AutoGameState, pid: PID): PlayerIntent {
+export function counterIntent(db: CardDb, state: AutoGameState, pid: PID): PlayerIntent {
   const pass: PlayerIntent = { type: "passCounter", player: pid };
   const b = state.battle;
   if (!b) return pass;
@@ -202,7 +202,7 @@ function mainPhase(ctx: Ctx, state: AutoGameState): PlayerIntent {
  * opposing Leader by 1000 (so a single counter card does not stop it);
  * whatever is left goes on the Leader.
  */
-function donIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
+export function donIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
   const p = state.players[player];
   const oppLeader = state.players[opponentOf(state, player)].leaderIid;
   const ready = attackers.filter((a) => a.targets.includes(oppLeader)).map((a) => a.iid);
@@ -220,7 +220,7 @@ function donIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targ
 }
 
 /** The Leader if the attack can connect, else the most valuable rested Character we can beat. */
-function attackIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
+export function attackIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
   const opp = opponentOf(state, player);
   const oppLeader = state.players[opp].leaderIid;
   let best: PlayerIntent | null = null;

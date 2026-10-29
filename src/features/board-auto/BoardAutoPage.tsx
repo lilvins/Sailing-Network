@@ -34,7 +34,7 @@ const SEAT_A: PID = "seatA";
 const SEAT_B: PID = "seatB";
 
 type Controller = "human" | "ai";
-const AI_NAMES: [string, string] = ["Greedy AI", "Greedy AI 2"];
+const AI_NAMES: [string, string] = ["Bot Pro", "Bot Pro 2"];
 /** Pause between two AI moves. */
 const AI_SPEEDS = [{ label: "Slow", ms: 1400 }, { label: "Normal", ms: 700 }, { label: "Fast", ms: 150 }];
 
@@ -267,9 +267,12 @@ function PickScreen() {
     };
   }, []);
 
-  const [names, setNames] = useState<[string, string]>([user?.username ?? "Player 1", "Player 2"]);
+  // Home's "Play vs Bot" lands here with seat B already on the Pro bot (read once)
+  const [vsBot] = useState(() => useAutoStore.getState().vsBot);
+  useEffect(() => { useAutoStore.getState().setVsBot(false); }, []);
+  const [names, setNames] = useState<[string, string]>([user?.username ?? "Player 1", vsBot ? AI_NAMES[1] : "Player 2"]);
   const [sel, setSel] = useState<[DeckChoice | null, DeckChoice | null]>([null, null]);
-  const [ctrl, setCtrl] = useState<[Controller, Controller]>(["human", "human"]);
+  const [ctrl, setCtrl] = useState<[Controller, Controller]>(["human", vsBot ? "ai" : "human"]);
   const options = [...meta, ...demoDecks, ...mine];
 
   const setController = (idx: 0 | 1, c: Controller) => {
@@ -2077,7 +2080,7 @@ function GameScreen() {
         <div className="ba-preview">{previewPanel}</div>
         {hasAi && (
           <div className="ba-aictl" data-ai-controls>
-            <span className="ba-aictl-tag">AI · Greedy</span>
+            <span className="ba-aictl-tag">AI · Pro</span>
             <div className="ba-aictl-row">
               <button className="ba-btn" data-act="ai-pause" onClick={() => setAiPaused(!aiPaused)}>{aiPaused ? "▶ Play" : "❚❚ Pause"}</button>
               <button className="ba-btn" data-act="ai-step" disabled={!aiPaused || !aiActing} onClick={aiStep}>Step</button>

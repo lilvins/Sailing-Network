@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useUiStore, type View } from "../../app/uiStore";
+import { useAutoStore } from "../board-auto/autoStore";
 import { useAuthStore } from "../../app/authStore";
 import { usePresenceStore } from "../../lib/presenceStore";
 import {
@@ -91,6 +92,8 @@ interface Mode {
   go: string;
   view: View;
   cls: string; // picks the real card-art background (m-*)
+  /** Open Play Auto with seat B on the Pro bot. */
+  vsBot?: true;
 }
 
 const MODES: Mode[] = [
@@ -122,13 +125,14 @@ const MODES: Mode[] = [
     cls: "m-auto",
   },
   {
-    id: "board-bot",
-    badge: "Full rules · optcg-ai",
+    id: "vs-bot",
+    badge: "Full rules · Bot Pro",
     name: "Play vs Bot",
-    sub: "Every card's effect. A bot that learns from your games.",
+    sub: "The Pro bot on the full-rules table. It plans a turn ahead.",
     go: "Play",
-    view: "board-bot",
+    view: "board-auto",
     cls: "m-auto",
+    vsBot: true,
   },
   {
     id: "duel-room",
@@ -349,7 +353,7 @@ export function HomePage() {
       </div>
       <section className="hu-play">
         {MODES.map((m) => (
-          <button key={m.id} className={`hu-mode ${m.cls}`} onClick={() => setView(m.view)}>
+          <button key={m.id} className={`hu-mode ${m.cls}`} onClick={() => { useAutoStore.getState().setVsBot(!!m.vsBot); setView(m.view); }}>
             <span className="hu-mode-badge">{m.badge}</span>
             <span className="hu-mode-name">{m.name}</span>
             <span className="hu-mode-sub">{m.sub}</span>

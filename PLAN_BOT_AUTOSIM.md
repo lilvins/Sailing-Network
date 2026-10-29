@@ -150,6 +150,22 @@ cui non ci si arriva e cosa costerebbe. Impronta delle partite invariata,
    Uscita: Pro batte Greedy ≥ 60% su ciascuno dei top 8 mazzi (gauntlet a
    partite in coppia).
 
+   **Stato (2026-10-29): passo 1 fatto.** `ai/pro.ts` + `ai/rollout.ts`,
+   `npm run gauntlet:autosim`. Pro contro greedy 61,7% su 128 partite in
+   coppia, 40 ms a decisione. Orizzonte misurato: 1 turno batte 2 e 3 (la
+   policy veloce è troppo grezza per giudicare oltre); rollout giocati col
+   greedy completo: niente guadagno, 3,5 volte più lenti, scartati.
+   Uscita non ancora raggiunta su ogni mazzo: Kaido 2/14, Rocks 4/10,
+   Mihawk 3/8, Enel OP15 6/12. Prossimo: passo 2 (valutazione per stile,
+   valore dei DON!! per Leader, playbook).
+
+   **Passo 2 (2026-10-29, sera): valutazione dalla teoria + allenamento.**
+   `docs/bot/teoria-del-vantaggio.md` (letteratura Patrick → grandezze
+   misurabili), `evaluate.ts` v2, `npm run train:autosim` (self-play a
+   coppie, un peso alla volta, test dei segni). v2 contro v1: 55,5%.
+   Primo allenamento lungo: 20.000 partite, in `docs/bot/allenamento.md`.
+   Playbook per Leader: ancora da fare.
+
 ### Fase 4 — Il bot al tavolo (board-auto)
 1. Web worker come `board-bot/bot.worker.ts`, ma con lo stato AUTOSIM.
 2. board-auto: un posto si può dare al bot ("Seat B: Bot Pro"). Il bot

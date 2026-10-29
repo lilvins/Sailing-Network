@@ -20,7 +20,7 @@ import { EngineError, type PlayerIntent } from "../../autosim/engine/intents";
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, CardDb, PID } from "../../autosim/engine/state";
 import { agentStep, actorOf, type Agent } from "../../autosim/ai/agent";
-import { createGreedyAgent } from "../../autosim/ai/greedy";
+import { createProAgent } from "../../autosim/ai/pro";
 import { makeCardDb } from "./compile";
 import type { DeckChoice } from "./decks";
 
@@ -30,7 +30,7 @@ export interface SeatSetup {
   pid: PID;
   name: string;
   deck: DeckChoice;
-  /** Who plays this seat: a person at this screen, or the greedy AI. */
+  /** Who plays this seat: a person at this screen, or the Pro bot. */
   controller?: "human" | "ai";
 }
 
@@ -89,6 +89,9 @@ interface AutoStoreState {
   /** AI seats: paused, and the pause between their moves (ms). */
   aiPaused: boolean;
   aiDelay: number;
+  /** Set by Home's "Play vs Bot": the deck pick opens with seat B on the Pro bot. */
+  vsBot: boolean;
+  setVsBot: (vsBot: boolean) => void;
 
   init: () => Promise<void>;
   /** pick → roll */
@@ -120,6 +123,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   banner: null,
   aiPaused: false,
   aiDelay: 700,
+  vsBot: false,
+  setVsBot: (vsBot) => set({ vsBot }),
 
   init: async () => {
     if (cardsById) {
@@ -164,7 +169,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
         ],
         firstPlayer: seats[firstIdx].pid,
       });
-      agents = Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createGreedyAgent(`${state.seed}:${s.pid}`)]));
+      agents = Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createProAgent(`${state.seed}:${s.pid}`)]));
       set({ game: state, events, stage: "play", banner: null, aiPaused: false });
     } catch (e) {
       // deck construction failed (user decks can be illegal) → back to pick
