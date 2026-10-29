@@ -11,6 +11,7 @@
  */
 import type { Timing } from "../ir/types";
 import type { AutoGameState, Iid, Modifier, PID } from "./state";
+import { bumpStateVersion } from "./stateVersion";
 
 export type GameEvent =
   // setup (5-2)
@@ -102,6 +103,7 @@ function cardLeftField(state: AutoGameState, owner: PID, iid: Iid): void {
 
 /** Pure reducer. Mutates `state` in place (callers own the draft). */
 export function applyEvent(state: AutoGameState, e: GameEvent): void {
+  bumpStateVersion(state); // invalidates the values cached for this state (stateVersion.ts)
   switch (e.type) {
     case "gameStarted":
       break; // creation event — state skeleton is built by createGame

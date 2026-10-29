@@ -13,6 +13,7 @@
 import type { Action, Effect } from "../ir/types";
 import { conditionsMet, matchesFilter, quantity, resolveSelector } from "./effects";
 import { isNegated, type AutoGameState, type CardDb, type Iid, type Modifier, type PID } from "./state";
+import { cachedPerVersion } from "./stateVersion";
 
 /** Action kinds a `static` effect can apply continuously today. */
 // negateEffect: read by isNegated (state.ts), not stored as a modifier
@@ -106,7 +107,21 @@ function same(a: Modifier[], b: Modifier[]): boolean {
 
 /** Modifiers produced right now by the `static` effects on the field. */
 export function staticModifiers(db: CardDb, state: AutoGameState): Modifier[] {
-  if (inProgress) return inProgress;
+  return inProgress ?? fixpoint(db, state);
+}
+
+/** Every modifier in force: stored (one-shot effects) + continuous. */
+export function activeModifiers(db: CardDb, state: AutoGameState): Modifier[] {
+  return inProgress ? withStored(state, inProgress) : allModifiers(db, state);
+}
+
+const withStored = (state: AutoGameState, statics: Modifier[]) =>
+  statics.length ? state.modifiers.concat(statics) : state.modifiers;
+
+// Both are asked hundreds of times per intent (every power, cost, keyword and
+// restriction check) but only change when an event changes the state.
+const allModifiers = cachedPerVersion((db: CardDb, state: AutoGameState) => withStored(state, fixpoint(db, state)));
+const fixpoint = cachedPerVersion((db: CardDb, state: AutoGameState): Modifier[] => {
   let current: Modifier[] = [];
   for (let pass = 0; pass < MAX_PASSES; pass++) {
     inProgress = current;
@@ -120,10 +135,4 @@ export function staticModifiers(db: CardDb, state: AutoGameState): Modifier[] {
     current = next;
   }
   return current; // no fixpoint (oscillating effects): last pass wins
-}
-
-/** Every modifier in force: stored (one-shot effects) + continuous. */
-export function activeModifiers(db: CardDb, state: AutoGameState): Modifier[] {
-  const statics = staticModifiers(db, state);
-  return statics.length ? state.modifiers.concat(statics) : state.modifiers;
-}
+});

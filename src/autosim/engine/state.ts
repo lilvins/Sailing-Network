@@ -7,6 +7,7 @@
  */
 import type { Action, CompiledCard, CostItem, Duration, Keyword, SelectorFilter } from "../ir/types";
 import { activeModifiers } from "./continuous";
+import { cachedPerVersion } from "./stateVersion";
 
 export type PID = string;
 export type Iid = string; // deterministic instance id: `${seat}#${n}`
@@ -392,27 +393,37 @@ export function isNegated(state: AutoGameState, owner: PID, iid: Iid, db?: CardD
  *  [X] have their effects negated" (M5): a static negateEffect, matched on
  *  card types only (no power / condition reads, so no recursion). */
 function staticallyNegated(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): boolean {
+  const rules = negationRules(db, state);
+  if (rules.length === 0) return false; // the usual case: nothing on the field negates
   const card = db(state.players[owner].instances[iid].cardId);
+  for (const { src, sel } of rules) {
+    const side = sel.owner === "any" || (sel.owner === "self") === (src === owner);
+    const zoneOk = sel.zone === "leaderOrCharacter" ? (iid === state.players[owner].leaderIid || state.players[owner].zones.characterArea.includes(iid))
+      : sel.zone === "characterArea" ? state.players[owner].zones.characterArea.includes(iid) : false;
+    const f = sel.filter ?? {};
+    const typeOk = (!f.typeExcludes || !f.typeExcludes.some((t) => card.types.includes(t)))
+      && (!f.typeIncludes || f.typeIncludes.some((t) => card.types.includes(t)));
+    if (side && zoneOk && typeOk) return true;
+  }
+  return false;
+}
+
+/** The unconditional static negateEffect actions on the field, with the
+ *  player whose card carries them. Asked for every card on every query, but
+ *  it only changes when an event changes the field. */
+const negationRules = cachedPerVersion((db: CardDb, state: AutoGameState) => {
+  const rules: { src: PID; sel: Extract<Action, { kind: "negateEffect" }>["sel"] }[] = [];
   for (const src of state.order) {
     const p = state.players[src];
     for (const s of [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage]) {
       for (const fx of db(p.instances[s].cardId).compiled?.effects ?? []) {
         if (fx.timing !== "static" || fx.conditions?.length) continue;
-        for (const a of fx.actions) {
-          if (a.kind !== "negateEffect") continue;
-          const side = a.sel.owner === "any" || (a.sel.owner === "self") === (src === owner);
-          const zoneOk = a.sel.zone === "leaderOrCharacter" ? (iid === state.players[owner].leaderIid || state.players[owner].zones.characterArea.includes(iid))
-            : a.sel.zone === "characterArea" ? state.players[owner].zones.characterArea.includes(iid) : false;
-          const f = a.sel.filter ?? {};
-          const typeOk = (!f.typeExcludes || !f.typeExcludes.some((t) => card.types.includes(t)))
-            && (!f.typeIncludes || f.typeIncludes.some((t) => card.types.includes(t)));
-          if (side && zoneOk && typeOk) return true;
-        }
+        for (const a of fx.actions) if (a.kind === "negateEffect") rules.push({ src, sel: a.sel });
       }
     }
   }
-  return false;
-}
+  return rules;
+});
 
 /** Whether a restriction applies to the card: stored modifiers plus the
  *  continuous effects on the field (M4, continuous.ts). */

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Action, Effect, Selector } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import { legalMoves } from "../engine/legality";
+import { markStateEdited } from "../engine/stateVersion";
 import { effectivePower, keywordsOf, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
 import { getGeneratedCard } from "../data/compiled";
 
@@ -58,13 +59,14 @@ function newGame(): AutoGameState {
   s = applyIntent(db, s, { type: "respondMulligan", player: "alice", take: false }).state;
   s = applyIntent(db, s, { type: "respondMulligan", player: "bob", take: false }).state;
   s.turn = 3;
+  markStateEdited(s);
   return s;
 }
 function put(s: AutoGameState, cardId: string, pid: PID = "alice", zone: "characterArea" | "trash" = "characterArea"): string {
   const p = s.players[pid];
   for (const from of ["deck", "hand"] as const) {
     const i = p.zones[from].findIndex((iid) => p.instances[iid].cardId === cardId);
-    if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); return iid; }
+    if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); markStateEdited(s); return iid; }
   }
   throw new Error(`no ${cardId}`);
 }
@@ -186,9 +188,11 @@ describe("M5 attack lure", () => {
     const lure = put(s, "C-LURE", "bob");
     const other = put(s, "V0", "bob");
     s.players.bob.instances[other].rested = true;
+    markStateEdited(s);
     const targets = () => legalMoves(db, s).attackers.find((x) => x.iid === s.players.alice.leaderIid)!.targets;
     expect(targets()).toEqual(expect.arrayContaining([s.players.bob.leaderIid, other]));
     s.players.bob.instances[lure].rested = true;
+    markStateEdited(s);
     expect(targets()).toEqual([lure]);
     expect(() => applyIntent(db, s, { type: "attack", player: "alice", attackerIid: s.players.alice.leaderIid, targetIid: s.players.bob.leaderIid })).toThrow();
   });

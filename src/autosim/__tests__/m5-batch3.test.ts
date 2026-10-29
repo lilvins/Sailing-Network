@@ -3,6 +3,7 @@ import type { Effect, Selector } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import { legalMoves } from "../engine/legality";
 import { matchesFilter } from "../engine/effects";
+import { markStateEdited } from "../engine/stateVersion";
 import { effectivePower, keywordsOf, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
 import { getGeneratedCard } from "../data/compiled";
 
@@ -56,7 +57,7 @@ function put(s: AutoGameState, cardId: string, pid: PID = "alice", zone: "charac
   const p = s.players[pid];
   for (const from of ["deck", "hand"] as const) {
     const i = p.zones[from].findIndex((iid) => p.instances[iid].cardId === cardId);
-    if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); return iid; }
+    if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); markStateEdited(s); return iid; }
   }
   throw new Error(`no ${cardId}`);
 }
@@ -162,6 +163,7 @@ addCard("C-DMG", [{ timing: "activateMain", actions: [{ kind: "dealDamage", who:
 function putAs(s: AutoGameState, cardId: string): string {
   const iid = put(s, "V1");
   s.players.alice.instances[iid] = { ...s.players.alice.instances[iid], cardId };
+  markStateEdited(s);
   return iid;
 }
 
@@ -367,6 +369,7 @@ describe("M5 batch 3g (engine)", () => {
     let s = newGame();
     const a = put(s, "V2", "bob"), b = put(s, "V3", "bob");
     s.players.bob.don.given = { [a]: 1 };
+    markStateEdited(s);
     s = act(s, putAs(s, "C-EQDON"));
     if (s.pendingChoice?.kind === "selectTargets") {
       expect(s.pendingChoice.candidates.map((c) => c.iid)).toEqual([a]);

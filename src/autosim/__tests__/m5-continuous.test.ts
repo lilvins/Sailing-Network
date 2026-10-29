@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Effect, Selector } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import { actionCandidates } from "../engine/effects";
+import { markStateEdited } from "../engine/stateVersion";
 import { effectiveBasePower, effectiveCost, effectivePower, keywordsOf, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
 import { getGeneratedCard } from "../data/compiled";
 
@@ -45,7 +46,7 @@ function put(s: AutoGameState, cardId: string, pid: PID = "alice", zone: "charac
   const p = s.players[pid];
   for (const from of ["deck", "hand"] as const) {
     const i = p.zones[from].findIndex((iid) => p.instances[iid].cardId === cardId);
-    if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); return iid; }
+    if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); markStateEdited(s); return iid; }
   }
   throw new Error(`no ${cardId}`);
 }
@@ -57,6 +58,7 @@ describe("M5 continuous", () => {
     const c = put(s, "C-HANDCOST", "alice", "hand");
     expect(effectiveCost(db, s, "alice", c)).toBe(4);
     s.players.alice.zones.life.splice(3);
+    markStateEdited(s);
     expect(effectiveCost(db, s, "alice", c)).toBe(2);
   });
 
@@ -86,6 +88,7 @@ describe("M5 continuous", () => {
     const s = newGame();
     const c = put(s, "C-SCALE");
     for (let i = 0; i < 11; i++) s.players.alice.zones.trash.push(s.players.alice.zones.deck.shift()!);
+    markStateEdited(s);
     expect(effectivePower(db, s, "alice", c)).toBe(3000 + 2000);
     put(s, "C-AURA");
     expect(keywordsOf(db, s, "alice", c).has("Blocker")).toBe(true);

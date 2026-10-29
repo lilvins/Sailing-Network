@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Effect, Keyword, Selector } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import { isAutomaticStatic, staticModifiers } from "../engine/continuous";
+import { markStateEdited } from "../engine/stateVersion";
 import {
   effectiveCost, effectivePower, hasRestriction, keywordsOf,
   type AutoGameState, type CardDb, type EngineCard, type PID,
@@ -86,6 +87,7 @@ function put(s: AutoGameState, pid: PID, cardId: string): string {
       const [iid] = p.zones[zone].splice(i, 1);
       p.zones.characterArea.push(iid);
       p.instances[iid].rested = false;
+      markStateEdited(s);
       return iid;
     }
   }
@@ -96,6 +98,7 @@ function removeFromField(s: AutoGameState, pid: PID, iid: string): void {
   const p = s.players[pid];
   p.zones.characterArea = p.zones.characterArea.filter((x) => x !== iid);
   p.zones.trash.push(iid);
+  markStateEdited(s);
 }
 
 describe("M4 continuous effects", () => {
@@ -105,9 +108,11 @@ describe("M4 continuous effects", () => {
     expect(s.turnPlayer).toBe("alice");
     expect(effectivePower(db, s, "alice", v)).toBe(3000);
     s.turnPlayer = "bob"; // [Your Turn] no longer true
+    markStateEdited(s);
     expect(effectivePower(db, s, "alice", v)).toBe(2000);
     // the opponent's Characters are not affected
     s.turnPlayer = "alice";
+    markStateEdited(s);
     const bv = put(s, "bob", "SC-V1");
     expect(effectivePower(db, s, "bob", bv)).toBe(2000);
   });
@@ -117,6 +122,7 @@ describe("M4 continuous effects", () => {
     const c = put(s, "alice", "SC-DONBLK");
     expect(keywordsOf(db, s, "alice", c).has("Blocker")).toBe(false);
     s.players.alice.don.given[c] = 1;
+    markStateEdited(s);
     expect(keywordsOf(db, s, "alice", c).has("Blocker")).toBe(true);
   });
 
@@ -126,7 +132,7 @@ describe("M4 continuous effects", () => {
     const gate = put(s, "alice", "SC-GATE");
     expect(effectivePower(db, s, "alice", big)).toBe(7000);
     expect(effectivePower(db, s, "alice", gate)).toBe(4000 + 1000 + 2000);
-    s.turnPlayer = "bob"; // aura off → BIG is 6000 → the gate closes too
+    s.turnPlayer = "bob"; markStateEdited(s); // aura off → BIG is 6000 → the gate closes too
     expect(effectivePower(db, s, "alice", gate)).toBe(4000);
   });
 
