@@ -3,6 +3,9 @@ import { useUiStore } from "../../app/uiStore";
 import { api, type Deck, type QueueStatus } from "../../lib/api";
 import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css"; // shared .sn atoms (logo, pill, avatar, livedot, vars)
+import "@fontsource/silkscreen/400.css"; // pixel HUD labels (--hud in duelroom.css)
+import "@fontsource/silkscreen/700.css";
+import "@fontsource/vt323/400.css"; // pixel duelist names (--pixel)
 import "./duelroom.css";
 
 /* Ported from Claude design (duelroom.jsx). Fluid + responsive; links wired to

@@ -181,3 +181,42 @@
 .dr-modal-x:hover{border-color:var(--acc);color:var(--txt);}
 .dr-modal .dr-mode{flex-direction:row;gap:8px;}
 .dr-modal .dr-radio{flex:1;justify-content:center;}
+
+/* ================= PIXEL ART PASS (same register as Play Auto) =================
+   Pixel type only where it stays readable: Silkscreen for the big labels
+   (title, panel heads, format names), VT323 for the duelist names in the
+   lists. Body text, small labels and form controls keep the sans face (a
+   pixel font under ~16px turns to mush). Panels get a 2px frame and a hard
+   drop shadow; buttons press down onto their shadow. */
+.dr{
+  --hud:"Silkscreen",system-ui,sans-serif;
+  --pixel:"VT323",ui-monospace,monospace;
+  --px-shadow:4px 4px 0 rgba(0,0,0,0.55);
+}
+.dr-title{font-family:var(--hud);font-weight:700;letter-spacing:3px;text-shadow:3px 3px 0 rgba(0,0,0,0.6);}
+.dr .card{background:rgba(12,16,28,0.88);border:2px solid rgba(242,243,245,0.18);box-shadow:var(--px-shadow);}
+.dr-card-h,.dr-open-title,.dr-fmt-name,.dr-mini-h,.dr-modal-title{font-family:var(--hud);font-weight:700;letter-spacing:1px;}
+.dr-card-h{font-size:14px;border-bottom:2px solid rgba(242,243,245,0.14);}
+.dr-open-title{font-size:16px;text-shadow:2px 2px 0 rgba(0,0,0,0.6);}
+.dr-fmt-h{border-bottom-width:3px;}
+.dr-fmt-name{font-size:13px;}
+.dr-fmt-dot{width:10px;height:10px;box-shadow:2px 2px 0 rgba(0,0,0,0.5);}
+.dr-fmt-count{font-family:var(--hud);font-size:11px;}
+.dr-mini-h{font-size:11px;}
+.dr-duel{background:rgba(255,255,255,0.035);border:2px solid rgba(255,255,255,0.06);}
+.dr-duel:hover{border-color:rgba(242,243,245,0.32);}
+.dr-duel-host{font-family:var(--pixel);font-weight:400;font-size:21px;line-height:1;letter-spacing:.3px;}
+.dr-duel-elo{font-family:var(--pixel);font-weight:400;font-size:19px;}
+/* chunky buttons: a hard shadow under them, pressed = sits on it */
+.dr-join,.dr-pool-btn,.dr-host-btn{border:2px solid rgba(0,0,0,0.45);box-shadow:0 4px 0 #7d1b15;transition:filter .1s,transform .06s,box-shadow .06s;}
+.dr-join.watch{box-shadow:0 4px 0 #22252a;}
+.dr-pool-btn.active{box-shadow:0 4px 0 #101114;}
+.dr-join:active,.dr-pool-btn:active,.dr-host-btn:active{transform:translateY(4px);box-shadow:0 0 0 transparent;}
+.dr-pool-btn,.dr-host-btn{font-family:var(--hud);font-weight:700;letter-spacing:1px;}
+.dr-back,.dr-foot-ico,.dr-open-arrows button{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);}
+.dr-radio,.dr-check,.dr-input,.dr-select select{border-width:2px;}
+.dr-radio .dr-dot,.dr-check .dr-box{border-width:2px;}
+.dr-exit{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);font-family:var(--hud);letter-spacing:1px;}
+.dr-spinner{border-width:3px;animation-timing-function:steps(8);}
+.dr .sn-pill{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);}
+.dr-modal{border:2px solid rgba(242,243,245,0.2);box-shadow:6px 6px 0 rgba(0,0,0,0.6);}
