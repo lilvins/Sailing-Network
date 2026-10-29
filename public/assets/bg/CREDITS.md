@@ -6,6 +6,13 @@ Source: https://opengameart.org/content/moon-and-sea-pixel-art-background
 License: **OGA-BY 3.0** (attribution required — keep this file).
 Layers renamed: 1→base, 2→moon, 3→clouds, 4→reflections, 5→full (2304x1296 composite).
 
+## sunset-sea/ (sky, cloud, reflection)
+"Sunset Clouds Over The Sea Pixel Background" by **CraftPix.net 2D Game Assets**
+Source: https://opengameart.org/node/158492 (also https://craftpix.net)
+License: **OGA-BY 3.0** (attribution required — keep this file). CraftPix's own
+freebie terms allow commercial use; no reselling of the files, no AI training.
+Layers renamed: 1→sky, 2→cloud, 3→reflection. Used behind the Duel Room.
+
 ## fx/water-sheet.png
 "Animated water texture 128px" by **YCbCr**
 Source: https://opengameart.org/content/animated-water-texture-128px

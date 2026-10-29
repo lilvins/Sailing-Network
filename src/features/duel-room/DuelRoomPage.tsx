@@ -356,6 +356,13 @@ export function DuelRoomPage() {
 
   return (
     <div className="sn dr">
+      {/* pixel-art sunset over the sea behind the room (CraftPix, OGA-BY 3.0 — CREDITS.md) */}
+      <div className="dr-scene" aria-hidden="true">
+        <i className="sky" />
+        <i className="cloud" />
+        <i className="reflection" />
+        <i className="shade" />
+      </div>
       <header className="dr-head">
         <div className="dr-head-l">
           <button className="dr-back" title="Back to menu" onClick={() => setView("home")}>
@@ -557,6 +564,11 @@ export function DuelRoomPage() {
         <button className="dr-exit" onClick={() => setView("home")}>
           <Icon name="exit" size={15} /> Exit
         </button>
+        <span className="dr-credit">
+          Background: <a href="https://opengameart.org/node/158492" target="_blank" rel="noopener noreferrer">“Sunset Clouds Over The Sea”</a> by{" "}
+          <a href="https://craftpix.net" target="_blank" rel="noopener noreferrer">CraftPix.net</a>,{" "}
+          <a href="https://opengameart.org/content/oga-by-30-faq" target="_blank" rel="noopener noreferrer">OGA-BY 3.0</a>
+        </span>
         <button className="dr-foot-ico mute" title="Sound">
           <Icon name="sound" size={18} />
         </button>

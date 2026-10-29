@@ -220,3 +220,27 @@
 .dr-spinner{border-width:3px;animation-timing-function:steps(8);}
 .dr .sn-pill{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);}
 .dr-modal{border:2px solid rgba(242,243,245,0.2);box-shadow:6px 6px 0 rgba(0,0,0,0.6);}
+
+/* ---- sunset over the sea behind the room ----------------------------------
+   "Sunset Clouds Over The Sea" (CraftPix.net, OGA-BY 3.0, see CREDITS.md):
+   576x324 layers scaled up pixel-sharp to cover the viewport. The cloud bank
+   drifts a few native pixels and back; a dark wash keeps the panels legible. */
+.sn.dr{position:relative;isolation:isolate;background:#8aa4ad;}
+.dr > :not(.dr-scene){position:relative;z-index:1;}
+.dr-scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.dr-scene i{position:absolute;inset:0;background-size:cover;background-position:center bottom;background-repeat:no-repeat;image-rendering:pixelated;}
+.dr-scene .sky{background-image:url("/assets/bg/sunset-sea/sky.png");}
+.dr-scene .cloud{background-image:url("/assets/bg/sunset-sea/cloud.png");}
+.dr-scene .reflection{background-image:url("/assets/bg/sunset-sea/reflection.png");}
+.dr-scene .shade{background:linear-gradient(180deg,rgba(6,9,18,0.12) 0%,rgba(6,9,18,0.38) 55%,rgba(6,9,18,0.68) 100%);}
+@media (prefers-reduced-motion: no-preference){
+  .dr-scene .cloud{animation:dr-cloud 48s steps(24) infinite alternate;}
+  .dr-scene .reflection{animation:dr-shimmer 3.2s steps(4) infinite;}
+  @keyframes dr-cloud{from{transform:translateX(-1.2%);}to{transform:translateX(1.2%);}}
+  @keyframes dr-shimmer{0%,100%{opacity:1;}50%{opacity:0.82;}}
+}
+/* the background's credit (OGA-BY 3.0 asks for it where people see the art) */
+.dr-credit{margin-left:auto;font-size:11px;color:rgba(242,243,245,0.62);text-shadow:1px 1px 0 rgba(0,0,0,0.7);}
+.dr-credit a{color:inherit;text-decoration:underline dotted;text-underline-offset:2px;}
+.dr-credit a:hover{color:#fff;}
+.dr-credit + .dr-foot-ico.mute{margin-left:0;}
