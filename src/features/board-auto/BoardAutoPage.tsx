@@ -2187,10 +2187,11 @@ function GameScreen() {
 
       {overlay}
     </div>
-    {/* drag-to-play ghost: viewport coordinates, card size at the stage scale */}
+    {/* drag-to-play ghost: viewport coordinates, card size at the stage scale;
+        it lives outside the stage, so in portrait it needs the stage's 90° turn */}
     {drag && cards.get(drag.cardId)?.image && (
       <img
-        className="ba-dragghost"
+        className={`ba-dragghost${stage.rotate ? " rot" : ""}`}
         src={cards.get(drag.cardId)!.image}
         alt=""
         style={{ left: drag.x, top: drag.y, width: CARD_W * stage.scale * 1.08 }}

@@ -349,6 +349,8 @@
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7);
   image-rendering: auto;
 }
+/* portrait viewport = the table lies on its side: turn the ghost with it */
+.ba-dragghost.rot { transform: translate(-50%, -50%) rotate(87deg); }
 
 /* one half, tinted with the seat's leader color (--lc) */
 .ba-half {
