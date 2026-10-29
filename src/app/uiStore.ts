@@ -23,6 +23,7 @@ export type View =
   | "notifications"
   | "popular-decklists"
   | "admin"
+  | "credits" // artists, fonts and data sources
   | "board" // the playmat (current layout)
   | "board2" // layout lab — OPTCGSim-style table
   | "board-auto" // AUTOSIM full-rules board (engine-driven)

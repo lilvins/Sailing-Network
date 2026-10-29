@@ -568,6 +568,8 @@ export function DuelRoomPage() {
           Background: <a href="https://opengameart.org/node/158492" target="_blank" rel="noopener noreferrer">“Sunset Clouds Over The Sea”</a> by{" "}
           <a href="https://craftpix.net" target="_blank" rel="noopener noreferrer">CraftPix.net</a>,{" "}
           <a href="https://opengameart.org/content/oga-by-30-faq" target="_blank" rel="noopener noreferrer">OGA-BY 3.0</a>
+          {" · "}
+          <button className="dr-credit-all" onClick={() => setView("credits")}>All credits</button>
         </span>
         <button className="dr-foot-ico mute" title="Sound">
           <Icon name="sound" size={18} />

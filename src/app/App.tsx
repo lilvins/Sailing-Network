@@ -18,6 +18,7 @@ import { DeckBuilderPage } from "../features/deck-builder/DeckBuilderPage";
 import { MyDecksPage } from "../features/deck-builder/MyDecksPage";
 import { PopularDecklistsPage } from "../features/popular/PopularDecklistsPage";
 import { AdminPage } from "../features/admin/AdminPage";
+import { CreditsPage } from "../features/credits/CreditsPage";
 import { BoardPage } from "../features/board/BoardPage";
 import { BoardPage2 } from "../features/board/BoardPage2";
 import { BoardAutoPage } from "../features/board-auto/BoardAutoPage";
@@ -119,6 +120,8 @@ function CurrentView({ view }: { view: View }) {
       return <PopularDecklistsPage />;
     case "admin":
       return <AdminPage />;
+    case "credits":
+      return <CreditsPage />;
     case "board":
       return <BoardPage />;
     case "board2":

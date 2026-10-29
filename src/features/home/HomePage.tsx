@@ -497,6 +497,12 @@ export function HomePage() {
               );
             })}
           </section>
+          {/* the night sky above is OGA-BY: its credit sits where people see it */}
+          <footer className="hu-credits">
+            Night sky: <a href="https://opengameart.org/content/moon-and-sea-pixel-art-background" target="_blank" rel="noopener noreferrer">“Moon and Sea”</a> by
+            CraftPix.net (OGA-BY 3.0) ·{" "}
+            <button className="hu-credits-link" onClick={() => setView("credits")}>All credits</button>
+          </footer>
         </main>
 
         {/* ---- social rail (the Dock, promoted) ---- */}

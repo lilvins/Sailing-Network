@@ -352,3 +352,9 @@
   .hu-index{grid-template-columns:1fr;}
   .sn-logo-tag{display:none;}
 }
+
+/* credits line under the Browse index (night sky is OGA-BY 3.0) */
+.hu-credits{margin-top:14px;font-size:11.5px;color:var(--muted);}
+.hu-credits a,.hu-credits-link{color:var(--txt);text-decoration:underline dotted;text-underline-offset:2px;}
+.hu-credits-link{background:none;border:0;font:inherit;cursor:pointer;padding:0;}
+.hu-credits a:hover,.hu-credits-link:hover{color:#fff;}

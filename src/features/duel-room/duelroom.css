@@ -244,3 +244,5 @@
 .dr-credit a{color:inherit;text-decoration:underline dotted;text-underline-offset:2px;}
 .dr-credit a:hover{color:#fff;}
 .dr-credit + .dr-foot-ico.mute{margin-left:0;}
+.dr-credit-all{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:2px;cursor:pointer;}
+.dr-credit-all:hover{color:#fff;}
