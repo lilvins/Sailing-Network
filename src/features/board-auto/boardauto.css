@@ -1144,3 +1144,63 @@
 .ba-hint i { font-style: normal; color: var(--ivory-muted); font-size: 12.5px; }
 .ba-hint.play b { color: #ff9a8a; }
 .ba-hint.don b { color: #e9e7e1; }
+
+/* ─── the battle, readable ──────────────────────────────────────────────────
+   A panel over the band while a battle runs (both powers live, what the
+   defender needs, counters played), then the outcome for a beat. A counter
+   card flies from the hand onto the defended card with its amount. */
+.ba-battlehud {
+  position: absolute; left: 50%; top: 50%; z-index: 24;
+  transform: translate(-50%, calc(-100% - 40px));
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 420px; padding: 10px 18px;
+  background: rgba(8, 11, 22, 0.92); border: 3px solid var(--lc, var(--brass-hi));
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.6); pointer-events: none;
+  animation: ba-hudin 180ms var(--ease) both;
+}
+@keyframes ba-hudin { from { transform: translate(-50%, calc(-100% - 20px)); opacity: 0; } }
+.ba-bh-step { font: 700 12px var(--hud); letter-spacing: 0.1em; color: var(--ivory-muted); text-transform: uppercase; }
+.ba-bh-row { display: flex; align-items: center; gap: 18px; }
+.ba-bh-side { display: flex; flex-direction: column; align-items: center; min-width: 140px; }
+.ba-bh-side i { font: 500 13px var(--serif); font-style: normal; color: var(--ivory); max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ba-bh-side b { font: 700 30px/1 var(--hud); color: #ffd23f; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7); }
+.ba-bh-side.def b { color: #9fd2ff; }
+.ba-bh-vs { font: 700 26px var(--hud); color: var(--lc, #fff); }
+.ba-bh-need { font: 600 13px var(--serif); }
+.ba-bh-need.hits { color: #ff9a8a; }
+.ba-bh-need.safe { color: #8fe3a8; }
+.ba-bh-counters { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.ba-bh-counters em { font: 400 18px/1.1 var(--pixel); font-style: normal; color: #9fd2ff; border: 1px solid rgba(159, 210, 255, 0.4); padding: 1px 6px; }
+.ba-battlehud.recap { min-width: 300px; animation: ba-recap 1600ms var(--ease) both; }
+.ba-battlehud.recap b { font: 700 38px/1 var(--hud); letter-spacing: 0.06em; text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.7); }
+.ba-battlehud.recap span { font: 600 14px var(--serif); color: var(--ivory); }
+.ba-battlehud.recap.hit { border-color: var(--signal-hi); }
+.ba-battlehud.recap.hit b { color: #ff7a6a; }
+.ba-battlehud.recap.miss { border-color: #8fe3a8; }
+.ba-battlehud.recap.miss b { color: #8fe3a8; }
+@keyframes ba-recap {
+  0% { transform: translate(-50%, calc(-100% - 40px)) scale(0.7); opacity: 0; }
+  12% { transform: translate(-50%, calc(-100% - 40px)) scale(1.08); opacity: 1; }
+  20%, 82% { transform: translate(-50%, calc(-100% - 40px)) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, calc(-100% - 40px)) scale(1); opacity: 0; }
+}
+/* counter card: hand → over the defended card (held, readable) → into it */
+.ba-fx.counter {
+  z-index: 25; overflow: visible; border: 2px solid var(--lc, var(--brass));
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.5), 0 12px 30px rgba(0, 0, 0, 0.7);
+  animation: ba-counterfly 1100ms var(--ease) forwards;
+}
+.ba-fx-amount {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  font: 700 34px/1 var(--hud); color: #9fd2ff; background: rgba(8, 11, 22, 0.85);
+  border: 2px solid #9fd2ff; padding: 4px 8px; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8); white-space: nowrap;
+}
+@keyframes ba-counterfly {
+  0% { transform: translate(var(--dx), var(--dy)) scale(0.55); opacity: 0.4; }
+  30% { transform: translate(0, -24px) scale(1.05); opacity: 1; }
+  72% { transform: translate(0, -24px) scale(1); opacity: 1; }
+  100% { transform: translate(0, 0) scale(0.45); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ba-battlehud, .ba-battlehud.recap { animation: none; }
+}

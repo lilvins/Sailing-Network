@@ -106,6 +106,10 @@ const LIFE_STEP = 10;
 /** Cost-area cascade step: each DON!! is uncovered for 28px (35% of a card,
  *  25% of a rotated card's footprint — the bot requires ≥25%). */
 const DON_STEP = 28;
+/** An AI answer inside a battle never comes faster than this (ms), and the
+ *  outcome of a battle stays on screen this long before play goes on. */
+const BATTLE_BEAT = 900;
+const RECAP_MS = 1600;
 /** How far a split DON!! group rises per level (visual thinking aid). */
 const DON_RAISE = 26;
 
@@ -511,6 +515,8 @@ function GameScreen() {
   const lm = useMemo(() => legalMoves(db, game), [db, game]);
   const pc = game.pendingChoice;
 
+  /** How the last battle ended, shown for a beat after it (HIT / REPELLED / K.O.). */
+  const [recap, setRecap] = useState<{ text: string; sub: string; tone: "hit" | "miss" } | null>(null);
   // AI seats: one move per tick while it is their move
   const aiStep = useAutoStore((s) => s.aiStep);
   const aiPaused = useAutoStore((s) => s.aiPaused);
@@ -529,9 +535,11 @@ function GameScreen() {
   const hiddenHand = (pid: PID) => game.phase !== "over" && isAiSeat(seats, pid) && !seats.every((s) => s.controller === "ai");
   useEffect(() => {
     if (!aiActing || aiPaused) return;
-    const t = setTimeout(aiStep, aiDelay);
+    // a battle is followed step by step: the AI never answers faster than you can read
+    const delay = game.battle ? Math.max(aiDelay, BATTLE_BEAT) : recap ? Math.max(aiDelay, RECAP_MS) : aiDelay;
+    const t = setTimeout(aiStep, delay);
     return () => clearTimeout(t);
-  }, [game, aiActing, aiPaused, aiDelay, aiStep]);
+  }, [game, aiActing, aiPaused, aiDelay, aiStep, recap]);
 
   const seatName = (pid: PID) => seats.find((s) => s.pid === pid)?.name ?? pid;
   const leaderHex = (pid: PID) => {
@@ -827,8 +835,19 @@ function GameScreen() {
   // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
   // "cast": an Event card used — rises from the hand to the table centre,
   // holds for a beat (readable), then fades toward the trash (tx/ty)
-  interface Fx { id: number; kind: "life" | "ko" | "cast" | "reveal"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
+  interface Fx { id: number; label?: string; kind: "life" | "ko" | "cast" | "reveal" | "counter"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
   const [fxList, setFxList] = useState<Fx[]>([]);
+  const battleOutcome = (fresh: typeof events): { text: string; sub: string; tone: "hit" | "miss" } | null => {
+    const won = fresh.find((e) => e.type === "battleWon");
+    const lost = fresh.find((e) => e.type === "battleLost");
+    if (!won && !lost) return null;
+    const ko = fresh.find((e) => e.type === "characterKOd");
+    const lifeHits = fresh.filter((e) => e.type === "lifeCardToHand" || e.type === "lifeCardTrashed").length;
+    const nameOf = (iid: string) => cards.get(findCardId(game, iid) ?? "")?.name ?? "the card";
+    if (lost && lost.type === "battleLost") return { text: "REPELLED", sub: `${nameOf(lost.targetIid)} holds`, tone: "miss" };
+    if (ko && ko.type === "characterKOd") return { text: "K.O.!", sub: `${nameOf(ko.iid)} is K.O.'d`, tone: "hit" };
+    return { text: "HIT!", sub: lifeHits ? `${lifeHits} Life card${lifeHits > 1 ? "s" : ""} taken` : "the attack connects", tone: "hit" };
+  };
   const [hitSeat, setHitSeat] = useState<PID | null>(null);
   const lastRects = useRef(new Map<Iid, { cx: number; cy: number; w: number; h: number }>());
   const seenEvents = useRef(events.length);
@@ -867,6 +886,17 @@ function GameScreen() {
         flashes[e.targetIid] = "hit";
       } else if (e.type === "counterApplied") {
         flashes[e.targetIid] = "up";
+        const targetEl = nodeMap.current.get(e.targetIid);
+        const from = lastRects.current.get(e.cardIid) ?? null; // the hand card, as it was
+        if (targetEl && !reduce) {
+          const t = centerOf(targetEl);
+          const w = CARD_W * 1.5, h = CARD_H * 1.5;
+          added.push({
+            id: ++fxSeq.current, kind: "counter", x: t.x - w / 2, y: t.y - h / 2, w, h,
+            dx: from ? from.cx - t.x : 0, dy: from ? from.cy - t.y : 200,
+            cardId: game.players[e.player]?.instances[e.cardIid]?.cardId, color: leaderHex(e.player), label: `+${e.amount}`,
+          });
+        }
       } else if (e.type === "effectActivated" || e.type === "triggerActivated") {
         flashes[e.type === "effectActivated" ? e.sourceIid : e.iid] = "glow";
       } else if (e.type === "peekResolved" && e.toHand.length && !reduce) {
@@ -906,6 +936,11 @@ function GameScreen() {
       setFxList((l) => [...l, ...added]);
       const ids = added.map((f) => f.id);
       window.setTimeout(() => setFxList((l) => l.filter((f) => !ids.includes(f.id))), 2200); // safety net
+    }
+    const outcome = battleOutcome(fresh);
+    if (outcome) {
+      setRecap(outcome);
+      window.setTimeout(() => setRecap((r) => (r === outcome ? null : r)), RECAP_MS);
     }
     if (hit) {
       setHitSeat(hit);
@@ -1364,6 +1399,44 @@ function GameScreen() {
     }
     return null;
   })();
+
+  /** The battle, readable: who attacks whom, both powers live, what the
+   *  defender still needs, the counters already played; then the outcome. */
+  function BattleHud() {
+    const b = game.battle;
+    if (!b) {
+      return recap ? (
+        <div className={`ba-battlehud recap ${recap.tone}`} data-battle-recap>
+          <b>{recap.text}</b>
+          <span>{recap.sub}</span>
+        </div>
+      ) : null;
+    }
+    const atk = effectivePower(db, game, b.attackerOwner, b.attackerIid);
+    const def = effectivePower(db, game, b.defenderOwner, b.targetIid);
+    const name = (iid: Iid) => cards.get(findCardId(game, iid) ?? "")?.name ?? "?";
+    const start = events.map((e) => e.type).lastIndexOf("attackDeclared");
+    const counters = events.slice(start).flatMap((e) => (e.type === "counterApplied" ? [{ name: name(e.cardIid), amount: e.amount }] : []));
+    const blocked = events.slice(start).find((e) => e.type === "blockWindowResolved" && e.blockerIid);
+    const need = atk - def; // the attack connects at atk >= def (7-1-4)
+    const stepLabel = b.step === "block" ? "Block step" : b.step === "counter" ? "Counter step" : b.step === "damage" ? "Damage" : "Attack";
+    return (
+      <div className="ba-battlehud" data-battle-hud style={{ ["--lc" as string]: leaderHex(b.attackerOwner) }}>
+        <span className="ba-bh-step">{stepLabel}{blocked ? " · blocked" : ""}</span>
+        <div className="ba-bh-row">
+          <span className="ba-bh-side"><i>{name(b.attackerIid)}</i><b>{atk}</b></span>
+          <span className="ba-bh-vs">⚔</span>
+          <span className="ba-bh-side def"><i>{name(b.targetIid)}</i><b>{def}</b></span>
+        </div>
+        <span className={`ba-bh-need${need >= 0 ? " hits" : " safe"}`}>
+          {need >= 0 ? `Hits — the defender needs +${need + 1000 - (need % 1000)} to stop it` : "Repelled at these powers"}
+        </span>
+        {counters.length > 0 && (
+          <span className="ba-bh-counters">{counters.map((c, i) => <em key={i}>{c.name} +{c.amount}</em>)}</span>
+        )}
+      </div>
+    );
+  }
 
   /** Why a selected card of yours has no attack right now (shown in the bar). */
   function cardIdleReason(owner: PID, iid: Iid): string {
@@ -2421,6 +2494,7 @@ function GameScreen() {
               </>
             )}
           </svg>
+          {BattleHud()}
           {fxList.map((f) => (
             <div
               key={f.id}
@@ -2433,7 +2507,12 @@ function GameScreen() {
               }}
               onAnimationEnd={(ev) => { if (ev.target === ev.currentTarget) setFxList((l) => l.filter((x) => x.id !== f.id)); }}
             >
-              {f.kind === "reveal" ? (
+              {f.kind === "counter" ? (
+                <>
+                  {f.cardId && cards.get(f.cardId)?.image && <img src={cards.get(f.cardId)!.image} alt="" />}
+                  <span className="ba-fx-amount">{f.label}</span>
+                </>
+              ) : f.kind === "reveal" ? (
                 <div className={`ba-fx-flip${f.flip ? " flip" : ""}`}>
                   <div className="ba-fx-face">{f.cardId && cards.get(f.cardId)?.image && <img src={cards.get(f.cardId)!.image} alt="" />}</div>
                   <div className="ba-fx-face back"><span className="gb-back"><span className="gb-back-emblem" /></span></div>
