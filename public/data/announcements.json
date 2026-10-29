@@ -1,5 +1,12 @@
 [
   {
+    "date": "2026-10-29",
+    "title": "Every card, and an AI to beat",
+    "body": "All 2850 cards play by the rules in Play Auto. Face the AI, or watch two AIs duel.",
+    "tag": "Play vs Bot",
+    "view": "board-auto"
+  },
+  {
     "date": "2026-10-23",
     "title": "Play Auto is live",
     "body": "Full-rules engine duels: ST01 and OP01 with real card effects.",

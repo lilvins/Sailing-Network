@@ -96,24 +96,6 @@ interface Mode {
 
 const MODES: Mode[] = [
   {
-    id: "board",
-    badge: "Manual",
-    name: "Board",
-    sub: "DuelingBook-style table. You make every move.",
-    go: "Open table",
-    view: "board",
-    cls: "m-board",
-  },
-  {
-    id: "board2",
-    badge: "Manual · alt layout",
-    name: "Layout Lab",
-    sub: "OPTCGSim-style arrangement of the same table.",
-    go: "Open table",
-    view: "board2",
-    cls: "m-lab",
-  },
-  {
     id: "board-auto",
     badge: "Full rules · engine beta",
     name: "Play Auto",
