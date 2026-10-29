@@ -1996,7 +1996,7 @@ function GameScreen() {
   if (pc?.kind === "triggerDecision") {
     const c = cards.get(pc.cardId);
     overlay = (
-      <div className="ba-overlay">
+      <div className="ba-overlay dock" data-dock>
         <div className="ba-panel ba-ov">
           <span className="ba-ovtag">{seatName(pc.player)} took a Life with [Trigger]</span>
           {overlayCard(pc.cardId)}
@@ -2016,7 +2016,7 @@ function GameScreen() {
   } else if (pc?.kind === "mayActivate") {
     const c = cards.get(pc.sourceCardId);
     overlay = (
-      <div className="ba-overlay">
+      <div className="ba-overlay dock" data-dock>
         <div className="ba-panel ba-ov">
           <span className="ba-ovtag">{seatName(pc.player)} — optional effect</span>
           {overlayCard(pc.sourceCardId)}
@@ -2037,7 +2037,7 @@ function GameScreen() {
     const cardId = findCardId(game, pc.sourceIid);
     const c = cardId ? cards.get(cardId) : undefined;
     overlay = (
-      <div className="ba-overlay">
+      <div className="ba-overlay dock" data-dock>
         <div className="ba-panel ba-ov">
           <span className="ba-ovtag">Resolve manually — {seatName(pc.player)}</span>
           {cardId && overlayCard(cardId)}
@@ -2221,7 +2221,7 @@ function GameScreen() {
     const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
     const target = cards.get(findCardId(game, pc.targetIid) ?? "");
     overlay = (
-      <div className="ba-overlay">
+      <div className="ba-overlay dock" data-dock>
         <div className="ba-panel ba-ov">
           <span className="ba-ovtag">{seatName(pc.player)} — replace?</span>
           {src && <b className="ba-ovname">{src.name}</b>}
@@ -2306,7 +2306,7 @@ function GameScreen() {
     // M5 — "Choose one:" / "X or Y:" cost: one button per option
     const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
     overlay = (
-      <div className="ba-overlay">
+      <div className="ba-overlay dock" data-dock>
         <div className="ba-panel ba-ov">
           <span className="ba-ovtag">{seatName(pc.player)} — {pc.purpose === "cost" ? "choose how to pay" : "choose one"}</span>
           {src && <b className="ba-ovname">{src.name}</b>}
@@ -2331,7 +2331,7 @@ function GameScreen() {
     const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
     const value = numberPick ?? pc.max;
     overlay = (
-      <div className="ba-overlay">
+      <div className="ba-overlay dock" data-dock>
         <div className="ba-panel ba-ov">
           <span className="ba-ovtag">{seatName(pc.player)} — {pc.purpose === "draw" ? `draw up to ${pc.max}` : pc.purpose === "life" ? `add up to ${pc.max} to Life` : pc.purpose === "declare" ? "choose a cost" : pc.purpose === "addDon" ? `add up to ${pc.max} DON!!` : pc.purpose === "standDon" ? `set up to ${pc.max} DON!! as active` : pc.purpose === "restDon" ? `rest up to ${pc.max} DON!!` : "choose a number"}</span>
           {src && <b className="ba-ovname">{src.name}</b>}
@@ -2440,7 +2440,7 @@ function GameScreen() {
     <div className={`ba-scene${stage.rotate ? " rot" : ""}`}><NightSea /></div>
     <div
       className="ba-root ba-game ba-stage"
-      style={{ transform: stageTransform(stage), width: stage.w, gridTemplateColumns: `${stage.rail}px ${stage.field}px ${stage.rail}px` }}
+      style={{ transform: stageTransform(stage), width: stage.w, gridTemplateColumns: `${stage.rail}px ${stage.field}px ${stage.rail}px`, ["--rail" as string]: `${stage.rail}px` }}
       onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
     >
       <Banner />

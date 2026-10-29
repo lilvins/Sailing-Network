@@ -1218,3 +1218,26 @@
 .ba-donpeek.rested { transform: translate(-50%, -50%) rotate(90deg) translate(calc(5px + var(--k) * 4px), calc(3px + var(--k) * 3px)); }
 .ba-donpeek > * { width: 100%; height: 100%; }
 .ba-fx.don { z-index: 22; animation-duration: 320ms; }
+
+/* ─── simple prompts, docked ────────────────────────────────────────────────
+   Yes/no, [Trigger], "you may", choose one / a number, resolve by hand: a
+   panel at the bottom-right of the table instead of a dimmed modal, so the
+   board stays readable. Complex choices (search, piles, Life order) keep the
+   centred modal. */
+.ba-overlay.dock {
+  inset: auto calc(var(--rail, 0px) + 14px) 14px auto;
+  display: block; background: none; pointer-events: none;
+}
+.ba-overlay.dock .ba-ov {
+  pointer-events: auto; max-width: 520px; max-height: 420px;
+  align-items: flex-start; text-align: left; gap: 8px;
+  border-color: var(--brass-hi); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6);
+  animation: ba-dockin 200ms var(--ease) both;
+}
+.ba-overlay.dock .ba-ov:has(> .ba-ovcard) { display: grid; grid-template-columns: 112px 1fr; column-gap: 14px; row-gap: 6px; align-items: start; }
+.ba-overlay.dock .ba-ov:has(> .ba-ovcard) > :not(.ba-ovcard) { grid-column: 2; }
+.ba-overlay.dock .ba-ovcard { width: 112px; grid-column: 1; grid-row: 1 / span 6; }
+.ba-overlay.dock .ba-ovtext { max-width: none; max-height: 8.5em; overflow-y: auto; }
+.ba-overlay.dock .ba-ovbtns { justify-content: flex-start; }
+@keyframes ba-dockin { from { transform: translateY(16px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ba-overlay.dock .ba-ov { animation: none; } }
