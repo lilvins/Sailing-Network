@@ -284,8 +284,8 @@
   border-radius: 50%;
   background: rgba(227, 178, 76, 0.75);
 }
-/* DON!! deck: same real back as every other card */
-.gb-back-don { background-image: url("/cards/BACK.webp"); }
+/* DON!! deck: the white back of the real DON!! cards */
+.gb-back-don { background-image: url("/cards/BACK-don.webp"); background-color: #e9e7e1; }
 /* DON!! card — SVG manga-burst recreation */
 .gb-don-art {
   position: absolute;

@@ -35,6 +35,7 @@ public/cards/*
 !public/cards/DON.webp
 !public/cards/BACK.webp
 !public/cards/BACK-leader.webp
+!public/cards/BACK-don.webp
 
 # Local screenshots / scratch from dev tooling
 scripts/.shots/

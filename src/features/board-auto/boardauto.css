@@ -618,7 +618,8 @@
   text-align: center;
   border: 1px solid #15100a;
 }
-/* DON!! deck pile: the same real back (BACK.webp) as every other pile */
+/* DON!! deck pile: the white back of the DON!! cards (BACK-don.webp) */
+.ba-donback .gb-back { background-image: url("/cards/BACK-don.webp"); background-color: #e9e7e1; }
 
 /* hands: cards side by side, NEVER overlapping. Up to ~17 fit the mat; beyond
    that the row scrolls horizontally (still no overlap). Both hands: the same
