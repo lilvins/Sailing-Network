@@ -14,6 +14,7 @@ import {
 import { loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { NightSea } from "./NightSea";
+import { useAutoStore } from "../board-auto/autoStore";
 import "./home.css";
 
 /* Home hub — "one place for everything" (plancia di notte identity):
@@ -122,12 +123,13 @@ const MODES: Mode[] = [
     cls: "m-auto",
   },
   {
-    id: "board-bot",
-    badge: "Full rules · optcg-ai",
+    // same Play Auto table, seat B already given to the AI
+    id: "board-auto-ai",
+    badge: "Full rules · AI",
     name: "Play vs Bot",
-    sub: "Every card's effect. A bot that learns from your games.",
+    sub: "Play Auto against the AI — or watch two AIs play.",
     go: "Play",
-    view: "board-bot",
+    view: "board-auto",
     cls: "m-auto",
   },
   {
@@ -349,7 +351,14 @@ export function HomePage() {
       </div>
       <section className="hu-play">
         {MODES.map((m) => (
-          <button key={m.id} className={`hu-mode ${m.cls}`} onClick={() => setView(m.view)}>
+          <button
+            key={m.id}
+            className={`hu-mode ${m.cls}`}
+            onClick={() => {
+              if (m.view === "board-auto") useAutoStore.getState().newGame(m.id === "board-auto-ai");
+              setView(m.view);
+            }}
+          >
             <span className="hu-mode-badge">{m.badge}</span>
             <span className="hu-mode-name">{m.name}</span>
             <span className="hu-mode-sub">{m.sub}</span>

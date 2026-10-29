@@ -86,6 +86,8 @@ interface AutoStoreState {
   game: AutoGameState | null;
   events: GameEvent[];
   banner: Banner | null;
+  /** The next deck pick starts with seat B played by the AI (Home → Play vs Bot). */
+  aiOpponent: boolean;
   /** AI seats: paused, and the pause between their moves (ms). */
   aiPaused: boolean;
   aiDelay: number;
@@ -100,6 +102,8 @@ interface AutoStoreState {
   dispatch: (intent: PlayerIntent) => boolean;
   /** One move by the AI whose turn it is to act (no-op when a human must act). */
   aiStep: () => void;
+  /** Open the deck pick fresh, seat B to the AI or both seats human. */
+  newGame: (aiOpponent: boolean) => void;
   setAiPaused: (paused: boolean) => void;
   setAiDelay: (ms: number) => void;
   explain: (text: string, hint?: string, tone?: Banner["tone"]) => void;
@@ -118,6 +122,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   game: null,
   events: [],
   banner: null,
+  aiOpponent: false,
   aiPaused: false,
   aiDelay: 700,
 
@@ -210,6 +215,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
       set({ aiPaused: true, banner: { id: bannerSeq++, text: `AI stuck: ${e instanceof Error ? e.message : String(e)}`, hint: "The AI is paused. Concede for that seat, or change decks." } });
     }
   },
+  newGame: (aiOpponent) => set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }),
   setAiPaused: (aiPaused) => set({ aiPaused }),
   setAiDelay: (aiDelay) => set({ aiDelay }),
 

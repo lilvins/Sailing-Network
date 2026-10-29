@@ -33,9 +33,11 @@ import {
   computeMeta,
 } from "./store.mjs";
 
-const PORT = Number(process.env.PORT || 8787);
 const COOKIE = "sn_session";
 const isProd = process.env.NODE_ENV === "production";
+// SN_API_PORT wins; PORT only in production (hosts set it). In dev, tools that
+// launch `npm run dev` set PORT for the Vite port, and the API must not take it.
+const PORT = Number(process.env.SN_API_PORT || (isProd && process.env.PORT) || 8787);
 
 await initDb();
 

@@ -264,9 +264,10 @@ function PickScreen() {
     };
   }, []);
 
-  const [names, setNames] = useState<[string, string]>([user?.username ?? "Player 1", "Player 2"]);
+  const aiOpponent = useAutoStore((s) => s.aiOpponent);
+  const [names, setNames] = useState<[string, string]>([user?.username ?? "Player 1", aiOpponent ? AI_NAMES[1] : "Player 2"]);
   const [sel, setSel] = useState<[DeckChoice | null, DeckChoice | null]>([null, null]);
-  const [ctrl, setCtrl] = useState<[Controller, Controller]>(["human", "human"]);
+  const [ctrl, setCtrl] = useState<[Controller, Controller]>(["human", aiOpponent ? "ai" : "human"]);
   const options = [...meta, ...demoDecks, ...mine];
 
   const setController = (idx: 0 | 1, c: Controller) => {
