@@ -22,22 +22,98 @@
 | B. Adattatore | Tradurre ogni stato AUTOSIM nello stato optcg-ai, far decidere il bot lì, tradurre la mossa indietro. | Veloce da provare. | Due motori che divergono; traduzione fragile a ogni carta; il bot simula con regole diverse da quelle del tavolo. |
 
 Si va con **A**. B si scarta: vanifica il lavoro fatto per avere un solo motore.
+Decisione registrata in `docs/adr/0001-bot-nativo-su-autosim.md`.
+
+## Regole di lavoro
+
+Prese dalla skill `unity-gamedev`, adattate al web: niente Unity, niente C#,
+stessa sostanza. Più qualcosa da `card-game` e da `domain-modeling`.
+
+**Sistemi autonomi e riusabili**
+- Il bot è un sistema a sé: `src/autosim/ai/`, con il suo `README.md` (a cosa
+  serve, come si aggancia, interfaccia pubblica, esempio d'uso).
+- Dipende solo dal motore AUTOSIM (`engine/`, `ir/`), **mai** da board-auto,
+  React o gli store. È il gioco a usare il bot, non il contrario. Si deve
+  poter copiare in un altro progetto TCG con lo stesso motore.
+- Interfaccia piccola: un `Agent` con `decide(state, pid) → PlayerIntent`,
+  più le fabbriche dei livelli. Tutto il resto resta interno.
+- I numeri di taratura (peso del DON, numero di rollout, orizzonte, budget di
+  tempo) non stanno scritti nel codice: vanno in un file di config dati
+  (`ai/config.ts` con i default commentati, sovrascrivibili da `learned.json`).
+  I contenuti, cioè i playbook per Leader, sono dati JSON e non codice.
+- Nomi: si tengono le convenzioni del progetto web (cartelle minuscole,
+  camelCase). `Vins<Nome>System` è una convenzione Unity, come già deciso nel
+  report del compilatore. Il bot entra nel catalogo dei sistemi come
+  "sistema bot TCG".
+
+**Codice umano**
+- Un file = una responsabilità: generatore di mosse, determinizzazione,
+  valutazione, ricerca e runner restano separati. Niente file tuttofare.
+- Metodi corti (~30 righe al massimo), nomi parlanti, commenti sul *perché*.
+- Niente numeri magici, niente codice morto, niente blocchi commentati.
+
+**Regole del motore che il bot non deve rompere** (da `card-game`)
+- Un intent illegale non cambia niente: `applyIntent` è atomico. Eventuali
+  scorciatoie per la velocità valgono solo sulle copie usa e getta dei rollout,
+  mai sullo stato della partita vera.
+- Il caso del bot non consuma il caso della partita. Gli shuffle usano
+  `${seed}:${rngUses}`: il bot ha il suo generatore e lavora solo su copie,
+  così il replay di una partita (seed + intents) resta identico.
+- Le scelte simultanee hanno un ordine fisso: il bot non deve introdurre
+  risultati diversi a parità di seed.
+
+**Ciclo di lavoro**
+- Due modalità dichiarate: **pianificare** (solo lettura, il piano sta in
+  questo file) ed **eseguire** (una sezione alla volta, seguendo il piano). Se
+  il piano si rivela sbagliato ci si ferma e si torna a pianificare.
+- Si parte da un commit pulito; ogni passo si chiude con i test verdi, il
+  typecheck pulito e, quando si vede, una prova nel browser.
+- Un commit, una cosa. La bozza del messaggio la propongo io, tu la correggi.
+  Il corpo del commit dice come è stato verificato.
+- Ogni sessione chiude con un report in `_Reports/` (fuori dai commit): in
+  breve, file toccati, come funziona, concetti nuovi, scelte, come
+  verificarlo, errori del modello, domande da esame, riuso, da fare.
+
+**Lessico e decisioni** (da `domain-modeling`)
+- I termini del bot (rollout, determinizzazione, agente…) vanno in
+  `GLOSSARY.md`, aggiornato appena un termine si chiarisce.
+- Un ADR in `docs/adr/` si scrive solo per decisioni difficili da
+  ribaltare, sorprendenti e frutto di un vero compromesso.
 
 ## Fasi
 
 ### Fase 1 — Motore pronto per le simulazioni (tappa 9)
-Il Monte Carlo gioca migliaia di partite per decisione: AUTOSIM deve essere veloce
-e "senza testa".
-1. **Benchmark** `npm run bench:autosim`: partite casuali/secondo tra i 17
-   mazzi meta. Oggi ≈ 20-30 ms a partita con driver casuale; la suite è
-   rallentata quando sono arrivati gli effetti continui.
-2. **Cache degli effetti continui** (`activeModifiers` ricalcolato a ogni
-   domanda): memo per versione dello stato, invalidata dagli eventi.
-3. **Clonazione più leggera**: `applyIntent` fa `structuredClone` dell'intero
-   stato a ogni intent; per i rollout serve una modalità "in place"
-   (stato già copiato una volta all'inizio del rollout).
-4. Obiettivo: ≥ 100 partite casuali/s su un core. Uscita: benchmark nel
-   report, nessun test cambia comportamento.
+
+**Spec.** Il Monte Carlo gioca migliaia di partite per ogni decisione:
+AUTOSIM deve giocare partite intere senza interfaccia, in fretta, con risultati
+identici a quelli di oggi a parità di seed.
+
+**Passi**, ognuno con il suo commit:
+1. **Misurare prima di toccare.** Creare `scripts/bench-autosim.mjs`
+   (`npm run bench:autosim`): N partite con driver casuale a seed fissi tra i
+   17 mazzi dell'account di test. Stampa partite/s, intents/s, ms medi per
+   intent e i 3 punti più costosi (profilo di Node). Salva anche
+   un'**impronta** delle partite (hash degli eventi per seed), che serve ai
+   passi 2-3.
+   Criterio: numeri di partenza scritti nel report; nessun file del motore
+   toccato.
+2. **Cache degli effetti continui.** Oggi `activeModifiers` ricalcola tutti gli
+   statici a ogni domanda (potenza, costo, keyword, restrizioni). Va calcolato
+   una volta per versione dello stato e invalidato quando un evento cambia il
+   campo. Il modulo resta `engine/continuous.ts`, con la sua responsabilità.
+   Criterio: impronta identica, test verdi, guadagno misurato con il bench.
+3. **Copia più leggera dello stato.** `applyIntent` fa `structuredClone`
+   dell'intero stato a ogni intent; questo garantisce l'atomicità e resta per
+   il gioco vero. Si aggiunge un'entrata separata per i rollout, che lavora su
+   una copia già fatta a inizio rollout. Se un intent fallisce lì, si scarta
+   l'intero rollout. Criterio: impronta identica e un test che dimostra che
+   lo stato della partita vera non viene mai modificato.
+4. **Solo se serve**, dopo aver rimisurato: gli altri punti caldi indicati dal
+   profilo (`legalMoves`, la risoluzione dei selettori).
+
+**Uscita.** ≥ 100 partite casuali/s su un core, oppure il motivo misurato per
+cui non ci si arriva e cosa costerebbe. Impronta delle partite invariata,
+489+ test verdi, typecheck pulito, report in `_Reports/`.
 
 ### Fase 2 — Interfaccia agente (`src/autosim/ai/`)
 1. `Agent.decide(state, pid) → PlayerIntent`, un solo punto d'ingresso per
