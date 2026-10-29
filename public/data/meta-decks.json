@@ -1,0 +1,1360 @@
+{
+  "source": "egmanevents.com",
+  "fetchedAt": "2026-10-29T11:36:42.973Z",
+  "setGroup": "OP17",
+  "newestFormat": "EB05",
+  "events": 50,
+  "decks": [
+    {
+      "leaderId": "OP14-020",
+      "leaderName": "Dracule Mihawk",
+      "colors": [
+        "Green"
+      ],
+      "results": 183,
+      "resultsNewestFormat": 0,
+      "cards": [
+        {
+          "id": "OP07-022",
+          "count": 4
+        },
+        {
+          "id": "ST32-001",
+          "count": 4
+        },
+        {
+          "id": "OP06-038",
+          "count": 4
+        },
+        {
+          "id": "ST32-002",
+          "count": 4
+        },
+        {
+          "id": "OP14-039",
+          "count": 3
+        },
+        {
+          "id": "OP12-034",
+          "count": 4
+        },
+        {
+          "id": "OP12-023",
+          "count": 4
+        },
+        {
+          "id": "OP13-031",
+          "count": 4
+        },
+        {
+          "id": "OP17-031",
+          "count": 4
+        },
+        {
+          "id": "OP17-022",
+          "count": 4
+        },
+        {
+          "id": "OP06-033",
+          "count": 4
+        },
+        {
+          "id": "OP14-038",
+          "count": 2
+        },
+        {
+          "id": "OP01-055",
+          "count": 2
+        },
+        {
+          "id": "OP08-036",
+          "count": 2
+        },
+        {
+          "id": "OP12-037",
+          "count": 1
+        }
+      ],
+      "event": "Flame Flame Fruit Coliseum JPN Block D",
+      "format": "OP17",
+      "date": "2026-10-11",
+      "players": 32,
+      "eventType": "Large Official Event",
+      "placement": 1,
+      "player": "Kiiroi Kuma"
+    },
+    {
+      "leaderId": "OP09-062",
+      "leaderName": "Nico Robin",
+      "colors": [
+        "Purple",
+        "Yellow"
+      ],
+      "results": 80,
+      "resultsNewestFormat": 0,
+      "cards": [
+        {
+          "id": "EB04-058",
+          "count": 3
+        },
+        {
+          "id": "ST34-003",
+          "count": 4
+        },
+        {
+          "id": "OP17-107",
+          "count": 4
+        },
+        {
+          "id": "OP17-112",
+          "count": 4
+        },
+        {
+          "id": "OP17-102",
+          "count": 4
+        },
+        {
+          "id": "OP17-109",
+          "count": 4
+        },
+        {
+          "id": "OP17-106",
+          "count": 2
+        },
+        {
+          "id": "OP16-119",
+          "count": 4
+        },
+        {
+          "id": "OP17-113",
+          "count": 4
+        },
+        {
+          "id": "OP17-114",
+          "count": 4
+        },
+        {
+          "id": "OP17-074",
+          "count": 4
+        },
+        {
+          "id": "OP09-078",
+          "count": 4
+        },
+        {
+          "id": "OP05-073",
+          "count": 1
+        },
+        {
+          "id": "OP14-108",
+          "count": 4
+        }
+      ],
+      "event": "Flame Flame Fruit Coliseum JPN Block A",
+      "format": "OP17",
+      "date": "2026-10-11",
+      "players": 32,
+      "eventType": "Large Official Event",
+      "placement": 1,
+      "player": "Hiromaruchi"
+    },
+    {
+      "leaderId": "OP17-039",
+      "leaderName": "Rocks.D.Xebec",
+      "colors": [
+        "Blue"
+      ],
+      "results": 60,
+      "resultsNewestFormat": 6,
+      "cards": [
+        {
+          "id": "OP08-051",
+          "count": 3
+        },
+        {
+          "id": "OP17-044",
+          "count": 3
+        },
+        {
+          "id": "OP17-049",
+          "count": 4
+        },
+        {
+          "id": "OP17-052",
+          "count": 3
+        },
+        {
+          "id": "OP17-040",
+          "count": 4
+        },
+        {
+          "id": "OP17-046",
+          "count": 4
+        },
+        {
+          "id": "OP17-042",
+          "count": 2
+        },
+        {
+          "id": "OP17-045",
+          "count": 4
+        },
+        {
+          "id": "OP17-054",
+          "count": 4
+        },
+        {
+          "id": "OP17-118",
+          "count": 4
+        },
+        {
+          "id": "OP17-048",
+          "count": 4
+        },
+        {
+          "id": "OP17-050",
+          "count": 3
+        },
+        {
+          "id": "OP17-056",
+          "count": 4
+        },
+        {
+          "id": "OP17-055",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #125",
+      "format": "EB05",
+      "date": "2026-10-21",
+      "players": 120,
+      "eventType": "Unofficial Event",
+      "placement": 1,
+      "player": "Donkaiser"
+    },
+    {
+      "leaderId": "OP13-004",
+      "leaderName": "Sabo",
+      "colors": [
+        "Red",
+        "Black"
+      ],
+      "results": 55,
+      "resultsNewestFormat": 1,
+      "cards": [
+        {
+          "id": "ST01-011",
+          "count": 2
+        },
+        {
+          "id": "OP17-089",
+          "count": 4
+        },
+        {
+          "id": "OP17-083",
+          "count": 2
+        },
+        {
+          "id": "OP17-119",
+          "count": 4
+        },
+        {
+          "id": "OP17-093",
+          "count": 4
+        },
+        {
+          "id": "OP17-086",
+          "count": 2
+        },
+        {
+          "id": "OP17-087",
+          "count": 4
+        },
+        {
+          "id": "OP15-088",
+          "count": 4
+        },
+        {
+          "id": "EB05-047",
+          "count": 4
+        },
+        {
+          "id": "OP17-095",
+          "count": 4
+        },
+        {
+          "id": "OP17-082",
+          "count": 4
+        },
+        {
+          "id": "OP17-084",
+          "count": 2
+        },
+        {
+          "id": "OP17-080",
+          "count": 4
+        },
+        {
+          "id": "EB05-046",
+          "count": 2
+        },
+        {
+          "id": "OP04-016",
+          "count": 2
+        },
+        {
+          "id": "OP17-096",
+          "count": 2
+        }
+      ],
+      "event": "ChinoizeCup #124",
+      "format": "EB05",
+      "date": "2026-10-20",
+      "players": 128,
+      "eventType": "Unofficial Event",
+      "placement": 2,
+      "player": "Canepis"
+    },
+    {
+      "leaderId": "OP15-058",
+      "leaderName": "Enel",
+      "colors": [
+        "Purple"
+      ],
+      "results": 41,
+      "resultsNewestFormat": 0,
+      "cards": [
+        {
+          "id": "OP15-061",
+          "count": 4
+        },
+        {
+          "id": "OP15-066",
+          "count": 4
+        },
+        {
+          "id": "OP15-074",
+          "count": 3
+        },
+        {
+          "id": "OP15-075",
+          "count": 4
+        },
+        {
+          "id": "OP15-076",
+          "count": 4
+        },
+        {
+          "id": "OP15-077",
+          "count": 4
+        },
+        {
+          "id": "OP15-078",
+          "count": 4
+        },
+        {
+          "id": "OP12-071",
+          "count": 2
+        },
+        {
+          "id": "OP15-067",
+          "count": 4
+        },
+        {
+          "id": "ST10-010",
+          "count": 3
+        },
+        {
+          "id": "OP09-077",
+          "count": 2
+        },
+        {
+          "id": "OP15-118",
+          "count": 3
+        },
+        {
+          "id": "OP13-076",
+          "count": 1
+        },
+        {
+          "id": "OP05-077",
+          "count": 1
+        },
+        {
+          "id": "OP17-075",
+          "count": 2
+        },
+        {
+          "id": "OP10-067",
+          "count": 1
+        },
+        {
+          "id": "OP15-071",
+          "count": 4
+        }
+      ],
+      "event": "Flame Flame Fruit Coliseum JPN Block B",
+      "format": "OP17",
+      "date": "2026-10-11",
+      "players": 32,
+      "eventType": "Large Official Event",
+      "placement": 3,
+      "player": "Cham Mochi"
+    },
+    {
+      "leaderId": "ST30-001",
+      "leaderName": "Luffy & Ace",
+      "colors": [
+        "Red",
+        "Green"
+      ],
+      "results": 38,
+      "resultsNewestFormat": 2,
+      "cards": [
+        {
+          "id": "EB04-002",
+          "count": 4
+        },
+        {
+          "id": "ST30-012",
+          "count": 4
+        },
+        {
+          "id": "OP12-015",
+          "count": 4
+        },
+        {
+          "id": "ST21-014",
+          "count": 4
+        },
+        {
+          "id": "OP14-031",
+          "count": 1
+        },
+        {
+          "id": "OP01-016",
+          "count": 4
+        },
+        {
+          "id": "EB02-017",
+          "count": 4
+        },
+        {
+          "id": "OP13-037",
+          "count": 2
+        },
+        {
+          "id": "ST31-001",
+          "count": 4
+        },
+        {
+          "id": "OP12-006",
+          "count": 2
+        },
+        {
+          "id": "OP04-016",
+          "count": 3
+        },
+        {
+          "id": "OP12-037",
+          "count": 2
+        },
+        {
+          "id": "OP17-017",
+          "count": 3
+        },
+        {
+          "id": "ST21-017",
+          "count": 1
+        },
+        {
+          "id": "OP13-040",
+          "count": 2
+        },
+        {
+          "id": "OP06-017",
+          "count": 2
+        },
+        {
+          "id": "ST31-005",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #122",
+      "format": "OP17.5",
+      "date": "2026-10-13",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 2,
+      "player": "not_dev"
+    },
+    {
+      "leaderId": "OP17-058",
+      "leaderName": "Kaido",
+      "colors": [
+        "Purple"
+      ],
+      "results": 37,
+      "resultsNewestFormat": 2,
+      "cards": [
+        {
+          "id": "OP17-073",
+          "count": 4
+        },
+        {
+          "id": "EB05-037",
+          "count": 4
+        },
+        {
+          "id": "ST34-004",
+          "count": 4
+        },
+        {
+          "id": "OP14-069",
+          "count": 1
+        },
+        {
+          "id": "OP17-062",
+          "count": 4
+        },
+        {
+          "id": "EB04-031",
+          "count": 4
+        },
+        {
+          "id": "OP17-061",
+          "count": 2
+        },
+        {
+          "id": "OP17-065",
+          "count": 4
+        },
+        {
+          "id": "EB04-032",
+          "count": 4
+        },
+        {
+          "id": "EB05-034",
+          "count": 2
+        },
+        {
+          "id": "P-046",
+          "count": 1
+        },
+        {
+          "id": "OP17-074",
+          "count": 4
+        },
+        {
+          "id": "OP15-078",
+          "count": 4
+        },
+        {
+          "id": "OP07-076",
+          "count": 4
+        },
+        {
+          "id": "OP07-077",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #128",
+      "format": "EB05",
+      "date": "2026-10-27",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 1,
+      "player": "crossai8"
+    },
+    {
+      "leaderId": "OP17-079",
+      "leaderName": "Monkey.D.Luffy",
+      "colors": [
+        "Black"
+      ],
+      "results": 26,
+      "resultsNewestFormat": 0,
+      "cards": [
+        {
+          "id": "OP17-090",
+          "count": 2
+        },
+        {
+          "id": "OP17-081",
+          "count": 4
+        },
+        {
+          "id": "OP17-089",
+          "count": 3
+        },
+        {
+          "id": "OP17-119",
+          "count": 4
+        },
+        {
+          "id": "OP17-093",
+          "count": 4
+        },
+        {
+          "id": "OP17-086",
+          "count": 4
+        },
+        {
+          "id": "OP17-087",
+          "count": 4
+        },
+        {
+          "id": "OP15-088",
+          "count": 4
+        },
+        {
+          "id": "OP17-094",
+          "count": 4
+        },
+        {
+          "id": "OP17-095",
+          "count": 4
+        },
+        {
+          "id": "OP17-082",
+          "count": 4
+        },
+        {
+          "id": "OP17-084",
+          "count": 2
+        },
+        {
+          "id": "OP17-080",
+          "count": 4
+        },
+        {
+          "id": "OP17-098",
+          "count": 1
+        },
+        {
+          "id": "ST14-017",
+          "count": 2
+        }
+      ],
+      "event": "ChinoizeCup #118",
+      "format": "OP17.5",
+      "date": "2026-10-05",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 1,
+      "player": "trocheesy"
+    },
+    {
+      "leaderId": "OP16-001",
+      "leaderName": "Portgas.D.Ace",
+      "colors": [
+        "Red"
+      ],
+      "results": 17,
+      "resultsNewestFormat": 0,
+      "cards": [
+        {
+          "id": "OP13-016",
+          "count": 4
+        },
+        {
+          "id": "OP17-016",
+          "count": 2
+        },
+        {
+          "id": "OP16-015",
+          "count": 4
+        },
+        {
+          "id": "OP16-017",
+          "count": 4
+        },
+        {
+          "id": "OP16-011",
+          "count": 4
+        },
+        {
+          "id": "OP16-014",
+          "count": 4
+        },
+        {
+          "id": "OP16-004",
+          "count": 4
+        },
+        {
+          "id": "OP17-006",
+          "count": 4
+        },
+        {
+          "id": "OP16-003",
+          "count": 4
+        },
+        {
+          "id": "OP17-005",
+          "count": 4
+        },
+        {
+          "id": "OP17-017",
+          "count": 2
+        },
+        {
+          "id": "OP16-021",
+          "count": 4
+        },
+        {
+          "id": "OP04-016",
+          "count": 2
+        },
+        {
+          "id": "OP16-118",
+          "count": 2
+        },
+        {
+          "id": "ST23-001",
+          "count": 2
+        }
+      ],
+      "event": "SangSang Event's Mexico Regionals",
+      "format": "OP17",
+      "date": "2026-09-22",
+      "players": 1024,
+      "eventType": "Large Official Event",
+      "placement": 4,
+      "player": "Hebi"
+    },
+    {
+      "leaderId": "OP05-098",
+      "leaderName": "Enel",
+      "colors": [
+        "Yellow"
+      ],
+      "results": 15,
+      "resultsNewestFormat": 7,
+      "cards": [
+        {
+          "id": "EB04-058",
+          "count": 4
+        },
+        {
+          "id": "OP17-107",
+          "count": 4
+        },
+        {
+          "id": "OP17-112",
+          "count": 4
+        },
+        {
+          "id": "OP17-102",
+          "count": 4
+        },
+        {
+          "id": "OP17-109",
+          "count": 4
+        },
+        {
+          "id": "EB02-052",
+          "count": 1
+        },
+        {
+          "id": "OP14-104",
+          "count": 4
+        },
+        {
+          "id": "OP15-103",
+          "count": 3
+        },
+        {
+          "id": "OP13-113",
+          "count": 2
+        },
+        {
+          "id": "OP16-119",
+          "count": 4
+        },
+        {
+          "id": "OP17-113",
+          "count": 4
+        },
+        {
+          "id": "OP17-114",
+          "count": 4
+        },
+        {
+          "id": "OP11-106",
+          "count": 4
+        },
+        {
+          "id": "OP06-115",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #128",
+      "format": "EB05",
+      "date": "2026-10-27",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 2,
+      "player": "ZerkSan"
+    },
+    {
+      "leaderId": "OP13-001",
+      "leaderName": "Monkey.D.Luffy",
+      "colors": [
+        "Red",
+        "Green"
+      ],
+      "results": 12,
+      "resultsNewestFormat": 8,
+      "cards": [
+        {
+          "id": "EB05-001",
+          "count": 4
+        },
+        {
+          "id": "OP12-023",
+          "count": 4
+        },
+        {
+          "id": "ST24-002",
+          "count": 4
+        },
+        {
+          "id": "EB01-013",
+          "count": 4
+        },
+        {
+          "id": "ST32-002",
+          "count": 4
+        },
+        {
+          "id": "PRB02-003",
+          "count": 3
+        },
+        {
+          "id": "OP13-016",
+          "count": 4
+        },
+        {
+          "id": "OP14-013",
+          "count": 4
+        },
+        {
+          "id": "OP14-031",
+          "count": 4
+        },
+        {
+          "id": "OP07-022",
+          "count": 4
+        },
+        {
+          "id": "OP17-022",
+          "count": 2
+        },
+        {
+          "id": "OP13-031",
+          "count": 3
+        },
+        {
+          "id": "OP06-033",
+          "count": 3
+        },
+        {
+          "id": "OP13-040",
+          "count": 1
+        },
+        {
+          "id": "OP01-055",
+          "count": 2
+        }
+      ],
+      "event": "ChinoizeCup #128",
+      "format": "EB05",
+      "date": "2026-10-27",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 4,
+      "player": "PhoenixShiba"
+    },
+    {
+      "leaderId": "OP14-041",
+      "leaderName": "Boa Hancock",
+      "colors": [
+        "Blue",
+        "Yellow"
+      ],
+      "results": 11,
+      "resultsNewestFormat": 1,
+      "cards": [
+        {
+          "id": "OP12-119",
+          "count": 2
+        },
+        {
+          "id": "EB05-028",
+          "count": 2
+        },
+        {
+          "id": "OP14-112",
+          "count": 4
+        },
+        {
+          "id": "OP16-113",
+          "count": 4
+        },
+        {
+          "id": "EB04-058",
+          "count": 4
+        },
+        {
+          "id": "OP17-109",
+          "count": 4
+        },
+        {
+          "id": "OP14-104",
+          "count": 4
+        },
+        {
+          "id": "OP14-103",
+          "count": 4
+        },
+        {
+          "id": "OP14-105",
+          "count": 4
+        },
+        {
+          "id": "OP11-054",
+          "count": 2
+        },
+        {
+          "id": "OP14-114",
+          "count": 4
+        },
+        {
+          "id": "OP15-113",
+          "count": 4
+        },
+        {
+          "id": "OP14-107",
+          "count": 4
+        },
+        {
+          "id": "OP06-058",
+          "count": 1
+        },
+        {
+          "id": "OP07-057",
+          "count": 1
+        },
+        {
+          "id": "OP06-115",
+          "count": 2
+        }
+      ],
+      "event": "ChinoizeCup #124",
+      "format": "EB05",
+      "date": "2026-10-20",
+      "players": 128,
+      "eventType": "Unofficial Event",
+      "placement": 1,
+      "player": "volkiso"
+    },
+    {
+      "leaderId": "OP12-061",
+      "leaderName": "Donquixote Rosinante",
+      "colors": [
+        "Purple",
+        "Yellow"
+      ],
+      "results": 9,
+      "resultsNewestFormat": 3,
+      "cards": [
+        {
+          "id": "EB04-058",
+          "count": 4
+        },
+        {
+          "id": "OP16-064",
+          "count": 2
+        },
+        {
+          "id": "EB04-038",
+          "count": 4
+        },
+        {
+          "id": "OP16-065",
+          "count": 4
+        },
+        {
+          "id": "EB05-034",
+          "count": 2
+        },
+        {
+          "id": "OP10-065",
+          "count": 4
+        },
+        {
+          "id": "P-088",
+          "count": 4
+        },
+        {
+          "id": "ST10-010",
+          "count": 3
+        },
+        {
+          "id": "EB03-062",
+          "count": 1
+        },
+        {
+          "id": "P-093",
+          "count": 4
+        },
+        {
+          "id": "OP13-076",
+          "count": 1
+        },
+        {
+          "id": "OP12-115",
+          "count": 4
+        },
+        {
+          "id": "OP15-078",
+          "count": 4
+        },
+        {
+          "id": "OP07-076",
+          "count": 1
+        },
+        {
+          "id": "EB05-040",
+          "count": 4
+        },
+        {
+          "id": "OP16-078",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #125",
+      "format": "EB05",
+      "date": "2026-10-21",
+      "players": 120,
+      "eventType": "Unofficial Event",
+      "placement": 2,
+      "player": "FlyestRaven"
+    },
+    {
+      "leaderId": "OP08-098",
+      "leaderName": "Kalgara",
+      "colors": [
+        "Yellow"
+      ],
+      "results": 5,
+      "resultsNewestFormat": 1,
+      "cards": [
+        {
+          "id": "EB04-058",
+          "count": 4
+        },
+        {
+          "id": "OP12-099",
+          "count": 4
+        },
+        {
+          "id": "OP15-101",
+          "count": 4
+        },
+        {
+          "id": "OP15-119",
+          "count": 2
+        },
+        {
+          "id": "OP08-109",
+          "count": 4
+        },
+        {
+          "id": "EB03-053",
+          "count": 4
+        },
+        {
+          "id": "OP15-108",
+          "count": 4
+        },
+        {
+          "id": "OP15-112",
+          "count": 2
+        },
+        {
+          "id": "OP17-114",
+          "count": 2
+        },
+        {
+          "id": "OP08-110",
+          "count": 4
+        },
+        {
+          "id": "OP12-114",
+          "count": 4
+        },
+        {
+          "id": "OP15-114",
+          "count": 4
+        },
+        {
+          "id": "OP11-106",
+          "count": 2
+        },
+        {
+          "id": "OP08-115",
+          "count": 2
+        },
+        {
+          "id": "OP05-117",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #122",
+      "format": "OP17.5",
+      "date": "2026-10-13",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 1,
+      "player": "BMKid"
+    },
+    {
+      "leaderId": "ST10-002",
+      "leaderName": "Monkey.D.Luffy",
+      "colors": [
+        "Red",
+        "Purple"
+      ],
+      "results": 5,
+      "resultsNewestFormat": 4,
+      "cards": [
+        {
+          "id": "OP05-119",
+          "count": 3
+        },
+        {
+          "id": "ST31-004",
+          "count": 2
+        },
+        {
+          "id": "EB01-061",
+          "count": 4
+        },
+        {
+          "id": "OP01-016",
+          "count": 4
+        },
+        {
+          "id": "EB05-033",
+          "count": 4
+        },
+        {
+          "id": "EB04-007",
+          "count": 4
+        },
+        {
+          "id": "ST21-003",
+          "count": 2
+        },
+        {
+          "id": "ST18-001",
+          "count": 4
+        },
+        {
+          "id": "OP17-074",
+          "count": 4
+        },
+        {
+          "id": "OP05-067",
+          "count": 4
+        },
+        {
+          "id": "OP09-078",
+          "count": 4
+        },
+        {
+          "id": "OP15-077",
+          "count": 3
+        },
+        {
+          "id": "OP15-078",
+          "count": 4
+        },
+        {
+          "id": "ST31-005",
+          "count": 4
+        }
+      ],
+      "event": "ChinoizeCup #125",
+      "format": "EB05",
+      "date": "2026-10-21",
+      "players": 120,
+      "eventType": "Unofficial Event",
+      "placement": 4,
+      "player": "ricmasterflash"
+    },
+    {
+      "leaderId": "OP08-058",
+      "leaderName": "Charlotte Pudding",
+      "colors": [
+        "Purple",
+        "Yellow"
+      ],
+      "results": 5,
+      "resultsNewestFormat": 1,
+      "cards": [
+        {
+          "id": "OP17-104",
+          "count": 2
+        },
+        {
+          "id": "OP17-107",
+          "count": 4
+        },
+        {
+          "id": "OP08-062",
+          "count": 4
+        },
+        {
+          "id": "OP11-067",
+          "count": 2
+        },
+        {
+          "id": "OP17-103",
+          "count": 4
+        },
+        {
+          "id": "OP17-112",
+          "count": 4
+        },
+        {
+          "id": "OP17-109",
+          "count": 4
+        },
+        {
+          "id": "EB03-051",
+          "count": 2
+        },
+        {
+          "id": "OP17-113",
+          "count": 4
+        },
+        {
+          "id": "OP17-114",
+          "count": 4
+        },
+        {
+          "id": "OP17-074",
+          "count": 4
+        },
+        {
+          "id": "OP11-106",
+          "count": 3
+        },
+        {
+          "id": "EB05-059",
+          "count": 2
+        },
+        {
+          "id": "OP08-077",
+          "count": 1
+        },
+        {
+          "id": "OP15-078",
+          "count": 4
+        },
+        {
+          "id": "OP07-077",
+          "count": 2
+        }
+      ],
+      "event": "ChinoizeCup #124",
+      "format": "EB05",
+      "date": "2026-10-20",
+      "players": 128,
+      "eventType": "Unofficial Event",
+      "placement": 3,
+      "player": "ImAzire"
+    },
+    {
+      "leaderId": "OP09-042",
+      "leaderName": "Buggy",
+      "colors": [
+        "Blue"
+      ],
+      "results": 3,
+      "resultsNewestFormat": 3,
+      "cards": [
+        {
+          "id": "ST25-001",
+          "count": 3
+        },
+        {
+          "id": "EB05-021",
+          "count": 4
+        },
+        {
+          "id": "EB05-028",
+          "count": 2
+        },
+        {
+          "id": "OP12-049",
+          "count": 4
+        },
+        {
+          "id": "OP09-051",
+          "count": 4
+        },
+        {
+          "id": "ST25-002",
+          "count": 4
+        },
+        {
+          "id": "ST25-003",
+          "count": 4
+        },
+        {
+          "id": "OP09-048",
+          "count": 4
+        },
+        {
+          "id": "ST25-005",
+          "count": 4
+        },
+        {
+          "id": "OP16-056",
+          "count": 4
+        },
+        {
+          "id": "OP09-056",
+          "count": 4
+        },
+        {
+          "id": "OP09-057",
+          "count": 4
+        },
+        {
+          "id": "OP06-058",
+          "count": 1
+        },
+        {
+          "id": "OP16-058",
+          "count": 2
+        },
+        {
+          "id": "OP09-060",
+          "count": 2
+        }
+      ],
+      "event": "ChinoizeCup #127",
+      "format": "EB05",
+      "date": "2026-10-26",
+      "players": 64,
+      "eventType": "Unofficial Event",
+      "placement": 7,
+      "player": "Gringoloco"
+    }
+  ],
+  "skipped": []
+}
