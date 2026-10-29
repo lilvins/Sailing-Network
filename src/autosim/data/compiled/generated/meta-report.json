@@ -1,0 +1,274 @@
+{
+ "source": "src/autosim/__tests__/meta-report.test.ts (board-auto automationInfo over optcg-ai metaDecks)",
+ "deckCount": 29,
+ "copies": {
+  "automatic": 1479,
+  "total": 1479,
+  "pct": 100
+ },
+ "leadersAutomatic": 29,
+ "decksAt100": 29,
+ "decks": [
+  {
+   "name": "OP17-039 Rocks D. Xebec",
+   "leader": "OP17-039",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "ST30-001 Luffy & Ace",
+   "leader": "ST30-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP13-004 Sabo",
+   "leader": "OP13-004",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP17-079 Monkey D. Luffy",
+   "leader": "OP17-079",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP15-058 Enel",
+   "leader": "OP15-058",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP17-058 Kaido",
+   "leader": "OP17-058",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP05-098 Enel",
+   "leader": "OP05-098",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP17-020 Shanks",
+   "leader": "OP17-020",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP09-062 Nico Robin",
+   "leader": "OP09-062",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP08-058 Charlotte Pudding",
+   "leader": "OP08-058",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP14-041 Boa Hancock",
+   "leader": "OP14-041",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP12-061 Donquixote Rosinante",
+   "leader": "OP12-061",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP13-079 Imu",
+   "leader": "OP13-079",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP11-041 Nami",
+   "leader": "OP11-041",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP13-001 Monkey D. Luffy",
+   "leader": "OP13-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP16-001 Portgas D. Ace",
+   "leader": "OP16-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "EB04-001 Jewelry Bonney",
+   "leader": "EB04-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP08-098 Kalgara",
+   "leader": "OP08-098",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP11-001 Koby",
+   "leader": "OP11-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP13-002 Portgas D. Ace",
+   "leader": "OP13-002",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP14-080 Gecko Moria",
+   "leader": "OP14-080",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP16-022 Monkey D. Luffy",
+   "leader": "OP16-022",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP16-079 Yamato",
+   "leader": "OP16-079",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP17-001 Edward Newgate",
+   "leader": "OP17-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP17-099 Charlotte Linlin",
+   "leader": "OP17-099",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP15-001 Krieg",
+   "leader": "OP15-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "OP15-002 Lucy",
+   "leader": "OP15-002",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "ST10-002 Monkey D. Luffy",
+   "leader": "ST10-002",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  },
+  {
+   "name": "ST29-001 Monkey D. Luffy",
+   "leader": "ST29-001",
+   "leaderAutomatic": true,
+   "automatic": 51,
+   "total": 51,
+   "pct": 100,
+   "blockers": []
+  }
+ ]
+}

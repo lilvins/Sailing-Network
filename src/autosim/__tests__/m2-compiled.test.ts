@@ -7,6 +7,7 @@ import { allCompiledCards, coverage, getCompiledCard } from "../data/compiled";
 import { validateCompiledSet } from "../ir/validate";
 import type { Action, CompiledCard, Effect } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
+import { fitChoice } from "../engine/effects";
 import { emit, type GameEvent } from "../engine/events";
 import type { PlayerIntent } from "../engine/intents";
 import { legalMoves } from "../engine/legality";
@@ -101,7 +102,7 @@ describe("M2 batch: structure and lint", () => {
 // Action kinds the executor cannot auto-run yet (M4+: continuous/meta); the
 // M3 executor covers everything else, every cost kind, prev and ifThen.
 const NOT_AUTO = new Set<Action["kind"]>([
-  "setBasePower", "negateEffect", "redirectAttack", "endBattle", "addToLife", "chooseOne",
+  "setBasePower", "endBattle", "addToLife", "chooseOne",
 ]);
 function flatActions(actions: Action[]): Action[] {
   return actions.flatMap((a) => [
@@ -228,7 +229,7 @@ function drainChoices(db: CardDb, state: AutoGameState): AutoGameState {
     switch (pc.kind) {
       case "selectTargets": {
         const n = Math.min(pc.count, pc.candidates.length);
-        intent = { type: "respondTargets", player: pc.player, iids: pc.candidates.slice(0, n).map((c) => c.iid) };
+        intent = { type: "respondTargets", player: pc.player, iids: fitChoice(db, state, pc, pc.candidates.slice(0, n).map((c) => c.iid)) };
         break;
       }
       case "mayActivate": intent = { type: "respondMay", player: pc.player, activate: true }; break;
@@ -259,6 +260,9 @@ function drainChoices(db: CardDb, state: AutoGameState): AutoGameState {
         break;
       }
       case "chooseNumber": intent = { type: "respondNumber", player: pc.player, value: pc.max }; break;
+      case "chooseOption": intent = { type: "respondOption", player: pc.player, index: pc.enabled.indexOf(true) }; break;
+      case "mayReplace": intent = { type: "respondReplace", player: pc.player, use: true }; break;
+      case "arrangeLife": intent = { type: "respondArrangeLife", player: pc.player, order: pc.cards.slice(pc.toDeckTop), toDeck: pc.cards.slice(0, pc.toDeckTop) }; break;
       default: throw new Error(`unexpected choice in dry-run: ${pc.kind}`);
     }
     state = applyIntent(db, state, intent).state;
@@ -364,7 +368,7 @@ function playRealGame(seed: string, config: GameConfig): AutoGameState {
         case "selectTargets": {
           const n = Math.min(pc.count, pc.candidates.length);
           const take = pc.upTo ? Math.floor(rng() * (n + 1)) : n;
-          step({ type: "respondTargets", player: pc.player, iids: pc.candidates.slice(0, take).map((c) => c.iid) });
+          step({ type: "respondTargets", player: pc.player, iids: fitChoice(realDb, state, pc, pc.candidates.slice(0, take).map((c) => c.iid)) });
           break;
         }
         case "mayActivate": step({ type: "respondMay", player: pc.player, activate: rng() < 0.7 }); break;
@@ -394,6 +398,17 @@ function playRealGame(seed: string, config: GameConfig): AutoGameState {
           break;
         }
         case "chooseNumber": step({ type: "respondNumber", player: pc.player, value: Math.floor(rng() * (pc.max - pc.min + 1)) + pc.min }); break;
+        case "mayReplace": step({ type: "respondReplace", player: pc.player, use: rng() < 0.5 }); break;
+        case "arrangeLife": {
+          const shuffled = [...pc.cards].sort(() => rng() - 0.5);
+          step({ type: "respondArrangeLife", player: pc.player, order: shuffled.slice(pc.toDeckTop), toDeck: shuffled.slice(0, pc.toDeckTop) });
+          break;
+        }
+        case "chooseOption": {
+          const legal = pc.enabled.flatMap((ok, i) => (ok ? [i] : []));
+          step({ type: "respondOption", player: pc.player, index: legal[Math.floor(rng() * legal.length)] });
+          break;
+        }
       }
       continue;
     }

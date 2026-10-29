@@ -15,8 +15,8 @@
  * eligibility (conditions, costs, 8-1-3-1-3) is checked by the pump at
  * resolution time.
  */
-import type { Timing } from "../ir/types";
-import type { AutoGameState, CardDb, ExecState, FlowResume, Iid, PID, QueuedEffect } from "./state";
+import type { SelectorFilter, Timing } from "../ir/types";
+import { hasRestriction, isNegated, type AutoGameState, type CardDb, type ExecState, type FlowResume, type Iid, type PID, type QueuedEffect } from "./state";
 
 /** Get-or-create the exec bookkeeping. `flow` is only applied on creation —
  *  an in-progress resolution keeps its resumption point. */
@@ -30,19 +30,55 @@ export function ensureExec(state: AutoGameState, flow: FlowResume): ExecState {
  *  starts share the current generation (simultaneous fulfillment, 8-6-1). */
 export function enqueueAutoEffects(
   db: CardDb, state: AutoGameState, owner: PID, iid: Iid, timing: Timing,
-  opts?: { fromTrash?: boolean },
+  opts?: { fromTrash?: boolean; subject?: { owner: PID; iid: Iid } },
 ): void {
   const inst = state.players[owner].instances[iid];
   const compiled = db(inst.cardId).compiled;
-  if (!compiled) return;
+  if (!compiled || isNegated(state, owner, iid, db)) return; // M5: "negate the effect"
+  if (timing === "onPlay" && hasRestriction(db, state, owner, state.players[owner].leaderIid, "onPlaysNegated")) return; // M5
   const exec = ensureExec(state, { at: "none" });
   compiled.effects.forEach((fx, effectIndex) => {
     if (fx.timing !== timing) return;
     exec.queue.push({
       controller: owner, sourceIid: iid, sourceCardId: inst.cardId,
-      effectIndex, gen: exec.gen, fromTrash: opts?.fromTrash,
+      effectIndex, gen: exec.gen, fromTrash: opts?.fromTrash, ...(opts?.subject ? { subject: opts.subject } : {}),
     });
   });
+}
+
+/** M5 event timings: queue the effects of `iids` with `timing` whose `react`
+ *  filter accepts the event (how many cards; whose effect caused it — `by` is
+ *  the controller of the causing effect, undefined when no effect did). */
+export function enqueueReactions(
+  db: CardDb, state: AutoGameState, owner: PID, iids: Iid[], timing: Timing,
+  ctx: { count?: number; by?: PID; subjectOwner?: PID; accept?: (filter: SelectorFilter) => boolean;
+    subject?: { owner: PID; iid: Iid }; fromTrash?: boolean;
+    /** M5: the card whose effect caused the event matches */
+    acceptSource?: (filter: SelectorFilter) => boolean },
+  opts?: { fromTrash?: boolean },
+): void {
+  for (const iid of iids) {
+    const inst = state.players[owner].instances[iid];
+    const compiled = inst && db(inst.cardId).compiled;
+    if (!compiled || isNegated(state, owner, iid, db)) continue;
+    const exec = ensureExec(state, { at: "none" });
+    compiled.effects.forEach((fx, effectIndex) => {
+      if (fx.timing !== timing) return;
+      const r = fx.react ?? {};
+      if (r.minCount !== undefined && (ctx.count ?? 0) < r.minCount) return;
+      if (r.byEffect && ctx.by === undefined) return;
+      if (r.by === "you" && ctx.by !== owner) return;
+      if (r.by === "opponent" && (ctx.by === undefined || ctx.by === owner)) return;
+      if (r.whose === "yours" && ctx.subjectOwner !== owner) return;
+      if (r.whose === "opponents" && ctx.subjectOwner === owner) return;
+      const srcOk = (f: SelectorFilter) => ctx.acceptSource?.(f) ?? false;
+      if (r.filter && !(ctx.accept?.(r.filter) ?? false) && !(r.orSourceFilter && srcOk(r.orSourceFilter))) return;
+      if (r.sourceFilter && !srcOk(r.sourceFilter)) return;
+      if (r.fromTrash && !ctx.fromTrash) return;
+      exec.queue.push({ controller: owner, sourceIid: iid, sourceCardId: inst.cardId, effectIndex, gen: exec.gen, fromTrash: opts?.fromTrash,
+        ...(ctx.subject ? { subject: ctx.subject } : {}) });
+    });
+  }
 }
 
 /** Pop the next effect to resolve per 8-6-1: lowest generation first; within

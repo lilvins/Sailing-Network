@@ -61,6 +61,8 @@ export function fmtEvent(
       return { text: `${seatName(e.player)} uses ${n(e.iid)}${e.donRested ? ` (−${e.donRested} DON!!)` : ""}.`, kind: "effect" };
     case "donGiven":
       return { text: `${seatName(e.player)} gives 1 DON!! to ${n(e.targetIid)}.`, kind: "system" };
+    case "donUngiven":
+      return { text: `${seatName(e.player)} returns ${Object.values(e.from).reduce((s, k) => s + k, 0)} given DON!! to the cost area, rested.`, kind: "effect" };
     case "attackDeclared":
       return { text: `${n(e.attackerIid)} attacks ${n(e.targetIid)}!`, kind: "battle" };
     case "attackStepEnded":
@@ -102,7 +104,7 @@ export function fmtEvent(
     case "cardStood":
       return { text: `${n(e.iid)} stands.`, kind: "effect" };
     case "cardsDiscarded":
-      return { text: `${seatName(e.player)} discards ${e.iids.map(n).join(", ")}.`, kind: "effect" };
+      return { text: `${seatName(e.player)} discards ${e.iids.map((iid) => n(iid)).join(", ")}.`, kind: "effect" };
     case "manualResolved":
       return { text: `${seatName(e.player)} resolves ${n(e.sourceIid)} manually.`, kind: "effect" };
     // M3 — tier-2 executor
@@ -123,6 +125,30 @@ export function fmtEvent(
       return { text: `${n(e.iid)} returns to ${seatName(e.player)}'s hand.`, kind: "effect" };
     case "returnedToDeck":
       return { text: `${seatName(e.player)} puts ${n(e.iid)} ${e.where === "top" ? "on top of" : "at the bottom of"} their deck (from ${e.from}).`, kind: "effect" };
+    case "addedToLife":
+      return { text: `${seatName(e.player)} adds ${e.from === "deck" ? "the top card of their deck" : n(e.iid)} to the ${e.where} of their Life${e.faceUp ? " face-up" : ""}.`, kind: "effect" };
+    case "lifeFlipped":
+      return { text: `${seatName(e.player)} turns ${e.iids.length} Life card${e.iids.length === 1 ? "" : "s"} face-${e.faceUp ? "up" : "down"}.`, kind: "effect" };
+    case "donRestedByEffect":
+      return { text: `${seatName(e.player)} rests ${e.count} DON!! (effect).`, kind: "effect" };
+    case "lifeTopToBottom":
+      return { text: `${seatName(e.player)}'s top Life card goes to the bottom of their Life.`, kind: "effect" };
+    case "lifePeeked":
+      return { text: `${seatName(e.player)} looks at the top Life card of ${seatName(e.owner)}.`, kind: "effect" };
+    case "endOfTurnScheduled":
+      return { text: `${seatName(e.player)}: an effect will resolve at the end of this turn.`, kind: "effect" };
+    case "cardsRevealed":
+      return { text: `${seatName(e.player)} reveals ${e.iids.map((iid) => n(iid)).join(", ")}.`, kind: "effect" };
+    case "attackRedirected":
+      return { text: `The attack now targets ${n(e.targetIid)}.`, kind: "effect" };
+    case "extraTurnGranted":
+      return { text: `${seatName(e.player)} will take an extra turn after this one.`, kind: "effect" };
+    case "startOfGameStage":
+      return { text: `${seatName(e.player)} plays ${n(e.iid)} from their deck (Leader rule, start of the game).`, kind: "effect" };
+    case "lifeArranged":
+      return { text: `${seatName(e.player)}'s Life cards are placed back in a chosen order.`, kind: "effect" };
+    case "costDeclared":
+      return { text: `${seatName(e.player)} chooses the cost ${e.value}.`, kind: "effect" };
     case "milled":
       return { text: `${seatName(e.player)} trashes ${e.iids.length} card${e.iids.length === 1 ? "" : "s"} from the top of their deck.`, kind: "effect" };
     case "trashToHand":

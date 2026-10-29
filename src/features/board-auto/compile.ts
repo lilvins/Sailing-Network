@@ -206,7 +206,12 @@ export function deriveCompiled(card: Card): CompiledCard | null {
 /** The IR for a card: official batch first, then the batch generated from
  *  optcg-ai, then the heuristic fallback. */
 export function compiledFor(card: Card): CompiledCard | undefined {
-  return getCompiledCard(card.id) ?? getGeneratedCard(card.id) ?? deriveCompiled(card) ?? undefined;
+  const official = getCompiledCard(card.id);
+  const generated = getGeneratedCard(card.id);
+  // M5: the M2 batch left a few effects to "resolve manually"; a generated IR that runs them wins
+  const manual = (c: CompiledCard) => JSON.stringify(c.effects).includes('"kind":"manual"');
+  if (official && generated && manual(official) && !manual(generated)) return generated;
+  return official ?? generated ?? deriveCompiled(card) ?? undefined;
 }
 
 // ─── automation transparency (an effect that doesn't run must SAY so) ────────
@@ -218,6 +223,11 @@ const ENGINE_RUNNABLE_TIMINGS = new Set<string>([
   "onPlay", "whenAttacking", "onKO", "onBlock", "counter", "trigger", "main", "onYourOpponentsAttack",
   "activateMain", "endOfYourTurn", "endOfOpponentsTurn", "endOfBattle",
   "onYouActivateEvent", "onOpponentActivatesEvent", "onOpponentCharacterKOd",
+  "delayed", // M5: runs when its card schedules it
+  "whenAttacked", "onYourDonReturned", "onKOByEffect", "onRested", "onDealDamage", "onLifeZero", // M5 event timings
+  "onCharacterKOd", "onCharacterRemoved", "onCharacterRestedBy", "onYouPlayCharacter", "onHandTrashed",
+  "replacement", // M5: "… instead" (8-1-3-4)
+  "onLeaderAttacks", "onLeaderAttacked", "onTakeDamage", "onLifeRemoved", "onOpponentBlocks", "afterBattleWithCharacter", "onDonGiven", "onDrawOutsideDrawPhase", "onLifeToHand", "onYouDealDamage", "onTriggerActivated", "onKOInBattle", "onDonPhase", "onCharacterBounced", "onBattlesCharacter", "startOfYourTurn", "startOfOpponentsTurn", // M5
 ]);
 
 const TIMING_LABEL: Record<string, string> = {
@@ -259,7 +269,11 @@ export function automationInfo(card: Card): AutomationInfo {
   if (hit) return hit;
   const fromBatch = getCompiledCard(card.id) !== undefined || getGeneratedCard(card.id) !== undefined;
   const effects = compiledFor(card)?.effects ?? [];
-  const manual = effects.some((fx) => JSON.stringify(fx.actions).includes('"kind":"manual"'));
+  // "manual" actions, and the few kinds the engine still hands to the "resolve manually" panel (effects.ts planAction)
+  const manual = effects.some((fx) => {
+    const s = JSON.stringify(fx.actions);
+    return s.includes('"kind":"manual"') || s.includes('"kind":"endBattle"') || s.includes('"zone":"revealed"');
+  });
   // M4: a `static` effect made only of continuous power/cost/keyword/restriction
   // changes runs (engine/continuous.ts); other statics are still inert
   const inertTimings = [...new Set(effects.filter((fx) => !isAutomaticStatic(fx)).map((fx) => fx.timing).filter((t) => !ENGINE_RUNNABLE_TIMINGS.has(t)))];
@@ -311,7 +325,9 @@ export function makeCardDb(cardsById: Map<string, Card>): CardDb {
       colors: card.colors,
       types: card.types,
       name: card.name,
+      attributes: card.attributes,
       compiled: compiledFor(card),
+      hasEffect: !!card.effect && card.effect.trim() !== "" && card.effect.trim() !== "-",
     };
     cache.set(cardId, engineCard);
     return engineCard;

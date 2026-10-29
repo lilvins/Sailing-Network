@@ -778,6 +778,262 @@ ricompilazione ST01+OP01 al 94.2% IR-complete).** Scelte fatte:
     Restano ~320 static manual: Immune*/FieldCostChange/Passive1KPerX/
     OpponentCanOnlyAttack…/FieldRush (passive optcg-ai senza IR).
 
+55. Condizioni generali (M5, tappa 2): `compare` (Quantity vs Quantity o
+    numero: vite, mano, mazzo, cimitero, personaggi, DON in campo / dati /
+    attivi / riposati, carte riposate; `who: both` = somma), `anyOf`,
+    `selfMatches` (questa carta in campo), `ownTurnAtLeast` (turni propri, 6-1).
+56. Filtri: il costo "N o meno" legge il costo CORRENTE in campo (in mano /
+    cimitero lo stampato; il Leader mai: il suo slot costo è la vita);
+    `baseCost*` / `basePower*` leggono lo stampato; `attributes`,
+    `colorCountAtLeast/AtMost`, `typeExcludes`, `hasTrigger`, `playedThisTurn`.
+57. Compilatore: le chiavi nuove stanno in `compiler/extraConditions.ts`.
+    optcg-ai usa una chiave sola per "there is / you have / your opponent has
+    a Character with …": decide il testo stampato; se è ambiguo → a mano.
+58. Misure: carte senza avvertenza in board-auto 1797 → 1997 (su 2850);
+    effetti "a mano" nel generato 1163 → 920. Test `m5-conditions.test.ts` (7).
+
+59. Costi (M5, tappa 4): nuovo `CostItem` `{ kind: "action"; action }`: un
+    costo è un'azione normale fatta per intero (tutti i bersagli obbligatori,
+    mai "fino a"; 8-3-1-3: se non si può pagare tutto, l'abilità non si
+    attiva). Copre K.O. / cestina / metti in fondo un tuo personaggio,
+    "metti N carte dal cimitero in fondo al mazzo", mill, rivela dalla mano,
+    dai DON attivi, "dai al tuo Leader −5000". I costi M2/M3 restano com'erano.
+60. Azioni nuove: `trashTarget` (campo → cimitero, NON è un K.O.: niente
+    [On K.O.]), `reveal` (solo log), `giveActiveDon`; `returnToDeck` ora
+    anche da mano e cimitero.
+61. Compilatore: un passo `NoCancel` dopo i costi è il payoff (optcgwebsim non
+    lascia annullare dopo aver pagato), quindi la lettura del costo si ferma
+    lì. "… in any order" (Choices di ordinamenti) paga l'ordine elencato per
+    primo. "Choose one:" non è un costo.
+62. Misure: carte senza avvertenza in board-auto 1997 → 2121; costi non
+    esprimibili 180 → 40 effetti. Restano le **alternative di costo** ("scarta
+    1 carta o riposa 1 DON", Shanks OP17-020): richiedono una scelta del
+    giocatore, si fanno con `chooseOne` (tappa 3).
+
+63. "Scegli uno" (M5, tappa 3): `chooseOne` ora si esegue. Il motore chiede
+    `chooseOption` (etichette = i "•" stampati, abbinati al ramo giusto anche
+    se optcg-ai li elenca in un altro ordine; altrimenti il testo del
+    bottone), risposta `respondOption`. Si può scegliere anche un'opzione
+    che ora non farebbe nulla (8-1-2).
+64. Alternative di costo: `CostItem` `oneOf` ("scarta 1 carta o riposa 1
+    DON!!:"). Pagabile se lo è almeno un'opzione; se una sola è pagabile si
+    paga senza chiedere; altrimenti `chooseOption` con `purpose: "cost"` e le
+    opzioni non pagabili disabilitate.
+65. "Non diventerà attivo nella prossima Refresh Phase" (Freeze): restrizione
+    `skipNextRefresh` con durata nuova `untilOwnersNextRefresh`: la Refresh
+    Phase del proprietario (6-2-4) la legge, lascia la carta riposata e la
+    consuma. Vale per carte avversarie e proprie.
+66. Tabellone meta (tappa 1): `__tests__/meta-report.test.ts` scrive
+    `generated/meta-report.json` (con `npm run compile:optcg`): per ognuno dei
+    29 mazzi meta di optcg-ai le copie automatiche e le carte che bloccano.
+    Il test fallisce se un mazzo perde copie automatiche. Oggi: 71,7% delle
+    copie, 12/29 Leader automatici.
+
+67. Condizioni (2° giro): lato avversario ("se il tuo avversario ha un
+    personaggio con 8000 power / base ≥ X"), mazzo ≤ X, nessun DON attivo,
+    "0 o N+ DON" (OrDonIsZero). Sotto ForceOpponent una condizione si legge
+    come scritta e poi si scambiano i lati (`flipSides`); i tipi che non
+    nominano un lato restano a mano.
+68. Vite a faccia in su (M5): `AutoInstance.faceUp` (solo vite; si imposta
+    quando la carta entra nelle vite). Azioni `addToLife` (dalla cima del
+    mazzo — "fino a N" chiede quanti, `chooseNumber` purpose `life` —, dal
+    campo o dalla mano, in cima o in fondo, a faccia in su) e `flipLife`
+    (anche come costo: non pagabile se la carta è già girata). Condizioni
+    `lifeTop` e filtro `faceUp` sulle vite. board-auto mostra le vite girate.
+69. `npm run compile:optcg` ora gira in 3 passi: compila, poi il tabellone
+    meta (legge il NUOVO optcg.json), poi i controlli. Prima il tabellone
+    restava indietro di una compilazione.
+70. Misure: effetti a mano nel generato 787 → 681; tabellone meta 72,6% →
+    74,1% delle copie, 13/29 Leader.
+
+### M5 — coda lunga (2026-10-28, dopo il punto 70)
+
+71. Bersagli: filtri su costo/power **stampati** (`baseCost*`, `basePower*`),
+    attributi, numero di colori, `typeExcludes`, `hasTrigger`,
+    `playedThisTurn`, `faceUp`, `costAtMostQ` dinamico (solo se il testo
+    stampato lo dice), `donGivenAtLeast`, `noBaseEffect`, `hasTiming` /
+    `lacksTiming`, filtro `or` (NameOverrides, ColoredEventOverrides,
+    StrikeTypeOverrides). Vincoli d'insieme sulla scelta: `totalCostAtMost`,
+    `totalPowerAtMost`, `distinctNames` (`fitChoice` / `satisfiesSet`). Zone
+    nuove: `leaderOrStage`, `characterOrStage`, `field`, `life`, `deckTop`,
+    `lifeTop`.
+72. **Bersagli alternativi** (`targetOverrides` di optcg-ai, "X o Y"): prima
+    venivano ignorati in silenzio (il bersaglio era solo X — un errore). Ora
+    il compilatore li legge (`OrTarget` sul target): unione delle zone e
+    filtro `or`, con la categoria di ciascun lato. Alternative con DON!! o con
+    la mano diventano costi `oneOf`; il resto va a mano.
+73. Effetti: `setBasePower` (modificatore `basePower`, anche statico: il
+    filtro legge il valore stampato per non oscillare), `scheduleEndOfTurn`
+    (timing `delayed`, coda in `state.scheduled` via evento
+    `scheduledQueued`), restrizioni nuove (non può essere riposato, salta la
+    prossima Refresh, non puoi giocare Personaggi, immunità "dagli effetti
+    dell'avversario"), `select` ("seleziona fino a 1 …"), `restDon`,
+    `lifeTopToBottom`, `peekLife`, `flipLife`, `addToLife` da mazzo / campo /
+    mano / cimitero.
+74. Continui (statici): costo in mano, immunità, base power del campo, costi
+    del campo propri/avversari, keyword al campo, "+1000 per ogni …"
+    (`scale` con `Quantity`), immunità in battaglia per attributo. Uno
+    statico con selettore "questa carta in mano" lavora dalla mano
+    (`worksFrom`).
+75. Timing a evento (con `Effect.react`): DON!! restituiti (quanti, di chi),
+    K.O. da effetto (dell'avversario), diventa riposato, l'attacco infligge
+    danno, Life a 0, quando è attaccato; e "osservatori": un tuo / un
+    personaggio è K.O., è rimosso, è riposato da un tuo effetto, giochi un
+    Personaggio, una carta della mano è scartata da un effetto.
+76. **Sostituzioni** (8-1-3-4): timing `replacement`, `Effect.replaces`
+    (eventi, se stesso / alleato, filtro, solo dall'avversario); il costo è
+    l'"invece". Prima della rimozione il motore chiede al proprietario
+    (`mayReplace` / `respondReplace`); anche per il K.O. in battaglia.
+
+77. **"Then, you may X. If you do, Y"** a metà abilità: azione `mayPay` (costo
+    + seguito). Si offre solo se il costo è pagabile per intero; pagarlo esegue
+    il seguito. Il testo stampato vince: un pagamento che la frase non nomina
+    (OP11-035: i dati aggiungono "scarta 1") viene tolto, con nota.
+78. "If you do," dopo un'azione "fino a": condizione `hadTargets` (l'azione
+    prima ha scelto almeno una carta). Se prima non c'è un'azione con
+    bersagli nella stessa sequenza, resta l'approssimazione dichiarata.
+    Vite: dal fondo (`bottom`), e "dalla cima o dal fondo" diventa una scelta
+    `oneOf` del pagatore.
+79. Costi: "riposa il Leader o 1 DON!!", "restituisci 1 o più DON!!" (una
+    opzione per quantità), ③ scritto dentro il passo del payoff, costo e
+    payoff nello stesso passo ("You may rest this Character: Draw 1"),
+    "Annulla / Fai" come "you may", "rest this + metti 2 dal cimitero in
+    fondo", "scarta un Personaggio o 1 carta dalla mano", Stage di
+    qualunque giocatore nel mazzo ("the owner's deck").
+80. Azioni: mischia il mazzo, mano nel mazzo e ripesca, "trash this card",
+    base power uguale a un'altra carta (`amountFromPrev`), "non puoi
+    aggiungere vite alla mano / pescare con i tuoi effetti" (restrizioni sul
+    Leader), carta in cima al mazzo in fondo, "scegli un costo" (`declareCost`
+    + condizione `deckTopCostDeclared`), attiva il [Main] di un Evento dalla
+    mano o dal cimitero (`activateEvent`, effetto annidato come le
+    sostituzioni), riordina le vite (`arrangeLife`, scelta nuova con UI),
+    vinci la partita, turno extra (`takeExtraTurn`; i turni propri si
+    contano con `state.extraTurns`), sconto sulla prossima giocata
+    (`nextPlayDiscount`, modificatore `playDiscount` consumato dalla
+    giocata), riposa quanti DON!! vuoi (+N per ognuno: `lastCount`), vite
+    fino a N, danno da effetto (`dealDamage`: come in battaglia, con
+    [Trigger] e sconfitta a 0 vite), congela DON!! avversari (`freezeDon`),
+    rivela la vita in cima (giocala / +1000 per il suo costo).
+81. "Il tuo avversario sceglie uno:": `chooseOne.chooser = "opponent"`. Un
+    ForceOpponent dentro un ramo di una scelta non passa al ramo dopo.
+82. Counter in mano: azione statica `setCounter` (modificatore `counter`,
+    `effectiveCounter` usato dalla finestra counter e dalle mosse legali) e
+    filtro `counter: "none" | "some"`.
+83. Nuovi timing: il tuo Leader attacca / è attaccato, prendi danno, una
+    carta è rimossa dalle vite (di chiunque: da `emitLife`), l'avversario
+    attiva [Blocker], Personaggio giocato dal cimitero ("that Character": la
+    coda porta il `subject`, che diventa il primo bersaglio precedente).
+    "Passive" accanto a un timing è solo un'etichetta.
+84. Attacchi: `cannotBeAttacked` era dichiarato ma non applicato; ora
+    `attackTargetAllowed` lo applica insieme al richiamo "l'avversario non
+    può attaccare altre carte che [questo Personaggio]".
+85. **Regole stampate** (`CompiledCard.rules`, dal testo): copie illimitate,
+    "considera anche il nome [X]", mazzo DON!! del Leader, carte vietate /
+    solo un tipo, Stage a inizio partita (approssimazione dichiarata: la
+    prima del mazzo), vittoria a mazzo vuoto. `createGame` le applica.
+86. DON!! dell'avversario: dare DON!! usa sempre il pool del proprietario
+    della carta bersaglio (Krieg); importi "per ogni DON!! dato" e "per ogni
+    nome diverso".
+87. Il type-check usato fin qui (`tsc -p .`) non controllava niente
+    (`tsconfig.json` ha `files: []`): si usa `tsc -p tsconfig.app.json`.
+    Ha trovato tipi mancanti, corretti.
+88. Misure: carte senza avvertenza in board-auto **2574 → 2691** su 2850;
+    tabellone meta **74,1% → 100%** delle copie, **29/29** mazzi interi
+    automatici; 174 partite meta casuali senza errori.
+
+### M5 — coda lunga, seconda parte (2026-10-28 notte)
+
+89. **`negateEffect` e `redirectAttack` non giravano**: il motore li passava
+    in silenzio al pannello "risolvi a mano" mentre board-auto diceva
+    "automatico" (18 carte). Ora: la negazione è una restrizione
+    `effectsNegated` sulla carta (niente effetti in coda, niente
+    [Activate: Main], niente static, niente keyword proprie); il cambio di
+    bersaglio è l'evento `attackRedirected`. board-auto segnala come
+    manuali anche `endBattle` e il gioco da carta rivelata.
+90. **Negazione statica** (Roger OP13-064): letta da `isNegated` sui tipi
+    della carta, senza passare dagli altri effetti continui (niente ricorsione).
+91. **Effetti "all'inizio del tuo turno"** (6-2-1): risolti prima di
+    Refresh / Pesca / DON!!; il flusso riprende con `toRefresh`. Nuovo timing
+    dopo la Fase DON!! (OP13-003).
+92. **Timing nuovi**: peschi fuori dalla Fase Pesca, una vita va in mano,
+    infliggi danno (anche da effetto), una vita dell'avversario viene rimossa
+    (`react.whose`), si attiva un [Trigger], K.O. in battaglia, l'avversario
+    gioca un Personaggio, un Personaggio avversario torna in mano per tuo
+    effetto, un tuo Personaggio con [X] è K.O., il Leader attacca il Leader
+    (condizione `attackingLeader` sul [When Attacking]).
+93. **Restrizioni nuove**: niente Refresh (statica, entrambi i giocatori),
+    Personaggi giocati riposati, non puoi attaccare Leader nel turno, non
+    puoi giocare carte dalla mano (gli Eventi si attivano, non si giocano:
+    restano usabili), [On Play] negati, "non può essere giocata da effetti",
+    "non può attaccare" statico.
+94. **Un passo "Choices" con condizione e senza Required**: se la condizione
+    manca, optcg-ai salta il passo e prosegue col passo dopo. Prima il
+    compilatore lo leggeva come "niente"; ora è l'`else` (OP04-040: pesca 1
+    se non hai il Personaggio da 8; OP08-057: resta l'opzione −2 costo).
+95. **"L'avversario pesca"** sotto ForceOpponent pescava il controllore
+    (OP06-047, OP07-090): `draw.who` = "opponent".
+96. **Due scelte in un passo** ("K.O. fino a 1 con ≤4000 e fino a 1 con
+    ≤3000"): due K.O. uno dopo l'altro (approssimazione dichiarata). "Se hai
+    un Personaggio da 8, puoi scegliere ≤6 invece": `ifThen` / `else`.
+97. **Quantità e condizioni**: vite+mano, costo totale dei Personaggi,
+    carta macinata ("se la carta scartata ha costo ≥6"), cose successe nel
+    turno (`happenedThisTurn`: K.O. di un Personaggio, carta scartata dalla
+    mano per effetto), `allOf`, filtri "costo = DON!! dati", "senza [Blocker]".
+98. **Approssimazioni dichiarate nuove**: "non può essere riposato da effetti
+    di Leader e Personaggi" copre anche Eventi/Stage (OP15-024); "base power
+    uguale al Leader" usa quella stampata (OP14-053); un [Once Per Turn] con
+    due timing conta separato anche su OP11-102.
+99. Misure (a metà notte): carte senza avvertenza **2691 → 2782** su 2850.
+
+### M5 — coda lunga, fine (2026-10-28 notte)
+
+100. **IR scritto dal testo stampato** (`compiler/textIr.ts`): per 36 carte i
+     passi optcg-ai non si traducono (dati di un'altra carta, costo scritto
+     come passi del seguito, scelta nascosta filtrata, nessun dato). Ogni voce
+     ha il testo esatto da cui è scritta: se il testo del catalogo cambia, la
+     voce non si applica più. Nota sulla carta: "IR written from the printed text".
+101. **Il testo vince anche sul proprietario**: "metti / riporta 1 Personaggio
+     … nel mazzo / in mano del proprietario" senza "avversario" nel testo =
+     Personaggio di qualunque giocatore; "Leader o Personaggio" nel testo
+     allarga il bersaglio quando i dati hanno solo il Personaggio.
+102. **Sostituzioni nuove**: scelta vita sopra/sotto, alleato con nome,
+     "aggiungilo alle vite", immunità una volta per turno, immunità statica
+     alla rimozione, −1000 al posto del K.O., riposo ("would be rested"),
+     danno ("If you would take damage", solo danno in battaglia —
+     approssimazione dichiarata), sostituzione concessa da un Evento per il
+     turno (`grantsReplacement`). Il pagamento può usare "la carta protetta"
+     (`lastTargets` = la carta protetta).
+103. **Timing nuovi**: un Personaggio avversario torna in mano per tuo
+     effetto, un tuo Personaggio con [X] è K.O., il Personaggio combatte un
+     Personaggio (`onBattlesCharacter`), filtri sulla carta che causa
+     l'evento (`react.sourceFilter`: "dall'effetto di una tua carta {Navy}";
+     `orSourceFilter`: "giocato con l'effetto di un Personaggio"). Il
+     soggetto dell'evento vale anche per le condizioni di attivazione.
+104. **Restrizioni nuove**: immunità al K.O. secondo la carta sorgente
+     ("di Personaggi senza <Special>", "di Personaggi avversari con ≤5000"),
+     immunità in battaglia "eccetto attributi", attributo guadagnato, Leader
+     che non può attaccare Personaggi di costo base ≤N, fondo del mazzo a
+     fine battaglia, riposa DON!! all'inizio della Main Phase avversaria,
+     tassa d'attacco (scarta 2 per attaccare), vite a faccia in su nel mazzo
+     invece che in mano (danno).
+105. **Regola stampata**: "perdi alla fine del turno in cui il mazzo arriva a
+     0" (OP15-022).
+106. **Viste**: "scarta fino a N" tra le carte guardate; la carta giocata da
+     una vista diventa "quel Personaggio".
+107. **"Fino a N" DON!!** ("aggiungi fino a 1 DON!!", "imposta attivi fino a N
+     DON!!"): ora è una scelta del giocatore (`chooseNumber`), non più "sempre
+     il massimo". Carte con approssimazioni dichiarate: **255 → 96**.
+108. board-auto: se il batch M2 (scritto a mano) lascia un effetto "a mano" e
+     il batch generato lo esegue, vince il generato (OP01-002, OP01-063,
+     OP01-105).
+109. Errore corretto: le scelte "fino a N" DON!! erano pianificate dopo la
+     scorciatoia "azione senza bersaglio", quindi restavano "sempre il
+     massimo" — il test nuovo l'ha trovato.
+110. Misure finali: carte senza avvertenza **2850 / 2850**; mazzi meta
+     **1479/1479**, 29/29; 174 partite meta senza errori; 489 test; build ok.
+     "Senza avvertenza" non vuol dire "giusto": 96 carte hanno
+     un'approssimazione dichiarata, da rivedere nella tappa 8.
+
 Debiti M4+: static non coperti sopra (immunità, costo in mano, +X per ogni …,
 rush a tutto il campo), replacement/negate (8-1-3-4, 8-2),
 setBasePower/redirectAttack/endBattle/addToLife/chooseOne, reveal della mano

@@ -899,6 +899,16 @@
 .ba-ovtext { margin: 0; font: 500 12px/1.5 var(--serif); color: var(--ivory); white-space: pre-wrap; max-width: 40ch; }
 .ba-ovnote { margin: 0; font: 500 11px/1.45 var(--serif); color: var(--ivory-muted); max-width: 42ch; }
 .ba-ovbtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+/* replacement prompt: the card's printed text, smaller */
+.ba-ovsmall { font-size: 0.82em; opacity: 0.8; max-width: 46ch; }
+/* "Choose one": options are sentences — stack them, left-aligned */
+.ba-options { flex-direction: column; align-items: stretch; max-width: 46ch; }
+.ba-options .ba-btn { text-align: left; white-space: normal; line-height: 1.3; }
+/* face-up Life card (M5): its art, with a thin accent so it reads as "public" */
+.ba-lifeup { outline: 2px solid var(--lc, #c9a227); outline-offset: -2px; }
+.ba-lifeup img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ba-lifeupname { font-size: 11px; padding: 4px; display: block; }
+.ba-options .ba-btn:disabled { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
 
 /* the pre-game screens (deck pick, roll) are ordinary pages and may collapse;
    the stage itself never changes layout */

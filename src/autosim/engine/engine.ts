@@ -11,19 +11,20 @@
  */
 import {
   afterBlockResolved, beginEffect, declareAttack, enqueueEventActivationReactions,
-  pump, resolveManual, resolveMay, resolveNumber, resolvePayDon, resolvePeek,
-  resolveTargets, resolveTriggerDecision, shuffleDeck, startActivateMain,
+  pump, resolveManual, resolveMay, resolveNumber, resolveOption, resolveReplace, resolvePayDon, resolvePeek,
+  resolveArrangeLife, resolveTargets, resolveTriggerDecision, shuffleDeck, startActivateMain,
   startDamageStep, startEndPhase, startOnPlayEffects, startTurn,
   useCounterEventCard,
 } from "./battle";
-import { canPayCost, conditionsMet } from "./effects";
+import { canPayCost, conditionsMet, playLocked, satisfiesSet, watchers } from "./effects";
 import { emit, type GameEvent } from "./events";
 import { EngineError, type PlayerIntent } from "./intents";
 import {
-  effectiveCost, opponentOf,
-  type AutoGameState, type AutoPlayerState, type CardDb, type Iid, type PID,
+  effectiveCost, effectiveCounter, hasRestriction, isNegated, opponentOf, playDiscountFor,
+  type AutoGameState, type AutoPlayerState, type CardDb, type EngineCard, type Iid, type PID,
 } from "./state";
-import { ensureExec } from "./triggers";
+import type { SelectorFilter } from "../ir/types";
+import { enqueueAutoEffects, ensureExec } from "./triggers";
 
 export interface GameConfig {
   seed: string;
@@ -85,10 +86,15 @@ export function createGame(db: CardDb, config: GameConfig): EngineResult {
     const leaderColors = new Set(leaderCard.colors);
     const copies = new Map<string, number>();
     for (const cardId of pc.deck) copies.set(cardId, (copies.get(cardId) ?? 0) + 1);
+    const leaderRules = leaderCard.compiled?.rules ?? {};
     for (const [cardId, n] of copies) {
-      // 5-1-2-3 / 2-14-2: no more than 4 cards with the same card number
-      if (n > 4) throw new EngineError(`${pc.id}: ${n} copies of ${cardId} (max 4, 5-1-2-3)`);
       const card = db(cardId);
+      // 5-1-2-3 / 2-14-2: no more than 4 cards with the same card number
+      // ("you may have any number of this card in your deck": M5)
+      if (n > 4 && !card.compiled?.rules?.anyCopies) throw new EngineError(`${pc.id}: ${n} copies of ${cardId} (max 4, 5-1-2-3)`);
+      // Leader deck rules ("Under the rules of this game …", M5)
+      if (leaderRules.deckBan && deckRuleMatch(card, leaderRules.deckBan)) throw new EngineError(`${pc.id}: ${cardId} is not allowed by the Leader's rule`);
+      if (leaderRules.deckOnly && !deckRuleMatch(card, leaderRules.deckOnly)) throw new EngineError(`${pc.id}: ${cardId} is not allowed by the Leader's rule`);
       // 5-1-2-1: main deck holds Character/Event/Stage cards only
       if (card.category === "Leader") throw new EngineError(`${pc.id}: ${cardId} is a Leader — not a deck card (5-1-2-1)`);
       // 5-1-2-2: only colors included on the Leader card
@@ -101,8 +107,10 @@ export function createGame(db: CardDb, config: GameConfig): EngineResult {
       leaderIid: `${seat}#L`,
       zones: { deck: [], hand: [], trash: [], life: [], characterArea: [], stage: [] },
       instances: {},
-      don: { deck: 10, active: 0, rested: 0, given: {} }, // 5-1-2: 10-card DON!! deck
+      don: { deck: leaderRules.donDeck ?? 10, active: 0, rested: 0, given: {} }, // 5-1-2: 10-card DON!! deck (a Leader rule may change it, M5)
       mulliganResolved: false,
+      ...(leaderRules.winsOnDeckOut ? { deckOutWins: true } : {}),
+      ...(leaderRules.deckOutLosesAtEndOfTurn ? { deckOutAtEnd: true } : {}),
     };
     p.instances[p.leaderIid] = { iid: p.leaderIid, cardId: pc.leader, rested: false };
     pc.deck.forEach((cardId, i) => {
@@ -135,6 +143,13 @@ export function createGame(db: CardDb, config: GameConfig): EngineResult {
 
   const log: GameEvent[] = [];
   emit(state, log, { type: "gameStarted", seed: config.seed, order });
+  // "at the start of the game, play up to 1 {X} type Stage card from your deck" (Leader rule, M5)
+  for (const pid of order) {
+    const p = state.players[pid];
+    const rule = db(p.instances[p.leaderIid].cardId).compiled?.rules?.startOfGamePlay;
+    const pick = rule && p.zones.deck.find((iid) => deckRuleMatch(db(p.instances[iid].cardId), rule));
+    if (pick) emit(state, log, { type: "startOfGameStage", player: pid, iid: pick });
+  }
   // 5-2-1-2: shuffle; 5-2-1-6: draw 5 each, then mulligans starting with first
   for (const pid of order) {
     shuffleDeck(state, log, pid);
@@ -145,6 +160,15 @@ export function createGame(db: CardDb, config: GameConfig): EngineResult {
   return { state, events: log };
 }
 
+/** A deck-construction rule filter, on the printed card (M5). */
+function deckRuleMatch(card: EngineCard, f: SelectorFilter): boolean {
+  if (f.category && !f.category.includes(card.category)) return false;
+  if (f.typeIncludes && !f.typeIncludes.some((t) => card.types.includes(t))) return false;
+  if (f.costAtLeast !== undefined && (card.cost ?? 0) < f.costAtLeast) return false;
+  if (f.costAtMost !== undefined && (card.cost ?? 0) > f.costAtMost) return false;
+  return true;
+}
+
 /** After both mulligans: deal Life (5-2-1-7) and start the first turn. */
 function finishSetup(db: CardDb, state: AutoGameState, log: GameEvent[]): void {
   for (const pid of state.order) {
@@ -152,7 +176,8 @@ function finishSetup(db: CardDb, state: AutoGameState, log: GameEvent[]): void {
     const lifeValue = db(p.instances[p.leaderIid].cardId).cost ?? 0; // Leader cost = Life (local DB quirk)
     emit(state, log, { type: "lifeDealt", player: pid, iids: p.zones.deck.slice(0, lifeValue) });
   }
-  startTurn(state, log, state.order[0], 1);
+  startTurn(db, state, log, state.order[0], 1);
+  if (state.exec) pump(db, state, log); // M5: start-of-turn / DON!! Phase effects
 }
 
 // ─── intent handling ─────────────────────────────────────────────────────────
@@ -195,8 +220,13 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       const card = db(p.instances[intent.iid].cardId);
       const cost = effectiveCost(db, state, intent.player, intent.iid); // base + costMods (M3)
       if (p.don.active < cost) throw new EngineError(`not enough active DON!! (${p.don.active}/${cost})`);
+      if (playLocked(db, state, intent.player, intent.iid, true)) throw new EngineError("you cannot play this card this turn (effect)");
+      // "the next time you play [X] …, the cost will be reduced" (M5): spent by this play
+      const discount = playDiscountFor(db, state, intent.player, intent.iid);
+      if (discount) emit(state, log, { type: "playDiscountUsed", player: intent.player, source: discount.source });
 
       if (card.category === "Character") {
+        if (playLocked(db, state, intent.player, intent.iid)) throw new EngineError("you cannot play this Character this turn (effect)");
         // 3-7-6-1: with 5 characters, trash one (by rule) before playing
         if (p.zones.characterArea.length >= 5) {
           if (!intent.replaceIid || !p.zones.characterArea.includes(intent.replaceIid)) {
@@ -204,7 +234,9 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
           }
           emit(state, log, { type: "characterTrashedByRule", player: intent.player, iid: intent.replaceIid });
         }
-        emit(state, log, { type: "cardPlayed", player: intent.player, iid: intent.iid, donRested: cost, zone: "characterArea" });
+        watchers(db, state, "onYouPlayCharacter", intent.player, intent.iid, undefined);
+        emit(state, log, { type: "cardPlayed", player: intent.player, iid: intent.iid, donRested: cost, zone: "characterArea",
+          ...(hasRestriction(db, state, intent.player, p.leaderIid, "charactersPlayedRested") ? { rested: true } : {}) });
         // 10-2-6 [On Play]: activation timing fulfilled by the play
         startOnPlayEffects(db, state, log, intent.player, intent.iid);
       } else if (card.category === "Stage") {
@@ -235,7 +267,7 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
           }
         }
         // 2-7-3 / 8-4-2: pay, trash, activate
-        emit(state, log, { type: "eventCardUsed", player: intent.player, iid: intent.iid, donRested: cost });
+        emit(state, log, { type: "eventCardUsed", player: intent.player, iid: intent.iid, donRested: cost, baseCost: card.cost ?? 0 });
         // "when you/your opponent activates an Event" (8-5-2, M3) — resolved
         // after the Event's own effect (8.6.3)
         ensureExec(state, { at: "none" });
@@ -260,6 +292,7 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       const compiled = db(p.instances[intent.iid].cardId).compiled;
       const fx = compiled?.effects[intent.effectIndex];
       if (!fx || fx.timing !== "activateMain") throw new EngineError("not an [Activate: Main] effect (10-2-2)");
+      if (isNegated(state, intent.player, intent.iid, db)) throw new EngineError("this card's effects are negated");
       if (fx.oncePerTurn && state.oncePerTurnUsed[`${intent.player}:${intent.iid}:${intent.effectIndex}`] === state.turn) {
         throw new EngineError("already activated this turn (10-2-13-3)");
       }
@@ -281,6 +314,12 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
         intent.targetIid === p.leaderIid || p.zones.characterArea.includes(intent.targetIid);
       if (!isOwnBoardCard) throw new EngineError("DON!! can only be given to your Leader or Characters (6-5-5-1)");
       emit(state, log, { type: "donGiven", player: intent.player, targetIid: intent.targetIid });
+      // "When this Leader or any of your Characters is given a DON!! card" (M5)
+      if ([p.leaderIid, ...p.zones.characterArea, ...p.zones.stage].some((iid) => db(p.instances[iid].cardId).compiled?.effects.some((fx) => fx.timing === "onDonGiven"))) {
+        ensureExec(state, { at: "none" });
+        for (const iid of [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage]) enqueueAutoEffects(db, state, intent.player, iid, "onDonGiven");
+        pump(db, state, log);
+      }
       break;
     }
 
@@ -316,7 +355,8 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       if (!p.zones.hand.includes(intent.cardIid)) throw new EngineError("counter card not in hand");
       const card = db(p.instances[intent.cardIid].cardId);
       // 7-1-3-2-1: a Character card with a counter value, trashed from hand
-      if (card.category !== "Character" || !card.counter) {
+      const counter = effectiveCounter(db, state, intent.player, intent.cardIid);
+      if (card.category !== "Character" || counter <= 0) {
         throw new EngineError("card has no counter value");
       }
       const isOwnLeaderOrChar =
@@ -324,7 +364,7 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       if (!isOwnLeaderOrChar) throw new EngineError("counter target must be your Leader or a Character");
       emit(state, log, {
         type: "counterApplied", player: intent.player,
-        cardIid: intent.cardIid, targetIid: intent.targetIid, amount: card.counter,
+        cardIid: intent.cardIid, targetIid: intent.targetIid, amount: counter,
       });
       // window stays open (7-1-3-2: as many times as they wish)
       break;
@@ -400,6 +440,11 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
       const max = Math.min(choice.count, choice.candidates.length);
       if (choice.upTo ? intent.iids.length > max : intent.iids.length !== max) {
         throw new EngineError(`must select ${choice.upTo ? "at most" : "exactly"} ${max} target(s) (8-4-4-1)`);
+      }
+      const set = { totalCostAtMost: choice.totalCostAtMost, totalPowerAtMost: choice.totalPowerAtMost, distinctNames: choice.distinctNames };
+      if (set.totalCostAtMost !== undefined || set.totalPowerAtMost !== undefined || set.distinctNames) {
+        const chosen = intent.iids.map((iid) => choice.candidates.find((c) => c.iid === iid)!);
+        if (!satisfiesSet(db, state, chosen, set)) throw new EngineError("the chosen cards break the total cost / power or different-names limit");
       }
       resolveTargets(db, state, log, intent.iids);
       break;
@@ -504,6 +549,44 @@ export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerInten
         throw new EngineError(`value must be between ${choice.min} and ${choice.max}`);
       }
       resolveNumber(db, state, log, intent.value);
+      break;
+    }
+
+    case "respondReplace": {
+      requireGameRunning(state);
+      const choice = state.pendingChoice;
+      if (!choice || choice.kind !== "mayReplace" || choice.player !== intent.player) {
+        throw new EngineError("no replacement choice pending for this player");
+      }
+      resolveReplace(db, state, log, intent.use);
+      break;
+    }
+
+    case "respondOption": {
+      requireGameRunning(state);
+      const choice = state.pendingChoice;
+      if (!choice || choice.kind !== "chooseOption" || choice.player !== intent.player) {
+        throw new EngineError("no option choice pending for this player");
+      }
+      if (!Number.isInteger(intent.index) || !choice.enabled[intent.index]) {
+        throw new EngineError(`option ${intent.index} is not available`);
+      }
+      resolveOption(db, state, log, intent.index);
+      break;
+    }
+
+    case "respondArrangeLife": {
+      requireGameRunning(state);
+      const choice = state.pendingChoice;
+      if (!choice || choice.kind !== "arrangeLife" || choice.player !== intent.player) {
+        throw new EngineError("no Life arrangement pending for this player");
+      }
+      const all = [...intent.order, ...intent.toDeck];
+      if (intent.toDeck.length !== choice.toDeckTop || all.length !== choice.cards.length
+        || new Set(all).size !== all.length || !all.every((iid) => choice.cards.includes(iid))) {
+        throw new EngineError(`place every Life card back, ${choice.toDeckTop} of them on top of the deck`);
+      }
+      resolveArrangeLife(db, state, log, intent.order, intent.toDeck);
       break;
     }
 

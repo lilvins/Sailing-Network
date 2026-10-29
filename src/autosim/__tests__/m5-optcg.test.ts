@@ -9,6 +9,7 @@ import { allCompiledCards, getGeneratedCard, generatedCards, generatedReport } f
 import { validateCompiledSet } from "../ir/validate";
 import type { Action, CompiledCard, Effect } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
+import { fitChoice } from "../engine/effects";
 import { emit, type GameEvent } from "../engine/events";
 import type { PlayerIntent } from "../engine/intents";
 import { legalMoves } from "../engine/legality";
@@ -27,7 +28,7 @@ import { seededRng } from "../../lib/rng";
 
 const read = (rel: string) => JSON.parse(readFileSync(new URL(rel, import.meta.url), "utf8"));
 interface RawCard extends CatalogCard {
-  name: string; category: EngineCard["category"]; colors: string[]; cost: number | null; power: number | null;
+  name: string; category: EngineCard["category"]; colors: string[]; cost: number | null; power: number | null; attributes: string[];
 }
 const catalog: RawCard[] = read("../../../public/data/cards.json");
 const bundle: { db: Record<string, OptcgCard>; metaDecks: { name: string; leader: string; cards: string[] }[] } = read("../../../public/data/optcg/bundle.json");
@@ -38,7 +39,7 @@ const FILE = new URL("../data/compiled/generated/optcg.json", import.meta.url);
 const REPORT = new URL("../data/compiled/generated/report.json", import.meta.url);
 
 /** Action kinds the engine degrades to manualResolve today (effects.ts). */
-const NOT_AUTO = new Set(["setBasePower", "negateEffect", "redirectAttack", "endBattle", "addToLife", "chooseOne", "manual"]);
+const NOT_AUTO = new Set(["endBattle", "manual"]);
 function flatActions(actions: Action[]): Action[] {
   return actions.flatMap((a) => [a, ...(a.kind === "ifThen" ? flatActions([...a.then, ...(a.else ?? [])]) : [])]);
 }
@@ -215,7 +216,7 @@ function drainChoices(db: CardDb, state: AutoGameState): AutoGameState {
     switch (pc.kind) {
       case "selectTargets": {
         const n = Math.min(pc.count, pc.candidates.length);
-        intent = { type: "respondTargets", player: pc.player, iids: pc.candidates.slice(0, n).map((c) => c.iid) };
+        intent = { type: "respondTargets", player: pc.player, iids: fitChoice(db, state, pc, pc.candidates.slice(0, n).map((c) => c.iid)) };
         break;
       }
       case "mayActivate": intent = { type: "respondMay", player: pc.player, activate: true }; break;
@@ -232,6 +233,9 @@ function drainChoices(db: CardDb, state: AutoGameState): AutoGameState {
       }
       case "payDon": intent = payDonIntent(state, pc.player, pc.amount); break;
       case "chooseNumber": intent = { type: "respondNumber", player: pc.player, value: pc.max }; break;
+      case "chooseOption": intent = { type: "respondOption", player: pc.player, index: pc.enabled.indexOf(true) }; break;
+      case "mayReplace": intent = { type: "respondReplace", player: pc.player, use: true }; break;
+      case "arrangeLife": intent = { type: "respondArrangeLife", player: pc.player, order: pc.cards.slice(pc.toDeckTop), toDeck: pc.cards.slice(0, pc.toDeckTop) }; break;
       default: throw new Error(`unexpected choice in dry-run: ${pc.kind}`);
     }
     state = applyIntent(db, state, intent).state;
@@ -244,7 +248,8 @@ function engineCardOf(id: string): EngineCard {
   const raw = catalogById.get(id)!;
   return {
     id: raw.id, category: raw.category, cost: raw.cost, power: raw.power, counter: raw.counter,
-    colors: raw.colors, types: raw.types, name: raw.name, compiled: getGeneratedCard(raw.id),
+    colors: raw.colors, types: raw.types, name: raw.name, attributes: raw.attributes, compiled: getGeneratedCard(raw.id),
+    hasEffect: !!raw.effect && raw.effect.trim() !== "" && raw.effect.trim() !== "-",
   };
 }
 
@@ -329,7 +334,7 @@ function playMetaGame(seed: string, config: GameConfig): AutoGameState {
         case "selectTargets": {
           const n = Math.min(pc.count, pc.candidates.length);
           const take = pc.upTo ? Math.floor(rng() * (n + 1)) : n;
-          step({ type: "respondTargets", player: pc.player, iids: pc.candidates.slice(0, take).map((c) => c.iid) });
+          step({ type: "respondTargets", player: pc.player, iids: fitChoice(realDb, state, pc, pc.candidates.slice(0, take).map((c) => c.iid)) });
           break;
         }
         case "mayActivate": step({ type: "respondMay", player: pc.player, activate: rng() < 0.7 }); break;
@@ -346,6 +351,17 @@ function playMetaGame(seed: string, config: GameConfig): AutoGameState {
         }
         case "payDon": step(payDonIntent(state, pc.player, pc.amount)); break;
         case "chooseNumber": step({ type: "respondNumber", player: pc.player, value: Math.floor(rng() * (pc.max - pc.min + 1)) + pc.min }); break;
+        case "mayReplace": step({ type: "respondReplace", player: pc.player, use: rng() < 0.5 }); break;
+        case "arrangeLife": {
+          const shuffled = [...pc.cards].sort(() => rng() - 0.5);
+          step({ type: "respondArrangeLife", player: pc.player, order: shuffled.slice(pc.toDeckTop), toDeck: shuffled.slice(0, pc.toDeckTop) });
+          break;
+        }
+        case "chooseOption": {
+          const legal = pc.enabled.flatMap((ok, i) => (ok ? [i] : []));
+          step({ type: "respondOption", player: pc.player, index: legal[Math.floor(rng() * legal.length)] });
+          break;
+        }
         default: throw new Error(`unhandled choice ${(pc as { kind: string }).kind}`);
       }
       continue;
@@ -366,7 +382,8 @@ describe("M5 exit: the real meta decks play to a result with the generated IR", 
   const legal = (d: { cards: string[] }) => {
     const n = new Map<string, number>();
     for (const id of d.cards) n.set(id, (n.get(id) ?? 0) + 1);
-    return d.cards.length === 50 && [...n.values()].every((x) => x <= 4);
+    // 5-1-2-3, except "you may have any number of this card in your deck" (M5)
+    return d.cards.length === 50 && [...n.entries()].every(([id, x]) => x <= 4 || !!getGeneratedCard(id)?.rules?.anyCopies);
   };
   const playable = bundle.metaDecks.filter((d) => legal(d) && [d.leader, ...d.cards].every((id) => catalogById.has(id)));
   it("there are meta decks fully inside the catalog", () => {

@@ -112,8 +112,8 @@ addCard("MC-OPREST", { cost: 2, power: 3000, effects: [
   ]},
 ]});
 addCard("MC-MANUAL", { cost: 1, power: 2000, effects: [
-  // negateEffect stays outside the executor (M4+) → manualResolve
-  { timing: "onPlay", actions: [{ kind: "negateEffect", sel: sel("opponent", "characterArea"), scope: "all", duration: "thisTurn" }] },
+  // endBattle stays outside the executor → manualResolve
+  { timing: "onPlay", actions: [{ kind: "endBattle" }] },
 ]});
 
 // events

@@ -22,13 +22,14 @@ export type GameEvent =
   // turn flow (6)
   | { type: "turnStarted"; turn: number; player: PID }
   | { type: "givenDonReturned"; player: PID; count: number }        // 6-2-3 (returned RESTED)
-  | { type: "allStood"; player: PID }                               // 6-2-4
+  | { type: "allStood"; player: PID; keepRested?: Iid[] }           // 6-2-4 (M5: cards a static keeps rested)
   | { type: "donPlaced"; player: PID; count: number }               // 6-4
   | { type: "turnEnded"; turn: number; player: PID }
   // main phase actions (6-5)
-  | { type: "cardPlayed"; player: PID; iid: Iid; donRested: number; zone: "characterArea" | "stage" } // 6-5-3, 2-7-2/4
+  | { type: "cardPlayed"; player: PID; iid: Iid; donRested: number; zone: "characterArea" | "stage"; rested?: boolean } // 6-5-3, 2-7-2/4
   | { type: "characterTrashedByRule"; player: PID; iid: Iid }        // 3-7-6-1 / 3-8-5-1
-  | { type: "eventCardUsed"; player: PID; iid: Iid; donRested: number } // 2-7-3 / 7-1-3-2-2
+  | { type: "eventCardUsed"; player: PID; iid: Iid; donRested: number; baseCost?: number; stays?: boolean } // 2-7-3 / 7-1-3-2-2 (M5: base cost; stays = activated from the trash)
+  | { type: "playDiscountUsed"; player: PID; source: Iid }          // M5: a "next time you play" discount is spent
   | { type: "donGiven"; player: PID; targetIid: Iid }                // 6-5-5
   // battle (7)
   | { type: "attackDeclared"; attackerOwner: PID; attackerIid: Iid; defenderOwner: PID; targetIid: Iid } // 7-1-1
@@ -56,9 +57,25 @@ export type GameEvent =
   | { type: "deckPeeked"; player: PID; iids: Iid[] }                 // "look at N from the top" (log marker)
   | { type: "peekResolved"; player: PID; toHand: Iid[]; played: { iid: Iid; rested: boolean }[];
       top: Iid[]; bottom: Iid[]; trashed: Iid[] }                    // 8-4-4-4, 11-2-1
-  | { type: "playedFromZone"; player: PID; iid: Iid; from: "hand" | "trash"; rested: boolean } // playFromZone
+  | { type: "playedFromZone"; player: PID; iid: Iid; from: "hand" | "trash" | "life"; rested: boolean; zone?: "stage" } // playFromZone (M5: a Stage)
   | { type: "returnedToHand"; player: PID; iid: Iid }                // bounce (field → hand)
-  | { type: "returnedToDeck"; player: PID; iid: Iid; where: "top" | "bottom"; from: "field" | "hand" }
+  | { type: "returnedToDeck"; player: PID; iid: Iid; where: "top" | "bottom"; from: "field" | "hand" | "trash" | "deck" | "life" }
+  | { type: "cardsRevealed"; player: PID; iids: Iid[] }              // reveal from hand / the top of a deck (M5, log only)
+  | { type: "costDeclared"; player: PID; value: number }             // "Choose a cost" (M5, log only)
+  | { type: "lifeArranged"; player: PID; order: Iid[] }              // M5: the Life area, top first
+  | { type: "extraTurnGranted"; player: PID }
+  | { type: "attackRedirected"; targetIid: Iid }                     // M5: "Change the attack target to …"
+  | { type: "donUngiven"; player: PID; from: Record<Iid, number> }   // M5: given DON!! back to the cost area, rested
+  | { type: "donFrozen"; player: PID; count: number }               // M5: rested DON!! skip the next Refresh
+  | { type: "givenDonMoved"; player: PID; from: Iid; to: Iid; count: number } // M5: given DON!! to another card                      // M5: "take an extra turn after this one"
+  | { type: "startOfGameStage"; player: PID; iid: Iid }              // M5: a Leader rule plays a Stage from the deck at setup
+  | { type: "addedToLife"; player: PID; iid: Iid; from: "deck" | "field" | "hand" | "trash"; faceUp: boolean; where: "top" | "bottom" } // M5
+  | { type: "lifeFlipped"; player: PID; iids: Iid[]; faceUp: boolean } // M5
+  | { type: "donRestedByEffect"; player: PID; count: number }        // M5
+  | { type: "lifeTopToBottom"; player: PID }                         // M5
+  | { type: "lifePeeked"; player: PID; owner: PID; iid: Iid }        // M5 (log only)
+  | { type: "endOfTurnScheduled"; player: PID; sourceIid: Iid; sourceCardId: string; effectIndex: number; subject?: { owner: PID; iid: Iid } } // M5
+  | { type: "scheduledQueued"; turn: number }                       // M5: this turn's scheduled effects left the list
   | { type: "milled"; player: PID; iids: Iid[] }                     // deck top → trash
   | { type: "trashToHand"; player: PID; iid: Iid }                   // addFromTrashToHand
   | { type: "donAdded"; player: PID; count: number; rested: boolean } // DON!! deck → cost area
@@ -88,6 +105,35 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
   switch (e.type) {
     case "gameStarted":
       break; // creation event — state skeleton is built by createGame
+
+    case "givenDonMoved": {
+      const don = state.players[e.player].don;
+      don.given[e.from] = (don.given[e.from] ?? 0) - e.count;
+      if (don.given[e.from] <= 0) delete don.given[e.from];
+      don.given[e.to] = (don.given[e.to] ?? 0) + e.count;
+      break;
+    }
+
+    case "donFrozen": {
+      const don = state.players[e.player].don;
+      don.frozen = Math.min((don.frozen ?? 0) + e.count, don.rested);
+      break;
+    }
+
+    case "extraTurnGranted":
+      state.extraTurn = e.player;
+      break;
+
+    case "startOfGameStage": {
+      const p = state.players[e.player];
+      p.zones.deck = p.zones.deck.filter((x) => x !== e.iid);
+      p.zones.stage.push(e.iid);
+      break;
+    }
+
+    case "lifeArranged":
+      state.players[e.player].zones.life = [...e.order].reverse(); // the last element is the top (3-10)
+      break;
 
     case "deckShuffled":
       state.players[e.player].zones.deck = [...e.order];
@@ -126,6 +172,11 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
     case "turnStarted":
       state.turn = e.turn;
       state.turnPlayer = e.player;
+      for (const pid of state.order) { delete state.players[pid].eventsThisTurn; delete state.players[pid].thisTurn; }
+      if (state.extraTurn === e.player) { // the extra turn starts (M5)
+        delete state.extraTurn;
+        state.extraTurns = [...(state.extraTurns ?? []), e.turn];
+      }
       state.phase = "main";
       // 6-2-1 (Refresh): effects lasting "until the start of your next turn"
       // expire at the start of the anchored player's next turn.
@@ -144,9 +195,17 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
 
     case "allStood": {
       const p = state.players[e.player];
-      for (const inst of Object.values(p.instances)) inst.rested = false;
-      p.don.active += p.don.rested;
-      p.don.rested = 0;
+      // "will not become active in your next Refresh Phase" (M5): those stay
+      // rested, and the effect is used up by this Refresh Phase
+      const frozen = new Set([...state.modifiers
+        .filter((m) => m.kind === "restriction" && m.restriction === "skipNextRefresh" && m.targetOwner === e.player)
+        .map((m) => m.targetIid), ...(e.keepRested ?? [])]);
+      state.modifiers = state.modifiers.filter((m) => !(m.duration === "untilOwnersNextRefresh" && m.targetOwner === e.player));
+      for (const [iid, inst] of Object.entries(p.instances)) if (!frozen.has(iid)) inst.rested = false;
+      const keep = Math.min(p.don.frozen ?? 0, p.don.rested); // M5: frozen DON!! stay rested
+      p.don.active += p.don.rested - keep;
+      p.don.rested = keep;
+      delete p.don.frozen;
       break;
     }
 
@@ -175,7 +234,7 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       p.don.rested += e.donRested;
       p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
       const inst = p.instances[e.iid];
-      inst.rested = false; // played active (3-7-5 / 3-8-4)
+      inst.rested = !!e.rested; // played active (3-7-5 / 3-8-4) — M5: "played rested" by a static
       if (e.zone === "stage") p.zones.stage.push(e.iid);
       else { p.zones.characterArea.push(e.iid); inst.playedOnTurn = state.turn; }
       break;
@@ -198,8 +257,16 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       const p = state.players[e.player];
       p.don.active -= e.donRested;
       p.don.rested += e.donRested;
+      if (e.baseCost !== undefined) p.eventsThisTurn = [...(p.eventsThisTurn ?? []), e.baseCost];
+      if (e.stays) break; // activated from the trash: it stays there
       p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
       p.zones.trash.push(e.iid); // 2-7-3 / 8-4-2: trash to activate
+      break;
+    }
+
+    case "playDiscountUsed": {
+      const i = state.modifiers.findIndex((m) => m.kind === "playDiscount" && m.targetOwner === e.player && m.source === e.source);
+      if (i >= 0) state.modifiers.splice(i, 1);
       break;
     }
 
@@ -213,6 +280,8 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
     case "attackDeclared": {
       const p = state.players[e.attackerOwner];
       p.instances[e.attackerIid].rested = true; // 7-1-1-1
+      // "If this Leader battles your opponent's Character during this turn" (M5)
+      if (e.attackerIid === p.leaderIid && state.players[e.defenderOwner].zones.characterArea.includes(e.targetIid)) p.thisTurn = { ...(p.thisTurn ?? {}), leaderBattledCharacter: true };
       state.battle = {
         attackerOwner: e.attackerOwner,
         attackerIid: e.attackerIid,
@@ -229,12 +298,30 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       if (state.battle) state.battle.step = "block"; // 7-1-2
       break;
 
+    case "donUngiven": {
+      const don = state.players[e.player].don;
+      for (const [iid, n] of Object.entries(e.from)) {
+        don.given[iid] = (don.given[iid] ?? 0) - n;
+        if (don.given[iid] <= 0) delete don.given[iid];
+        don.rested += n;
+      }
+      break;
+    }
+
+    case "attackRedirected":
+      if (state.battle) state.battle.targetIid = e.targetIid;
+      break;
+
     case "blockWindowResolved": {
       if (!state.battle) break;
       if (e.blockerIid) {
         // 10-1-4-1: activate [Blocker] by RESTING the card; it takes the
         // place of the card being attacked. 7-1-2-1: once per battle.
         state.players[state.battle.defenderOwner].instances[e.blockerIid].rested = true;
+        const ap = state.players[state.battle.attackerOwner];
+        if (state.battle.attackerIid === ap.leaderIid && state.players[state.battle.defenderOwner].zones.characterArea.includes(e.blockerIid)) {
+          ap.thisTurn = { ...(ap.thisTurn ?? {}), leaderBattledCharacter: true }; // M5
+        }
         state.battle.targetIid = e.blockerIid;
         state.battle.blockerUsed = true;
       }
@@ -280,6 +367,7 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
 
     case "characterKOd": {
       const p = state.players[e.player];
+      p.thisTurn = { ...(p.thisTurn ?? {}), characterKOd: true };
       p.zones.characterArea = p.zones.characterArea.filter((x) => x !== e.iid);
       const given = p.don.given[e.iid] ?? 0;
       if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; } // 6-5-5-4
@@ -329,6 +417,7 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
 
     case "cardsDiscarded": {
       const p = state.players[e.player];
+      if (e.iids.length > 0) p.thisTurn = { ...(p.thisTurn ?? {}), handTrashed: true };
       for (const iid of e.iids) {
         p.zones.hand = p.zones.hand.filter((x) => x !== iid);
         p.zones.trash.push(iid);
@@ -363,9 +452,12 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       const p = state.players[e.player];
       p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
       p.zones.trash = p.zones.trash.filter((x) => x !== e.iid);
-      p.zones.characterArea.push(e.iid);
+      p.zones.life = p.zones.life.filter((x) => x !== e.iid); // M5: from the Life area
       const inst = p.instances[e.iid];
       inst.rested = e.rested;
+      delete inst.faceUp;
+      if (e.zone === "stage") { p.zones.stage.push(e.iid); break; }
+      p.zones.characterArea.push(e.iid);
       inst.playedOnTurn = state.turn;          // 3-7-4
       break;
     }
@@ -391,11 +483,69 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
         if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; } // 6-5-5-4
         p.instances[e.iid].rested = false;
         cardLeftField(state, e.player, e.iid); // 3-1-6
-      } else {
+      } else if (e.from === "hand") {
         p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
+      } else if (e.from === "life") {
+        p.zones.life = p.zones.life.filter((x) => x !== e.iid);
+      } else if (e.from === "deck") {
+        p.zones.deck = p.zones.deck.filter((x) => x !== e.iid); // "place the top card at the bottom" (M5)
+      } else {
+        p.zones.trash = p.zones.trash.filter((x) => x !== e.iid);
       }
       if (e.where === "top") p.zones.deck.unshift(e.iid);
       else p.zones.deck.push(e.iid);
+      break;
+    }
+
+    case "addedToLife": {
+      const p = state.players[e.player];
+      if (e.from === "field") {
+        p.zones.characterArea = p.zones.characterArea.filter((x) => x !== e.iid);
+        p.zones.stage = p.zones.stage.filter((x) => x !== e.iid);
+        const given = p.don.given[e.iid] ?? 0;
+        if (given > 0) { p.don.rested += given; delete p.don.given[e.iid]; } // 6-5-5-4
+        p.instances[e.iid].rested = false;
+        cardLeftField(state, e.player, e.iid); // 3-1-6
+      } else if (e.from === "hand") {
+        p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
+      } else if (e.from === "trash") {
+        p.zones.trash = p.zones.trash.filter((x) => x !== e.iid);
+      } else {
+        p.zones.deck = p.zones.deck.filter((x) => x !== e.iid);
+      }
+      p.instances[e.iid].faceUp = e.faceUp;
+      // the top of the Life area is the END of the array (3-10)
+      if (e.where === "top") p.zones.life.push(e.iid);
+      else p.zones.life.unshift(e.iid);
+      break;
+    }
+
+    case "donRestedByEffect": {
+      const don = state.players[e.player].don;
+      don.active -= e.count;
+      don.rested += e.count;
+      break;
+    }
+
+    case "lifeTopToBottom": {
+      const life = state.players[e.player].zones.life;
+      const top = life.pop();
+      if (top) life.unshift(top);
+      break;
+    }
+
+    case "endOfTurnScheduled":
+      (state.scheduled ??= []).push({ turn: state.turn, controller: e.player, sourceIid: e.sourceIid, sourceCardId: e.sourceCardId, effectIndex: e.effectIndex,
+        ...(e.subject ? { subject: e.subject } : {}) });
+      break;
+
+    case "scheduledQueued":
+      state.scheduled = (state.scheduled ?? []).filter((x) => x.turn !== e.turn);
+      break;
+
+    case "lifeFlipped": {
+      const p = state.players[e.player];
+      for (const iid of e.iids) p.instances[iid].faceUp = e.faceUp;
       break;
     }
 

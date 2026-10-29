@@ -5,6 +5,7 @@ import { api, type DirectoryUser } from "../../lib/api";
 import { useAuthStore } from "../../app/authStore";
 import { useUiStore } from "../../app/uiStore";
 import { legalMoves } from "../../autosim/engine/legality";
+import { fitChoice } from "../../autosim/engine/effects";
 import { effectivePower, keywordsOf, type AutoGameState, type Iid, type PID } from "../../autosim/engine/state";
 import type { Keyword } from "../../autosim/ir/types";
 import { getCardDb, getCardsById, useAutoStore, type SeatSetup } from "./autoStore";
@@ -45,6 +46,8 @@ const WIN_REASON: Record<string, string> = {
   leaderDamageAtZeroLife: "lethal damage to the Leader",
   deckOut: "the opponent decked out",
   concession: "concession",
+  effect: "a card's effect",
+  deckOutWin: "their deck ran out — and their Leader wins on deck-out",
 };
 
 // ─── dev hook for the Playwright verification driver ─────────────────────────
@@ -424,6 +427,9 @@ function GameScreen() {
   const setView = useUiStore((s) => s.setView);
 
   const db = getCardDb()!;
+  // M5: "total cost / power of N or less", "different names" — the picks must fit
+  const setOk = (pc: Extract<NonNullable<AutoGameState["pendingChoice"]>, { kind: "selectTargets" }>, iids: string[]) =>
+    fitChoice(db, game, pc, iids).length === iids.length;
   const cards = getCardsById()!;
   const lm = useMemo(() => legalMoves(db, game), [db, game]);
   const pc = game.pendingChoice;
@@ -972,7 +978,7 @@ function GameScreen() {
     }
     if (pc?.kind === "selectTargets" && !pileCandidates) {
       const max = Math.min(pc.count, pc.candidates.length);
-      const ok = pc.upTo ? picked.length <= max : picked.length === max;
+      const ok = (pc.upTo ? picked.length <= max : picked.length === max) && setOk(pc, picked);
       // cost phase (M3: trash from hand / return to hand / rest / hand→deck
       // bottom) vs effect targets — the running effect tells which
       const r = game.exec?.running;
@@ -983,7 +989,13 @@ function GameScreen() {
         discard: `trash ${n} card${plural} from your hand`,
         returnToHand: `return ${n} card${plural} to hand`,
         restTarget: `rest ${n} card${plural}`,
-        returnToDeck: `put ${n} card${plural} from your hand at the bottom of your deck`,
+        returnToDeck: `put ${n} card${plural} at the bottom of your deck`,
+        koTarget: `K.O. ${n} of your Character${plural}`,
+        trashTarget: `trash ${n} of your card${plural} on the field`,
+        reveal: `reveal ${n} card${plural} from your hand`,
+        giveActiveDon: "give active DON!! to",
+        giveRestedDon: "give rested DON!! to",
+        powerMod: "give the power change to",
       };
       const ACTION_LABEL: Record<string, string> = {
         koTarget: "K.O.", powerMod: "power change", restTarget: "rest", standTarget: "stand",
@@ -991,10 +1003,14 @@ function GameScreen() {
         returnToHand: "return to hand", playFromZone: "play", giveRestedDon: "give rested DON!! to",
         addFromTrashToHand: "return from trash", attachDonFromDeck: "attach DON!! to",
         costMod: "cost change", returnToDeck: "return to deck",
+        trashTarget: "trash", reveal: "reveal", giveActiveDon: "give active DON!! to",
       };
       const title = paying
         ? `Pay the cost: ${COST_LABEL[pc.actionKind] ?? `${pc.actionKind} (${n})`}`
-        : `choose ${n} target${plural} — ${ACTION_LABEL[pc.actionKind] ?? pc.actionKind}`;
+        : `choose ${n} target${plural} — ${ACTION_LABEL[pc.actionKind] ?? pc.actionKind}`
+          + (pc.totalCostAtMost !== undefined ? ` (total cost ≤ ${pc.totalCostAtMost})` : "")
+          + (pc.totalPowerAtMost !== undefined ? ` (total power ≤ ${pc.totalPowerAtMost})` : "")
+          + (pc.distinctNames ? " (different names)" : "");
       return (
         <div className="ba-actionbar">
           <span className="ba-actlabel">
@@ -1217,7 +1233,7 @@ function GameScreen() {
     );
   }
 
-  function PileBox({ label, count, children, faceClass, pid, tick }: { label: string; count: number; children?: React.ReactNode; faceClass?: string; pid: PID; tick?: boolean }) {
+  function PileBox({ label, count, children, faceClass, pid, tick, faces }: { label: string; count: number; children?: React.ReactNode; faceClass?: string; pid: PID; tick?: boolean; faces?: (Card | null)[] }) {
     const key = `${label.toLowerCase().replace(/[^a-z]/g, "")}-${pid}`; // life-seatA, trash-seatA, …
     return (
       <div className={`ba-pile ${faceClass ?? ""}`} data-pile={key}>
@@ -1226,11 +1242,17 @@ function GameScreen() {
           // Life: every card visible as a strip, a declared vertical stack
           // (constant LIFE_STEP, last on top) — countable at a glance
           <div className="ba-pcard ba-lifestack" data-stack="life" style={{ height: CARD_H + (count - 1) * LIFE_STEP }}>
-            {Array.from({ length: count }).map((_, i) => (
-              <div key={i} className="gb-card ba-card ba-backcard ba-lifecard" style={{ top: i * LIFE_STEP, zIndex: i + 1 }}>
-                <span className="gb-back"><span className="gb-back-emblem" /></span>
-              </div>
-            ))}
+            {Array.from({ length: count }).map((_, i) => {
+              // a face-up Life card (M5) shows its art; the rest are backs
+              const face = faces?.[i];
+              return (
+                <div key={i} className={`gb-card ba-card ba-lifecard${face ? " ba-lifeup" : " ba-backcard"}`} style={{ top: i * LIFE_STEP, zIndex: i + 1 }} title={face ? `${face.name} (face-up)` : undefined}>
+                  {face
+                    ? (face.image ? <img src={face.image} alt={face.name} /> : <span className="ba-lifeupname">{face.name}</span>)
+                    : <span className="gb-back"><span className="gb-back-emblem" /></span>}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="ba-pcard">{children ?? (count > 0 ? <div className="gb-card ba-backcard"><span className="gb-back"><span className="gb-back-emblem" /></span></div> : <div className="ba-empty" />)}</div>
@@ -1254,7 +1276,10 @@ function GameScreen() {
         style={{ ["--lc" as string]: leaderHex(pid) }}
       >
         <div className="ba-sidecol">
-          {PileBox({ label: "LIFE", count: p.zones.life.length, pid, tick: hitSeat === pid })}
+          {PileBox({
+            label: "LIFE", count: p.zones.life.length, pid, tick: hitSeat === pid,
+            faces: p.zones.life.map((iid) => (p.instances[iid].faceUp ? cards.get(p.instances[iid].cardId) ?? null : null)),
+          })}
           {PileBox({ label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid })}
         </div>
         <div className="ba-halfmain">
@@ -1553,7 +1578,7 @@ function GameScreen() {
     // candidates living in a pile (trash / deck / Life) have no card on the
     // table to tap: show them all in a picker (QA bot: "return from trash")
     const max = Math.min(pc.count, pc.candidates.length);
-    const ok = pc.upTo ? picked.length <= max : picked.length === max;
+    const ok = (pc.upTo ? picked.length <= max : picked.length === max) && setOk(pc, picked);
     overlay = (
       <div className="ba-overlay">
         <div className="ba-panel ba-ov ba-peek">
@@ -1596,7 +1621,7 @@ function GameScreen() {
       const idx = (iid: Iid) => { const i = peekOrder.indexOf(iid); return i === -1 ? 999 + pc.cards.indexOf(iid) : i; };
       return [...list].sort((a, b) => idx(a) - idx(b));
     };
-    const modeLabel = pc.mode === "hand" ? "add to your hand" : pc.mode === "play" ? `play${pc.playRested ? " (rested)" : ""}` : "look";
+    const modeLabel = pc.mode === "hand" ? "add to your hand" : pc.mode === "play" ? `play${pc.playRested ? " (rested)" : ""}` : pc.mode === "life" ? "add to the top of your Life" : pc.mode === "trash" ? "trash" : "look";
     const restLabel: Record<typeof pc.rest, string> = {
       topAnyOrder: "the rest goes back ON TOP, in the order you choose (1 = top)",
       bottomAnyOrder: "the rest goes to the BOTTOM, in the order you choose (1 = first placed)",
@@ -1645,7 +1670,7 @@ function GameScreen() {
                   <span className="ba-peekpos">#{i + 1}</span>
                   <div className="ba-peekart">{c?.image && <img src={c.image} alt={c.name} />}</div>
                   <b>{c?.name ?? iid}</b>
-                  {taken && <i className="ba-peektag">{pc.mode === "play" ? "PLAY" : "TAKE"}</i>}
+                  {taken && <i className="ba-peektag">{pc.mode === "play" ? "PLAY" : pc.mode === "life" ? "LIFE" : "TAKE"}</i>}
                   {!taken && ordered && (
                     <span className="ba-peekorder" onClick={(e) => e.stopPropagation()}>
                       <button
@@ -1744,6 +1769,116 @@ function GameScreen() {
         </div>
       </div>
     );
+  } else if (pc?.kind === "mayReplace") {
+    // M5 — "you may … instead" (8-1-3-4)
+    const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
+    const target = cards.get(findCardId(game, pc.targetIid) ?? "");
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov">
+          <span className="ba-ovtag">{seatName(pc.player)} — replace?</span>
+          {src && <b className="ba-ovname">{src.name}</b>}
+          <p className="ba-ovtext">
+            {target?.name ?? "Your card"} would be {pc.battle ? "K.O.'d" : "removed"}. Use this effect instead?
+          </p>
+          {src?.effect && <p className="ba-ovtext ba-ovsmall">{src.effect}</p>}
+          <div className="ba-ovbtns">
+            <button className="ba-btn" data-act="replace-no" onClick={() => dispatch({ type: "respondReplace", player: pc.player, use: false })}>No</button>
+            <button className="ba-btn primary big" data-act="replace-yes" onClick={() => dispatch({ type: "respondReplace", player: pc.player, use: true })}>Yes, instead</button>
+          </div>
+        </div>
+      </div>
+    );
+  } else if (pc?.kind === "arrangeLife") {
+    // M5 — "look at all of your Life cards [; place N at the top of your deck]
+    // and place them back in any order": tap = to the deck, "order" = new position
+    const p = game.players[pc.lifeOwner];
+    const cardOf = (iid: Iid) => cards.get(p.instances[iid].cardId);
+    const remaining = pc.cards.filter((iid) => !peekTake.includes(iid));
+    const idx = (iid: Iid) => { const i = peekOrder.indexOf(iid); return i === -1 ? 999 + pc.cards.indexOf(iid) : i; };
+    const order = [...remaining].sort((a, b) => idx(a) - idx(b));
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov ba-peek">
+          <span className="ba-ovtag">{seatName(pc.player)} — {pc.lifeOwner === pc.player ? "your" : "the opponent's"} Life cards (#1 = top)</span>
+          <p className="ba-ovtext">
+            {pc.toDeckTop > 0 ? <>Tap <b>{pc.toDeckTop}</b> card{pc.toDeckTop === 1 ? "" : "s"} to place at the top of the deck. </> : null}
+            Use "order" to set the new Life order (1 = top); unordered cards keep their place after the ordered ones.
+          </p>
+          <div className="ba-peekgrid">
+            {pc.cards.map((iid, i) => {
+              const c = cardOf(iid);
+              const taken = peekTake.includes(iid);
+              const pos = peekOrder.indexOf(iid);
+              return (
+                <div
+                  key={iid}
+                  className={`ba-peekcard${pc.toDeckTop > 0 ? " eligible" : ""}${taken ? " taken" : ""}`}
+                  data-peek-iid={iid}
+                  onClick={() => {
+                    if (pc.toDeckTop === 0) return;
+                    setPeekTake((prev) => (prev.includes(iid) ? prev.filter((x) => x !== iid) : prev.length >= pc.toDeckTop ? prev : [...prev, iid]));
+                    setPeekOrder((prev) => prev.filter((x) => x !== iid));
+                  }}
+                >
+                  <span className="ba-peekpos">#{i + 1}</span>
+                  <div className="ba-peekart">{c?.image && <img src={c.image} alt={c.name} />}</div>
+                  <b>{c?.name ?? iid}</b>
+                  {taken && <i className="ba-peektag">DECK</i>}
+                  {!taken && (
+                    <span className="ba-peekorder" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        className={`ba-btn tiny${pos >= 0 ? " on" : ""}`}
+                        data-act="life-order"
+                        data-peek-iid={iid}
+                        onClick={() => setPeekOrder((prev) => (prev.includes(iid) ? prev.filter((x) => x !== iid) : [...prev, iid]))}
+                      >
+                        {pos >= 0 ? `${pos + 1}` : "order"}
+                      </button>
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="ba-ovbtns">
+            {peekOrder.length > 0 && <button className="ba-btn" data-act="life-reset" onClick={() => setPeekOrder([])}>Reset order</button>}
+            <button
+              className="ba-btn primary big"
+              data-act="life-confirm"
+              disabled={peekTake.length !== pc.toDeckTop}
+              onClick={() => dispatch({ type: "respondArrangeLife", player: pc.player, order, toDeck: peekTake })}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  } else if (pc?.kind === "chooseOption") {
+    // M5 — "Choose one:" / "X or Y:" cost: one button per option
+    const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov">
+          <span className="ba-ovtag">{seatName(pc.player)} — {pc.purpose === "cost" ? "choose how to pay" : "choose one"}</span>
+          {src && <b className="ba-ovname">{src.name}</b>}
+          <div className="ba-ovbtns ba-options">
+            {pc.options.map((label, index) => (
+              <button
+                key={index}
+                className="ba-btn big"
+                data-act={`option-${index}`}
+                disabled={!pc.enabled[index]}
+                onClick={() => dispatch({ type: "respondOption", player: pc.player, index })}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   } else if (pc?.kind === "chooseNumber") {
     // M3 — "draw up to N" (8-4-4-1: 'up to' allows 0)
     const src = cards.get(findCardId(game, pc.sourceIid) ?? "");
@@ -1751,9 +1886,10 @@ function GameScreen() {
     overlay = (
       <div className="ba-overlay">
         <div className="ba-panel ba-ov">
-          <span className="ba-ovtag">{seatName(pc.player)} — {pc.purpose === "draw" ? `draw up to ${pc.max}` : "choose a number"}</span>
+          <span className="ba-ovtag">{seatName(pc.player)} — {pc.purpose === "draw" ? `draw up to ${pc.max}` : pc.purpose === "life" ? `add up to ${pc.max} to Life` : pc.purpose === "declare" ? "choose a cost" : pc.purpose === "addDon" ? `add up to ${pc.max} DON!!` : pc.purpose === "standDon" ? `set up to ${pc.max} DON!! as active` : pc.purpose === "restDon" ? `rest up to ${pc.max} DON!!` : "choose a number"}</span>
           {src && <b className="ba-ovname">{src.name}</b>}
-          <p className="ba-ovtext">How many cards do you draw?</p>
+          <p className="ba-ovtext">{pc.purpose === "life" ? "How many cards from the top of the deck go to the top of the Life?" : pc.purpose === "declare" ? "Which cost? The top card of your opponent's deck is revealed next."
+            : pc.purpose === "addDon" ? "How many DON!! cards come from your DON!! deck?" : pc.purpose === "standDon" ? "How many of your rested DON!! cards become active?" : pc.purpose === "restDon" ? "How many of your DON!! cards do you rest?" : "How many cards do you draw?"}</p>
           <div className="ba-numbers">
             {Array.from({ length: pc.max - pc.min + 1 }, (_, i) => pc.min + i).map((v) => (
               <button

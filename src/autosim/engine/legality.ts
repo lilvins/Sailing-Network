@@ -4,8 +4,8 @@
  * enforcement point; this is advisory).
  */
 import type { AutoGameState, CardDb, Iid, PID } from "./state";
-import { effectiveCost, hasRestriction, isPlayersFirstTurn, keywordsOf, opponentOf } from "./state";
-import { canPayCost, conditionsMet } from "./effects";
+import { attackTargetAllowed, attackTax, baseCostLocked, effectiveCost, effectiveCounter, hasRestriction, isNegated, isPlayersFirstTurn, keywordsOf, opponentOf } from "./state";
+import { canPayCost, conditionsMet, playLocked } from "./effects";
 
 export interface LegalMoves {
   /** Who must act right now (pending choice player, else turn player). */
@@ -37,8 +37,8 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
       const p = state.players[actor];
       const inHand = p.zones.hand.map((iid) => ({ iid, card: db(p.instances[iid].cardId) }));
       res.counterCards = inHand
-        .filter(({ card }) => card.category === "Character" && (card.counter ?? 0) > 0)
-        .map(({ iid, card }) => ({ iid, amount: card.counter! }));
+        .filter(({ iid, card }) => card.category === "Character" && effectiveCounter(db, state, actor, iid) > 0)
+        .map(({ iid }) => ({ iid, amount: effectiveCounter(db, state, actor, iid) }));
       // [Counter] Events: playable if the card cost + DON costs fit (7-1-3-2-2)
       res.counterEvents = inHand
         .filter(({ iid, card }) => {
@@ -69,6 +69,7 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
     .map((iid) => ({ iid, card: db(p.instances[iid].cardId) }))
     .filter(({ iid, card }) => {
       if (card.category === "Leader" || effectiveCost(db, state, player, iid) > p.don.active) return false;
+      if (playLocked(db, state, player, iid, true)) return false; // M5
       if (card.category === "Event") {
         // 10-2-3: only Events with a [Main] effect (or no compiled effects —
         // legacy vanilla fixtures) are playable in the Main Phase, and only if
@@ -99,7 +100,8 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
     for (const iid of candidates) {
       const inst = p.instances[iid];
       if (inst.rested) continue;
-      if (hasRestriction(db, state, player, iid, "cannotAttack")) continue;
+      if (hasRestriction(db, state, player, iid, "cannotAttack") || hasRestriction(db, state, player, iid, "cannotBeRested")) continue;
+      if (attackTax(db, state, player, iid) > p.zones.hand.length) continue; // M5
       // 7-1-1-2 (+ "can also attack active Characters" permission, M3)
       const canHitActive = hasRestriction(db, state, player, iid, "canAttackActiveCharacters");
       const charTargets = opp.zones.characterArea.filter(
@@ -114,6 +116,9 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
         else if (kws.has("RushCharacter")) targets = [...charTargets];
         else continue;
       }
+      targets = targets.filter((t) => attackTargetAllowed(db, state, opponentOf(state, player), t)
+        && !baseCostLocked(db, state, player, iid, opponentOf(state, player), t)); // M5
+      if (hasRestriction(db, state, player, iid, "cannotAttackLeaders") || hasRestriction(db, state, player, p.leaderIid, "noLeaderAttacks")) targets = targets.filter((t) => t !== leaderTarget); // M5
       if (targets.length > 0) attackers.push({ iid, targets });
     }
   }
@@ -123,7 +128,7 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
   const activatable: LegalMoves["activatable"] = [];
   for (const iid of [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage]) {
     const compiled = db(p.instances[iid].cardId).compiled;
-    if (!compiled) continue;
+    if (!compiled || isNegated(state, player, iid, db)) continue;
     compiled.effects.forEach((fx, effectIndex) => {
       if (fx.timing !== "activateMain") return;
       if (fx.oncePerTurn && state.oncePerTurnUsed[`${player}:${iid}:${effectIndex}`] === state.turn) return;

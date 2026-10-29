@@ -30,6 +30,9 @@ export type PlayerIntent =
   | { type: "respondPayDon"; player: PID; fromActive: number; fromRested: number;
       fromGiven: Record<Iid, number> }                               // payDon (8-3-1-6)
   | { type: "respondNumber"; player: PID; value: number }            // chooseNumber ("up to", 8-4-4-1)
+  | { type: "respondOption"; player: PID; index: number }            // chooseOption ("Choose one", M5)
+  | { type: "respondArrangeLife"; player: PID; order: Iid[]; toDeck: Iid[] } // arrangeLife (M5): order top first; toDeck first = top
+  | { type: "respondReplace"; player: PID; use: boolean }            // mayReplace (8-1-3-4, M5)
   // any time
   | { type: "concede"; player: PID };                                // 1-2-3
 

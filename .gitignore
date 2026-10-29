@@ -39,3 +39,9 @@ public/cards/*
 # Local screenshots / scratch from dev tooling
 scripts/.shots/
 scripts/.qa/
+
+# Personal session reports for Vins (never committed)
+_Reports/
+# One-off helper to run seed:cards + art from a double click
+update-cards.cmd
+update-cards.log

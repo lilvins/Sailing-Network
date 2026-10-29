@@ -157,10 +157,12 @@ optcg-ai project (`C:/Users/Admin/Desktop/optcg-ai`).
   AUTOSIM reads optcg-ai's card EFFECTS as IR data.
 
 ## AUTOSIM M5 — card IR generated from optcg-ai (THIS COPY ONLY, 2026-10-28)
+Session reports for Vins live in `_Reports/` (gitignored, never committed).
 User decision: keep AUTOSIM as the engine and bring optcg-ai's effect data
 into it through a compiler (option 2 of docs/INTEGRATION in optcg-ai), not
 swap engines.
-- `src/autosim/compiler/fromOptcg.ts`: pure compiler optcgwebsim actionV3
+- `src/autosim/compiler/` (entry `fromOptcg.ts`, one module per concern, see
+  its README.md): pure compiler optcgwebsim actionV3
   (`proc`+`steps`) → `CompiledCard`. Never invents semantics: what the IR
   can't say becomes `manual` with the card's own text (a translatable first
   part still runs, then "Continue by hand …"); abilities with no IR timing

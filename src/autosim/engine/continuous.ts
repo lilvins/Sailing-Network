@@ -11,11 +11,12 @@
  */
 
 import type { Action, Effect } from "../ir/types";
-import { conditionsMet, resolveSelector } from "./effects";
-import type { AutoGameState, CardDb, Iid, Modifier, PID } from "./state";
+import { conditionsMet, matchesFilter, quantity, resolveSelector } from "./effects";
+import { isNegated, type AutoGameState, type CardDb, type Iid, type Modifier, type PID } from "./state";
 
 /** Action kinds a `static` effect can apply continuously today. */
-const CONTINUOUS_KINDS = new Set<Action["kind"]>(["powerMod", "costMod", "grantKeyword", "restriction"]);
+// negateEffect: read by isNegated (state.ts), not stored as a modifier
+const CONTINUOUS_KINDS = new Set<Action["kind"]>(["powerMod", "costMod", "grantKeyword", "restriction", "setBasePower", "setCounter", "negateEffect"]);
 
 /** Whether the engine applies this static action continuously. */
 export function isContinuousAction(a: Action): boolean {
@@ -36,28 +37,55 @@ function fieldCards(state: AutoGameState, pid: PID): Iid[] {
   return [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage];
 }
 
+/** "this card in your hand …" (M5): a static whose selector is the card
+ *  itself in the hand works from the hand; every other static, from the field. */
+const worksFrom = (a: Action, inHand: boolean): boolean =>
+  "sel" in a && (!!a.sel.self && a.sel.zone === "hand") === inHand;
+
 function computePass(db: CardDb, state: AutoGameState): Modifier[] {
   const out: Modifier[] = [];
   for (const owner of state.order) {
-    for (const iid of fieldCards(state, owner)) {
+    const field = new Set(fieldCards(state, owner));
+    for (const iid of [...field, ...state.players[owner].zones.hand]) {
       const inst = state.players[owner].instances[iid];
+      if (isNegated(state, owner, iid, db)) continue; // M5: "negate the effect"
       const effects = db(inst.cardId).compiled?.effects ?? [];
       for (const fx of effects) {
         if (fx.timing !== "static") continue;
+        if (!fx.actions.some((a) => worksFrom(a, !field.has(iid)))) continue;
         if (!conditionsMet(db, state, owner, iid, fx.conditions)) continue;
         for (const a of fx.actions) {
-          if (!isContinuousAction(a) || !("sel" in a)) continue;
-          const targets = a.sel.self ? [{ owner, iid }] : resolveSelector(db, state, owner, iid, a.sel);
+          if (!isContinuousAction(a) || !("sel" in a) || !worksFrom(a, !field.has(iid))) continue;
+          // "the base power of … with 4000 base power becomes 8000" selects by the printed value
+          const s = a.kind === "setBasePower" && a.sel.filter ? { ...a.sel, filter: { ...a.sel.filter, printedBase: true } } : a.sel;
+          // a "this card" selector may carry a filter ("on the turn in which it is played", M5)
+          const targets = a.sel.self
+            ? (!a.sel.filter || matchesFilter(db, state, owner, iid, a.sel.filter, iid, field.has(iid)) ? [{ owner, iid }] : [])
+            : resolveSelector(db, state, owner, iid, s);
+          const scaled = (amount: number, scale?: { q: Parameters<typeof quantity>[2]; per: number }) =>
+            scale ? amount * Math.floor(quantity(state, owner, scale.q, db) / scale.per) : amount;
           for (const t of targets) {
             const base = {
               source: iid, controller: owner, targetOwner: t.owner, targetIid: t.iid,
               duration: "permanentWhileInPlay" as const, anchor: owner, createdTurn: state.turn,
             };
             switch (a.kind) {
-              case "powerMod": out.push({ ...base, kind: "powerMod", amount: a.amount }); break;
-              case "costMod": out.push({ ...base, kind: "costMod", amount: a.amount }); break;
+              case "powerMod": out.push({ ...base, kind: "powerMod", amount: scaled(a.amount, a.scale) }); break;
+              case "costMod": out.push({ ...base, kind: "costMod", amount: scaled(a.amount, a.scale) }); break;
+              case "setBasePower": out.push({ ...base, kind: "basePower",
+                amount: a.fromLeaderBase ? db(state.players[owner].instances[state.players[owner].leaderIid].cardId).power ?? 0 : a.amount }); break;
+              case "setCounter": out.push({ ...base, kind: "counter", amount: a.amount }); break;
               case "grantKeyword": out.push({ ...base, kind: "keywordGrant", keyword: a.keyword }); break;
-              case "restriction": out.push({ ...base, kind: "restriction", restriction: a.what }); break;
+              case "restriction": out.push({
+                ...base, kind: "restriction", restriction: a.what,
+                ...(a.amount !== undefined ? { amount: a.amount } : {}),
+                ...(a.attributes ? { attributes: a.attributes } : {}),
+                ...(a.attackerCharactersOnly ? { attackerCharactersOnly: true } : {}),
+                ...(a.attackerLeadersOnly ? { attackerLeadersOnly: true } : {}),
+                ...(a.exceptAttributes ? { exceptAttributes: a.exceptAttributes } : {}),
+                ...(a.sourceFilter ? { sourceFilter: a.sourceFilter } : {}),
+                ...(a.sourceOpponentOnly ? { sourceOpponentOnly: true } : {}),
+              }); break;
             }
           }
         }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import { EngineError, type PlayerIntent } from "../engine/intents";
 import { legalMoves } from "../engine/legality";
+import { fitChoice } from "../engine/effects";
 import type { AutoGameState, CardDb, EngineCard, Iid } from "../engine/state";
 import type { GameEvent } from "../engine/events";
 import type { Effect, Keyword } from "../ir/types";
@@ -209,7 +210,7 @@ function checkInvariants(state: AutoGameState, ctx: () => string, deep = true): 
 
   // pendingChoice / battle / exec consistency
   const pc = state.pendingChoice;
-  const effectChoice = pc && ["selectTargets", "mayActivate", "manualResolve", "peekSelect", "payDon", "chooseNumber"].includes(pc.kind);
+  const effectChoice = pc && ["selectTargets", "mayActivate", "manualResolve", "peekSelect", "payDon", "chooseNumber", "chooseOption", "mayReplace", "arrangeLife"].includes(pc.kind);
   if (state.battle) {
     if (!pc) fail(`battle in step "${state.battle.step}" with no pending choice`);
     const step = state.battle.step;
@@ -313,8 +314,8 @@ function enumerateMoves(state: AutoGameState): PlayerIntent[] {
   }
   if (pc?.kind === "selectTargets") {
     const n = Math.min(pc.count, pc.candidates.length);
-    const firstN = pc.candidates.slice(0, n).map((c) => c.iid);
-    const lastN = pc.candidates.slice(-n).map((c) => c.iid);
+    const firstN = fitChoice(db, state, pc, pc.candidates.slice(0, n).map((c) => c.iid));
+    const lastN = fitChoice(db, state, pc, pc.candidates.slice(-n).map((c) => c.iid));
     const moves: PlayerIntent[] = [{ type: "respondTargets", player: actor, iids: firstN }];
     if (lastN.join() !== firstN.join()) moves.push({ type: "respondTargets", player: actor, iids: lastN });
     if (pc.upTo) moves.push({ type: "respondTargets", player: actor, iids: [] });
@@ -367,6 +368,19 @@ function enumerateMoves(state: AutoGameState): PlayerIntent[] {
       return { type: "respondPayDon", player: actor, fromActive, fromRested, fromGiven };
     };
     return [compose(false), compose(true)];
+  }
+  if (pc?.kind === "mayReplace") {
+    return [{ type: "respondReplace", player: actor, use: true }, { type: "respondReplace", player: actor, use: false }];
+  }
+  if (pc?.kind === "arrangeLife") {
+    const rev = [...pc.cards].reverse();
+    return [
+      { type: "respondArrangeLife", player: actor, order: pc.cards.slice(pc.toDeckTop), toDeck: pc.cards.slice(0, pc.toDeckTop) },
+      { type: "respondArrangeLife", player: actor, order: rev.slice(pc.toDeckTop), toDeck: rev.slice(0, pc.toDeckTop) },
+    ];
+  }
+  if (pc?.kind === "chooseOption") {
+    return pc.enabled.flatMap((ok, index) => (ok ? [{ type: "respondOption", player: actor, index } as PlayerIntent] : []));
   }
   if (pc?.kind === "chooseNumber") {
     const moves: PlayerIntent[] = [{ type: "respondNumber", player: actor, value: pc.min }];
