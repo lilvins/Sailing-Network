@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { applyIntent, createGame } from "../engine/engine";
 import { seededRng } from "../../lib/rng";
-import { randomIntent } from "./randomPolicy";
+import { randomIntent } from "../ai/random";
 import { metaDecks, metaGameConfig, playRandomGame, realDb, type ApplyMode } from "./metaGames";
 
 /**

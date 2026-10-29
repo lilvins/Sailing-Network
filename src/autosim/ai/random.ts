@@ -69,7 +69,7 @@ function counterIntent(db: CardDb, state: AutoGameState, rng: Rng): PlayerIntent
 }
 
 /** Pays from rested DON!! first, then active, then given (the cheapest order for the payer). */
-function payDonIntent(state: AutoGameState, player: PID, amount: number): PlayerIntent {
+export function payDonIntent(state: AutoGameState, player: PID, amount: number): PlayerIntent {
   const don = state.players[player].don;
   let left = amount;
   const fromRested = Math.min(left, don.rested); left -= fromRested;

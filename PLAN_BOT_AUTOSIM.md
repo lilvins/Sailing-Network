@@ -131,6 +131,13 @@ cui non ci si arriva e cosa costerebbe. Impronta delle partite invariata,
    Uscita: 500 partite greedy-vs-casuale su ogni mazzo meta senza errori,
    greedy vince > 80%.
 
+   **Stato (2026-10-29): fatta.** `src/autosim/ai/` con interfaccia `Agent`,
+   casuale, greedy (regole + lookahead di una mossa su un mondo
+   determinizzato), `evaluate`, `determinize`, `tuning`. Greedy contro
+   casuale: 102/102 sui 17 mazzi meta, 0 mosse rifiutate, ~56 ms a partita.
+   Anticipato dalla fase 4: posti "AI" al tavolo di Play Auto e partita
+   IA contro IA da guardare.
+
 ### Fase 3 — Il bot Pro su AUTOSIM (tappa 10, M6)
 1. Porting di `pro.ts`: successive halving, orizzonte di 2-3 turni, difesa
    con ricerca, numeri casuali comuni.

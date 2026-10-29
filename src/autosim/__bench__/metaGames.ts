@@ -5,7 +5,7 @@ import { makeCardDb } from "../../features/board-auto/compile";
 import { applyIntent, applyIntentInPlace, createGame, type GameConfig } from "../engine/engine";
 import type { AutoGameState, CardDb } from "../engine/state";
 import { seededRng } from "../../lib/rng";
-import { randomIntent } from "./randomPolicy";
+import { randomIntent } from "../ai/random";
 
 /**
  * Full games between the meta decks of the test account
