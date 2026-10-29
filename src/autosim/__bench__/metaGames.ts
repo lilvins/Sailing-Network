@@ -2,7 +2,7 @@ import cardsJson from "../../../public/data/cards.json";
 import metaJson from "../../../public/data/meta-decks.json";
 import type { Card } from "../../features/cards/cardsDb";
 import { makeCardDb } from "../../features/board-auto/compile";
-import { applyIntent, createGame, type GameConfig } from "../engine/engine";
+import { applyIntent, applyIntentInPlace, createGame, type GameConfig } from "../engine/engine";
 import type { AutoGameState, CardDb } from "../engine/state";
 import { seededRng } from "../../lib/rng";
 import { randomIntent } from "./randomPolicy";
@@ -45,7 +45,14 @@ export interface GameRun {
   ms: { create: number; decide: number; apply: number };
 }
 
-export function playRandomGame(config: GameConfig): GameRun {
+/**
+ * "game": every intent through applyIntent (a copy per intent, like the table).
+ * "rollout": applyIntentInPlace on one state, like the bot's simulations.
+ */
+export type ApplyMode = "game" | "rollout";
+
+export function playRandomGame(config: GameConfig, mode: ApplyMode = "game"): GameRun {
+  const apply = mode === "game" ? applyIntent : applyIntentInPlace;
   const rng = seededRng(`driver:${config.seed}`);
   const ms = { create: 0, decide: 0, apply: 0 };
   let t = performance.now();
@@ -59,7 +66,7 @@ export function playRandomGame(config: GameConfig): GameRun {
     t = performance.now();
     const intent = randomIntent(realDb, state, rng);
     const mid = performance.now();
-    const result = applyIntent(realDb, state, intent);
+    const result = apply(realDb, state, intent);
     ms.decide += mid - t;
     ms.apply += performance.now() - mid;
     state = result.state;

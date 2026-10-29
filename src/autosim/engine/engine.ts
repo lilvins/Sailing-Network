@@ -182,8 +182,17 @@ function finishSetup(db: CardDb, state: AutoGameState, log: GameEvent[]): void {
 
 // ─── intent handling ─────────────────────────────────────────────────────────
 
+/** The game's entry point: works on a copy, so `prev` is never changed and an
+ *  illegal intent (EngineError) leaves the game exactly as it was. */
 export function applyIntent(db: CardDb, prev: AutoGameState, intent: PlayerIntent): EngineResult {
-  const state = structuredClone(prev);
+  return applyIntentInPlace(db, structuredClone(prev), intent);
+}
+
+/** For simulations only (the bot's rollouts, the benchmark): changes `state`
+ *  itself instead of a copy, which saves a deep copy per intent. If it throws,
+ *  `state` may be half-changed — throw the whole simulated game away. Never
+ *  call it on the state of the real game. */
+export function applyIntentInPlace(db: CardDb, state: AutoGameState, intent: PlayerIntent): EngineResult {
   const log: GameEvent[] = [];
 
   switch (intent.type) {
