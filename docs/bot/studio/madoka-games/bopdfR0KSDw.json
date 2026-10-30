@@ -1,0 +1,2368 @@
+{
+ "video_id": "bopdfR0KSDw",
+ "url": "https://www.youtube.com/watch?v=bopdfR0KSDw",
+ "title": "G Mihawk mirror (Go first)",
+ "mulligan": {
+  "You": true
+ },
+ "source": "OCR del combat log di OPTCGSim visibile nel video (non sottotitoli)",
+ "you": "madoka_hk",
+ "leaders": {
+  "Opponent": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  },
+  "You": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  }
+ },
+ "first_player": "You",
+ "winner": null,
+ "end": "fine video / non chiaro",
+ "turns": [
+  {
+   "turn": 1,
+   "player": "You",
+   "events": [
+    {
+     "t": 3.0,
+     "type": "don",
+     "player": "You",
+     "n": 1,
+     "don_total": 1
+    },
+    {
+     "t": 4.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 4.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 4.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 4.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 5,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 0
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 1,
+     "when": "inizio",
+     "t": 3.6,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo",
+      "ST24-002 Kid & Killer",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.835,
+      0.914,
+      0.884,
+      0.896,
+      0.889
+     ]
+    },
+    {
+     "turn": 1,
+     "when": "fine",
+     "t": 4.2,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo",
+      "ST24-002 Kid & Killer",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.835,
+      0.914,
+      0.883,
+      0.897,
+      0.889
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 2,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 4.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 10.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 2
+    },
+    {
+     "t": 10.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 15.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawKid&Killer<ST24-002>"
+    },
+    {
+     "t": 18.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 5,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [],
+     "Opponent": [
+      "ST24-002 Kid & Killer"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 3,
+   "player": "You",
+   "events": [
+    {
+     "t": 18.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 22.5,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 3
+    },
+    {
+     "t": 22.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 24.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 47.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 50.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 52.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 52.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 52.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [
+      "ST24-002 Kid & Killer",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 3,
+     "when": "inizio",
+     "t": 18.9,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP07-032 Fisher Tiger (?)",
+      "OP05-028 Donquixote Doflamingo (?)",
+      "OP11-035 Fisher Tiger (?)"
+     ],
+     "scores": [
+      0.639,
+      0.67,
+      0.382,
+      0.419,
+      0.28
+     ]
+    },
+    {
+     "turn": 3,
+     "when": "fine",
+     "t": 51.5,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo (?)",
+      "OP07-031 Bartolomeo (?)",
+      "P-057 Fleeting Lullaby (?)"
+     ],
+     "scores": [
+      0.844,
+      0.708,
+      0.406,
+      0.449,
+      0.291
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 4,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 52.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 52.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 4
+    },
+    {
+     "t": 53.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 53.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 56.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 58.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 58.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 62.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 70.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 70.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawTashigi<OP14-029>"
+    },
+    {
+     "t": 72.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 72.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "ST24-002 Kid & Killer",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 5,
+   "player": "You",
+   "events": [
+    {
+     "t": 72.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 75.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 5
+    },
+    {
+     "t": 75.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "ST24-002",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 80.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "value": 1000
+    },
+    {
+     "t": 84.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 87.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-002",
+     "attacker_name": "Kid & Killer",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 6000
+    },
+    {
+     "t": 97.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 97.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 98.25,
+     "type": "self_trash",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashJewelryBonney<OP12-118>"
+    },
+    {
+     "t": 98.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 105.25,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 105.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 105.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "ST24-002 Kid & Killer",
+      "ST02-007 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 5,
+     "when": "inizio",
+     "t": 73.1,
+     "n": 7,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.878,
+      0.934,
+      0.909,
+      0.908,
+      0.868,
+      0.921,
+      0.886
+     ]
+    },
+    {
+     "turn": 5,
+     "when": "fine",
+     "t": 104.8,
+     "n": 6,
+     "cards": [
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.935,
+      0.888,
+      0.903,
+      0.902,
+      0.909,
+      0.883
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 6,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 105.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 117.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 6
+    },
+    {
+     "t": 117.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "ST24-002",
+     "attacker_name": "Kid & Killer",
+     "target": "ST24-002",
+     "target_name": "Kid & Killer",
+     "counters": [],
+     "result": "ko"
+    },
+    {
+     "t": 124.25,
+     "type": "ko",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer"
+    },
+    {
+     "t": 128.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 128.0,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 129.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 130.0,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnKid&Killer<ST24-002>toHand"
+    },
+    {
+     "t": 133.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 136.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 137.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 137.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 142.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestOon[Don]"
+    },
+    {
+     "t": 142.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 142.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 142.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 142.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 3
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "ST02-007 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-029 Tashigi"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 7,
+   "player": "You",
+   "events": [
+    {
+     "t": 142.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 146.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 7
+    },
+    {
+     "t": 149.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "category": "Character"
+    },
+    {
+     "t": 149.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestShanks<OP14-027>"
+    },
+    {
+     "t": 150.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 150.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 151.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "text": "RestTrafalgarLaw<OP13-031>"
+    },
+    {
+     "t": 157.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "ST24-002",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 160.5,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "value": 1000
+    },
+    {
+     "t": 169.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-118",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-033",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 174.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-033",
+     "name": "Perona",
+     "value": 1000
+    },
+    {
+     "t": 179.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 179.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 182.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 186.5,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawScratchmenApoo<EB01-015>"
+    },
+    {
+     "t": 206.5,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 209.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 209.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 209.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 3
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "ST02-007 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-029 Tashigi"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 7,
+     "when": "inizio",
+     "t": 143.1,
+     "n": 8,
+     "cards": [
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP14-039 Coffin Boat",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.934,
+      0.908,
+      0.888,
+      0.887,
+      0.905,
+      0.9,
+      0.894,
+      0.837
+     ]
+    },
+    {
+     "turn": 7,
+     "when": "fine",
+     "t": 208.5,
+     "n": 9,
+     "cards": [
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo",
+      "EB01-015 Scratchmen Apoo",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "scores": [
+      0.915,
+      0.911,
+      0.878,
+      0.901,
+      0.902,
+      0.887,
+      0.902,
+      0.917,
+      0.904
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 8,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 209.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 209.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 8
+    },
+    {
+     "t": 214.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "ST24-002",
+     "attacker_name": "Kid & Killer",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 1000,
+     "defense_power": 1000
+    },
+    {
+     "t": 217.5,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 218.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 1000,
+     "defense_power": 1000
+    },
+    {
+     "t": 222.0,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 222.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "category": "Character"
+    },
+    {
+     "t": 223.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestShanks<OP14-027>"
+    },
+    {
+     "t": 224.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 224.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 233.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 233.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 233.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 233.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP13-031",
+     "to_name": "Trafalgar Law",
+     "total_on_card": 1
+    },
+    {
+     "t": 242.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [
+      {
+       "player": "You",
+       "card": "ST02-007",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 242.75,
+     "type": "counter",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "value": 1000
+    },
+    {
+     "t": 245.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [
+      {
+       "player": "You",
+       "card": "EB01-015",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 8000
+    },
+    {
+     "t": 249.75,
+     "type": "counter",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "value": 2000
+    },
+    {
+     "t": 251.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP14-029",
+     "to_name": "Tashigi",
+     "total_on_card": 1
+    },
+    {
+     "t": 252.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-029",
+     "attacker_name": "Tashigi",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 8000,
+     "defense_power": 10000
+    },
+    {
+     "t": 255.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCountel"
+    },
+    {
+     "t": 255.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffJewelry3onney<OP12-118>2000fortheCombat"
+    },
+    {
+     "t": 255.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffJewelryBonney<OP12-118>2000"
+    },
+    {
+     "t": 257.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 257.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 3
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-027 Shanks"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 9,
+   "player": "You",
+   "events": [
+    {
+     "t": 257.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 259.75,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 9
+    },
+    {
+     "t": 261.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 276.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawShanks<OP14-027>"
+    },
+    {
+     "t": 276.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-027",
+     "attacker_name": "Shanks",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 8000,
+     "defense_power": 6000
+    },
+    {
+     "t": 297.25,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP13-031",
+     "name": "Trafalgar Law"
+    },
+    {
+     "t": 299.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "category": "Character"
+    },
+    {
+     "t": 300.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestShanks<OP14-027>"
+    },
+    {
+     "t": 304.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 304.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 307.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 308.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 310.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP12-118",
+     "to_name": "Jewelry Bonney",
+     "total_on_card": 1
+    },
+    {
+     "t": 310.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-118",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-029",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 312.5,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "value": 1000
+    },
+    {
+     "t": 317.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP13-040",
+     "name": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+     "text": "Shanks<OP14-027>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 317.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP13-040",
+     "name": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+     "text": "Tashigi<OP14-029>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 317.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 317.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-027 Shanks",
+      "OP12-034 Perona",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona",
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 9,
+     "when": "inizio",
+     "t": 258.4,
+     "n": 7,
+     "cards": [
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.911,
+      0.909,
+      0.907,
+      0.91,
+      0.854,
+      0.903,
+      0.889
+     ]
+    },
+    {
+     "turn": 9,
+     "when": "fine",
+     "t": 317.2,
+     "n": 5,
+     "cards": [
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.877,
+      0.894,
+      0.887,
+      0.895,
+      0.889
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 10,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 317.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 317.75,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 10
+    },
+    {
+     "t": 327.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 328.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "Shanks<OP14-027>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 328.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 329.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 331.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 331.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!【"
+    },
+    {
+     "t": 334.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 338.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 10000,
+     "defense_power": 6000
+    },
+    {
+     "t": 343.5,
+     "type": "ko",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 343.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestPerona<OP12-034>"
+    },
+    {
+     "t": 343.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 343.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 344.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 344.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-027 Shanks",
+      "OP12-034 Perona",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP12-034 Perona",
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 11,
+   "player": "You",
+   "events": [
+    {
+     "t": 368.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 368.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 11
+    },
+    {
+     "t": 369.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 369.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RestLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 369.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "aw&Bepo<ST24-004>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 369.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 370.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 371.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 371.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 379.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP12-034",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 382.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP12-034",
+     "target_name": "Perona",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 2000,
+     "defense_power": 2000
+    },
+    {
+     "t": 382.25,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona"
+    },
+    {
+     "t": 386.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-027",
+     "to_name": "Shanks",
+     "total_on_card": 1
+    },
+    {
+     "t": 386.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-027",
+     "attacker_name": "Shanks",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "ST24-002",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 9000,
+     "defense_power": 10000
+    },
+    {
+     "t": 388.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "text": "ResKid&Killer<ST24-002>"
+    },
+    {
+     "t": 391.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "value": 1000
+    },
+    {
+     "t": 392.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 1
+    },
+    {
+     "t": 395.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP12-034",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 9000,
+     "defense_power": 10000
+    },
+    {
+     "t": 395.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona",
+     "value": 1000
+    },
+    {
+     "t": 397.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 397.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-027 Shanks",
+      "OP12-034 Perona",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 11,
+     "when": "inizio",
+     "t": 368.9,
+     "n": 5,
+     "cards": [
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "ST24-002 Kid & Killer"
+     ],
+     "scores": [
+      0.877,
+      0.893,
+      0.887,
+      0.894,
+      0.893
+     ]
+    },
+    {
+     "turn": 11,
+     "when": "fine",
+     "t": 396.5,
+     "n": 5,
+     "cards": [
+      "ST24-004 Law & Bepo",
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "ST24-002 Kid & Killer"
+     ],
+     "scores": [
+      0.877,
+      0.894,
+      0.886,
+      0.895,
+      0.892
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 12,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 426.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 426.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 430.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 442.5,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP12-034",
+     "name": "Perona",
+     "from": "field"
+    },
+    {
+     "t": 442.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 446.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "text": "Shanks<OP14-027>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 447.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 447.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 447.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!【"
+    },
+    {
+     "t": 451.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 3,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 3
+    },
+    {
+     "t": 453.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [
+      {
+       "player": "You",
+       "card": "ST24-002",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 9000,
+     "defense_power": 10000
+    },
+    {
+     "t": 456.25,
+     "type": "counter",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "value": 1000
+    },
+    {
+     "t": 459.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 4,
+     "to": "OP14-027",
+     "to_name": "Shanks",
+     "total_on_card": 4
+    },
+    {
+     "t": 460.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-027",
+     "attacker_name": "Shanks",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 11000,
+     "defense_power": 13000
+    },
+    {
+     "t": 465.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCountel"
+    },
+    {
+     "t": 465.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffShanks<OP14-027>2000fortheCombat"
+    },
+    {
+     "t": 465.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffShanks<OP14-027>2000"
+    },
+    {
+     "t": 467.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 467.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-027 Shanks",
+      "OP12-034 Perona",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "ST24-002 Kid & Killer",
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "ST24-004 Law & Bepo",
+      "OP07-026 Jewelry Bonney"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "OP14-039 Coffin Boat"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 13,
+   "player": "You",
+   "events": [
+    {
+     "t": 473.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 475.25,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 477.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "aw&Bepo<ST24-004>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 477.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 477.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 483.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 483.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 486.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-004",
+     "attacker_name": "Law & Bepo",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [],
+     "result": null
+    }
+   ],
+   "hand_you": [
+    {
+     "turn": 13,
+     "when": "inizio",
+     "t": 474.4,
+     "n": 3,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.882,
+      0.895,
+      0.827
+     ]
+    },
+    {
+     "turn": 13,
+     "when": "fine",
+     "t": 485.5,
+     "n": 3,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.877,
+      0.894,
+      0.823
+     ]
+    }
+   ]
+  }
+ ],
+ "quality": {
+  "log_chars": 11033,
+  "parsed_fraction": 0.929,
+  "unparsed_fragments": [
+   "0s [Opponent]HasDisconnected![You]Quits!AttemptingtoconnecttoETQRPFGVersionis1.35a",
+   "0s [You]Willselectturnordermadokahk#9226HasConnectedVersionis1.35a",
+   "15s [Opponent]PlacingCardsonBottomofDeck",
+   "25s DraculeMihawk",
+   "25s DraculeMihawk",
+   "50s [You]PlacingCardsonBottomofDeck",
+   "58s DraculeMihawk",
+   "58s OraculeMihawk",
+   "63s [Opponent]PlacingCardsonBottomofDeck",
+   "70s [Opponent]PlacingCardsonBottomofDeck",
+   "80s DraculeMihawk",
+   "124s Kid&Killer<ST24-002>[2000]vsKid&<iller<ST24-002>[2000]",
+   "128s DraculeMihawk",
+   "128s DraculeMihawk",
+   "161s DraculeMihawk",
+   "186s [You]PlacingCardsonBottomofDeck",
+   "209s [You]PlacingCardsonBottomofDeck",
+   "250s DraculeMihawk",
+   "256s fortheCombatTashigi",
+   "276s [You]PlacingCardsonBottomofDeck",
+   "309s DraculeMihawk",
+   "309s DraculeMihawk",
+   "313s JewelryBonney",
+   "344s DraculeMihawk",
+   "396s DraculeMihawk",
+   "430s [Opponent]PlacingCardsonBottomofDeck",
+   "459s DraculeMihawk",
+   "466s fortheCombatShanks"
+  ],
+  "unknown_ids": [],
+  "log_gaps": 1
+ }
+}

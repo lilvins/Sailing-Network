@@ -22,12 +22,18 @@ export type EvalWeights = {
   counter: number;
   /** Points per Character on the field (difference). */
   chars: number;
+  /** Points per cost point of a Character on the field: a K.O. is worth what it kills. */
+  charCost: number;
+  /** Points per cost point of the best target a removal card in hand still has (its option value). */
+  removalOption: number;
   /** Board power difference is divided by this (5000 power = 50 points). */
   powerDivisor: number;
   /** Points per active Blocker. */
   blocker: number;
   /** Points per DON!! the player will have next turn. */
   don: number;
+  /** Points for a hand that uses all the DON!! of the next two turns (0..2 × this): the curve plan. */
+  curve: number;
   /** Penalty per cost point of a rested Character costing more than `expendableCost`. */
   rested: number;
   expendableCost: number;
@@ -41,8 +47,8 @@ export type EvalWeights = {
 export const EVAL_BASE: EvalWeights = {
   myLifeBase: 70, oppLifeBase: 70, lifeConvex: 20,
   hand: 6, oppHand: 5, counter: 10,
-  chars: 12, powerDivisor: 100, blocker: 8,
-  don: 12, rested: 2, expendableCost: 1,
+  chars: 12, charCost: 8, removalOption: 14, powerDivisor: 100, blocker: 8,
+  don: 12, curve: 30, rested: 2, expendableCost: 1,
   pressure: 15, lethalBonus: 60, roleShift: 0.15,
 };
 
@@ -50,8 +56,8 @@ export const EVAL_BASE: EvalWeights = {
 export const EVAL_V1: EvalWeights = {
   myLifeBase: 100, oppLifeBase: 100, lifeConvex: 0,
   hand: 8, oppHand: 6, counter: 0,
-  chars: 12, powerDivisor: 100, blocker: 0,
-  don: 12, rested: 2, expendableCost: 1,
+  chars: 12, charCost: 0, removalOption: 0, powerDivisor: 100, blocker: 0,
+  don: 12, curve: 0, rested: 2, expendableCost: 1,
   pressure: 0, lethalBonus: 0, roleShift: 0,
 };
 
@@ -71,16 +77,21 @@ export const SHIELD = {
   maxPressure: 3,
   /** Life cards above this many are all worth the base value. */
   convexLives: 5,
+  /** DON!! cap on the field (6-5-1-1). */
+  maxDon: 10,
+  /** A removal is never worth less than killing a Character of this cost: big ones come later. */
+  futureThreatCost: 5,
 } as const;
 
 export const GREEDY = {
-  /** Mulligan unless the hand holds this many cards costing ≤ cheapCost. */
-  keepCheap: 2,
-  cheapCost: 3,
+  /** Mulligan: an opener (drawer/searcher or Stage) costs at most this… */
+  openerMaxCost: 2,
+  /** …and the middle of the curve is a Character costing within this range. */
+  middleCurve: [4, 6],
   /** Counter for the Leader only at this Life or less. */
   counterLeaderAtLife: 2,
-  /** Counter for a Character only if it costs at least this. */
-  counterCharFromCost: 4,
+  /** A Character this expensive is worth two counter cards (cheaper ones: one). */
+  bigPieceCost: 5,
   /** A main-phase play must raise the evaluation by more than this. */
   minGain: 1,
   /** Lookahead: at most this many options compared per choice. */

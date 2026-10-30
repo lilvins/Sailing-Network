@@ -27,7 +27,7 @@ const BUDGET = JSON.parse(opt("--budget", "{}"));
 const RUN = opt("--seed", new Date().toISOString().slice(0, 16));
 
 /** Weights training may change (integers like expendableCost stay as written). */
-const KEYS = ["lethalBonus", "pressure", "counter", "lifeConvex", "oppLifeBase", "myLifeBase", "hand", "oppHand", "chars", "blocker", "don", "rested", "roleShift", "powerDivisor"];
+const KEYS = ["lethalBonus", "pressure", "counter", "lifeConvex", "oppLifeBase", "myLifeBase", "hand", "oppHand", "chars", "charCost", "removalOption", "blocker", "don", "curve", "rested", "roleShift", "powerDivisor"];
 
 const LEARNED = "src/autosim/ai/learned.json";
 const REPORT = "docs/bot/allenamento.md";

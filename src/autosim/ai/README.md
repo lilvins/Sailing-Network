@@ -11,7 +11,8 @@ mai lo stato: chi lo usa (tavolo, test, self-play) applica l'intent con il motor
 | `greedy.ts` | agente greedy: regole fisse + lookahead di una mossa |
 | `pro.ts` | agente Pro: ricerca Monte Carlo (candidati, eliminazione progressiva, numeri casuali comuni) |
 | `rollout.ts` | policy veloce e rollout fino all'orizzonte, usati dal Pro |
-| `evaluate.ts` | valutazione statica di una posizione: vita convessa, mano, counter, campo, DON!!, pressione, ruolo (teoria in `docs/bot/teoria-del-vantaggio.md`) |
+| `evaluate.ts` | valutazione statica di una posizione: vita convessa, mano, counter, campo utile, rimozioni in mano, DON!!, pressione, ruolo (teoria in `docs/bot/teoria-del-vantaggio.md`) |
+| `cardTraits.ts` | cosa fa una carta, letto dall'IR: è una rimozione? ha un effetto che continua a lavorare? |
 | `determinize.ts` | copia "immaginata" della partita: le carte che l'agente non vede vengono rimescolate |
 | `tuning.ts` | tutti i pesi e le soglie, solo numeri |
 | `learned.json` | i pesi che l'allenamento ha adottato e il registro dei tentativi (`npm run train:autosim`, `src/autosim/train/`) |

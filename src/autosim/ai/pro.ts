@@ -9,6 +9,7 @@ import { determinize } from "./determinize";
 import { evaluate, roleOf, type Role } from "./evaluate";
 import { cardValue, choiceOptions, createGreedyAgent } from "./greedy";
 import { rollout } from "./rollout";
+import { isWastedPlay } from "./waste";
 import { EVAL, PRIOR, PRO, WIN, type EvalWeights } from "./tuning";
 
 export type ProConfig = {
@@ -28,23 +29,37 @@ export type ProConfig = {
  * 3. Successive halving: every candidate gets a few samples, the better half
  *    gets more, and so on. All candidates share the same imagined worlds
  *    (common random numbers), so they are compared on equal luck.
+ * A card played into nothing is never a candidate (waste.ts).
  * Blocks, counters and yes/no prompts are searched the same way; the other
  * prompts (targets, peek, numbers…) go to the greedy lookahead, which is
  * cheap and already good at them. Port of optcg-ai's src/ai/pro.ts.
  */
-export function createProAgent(seed = "pro", config: Partial<ProConfig> = {}): Agent {
+/** One candidate of the last decision: its mean rollout value and how many rollouts it got. */
+export type Thought = { intent: PlayerIntent; mean: number; rollouts: number };
+
+/** The Pro also tells why: the candidates of its last searched decision, best first. */
+export interface ProAgent extends Agent {
+  lastThoughts(): Thought[];
+}
+
+export function createProAgent(seed = "pro", config: Partial<ProConfig> = {}): ProAgent {
   const cfg: ProConfig = { candidates: PRO.candidates, rollouts: PRO.rollouts, horizon: PRO.horizon, weights: EVAL, ...config };
   const rng = seededRng(seed);
   const greedy = createGreedyAgent(`${seed}:greedy`);
+  let thoughts: Thought[] = [];
   return {
     name: "Pro",
     decide(db, state, pid) {
       const pc = state.pendingChoice;
       const options = pc ? searchedOptions(db, state, pc) : mainCandidates(db, state, cfg.candidates);
       const greedyPick = greedy.decide(db, state, pid);
+      thoughts = [];
       if (!options) return greedyPick;
-      return search({ db, pid, rng, cfg, role: roleOf(db, state, pid) }, state, withIntent(options, greedyPick));
+      const cands = withIntent(options, greedyPick).filter((o) => !isWastedPlay(db, state, o));
+      thoughts = search({ db, pid, rng, cfg, role: roleOf(db, state, pid) }, state, cands.length ? cands : options);
+      return thoughts[0].intent;
     },
+    lastThoughts: () => thoughts,
   };
 }
 
@@ -86,7 +101,7 @@ function counterOptions(db: CardDb, state: AutoGameState, pid: PID): PlayerInten
   return [pass, { type: "useCounter", player: pid, cardIid: card.iid, targetIid: b.targetIid }];
 }
 
-/** Main Phase moves worth searching, best prior first, End Turn always last. */
+/** Main Phase moves worth searching, best prior first, then every activation, End Turn always last. */
 function mainCandidates(db: CardDb, state: AutoGameState, keep: number): PlayerIntent[] {
   const lm = legalMoves(db, state);
   const ranked = mainMoves(db, state, lm)
@@ -94,7 +109,11 @@ function mainCandidates(db: CardDb, state: AutoGameState, keep: number): PlayerI
     .sort((a, b) => b.prior - a.prior)
     .slice(0, keep)
     .map((m) => m.intent);
-  return [...ranked, { type: "endTurn", player: lm.actor }];
+  // [Activate: Main] (Mihawk untapping 3 DON!!) is rare and decisive: never cut by the prior
+  const activations: PlayerIntent[] = lm.activatable
+    .map((a): PlayerIntent => ({ type: "activateMain", player: lm.actor, iid: a.iid, effectIndex: a.effectIndex }))
+    .filter((a) => !ranked.some((r) => JSON.stringify(r) === JSON.stringify(a)));
+  return [...ranked, ...activations, { type: "endTurn", player: lm.actor }];
 }
 
 function mainMoves(db: CardDb, state: AutoGameState, lm: LegalMoves): PlayerIntent[] {
@@ -141,23 +160,31 @@ function attackPrior(db: CardDb, state: AutoGameState, pid: PID, attacker: Iid, 
 // ---------------------------------------------------------------------------
 // Search
 
-/** Successive halving over `cands` with common random numbers; returns the best. */
-function search(ctx: Ctx, state: AutoGameState, cands: PlayerIntent[]): PlayerIntent {
-  if (cands.length === 1) return cands[0];
+/**
+ * Successive halving over `cands` with common random numbers. Returns every
+ * candidate with its mean value, best first (the winner = the last survivor).
+ */
+function search(ctx: Ctx, state: AutoGameState, cands: PlayerIntent[]): Thought[] {
+  if (cands.length === 1) return [{ intent: cands[0], mean: 0, rollouts: 0 }];
   const total = ctx.cfg.rollouts * cands.length;
   const rounds = Math.max(1, Math.ceil(Math.log2(cands.length)));
   const worlds = Array.from({ length: Math.max(ctx.cfg.rollouts * 2, 4) }, () => Math.floor(ctx.rng() * 1e9).toString(36));
-  let alive = cands.map((intent) => ({ intent, sum: 0, n: 0 }));
+  const all = cands.map((intent) => ({ intent, sum: 0, n: 0, round: 0 }));
+  let alive = all;
   for (let r = 0; r < rounds && alive.length > 1; r++) {
     const per = Math.max(1, Math.floor(total / (alive.length * rounds)));
     for (const c of alive) {
       for (let k = 0; k < per; k++) c.sum += sample(ctx, state, c.intent, worlds[(c.n + k) % worlds.length]);
       c.n += per;
+      c.round = r;
     }
     alive.sort((x, y) => y.sum / y.n - x.sum / x.n);
     alive = alive.slice(0, Math.ceil(alive.length / 2));
   }
-  return alive[0].intent;
+  // survivors of later rounds first, then by mean
+  return [...all]
+    .sort((x, y) => (alive.includes(y) ? 1 : 0) - (alive.includes(x) ? 1 : 0) || y.round - x.round || y.sum / y.n - x.sum / x.n)
+    .map((c) => ({ intent: c.intent, mean: c.n ? c.sum / c.n : 0, rollouts: c.n }));
 }
 
 /** One imagined future of `intent`: its value for the agent. A refused move scores as a loss. */

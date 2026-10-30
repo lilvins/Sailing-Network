@@ -1,0 +1,3043 @@
+{
+ "video_id": "wqUK8CS1vho",
+ "url": "https://www.youtube.com/watch?v=wqUK8CS1vho",
+ "title": "Mihawk vs Y Enel (3 you should disappear)",
+ "mulligan": {
+  "You": true
+ },
+ "source": "OCR del combat log di OPTCGSim visibile nel video (non sottotitoli)",
+ "you": "madoka_hk",
+ "leaders": {
+  "You": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  },
+  "Opponent": {
+   "id": "OP05-098",
+   "name": "Enel"
+  }
+ },
+ "first_player": "You",
+ "winner": "Opponent",
+ "end": "concede",
+ "turns": [
+  {
+   "turn": 1,
+   "player": "You",
+   "events": [
+    {
+     "t": 13.0,
+     "type": "don",
+     "player": "You",
+     "n": 1,
+     "don_total": 1
+    },
+    {
+     "t": 13.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 0
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 1,
+     "when": "inizio",
+     "t": 13.6,
+     "n": 5,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.852,
+      0.871,
+      0.893,
+      0.865,
+      0.89
+     ]
+    },
+    {
+     "turn": 1,
+     "when": "fine",
+     "t": 12.5,
+     "n": 5,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.852,
+      0.869,
+      0.893,
+      0.864,
+      0.889
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 2,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 13.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 14.75,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 2
+    },
+    {
+     "t": 14.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 3,
+   "player": "You",
+   "events": [
+    {
+     "t": 14.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 18.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 3
+    },
+    {
+     "t": 18.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP05-098",
+     "name": "Enel",
+     "text": ""
+    },
+    {
+     "t": 21.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "text": "foCounter1000"
+    },
+    {
+     "t": 24.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 3,
+     "when": "inizio",
+     "t": 15.3,
+     "n": 6,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.873,
+      0.87,
+      0.893,
+      0.884,
+      0.905,
+      0.892
+     ]
+    },
+    {
+     "turn": 3,
+     "when": "fine",
+     "t": 23.8,
+     "n": 6,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.873,
+      0.862,
+      0.891,
+      0.886,
+      0.904,
+      0.889
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 4,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 24.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 26.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 4
+    },
+    {
+     "t": 26.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 33.25,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 35.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP10-109",
+     "name": "Basil Hawkins",
+     "category": "Character"
+    },
+    {
+     "t": 35.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [],
+     "Opponent": [
+      "OP10-109 Basil Hawkins"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 5,
+   "player": "You",
+   "events": [
+    {
+     "t": 35.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 43.75,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 5
+    },
+    {
+     "t": 43.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 45.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 49.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 50.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "BasilHawkins<OP10-109>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 52.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 5,
+     "when": "inizio",
+     "t": 36.4,
+     "n": 8,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.886,
+      0.88,
+      0.906,
+      0.88,
+      0.906,
+      0.912,
+      0.918,
+      0.892
+     ]
+    },
+    {
+     "turn": 5,
+     "when": "fine",
+     "t": 52.2,
+     "n": 7,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.883,
+      0.887,
+      0.909,
+      0.905,
+      0.903,
+      0.908,
+      0.893
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 6,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 53.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 53.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 6
+    },
+    {
+     "t": 61.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 5,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 5
+    },
+    {
+     "t": 64.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 10000,
+     "defense_power": 5000
+    },
+    {
+     "t": 64.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 65.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 7,
+   "player": "You",
+   "events": [
+    {
+     "t": 65.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 71.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 7
+    },
+    {
+     "t": 71.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 78.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 78.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 81.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 81.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-102",
+     "name": "Kumacy",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 82.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "category": "Character",
+     "via": "OP14-102 Kumacy"
+    },
+    {
+     "t": 83.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "text": "Perona<OP14-033>can'tattacknexttum"
+    },
+    {
+     "t": 86.0,
+     "type": "play",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "category": "Character"
+    },
+    {
+     "t": 88.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 90.25,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnScratchmenApoo<EB01-015>toHand"
+    },
+    {
+     "t": 90.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 91.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "BasilHawkins<OP10-109>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 91.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Perona<OP14-111>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 97.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestTrafalgarLaw<OP13-031>"
+    },
+    {
+     "t": 98.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 98.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 99.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "isn0longerblockedfromattacking"
+    },
+    {
+     "t": 99.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 7,
+     "when": "inizio",
+     "t": 65.8,
+     "n": 9,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "EB01-015 Scratchmen Apoo",
+      "OP07-026 Jewelry Bonney",
+      "OP13-031 Trafalgar Law"
+     ],
+     "scores": [
+      0.892,
+      0.896,
+      0.886,
+      0.895,
+      0.912,
+      0.915,
+      0.919,
+      0.885,
+      0.888
+     ]
+    },
+    {
+     "turn": 7,
+     "when": "fine",
+     "t": 98.8,
+     "n": 7,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP13-031 Trafalgar Law",
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP07-026 Jewelry Bonney",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.883,
+      0.912,
+      0.908,
+      0.909,
+      0.908,
+      0.892,
+      0.894
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 8,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 99.5,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 101.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 8
+    },
+    {
+     "t": 101.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB04-054",
+     "name": "Bartholomew Kuma",
+     "category": "Character"
+    },
+    {
+     "t": 102.75,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "EB04-054",
+     "name": "Bartholomew Kuma",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 2
+    },
+    {
+     "t": 102.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 1
+    },
+    {
+     "t": 111.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 8000
+    },
+    {
+     "t": 111.5,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 113.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 9,
+   "player": "You",
+   "events": [
+    {
+     "t": 113.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 123.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 9
+    },
+    {
+     "t": 125.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 130.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 130.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 131.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 133.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 137.5,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP07-119",
+     "name": "Portgas.D.Ace",
+     "from": "hand"
+    },
+    {
+     "t": 137.5,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP05-098",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 143.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP13-031",
+     "to_name": "Trafalgar Law",
+     "total_on_card": 1
+    },
+    {
+     "t": 145.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 149.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-102",
+     "name": "Kumacy",
+     "text": "orCounter2000",
+     "times": 2
+    },
+    {
+     "t": 154.0,
+     "type": "play",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "category": "Character"
+    },
+    {
+     "t": 156.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 157.25,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnScratchmenApoo<EB01-015>toHand"
+    },
+    {
+     "t": 158.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 159.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "text": "Don[Don]willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 166.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 166.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 166.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 166.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 166.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 167.5,
+     "type": "trigger",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 167.5,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 170.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "TrashKingdomCome<EB01-059>"
+    },
+    {
+     "t": 170.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 9,
+     "when": "inizio",
+     "t": 113.6,
+     "n": 7,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP13-031 Trafalgar Law",
+      "PRB02-006 Roronoa Zoro",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP07-026 Jewelry Bonney",
+      "EB01-015 Scratchmen Apoo",
+      "ST24-004 Law & Bepo"
+     ],
+     "scores": [
+      0.882,
+      0.911,
+      0.907,
+      0.909,
+      0.89,
+      0.926,
+      0.891
+     ]
+    },
+    {
+     "turn": 9,
+     "when": "fine",
+     "t": 170.2,
+     "n": 5,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "PRB02-006 Roronoa Zoro",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "ST24-004 Law & Bepo",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.853,
+      0.894,
+      0.873,
+      0.896,
+      0.895
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 10,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 170.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 170.75,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 10
+    },
+    {
+     "t": 190.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP10-109",
+     "to_name": "Basil Hawkins",
+     "total_on_card": 1
+    },
+    {
+     "t": 192.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP10-109",
+     "attacker_name": "Basil Hawkins",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "You",
+       "card": "EB01-015",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 8000
+    },
+    {
+     "t": 195.75,
+     "type": "counter",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "value": 2000
+    },
+    {
+     "t": 200.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "EB04-054",
+     "attacker_name": "Bartholomew Kuma",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 200.0,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 201.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP14-111",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 202.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-111",
+     "attacker_name": "Perona",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 203.75,
+     "type": "ko",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law"
+    },
+    {
+     "t": 210.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 2,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 2
+    },
+    {
+     "t": 210.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 7000,
+     "defense_power": 6000
+    },
+    {
+     "t": 211.75,
+     "type": "ko",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law"
+    },
+    {
+     "t": 213.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB04-058",
+     "name": "Borsalino",
+     "category": "Character"
+    },
+    {
+     "t": 214.0,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "EB04-058",
+     "name": "Borsalino",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 2
+    },
+    {
+     "t": 214.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "EB04-058 Borsalino"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 11,
+   "player": "You",
+   "events": [
+    {
+     "t": 214.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 218.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 11
+    },
+    {
+     "t": 218.25,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 222.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RestBorsalino<EB04-058>"
+    },
+    {
+     "t": 222.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "Borsalino<EB04-058>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 222.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 222.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 223.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 233.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP11-106",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 233.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP11-106",
+     "name": "Zeus",
+     "value": 2000
+    },
+    {
+     "t": 244.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP07-026",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 244.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 250.75,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP07-119",
+     "name": "Portgas.D.Ace",
+     "from": "hand"
+    },
+    {
+     "t": 250.75,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP05-098",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 252.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 254.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 255.25,
+     "type": "trigger",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 255.25,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 264.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "TrashBartholomew<uma<EB04-054>"
+    },
+    {
+     "t": 264.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 265.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 265.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 267.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "BasilHawkins<OP10-109>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 267.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Perona<OP14-111>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 267.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "BartholomewKuma<EB04-054>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 267.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Borsalino<EB04-058>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 277.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "BartholomewKuma<EB04-054>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 277.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Perona<OP14-111>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 277.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "BartholomewKuma<EB04-054>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 277.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Borsalino<EB04-058>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 277.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP07-026 Jewelry Bonney",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "EB04-058 Borsalino"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 11,
+     "when": "inizio",
+     "t": 214.6,
+     "n": 4,
+     "cards": [
+      "OP08-036 Electrical Luna",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "ST24-004 Law & Bepo",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "scores": [
+      0.854,
+      0.877,
+      0.884,
+      0.899
+     ]
+    },
+    {
+     "turn": 11,
+     "when": "fine",
+     "t": 277.2,
+     "n": 2,
+     "cards": [
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "scores": [
+      0.881,
+      0.899
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 12,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 277.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 283.75,
+     "type": "effect_ko",
+     "player": "Opponent",
+     "card": "EB01-059",
+     "name": "Kingdom Come",
+     "text": "DestroyLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 285.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-113",
+     "name": "Roronoa Zoro",
+     "category": "Character"
+    },
+    {
+     "t": 286.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-113",
+     "name": "Roronoa Zoro",
+     "text": "TrashBartholomewKuma<EB04-054>"
+    },
+    {
+     "t": 288.0,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP15-113",
+     "name": "Roronoa Zoro",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 2
+    },
+    {
+     "t": 288.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "EB04-058 Borsalino",
+      "OP15-113 Roronoa Zoro"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 13,
+   "player": "You",
+   "events": [
+    {
+     "t": 288.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 304.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 305.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 308.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 308.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-109",
+     "name": "Basil Hawkins",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 308.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-109",
+     "name": "Basil Hawkins",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 310.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-109",
+     "name": "Basil Hawkins",
+     "text": "TrashRoronoaZoro<OP15-113>"
+    },
+    {
+     "t": 312.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 313.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 320.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 320.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP07-107",
+     "name": "Franky",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 320.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP07-107",
+     "name": "Franky",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 321.0,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "from": "hand"
+    },
+    {
+     "t": 321.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP07-107",
+     "name": "Franky",
+     "category": "Character",
+     "via": "OP07-107 Franky"
+    },
+    {
+     "t": 332.75,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP14-104",
+     "name": "Gecko Moria",
+     "from": "hand"
+    },
+    {
+     "t": 332.75,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP05-098",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 332.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP07-026",
+     "to_name": "Jewelry Bonney",
+     "total_on_card": 1
+    },
+    {
+     "t": 334.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP07-026",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP11-106",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 335.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "text": "foCounter1000"
+    },
+    {
+     "t": 336.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP11-106",
+     "name": "Zeus",
+     "value": 2000
+    },
+    {
+     "t": 375.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 375.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 376.5,
+     "type": "trigger",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 376.5,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 377.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP06-115",
+     "name": "You're the One Who Should Disappear.",
+     "text": "TrashEnel<EB02-052>"
+    },
+    {
+     "t": 388.75,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 391.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 401.5,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawRoronoaZoro<PRB02-006>"
+    },
+    {
+     "t": 401.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 403.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "text": "BartholomewKuma<EB04-054>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 406.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestJewelryBonney<OP07-026>"
+    },
+    {
+     "t": 406.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 406.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 410.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP13-040",
+     "name": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+     "text": "BasilHawkins<OP10-109>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 410.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP13-040",
+     "name": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+     "text": "Borsalino<EB04-058>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 410.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP07-026 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "EB04-058 Borsalino",
+      "OP15-113 Roronoa Zoro",
+      "OP07-107 Franky"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 13,
+     "when": "inizio",
+     "t": 288.6,
+     "n": 3,
+     "cards": [
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP07-026 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "scores": [
+      0.882,
+      0.9,
+      0.902
+     ]
+    },
+    {
+     "turn": 13,
+     "when": "fine",
+     "t": 410.2,
+     "n": 1,
+     "cards": [
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.878
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 14,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 410.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 416.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP07-107",
+     "attacker_name": "Franky",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 5000,
+     "defense_power": 1000
+    },
+    {
+     "t": 417.5,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 420.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-113",
+     "attacker_name": "Roronoa Zoro",
+     "target": "OP07-026",
+     "target_name": "Jewelry Bonney",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 8000
+    },
+    {
+     "t": 422.25,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 428.0,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP07-107",
+     "name": "Franky",
+     "from": "field"
+    },
+    {
+     "t": 428.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "category": "Character"
+    },
+    {
+     "t": 433.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "EB02-052",
+     "attacker_name": "Enel",
+     "target": "OP14-033",
+     "target_name": "Perona",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 12000,
+     "defense_power": 6000
+    },
+    {
+     "t": 434.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "text": "TrashGeckoMoria<OP14-104>"
+    },
+    {
+     "t": 434.0,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 2
+    },
+    {
+     "t": 434.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "text": "BuffEnel<EB02-052>000"
+    },
+    {
+     "t": 434.75,
+     "type": "ko",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona"
+    },
+    {
+     "t": 437.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP07-026 Jewelry Bonney",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "EB04-058 Borsalino",
+      "OP15-113 Roronoa Zoro",
+      "EB02-052 Enel"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 15,
+   "player": "You",
+   "events": [
+    {
+     "t": 437.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 443.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP07-026",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 445.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 450.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-104",
+     "name": "Gecko Moria",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 460.5,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP15-113",
+     "name": "Roronoa Zoro",
+     "from": "hand"
+    },
+    {
+     "t": 460.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "category": "Character",
+     "via": "OP14-104 Gecko Moria"
+    },
+    {
+     "t": 460.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "text": "Perona<OP14-033>can'tattacknextturn"
+    },
+    {
+     "t": 466.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 475.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 5,
+     "to": "OP07-026",
+     "to_name": "Jewelry Bonney",
+     "total_on_card": 5
+    },
+    {
+     "t": 484.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP07-026",
+     "attacker_name": "Jewelry Bonney",
+     "target": "EB02-052",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 11000,
+     "defense_power": 11000
+    },
+    {
+     "t": 485.75,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel"
+    },
+    {
+     "t": 490.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "（1Total)"
+    },
+    {
+     "t": 492.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "EB04-058",
+     "target_name": "Borsalino",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 499.0,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "EB04-058",
+     "name": "Borsalino"
+    },
+    {
+     "t": 499.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "isnclongerblockedfromattacking"
+    },
+    {
+     "t": 499.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP07-026 Jewelry Bonney",
+      "OP07-026 Jewelry Bonney",
+      "OP12-034 Perona"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "OP15-113 Roronoa Zoro",
+      "OP14-111 Perona"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 15,
+     "when": "inizio",
+     "t": 437.9,
+     "n": 1,
+     "cards": [
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.839
+     ]
+    },
+    {
+     "turn": 15,
+     "when": "fine",
+     "t": 498.5,
+     "n": 0,
+     "cards": [],
+     "scores": []
+    }
+   ]
+  },
+  {
+   "turn": 16,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 499.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 507.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP10-109",
+     "to_name": "Basil Hawkins",
+     "total_on_card": 1
+    },
+    {
+     "t": 508.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP10-109",
+     "attacker_name": "Basil Hawkins",
+     "target": "OP07-026",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 6000
+    },
+    {
+     "t": 509.25,
+     "type": "ko",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 511.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "EB04-054",
+     "attacker_name": "Bartholomew Kuma",
+     "target": "OP07-026",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 7000,
+     "defense_power": 6000
+    },
+    {
+     "t": 512.0,
+     "type": "ko",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 514.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-111",
+     "attacker_name": "Perona",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 515.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 518.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 1
+    },
+    {
+     "t": 518.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 518.75,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 520.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-104",
+     "name": "Gecko Moria",
+     "category": "Character"
+    },
+    {
+     "t": 523.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-104",
+     "name": "Gecko Moria",
+     "text": "AddKumacy<OP14-102>totopofLife"
+    },
+    {
+     "t": 524.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 1,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP12-034 Perona"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "OP14-111 Perona",
+      "EB04-054 Bartholomew Kuma",
+      "OP15-113 Roronoa Zoro",
+      "OP14-111 Perona",
+      "OP14-104 Gecko Moria"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 17,
+   "player": "You",
+   "events": [
+    {
+     "t": 538.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 538.75,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 627.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawTrafalgarLaw<OP13-031>"
+    },
+    {
+     "t": 640.25,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 644.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawScratchmenApoo<EB01-015>"
+    },
+    {
+     "t": 674.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP14-111",
+     "target_name": "Perona",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 675.25,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona"
+    },
+    {
+     "t": 675.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "text": "Perona<OP12-034>can'tattacknextturn"
+    },
+    {
+     "t": 686.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 688.25,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnPerona<OP12-034>toHand"
+    },
+    {
+     "t": 690.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 691.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "text": "BartholomewKuma<EB04-054>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 701.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestKid&Killer<ST24-002>"
+    },
+    {
+     "t": 703.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 703.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 706.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 1,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST24-002 Kid & Killer",
+      "ST24-002 Kid & Killer",
+      "OP13-031 Trafalgar Law",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "EB04-054 Bartholomew Kuma",
+      "OP15-113 Roronoa Zoro",
+      "OP14-111 Perona",
+      "OP14-104 Gecko Moria"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 17,
+     "when": "inizio",
+     "t": 539.4,
+     "n": 2,
+     "cards": [
+      "ST24-002 Kid & Killer",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "scores": [
+      0.879,
+      0.899
+     ]
+    },
+    {
+     "turn": 17,
+     "when": "fine",
+     "t": 706.2,
+     "n": 2,
+     "cards": [
+      "EB01-015 Scratchmen Apoo",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.89,
+      0.859
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 18,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 706.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 713.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 4,
+     "to": "OP10-109",
+     "to_name": "Basil Hawkins",
+     "total_on_card": 4
+    },
+    {
+     "t": 715.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP10-109",
+     "attacker_name": "Basil Hawkins",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 9000,
+     "defense_power": 5000
+    },
+    {
+     "t": 722.75,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 722.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP14-104",
+     "attacker_name": "Gecko Moria",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "ko",
+     "blocker": "OP13-031",
+     "blocker_name": "Trafalgar Law",
+     "attack_power": 10000,
+     "defense_power": 6000
+    },
+    {
+     "t": 725.75,
+     "type": "ko",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law"
+    },
+    {
+     "t": 729.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": null
+    },
+    {
+     "t": 730.75,
+     "type": "concede",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 0,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST24-002 Kid & Killer",
+      "ST24-002 Kid & Killer",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-109 Basil Hawkins",
+      "EB04-054 Bartholomew Kuma",
+      "OP15-113 Roronoa Zoro",
+      "OP14-111 Perona",
+      "OP14-104 Gecko Moria"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  }
+ ],
+ "quality": {
+  "log_chars": 13544,
+  "parsed_fraction": 0.923,
+  "unparsed_fragments": [
+   "0s [Opponent]Quits![Opponent]HasDisconnected![Opponent]Quits!SettingupaRelayRoom...ConnectedtoServer.asia-southeastlWaitingforaConnectionwithRoomD:WT86D7Mmadokahk#9226HasConnectedVersionis1.38a",
+   "2s JF19#9819HasConnectedVersionis1.38a",
+   "2s [You]Willselectturnorder",
+   "22s DraculeMihawk",
+   "33s DraculeMihawk",
+   "46s DraculeMihawk",
+   "64s DraculeMihawk",
+   "79s DraculeMihawk",
+   "166s ###020j:Activate1Don",
+   "166s DraculeMihawk",
+   "200s BartholomewKuma",
+   "244s JewelryBonney",
+   "254s DraculeMihawk",
+   "278s [You]ElectricalLune036]:Borsalinduring[madokUF19#9###036]:BasilHawkins<OP10-109>willnotActivateduringnextRefresh",
+   "337s JewelryBonney",
+   "376s OraculeMihawk",
+   "402s [You]PlacingCardsonBottomofDeck",
+   "468s [You]PickednocardstoDraw[You]PlacingCardsonBottomofDeck",
+   "499s DraculeMihawk",
+   "512s BartholomewKuma",
+   "516s DraculeMinawk",
+   "519s DraculeMihawk",
+   "628s [You]PlacingCardsonBottomofDeck",
+   "644s [You]PlacingCardsonBottomofDeck",
+   "723s OraculeMihawk",
+   "728s [Opponent]Attach6DontoEnel[OP0S-098](6Total)"
+  ],
+  "unknown_ids": [],
+  "log_gaps": 2
+ }
+}

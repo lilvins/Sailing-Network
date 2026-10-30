@@ -1,0 +1,491 @@
+    0.00  Opponent HasDisconnected!
+    0.00  [madokahk#9226]Quits!
+    0.00  Attempting to connect to ETQRPFG
+    0.00  Version is1.35a
+    0.00  BankHare#3550]LeaderisDracule
+    0.00  Mihawk[OP14-020]
+    0.00  You]Will selectturn order
+    0.00  madokahk#9226HasConnected
+    0.00  Version is1.35a
+    0.00  madokahk#9226]LeaderisDracule
+    0.00  Mihawk[OP14-020]
+    0.00  madokahk#9226]ChosetogoFirst
+    0.00  madokahk#9226]Mulligan
+    3.00  madokahk#9226]Draw1Don
+    4.75  madokahk#9226]DeployCoffinBoat
+    4.75  OP14-039]
+    4.75  madokahk#9226]CoffinBoat[OP14-039]
+    4.75  Draw1Card
+    4.75  madokahk#9226]CoffinBoat[OP14-039]
+    4.75  Activate1Don
+    4.75  [madokahk#9226]End Turn
+    4.75  [BankHare#3550]Draw1Card
+   10.50  BankHare#3550jDraw2Don
+   10.50  BankHare#3550]DeployKid&Killer
+   10.50  ST24-002]
+   15.25  BankHare#3550]Kid&Killer[ST24-002]:
+   15.25  RevealandDrawKid&Killer[ST24-
+   15.25  002]
+   15.25  [BankHare#3550]Placing CardsonBottom
+   15.25  ofDeck
+   18.00  [BankHare#3550]EndTurn
+   18.25  madokahk#9226]Draw1Card
+   22.50  madokahk#9226]Draw2Don
+   22.50  madokahk#9226]DraculeMihawk[OP14
+   22.50  020]attackingDraculeMihawk[OP14020]
+   24.75  DraculeMihawk[OP14-020][6000]vs
+   24.75  DraculeMihawk[OP14-020j[6000]
+   24.75  DraculeMihawk[OP14-020]hitfor1
+   24.75  damage
+   47.00  madokahk#9226]DeployKid&Killer
+   47.00  [ST24-002]
+   50.25  madokahk#9226]Kid&Killer[ST24-002]
+   50.25  Reveal andDrawJewelryBonney
+   50.25  ST02-007]
+   50.25  madokahk#9226]Placing Cardson
+   50.25  BottomofDeck
+   52.00  [madokahk#9226]DeployJewelryBonney
+   52.00  ST02-007]
+   52.00  madokahk#9226]Coffin Boat[OP14-039]
+   52.00  Activate1Don
+   52.00  madokahk#9226]EndTurn
+   52.00  BankHare#3550]Draw1Card
+   52.00  BankHare#3550]Draw2Don
+   53.50  BankHare#3550]DeployCoffinBoat
+   53.50  OP14-039]
+   53.50  BankHare#3550]CoffinBoat[OP14-039]:
+   53.50  Draw1Card
+   56.25  BankHare#3550]DraculeMihawk[OP14
+   56.25  020]attackingDraculeMihawk[OP14-020]
+   58.50  DraculeMihawk[OP14-020][6000]vs
+   58.50  DraculeMihawk[OP14-020][6000]
+   58.50  OraculeMihawk[OP14-020]hitfor1
+   58.50  damage
+   58.50  BankHare#3550]DeployKid&Killer
+   58.50  [ST24-002]
+   62.75  BankHare#3550]Kid&Killer[ST24-002]:
+   62.75  RevealandDrawLaw&Bepo[ST24
+   62.75  004]
+   62.75  BankHare#3550]PlacingCardsonBottom
+   62.75  ofDeck
+   70.00  [BankHare#3550]DeployPerona[OP12-
+   70.00  034]
+   70.00  BankHare#3550]Perona[OP12-034]:
+   70.00  RevealandDrawTashigi[OP14-029]
+   70.00  BankHare#3550]Placing CardsonBottom
+   70.00  ofDeck
+   72.25  BankHare#3550]CoffinBoat[OP14-039]:
+   72.25  Activate1Don
+   72.25  BankHare#3550]End Turn
+   72.50  madokahk#9226]Draw1Card
+   75.00  madokahk#9226]Draw2Don
+   75.00  madokahk#9226]DraculeMihawk[OP14
+   75.00  020]attackingDraculeMihawk[OP14020]
+   80.25  BankHare#3550]Discard Kid &Killer
+   80.25  ST24-002]forCounter1000
+   80.25  DraculeMihawk[OP14-020][6000]vs
+   80.25  DraculeMihawk[OP14-020][7000]
+   80.25  AttackFails
+   84.75  madokahk#9226]DraculeMihawk[OP14
+   84.75  020]:RestCoffinBoat[OP14-039]
+   87.50  [madokahk#9226]Kid&Killer[ST24-002]
+   87.50  attackingDraculeMihawk[OP14020]
+   92.00  Kid&Killer[ST24-002][2000]vsDracule
+   92.00  Mihawk[OP14-020][6000]
+   92.00  AttackFails
+   97.75  [madokahk#9226]DeployJewelryBonney
+   97.75  [OP12-118]
+   97.75  madokahk#9226]JewelryBonney[OP12-
+   97.75  118j:Draw2Card
+   98.25  madokahk#9226]JewelryBonney[OP12-
+   98.25  118]:Trash JewelryBonney[OP12-118]
+   98.25  madokahk#9226]JewelryBonney[OP12-
+   98.25  118j:Activate1Don
+  105.25  madokahk#9226]DeployJewelryBonney
+  105.25  ST02-007]
+  105.25  madokahk#9226]CoffinBoat[OP14-039]
+  105.25  Activate 1 Don
+  105.25  [madokahk#9226]EndTurn
+  105.25  [BankHare#3550]Draw1Card
+  117.50  BankHare#3550]Draw2Don
+  117.50  BankHare#3550]Kid&Killer[ST24-002]
+  117.50  attackingKid&Killer[ST24002]
+  124.25  Kid&Killer[ST24-002][2000]vsKid&
+  124.25  <iller[ST24-002][2000]
+  124.25  [madokahk#9226]Kid&Killer[ST24-002]
+  124.25  Destroyed
+  128.00  BankHare#3550]DraculeMihawk[OP14
+  128.00  020]attackingDraculeMihawk[OP14-020]
+  128.00  DraculeMihawk[OP14-020][6000]vs
+  128.00  DraculeMihawk[OP14-020][6000]
+  128.00  DraculeMihawk[OP14-020]hitfor1
+  128.00  damage
+  129.25  【BankHare#3550]DeployTrafalgarLaw
+  129.25  OP13-031]
+  130.00  BankHare#3550]TrafalgarLaw[OP13
+  130.00  031]:ReturnKid &Killer[ST24-002] to
+  130.00  Hand
+  133.25  BankHare#3550]TrafalgarLaw[OP13
+  133.25  031]:DeployTashigi[OP14-029]
+  136.25  BankHare#3550]DraculeMihawk[OP14
+  136.25  020]:Rest CoffinBoat[OP14-039]
+  137.50  BankHare#3550]DraculeMihawk[OP14-
+  137.50  020]:Activate1Don
+  137.50  BankHare#3550]DraculeMihawk[OP14-
+  137.50  020]:Activate 1Don
+  137.50  BankHare#3550]DraculeMihawk[OP14-
+  137.50  020]:Activate1Don
+  137.50  BankHare#3550]DraculeMihawk[OP14
+  137.50  020]:Can'tplay Cost1 OrMoreCharacters
+  137.50  fortheTurn!
+  142.25  BankHare#3550]Tashigi[OP14-029]:Rest
+  142.25  Oon[Don]
+  142.25  BankHare#3550]Tashigi[OP14-029]:Rest
+  142.25  Don[Don]
+  142.25  BankHare#3550]Tashigi[OP14-029]:
+  142.25  Grant Tashigi[OP14-029]2000until
+  142.25  opponent'snext turn end
+  142.25  BankHare#3550]CoffinBoat[OP14-039]:
+  142.25  Activate1Don
+  142.25  BankHare#3550]EndTurn
+  142.50  [madokahk#9226]Draw1Card
+  146.25  madokahk#9226]Draw2Don
+  149.50  [madokahk#9226]DeployShanks[OP14-
+  149.50  027]
+  149.50  [madokahk#9226]DraculeMihawk[OP14
+  149.50  020]:Rest Shanks[OP14-027]
+  150.75  madokahk#9226]DraculeMihawk[OP14
+  150.75  020]:Activate1Don
+  150.75  madokahk#9226]DraculeMihawk[OP14
+  150.75  020]:Activate1Don
+  150.75  madokahk#9226]DraculeMihawk[OP14
+  150.75  020]:Activate1Don
+  150.75  madokahk#9226]DraculeMihawk[OP14
+  150.75  020j:Can'tplayCost1OrMoreCharacters
+  150.75  fortheTurn!
+  151.50  [madokahk#9226]Shanks[OP14-027]:Rest
+  151.50  TrafalgarLaw[OP13031]
+  157.50  madokahk#9226]DraculeMihawk[OP14
+  157.50  020]attackingTrafalgarLaw[OP13-031]
+  160.50  BankHare#3550]DiscardKid&Killer
+  160.50  ST24002]forCounter1000
+  161.00  DraculeMihawk[OP14-020][6000]vs
+  161.00  TrafalgarLaw[OP13-031][7000]
+  161.00  AttackFails
+  169.50  madokahk#9226]JewelryBonney[OP12
+  169.50  118]attackingTrafalgarLaw[OP13-031]
+  174.00  BankHare#3550]DiscardPerona[OP14-
+  174.00  033]forCounter1000
+  174.75  ewelryBonney[OP12-118][6000]vs
+  174.75  TrafalgarLaw[OP13-031][7000]
+  174.75  AttackFails
+  179.50  [madokahk#9226]DeployCoffinBoat
+  179.50  OP14-039]
+  179.50  madokahk#9226]Coffin Boat[OP14-039]
+  179.50  Draw1Card
+  182.75  madokahk#9226]JewelryBonney[ST02
+  182.75  007]:Rest Jewelry Bonney[ST02-007]
+  186.50  madokahk#9226]JewelryBonney[ST02
+  186.50  007]:Reveal and DrawScratchmen
+  186.50  Apoo[EB01-015]
+  186.50  madokahk#9226]PlacingCardson
+  186.50  BottomofDeck
+  206.50  madokahk#9226]JewelryBonney[ST02
+  206.50  007]:RestJewelry Bonney[ST02-007]
+  209.00  madokahk#9226]JewelryBonney[ST02-
+  209.00  007]:Reveal andDrawJewelryBonney
+  209.00  ST02-007]
+  209.00  madokahk#9226]PlacingCardson
+  209.00  BottomofDeck
+  209.00  [madokahk#9226]Coffin Boat[OP14-039]:
+  209.00  Activate 1Don
+  209.00  [madokahk#9226]EndTurn
+  209.00  [BankHare#3550]Draw1Card
+  209.00  [BankHare#3550]Draw2Don
+  214.50  BankHare#3550]Kid &Killer[ST24-002]
+  214.50  attacking JewelryBonney[ST02007]
+  217.50  Kid&Killer[ST24-002][1000]vsJewelry
+  217.50  Bonney[ST02-007][1000]
+  217.50  madokahk#9226]Jewelry Bonney[ST02-
+  217.50  007]Destroyed
+  218.25  BankHare#3550]Perona[OP12-034]
+  218.25  attackingJewelryBonney[ST02-007]
+  222.00  Perona[OP12-034][1000]vsJewelry
+  222.00  Bonney[ST02-007][1000]
+  222.00  madokahk#9226]JewelryBonney[ST02-
+  222.00  007]Destroyed
+  222.00  BankHare#3550]DeployShanks[OP14-
+  222.00  027]
+  223.50  [BankHare#3550]DraculeMihawk[OP14-
+  223.50  020]:RestShanks[OP14027]
+  224.50  BankHare#3550]DraculeMihawk[OP14-
+  224.50  020]:Activate 1 Don
+  224.50  BankHare#3550]DraculeMihawk[OP14-
+  224.50  020]:Activate1Don
+  224.50  BankHare#3550]DraculeMihawk[OP14
+  224.50  020]:Activate1Don
+  224.50  BankHare#3550]DraculeMihawk[OP14
+  224.50  020]:Can'tplayCost 1OrMoreCharacters
+  224.50  fortheTurn!
+  233.75  BankHare#3550]Tashigi[OP14-029]:Rest
+  233.75  CoffinBoat[OP14-039]
+  233.75  BankHare#3550]Tashigi[OP14-029]:Rest
+  233.75  Don[Don]
+  233.75  BankHare#3550]Tashigi[OP14-029]
+  233.75  Grant Tashigi[OP14-029]2000until
+  233.75  opponent'snext turn end
+  233.75  BankHare#3550]Attach1Don to
+  233.75  TrafalgarLaw[OP13-031](1Total)
+  242.00  [BankHare#3550]TrafalgarLaw[OP13-031
+  242.00  attackingJewelryBonney[OP12-118]
+  242.75  madokahk#9226]DiscardJewelryBonney
+  242.75  ST02-007]forCounter1000
+  245.50  TrafalgarLaw[OP13-031][6000]vsJewelry
+  245.50  Bonney[OP12-118][7000]
+  245.50  AttackFails
+  245.50  BankHare#3550]DraculeMihawk[OP14
+  245.50  020]attackingJewelryBonneyOP12-118]
+  249.75  madokahk#9226]DiscardScratchmen
+  249.75  Apoo[EB01-015]forCounter2000
+  249.75  DraculeMihawk[OP14-020][6000]vs
+  249.75  JewelryBonney[OP12-118][8000]
+  249.75  AttackFails
+  251.00  BankHare#3550]Attach1Don toTashigi
+  251.00  OP14-029](1Total)
+  252.00  BankHare#3550]Tashigi[OP14-029]
+  252.00  attackingJewelryBonney[OP12-118]
+  255.75  madokahk#9226]Billion-foldWorld
+  255.75  Trichiliocosm[OP06-038]:ActivateCountel
+  255.75  madokahk#9226]Billion-foldWorld
+  255.75  Trichiliocosm[OP06-038]:Buff Jewelry
+  255.75  3onney[OP12-118]2000fortheCombat
+  255.75  madokahk#9226]Billion-foldWorld
+  255.75  Trichiliocosm[OP06-038]:Buff Jewelry
+  255.75  Bonney[OP12-118]2000fortheCombat
+  256.25  Tashigi[OP14-029][8000]vsJewelry
+  256.25  Bonney[OP12-118][10000]
+  256.25  AttackFails
+  257.50  BankHare#3550]Coffin Boat[OP14-039]:
+  257.50  Activate1Don
+  257.50  BankHare#3550]EndTurn
+  257.75  madokahk#9226]Draw1Card
+  259.75  madokahk#9226]Draw2Don
+  261.00  [madokahk#9226]DeployPerona[OP12-
+  261.00  034]
+  276.00  madokahk#9226]Perona[OP12-034]:
+  276.00  RevealandDrawShanks[OP14-027]
+  276.00  madokahk#9226]PlacingCardson
+  276.00  BottomofDeck
+  276.00  [madokahk#9226]Shanks[OP14-027]
+  276.00  attackingTrafalgarLaw[OP13-031]
+  297.25  Shanks[OP14-027][8000]vsTrafalgarLaw
+  297.25  OP13-031][6000]
+  297.25  BankHare#3550]TrafalgarLaw[OP13-031
+  297.25  Destroyed
+  299.00  madokahk#9226]DeployShanks[OP14-
+  299.00  027]
+  300.75  [madokahk#9226]DraculeMihawk[OP14-
+  300.75  020]:RestShanks[OP14-027]
+  304.75  madokahk#9226]DraculeMihawk[OP14
+  304.75  020]:Activate1Don
+  304.75  madokahk#9226]DraculeMihawk[OP14
+  304.75  020]:Activate1Don
+  304.75  madokahk#9226]DraculeMihawk[OP14
+  304.75  020]:Activate1Don
+  304.75  madokahk#9226]DraculeMihawk[OP14
+  304.75  020]:Can'tplayCost 1OrMoreCharacters
+  304.75  fortheTurn!
+  307.00  madokahk#9226]DraculeMihawk[OP14
+  307.00  020]attackingDraculeMihawk[OP14-020]
+  308.75  DraculeMihawk[OP14-020][6000]vs
+  308.75  DraculeMihawk[OP14-020][6000]
+  308.75  DraculeMihawk[OP14-020]hitfor1
+  308.75  damage
+  310.00  madokahk#9226]Attach1DontoJewelry
+  310.00  Bonney[OP12-118](1Total)
+  310.00  madokahk#9226]JewelryBonney[OP12
+  310.00  118]attackingDraculeMihawk[OP14020]
+  312.50  BankHare#3550]Discard Tashigi[OP14-
+  312.50  029]forCounter1000
+  313.00  JewelryBonney[0P12-118][6000]vs
+  313.00  DraculeMihawk[OP14-020][7000]
+  313.00  AttackFails
+  317.75  ### SALTO: righe mancanti ###
+  317.75  [madokahk#9226] IKnowYou'reStrong..
+  317.75  SoI'llGoAllOut[OP13-040]:Shanks
+  317.75  OP14-027]willnotActivateduring next
+  317.75  Refresh
+  317.75  [madokahk#9226] IKnowYou'reStrong...
+  317.75  So I'llGoAllOut[OP13-040]:Tashigi
+  317.75  OP14-029]willnotActivate during next
+  317.75  Refresh
+  317.75  madokahk#9226]CoffinBoat[OP14-039]
+  317.75  Activate1Don
+  317.75  madokahk#9226]EndTurn
+  317.75  [BankHare#3550]Draw1Card
+  317.75  [BankHare#3550]Draw2Don
+  327.25  【BankHare#3550]DeployLaw&Bepo
+  327.25  ST24-004]
+  328.00  BankHare#3550]Law&Bepo[ST24-004]:
+  328.00  Shanks[OP14-027]willnotActivateduring
+  328.00  nextRefresh
+  328.00  BankHare#3550]Law&Bepo[ST24-004]
+  328.00  GrantDraculeMihawk[OP14-020]2000
+  328.00  untilopponent'snextturn end
+  329.75  BankHare#3550]DraculeMihawk[OP14-
+  329.75  020]:Rest CoffinBoat[OP14-039]
+  331.00  BankHare#3550]DraculeMihawk[OP14
+  331.00  020]:Activate1Don
+  331.00  BankHare#3550]DraculeMihawk[OP14-
+  331.00  020]:Activate1Don
+  331.00  BankHare#3550]DraculeMihawk[OP14-
+  331.00  020]:Activate1Don
+  331.00  BankHare#3550]DraculeMihawk[OP14
+  331.00  020]:Can't play Cost1 OrMoreCharacters
+  331.00  fortheTurn!
+  334.50  【BankHare#3550]Attach2Don toDracule
+  334.50  Mihawk[OP14-020](2Total)
+  338.00  BankHare#3550]DraculeMihawk[OP14
+  338.00  020] attackingJewelryBonney[OP12-118]
+  343.50  DraculeMihawk[OP14-020][10000]vs
+  343.50  ewelryBonney[OP12-118][6000]
+  343.50  madokahk#9226]JewelryBonney[OP12-
+  343.50  118]Destroyed
+  343.50  BankHare#3550] Tashigi[OP14-029]:Rest
+  343.50  Perona[OP12-034]
+  343.50  BankHare#3550]Tashigi[OP14-029]:Rest
+  343.50  Don[Don]
+  343.50  BankHare#3550]Tashigi[OP14-029]:
+  343.50  Grant Tashigi[OP14-029]2000until
+  343.50  opponent'snext turn end
+  344.75  BankHare#3550]CoffinBoat[OP14-039]
+  344.75  Activate1Don
+  344.75  [BankHare#3550]EndTurn
+  368.25  [madokahk#9226]Draw1Card
+  368.25  madokahk#9226]Draw2Don
+  369.00  madokahk#9226]DeployLaw&Bepo
+  369.00  ST24-004]
+  369.00  madokahk#9226]Law&Bepo[ST24-004]
+  369.00  RestLaw&Bepo[ST24-004]
+  369.00  madokahk#9226]Law&Bepo[ST24-004]
+  369.00  aw&Bepo[ST24-004]willnotActivate
+  369.00  during nextRefresh
+  369.00  madokahk#9226]Law&Bepo[ST24-004]
+  369.00  GrantDraculeMihawkOP14-020]2000
+  369.00  untilopponent'snextturn end
+  370.50  madokahk#9226]DraculeMihawk[OP14
+  370.50  020]:Rest CoffinBoat[OP14-039]
+  371.75  madokahk#9226]DraculeMihawk[OP14
+  371.75  020]:Activate1Don
+  371.75  madokahk#9226]DraculeMihawk[OP14-
+  371.75  020]:Activate1Don
+  371.75  madokahk#9226]DraculeMihawk[OP14
+  371.75  020]:Activate1Don
+  371.75  madokahk#9226]DraculeMihawk[OP14
+  371.75  020]:Can'tplayCost1 OrMoreCharacters
+  371.75  fortheTurn!
+  379.75  madokahk#9226]Attach1Don toPerona
+  379.75  OP12-034](1Total)
+  382.25  madokahk#9226]Perona[OP12-034]
+  382.25  attackingPerona[OP12-034]
+  382.25  Perona[OP12-034][2000]vsPerona
+  382.25  OP12-034][2000]
+  382.25  [BankHare#3550]Perona[OP12-034]
+  382.25  Destroyed
+  386.50  madokahk#9226]Attach1Don toShanks
+  386.50  OP14-0271(1Total)
+  386.50  [madokahk#9226]Shanks[OP14-027]
+  386.50  attackingShanks[OP14027]
+  388.00  [madokahk#9226]Shanks[OP14-027]:Res
+  388.00  Kid&Killer[ST24002]
+  391.00  BankHare#3550]DiscardKid&Killer
+  391.00  ST24002]forCounter1000
+  391.50  Shanks[OP14-027][9000]vsShanks
+  391.50  OP14-027][10000]
+  391.50  AttackFails
+  392.25  madokahk#9226]Attach1Don toDracule
+  392.25  Mihawk[OP14020](1Total)
+  395.25  madokahk#9226]DraculeMihawk[OP14
+  395.25  020]attackingShanks[OP14-027]
+  395.25  BankHare#3550]Discard Perona[OP12-
+  395.25  034]forCounter1000
+  396.00  DraculeMihawk[OP14-020][9000]vs
+  396.00  Shanks[OP14-027][10000]
+  396.00  AttackFails
+  397.00  madokahk#9226]CoffinBoat[OP14-039]:
+  397.00  Activate1Don
+  397.00  madokahk#9226]EndTurn
+  426.00  BankHare#3550]Draw1Card
+  426.00  【BankHare#3550]DeployPerona[OP12-
+  426.00  034]
+  430.50  BankHare#3550]Perona[OP12-034]:
+  430.50  RevealandDrawLaw&Bepo[ST24
+  430.50  004]
+  430.50  [BankHare#3550]Placing Cardson Bottom
+  430.50  ofDeck
+  442.50  [BankHare#3550] Trash Perona [OP12-034
+  442.50  BankHare#3550)DeployJewelryBonney
+  442.50  OP07-026]
+  446.00  BankHare#3550] JewelryBonney[OP07
+  446.00  026]:ShanksOP14-027]will notActivate
+  446.00  during next Refresh
+  447.00  BankHare#3550]DraculeMihawk[OP14
+  447.00  020]:RestCoffinBoat[OP14-039]
+  447.00  BankHare#3550]DraculeMihawk[OP14-
+  447.00  020]:Activate1 Don
+  447.00  BankHare#3550]DraculeMihawk[OP14-
+  447.00  020]:Activate1Don
+  447.00  BankHare#3550]DraculeMihawk[OP14
+  447.00  020]:Activate1Don
+  447.00  BankHare#3550]DraculeMihawk[OP14-
+  447.00  020]:Can't play Cost1OrMoreCharacters
+  447.00  fortheTurn!
+  451.75  【BankHare#3550]Attach3Don toDracule
+  451.75  Mihawk[OP14-020](3Total)
+  453.25  BankHare#3550]DraculeMihawk[OP14
+  453.25  020]attacking Shanks[OP14 027]
+  456.25  madokahk#9226]DiscardKid&Killer
+  456.25  ST24-002]forCounter1000
+  459.25  DraculeMihawk[OP14-020][9000]vs
+  459.25  Shanks[OP14-027][10000]
+  459.25  AttackFails
+  459.25  [BankHare#3550]Attach4Don toShanks
+  459.25  OP14-0271(4Total)
+  460.25  [BankHare#3550]Shanks[OP14-027]
+  460.25  attackingShanks[OP14-027]
+  465.50  madokahk#9226]Billion-foldWorld
+  465.50  Trichiliocosm[OP06-038]:ActivateCountel
+  465.50  madokahk#9226]Billion-foldWorld
+  465.50  Trichiliocosm[OP06-038]:BuffShanks
+  465.50  OP14-027]2000fortheCombat
+  465.50  madokahk#9226]Billion-foldWorld
+  465.50  Trichiliocosm[OP06-038]:BuffShanks
+  465.50  OP14-0272000fortheCombat
+  466.00  Shanks[OP14-027][11000]vsShanks
+  466.00  OP14-027][13000]
+  466.00  AttackFails
+  467.00  BankHare#3550]CoffinBoat[OP14-039]:
+  467.00  Activate1Don
+  467.25  [BankHare#3550]EndTurn
+  473.75  madokahk#9226]Draw1Card
+  475.25  [madokahk#9226]DeployLaw&Bepo
+  475.25  [ST24-004]
+  477.00  madokahk#9226]Law&Bepo[ST24-004]
+  477.00  aw&Bepo[ST24-004]willnotActivate
+  477.00  during nextRefresh
+  477.00  madokahk#9226]Law&Bepo[ST24-004]
+  477.00  GrantDraculeMihawk[OP14-020]2000
+  477.00  untilopponent'snextturnend
+  477.00  madokahk#9226]DraculeMihawk[OP14
+  477.00  020]:RestCoffinBoat[OP14-039]
+  483.50  madokahk#9226]DraculeMihawk[OP14
+  483.50  020]:Activate1Don
+  483.50  madokahk#9226]DraculeMihawk[OP14
+  483.50  020]:Activate1Don
+  483.50  madokahk#9226]DraculeMihawk[OP14
+  483.50  020]:Activate1Don
+  483.50  madokahk#9226]DraculeMihawk[OP14
+  483.50  020]:Can't play Cost1Or More Characters
+  483.50  fortheTurn!
+  486.00  madokahk#9226]Law&Bepo[ST24-004]
+  486.00  attacking Shanks[OP14-027]

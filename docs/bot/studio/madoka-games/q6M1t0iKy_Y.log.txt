@@ -1,0 +1,346 @@
+    5.50  Attempting to connect toWD6PM9D
+    5.50  口
+    5.50  Leader is Enel [OP05-
+    5.50  Squeich Opponeot. urnorder
+    5.50  Has Connected
+    5.50  Leaderis Dracule
+    5.50  CAD OR ALIVE9
+    5.50  Klsus1994
+    5.50  Chose to go First 5539MILION-
+    5.50  STGRMRPROUNY
+    5.50  PNCPN
+    5.50  TS.DO NOT CLOGETHEAPP.
+    5.75  ### SALTO: righe mancanti ###
+    5.75  Attempting to connecttoWD6PM9D
+    5.75  Versionis1.40a.60
+    5.75  [CF123456#4579] Leader is Enel[OP05-
+    5.75  098]
+    5.75  [You]Willselectturnorder
+    5.75  madokahk#9226HasConnected
+    5.75  Version is1.40a.60
+    5.75  [madokahk#9226] LeaderisDracule
+    5.75  Mihawk[OP14-020]
+    5.75  [madokahk#9226]Chose togoFirst
+   12.00  [CF123456#4579]Mulligan
+   16.25  [madokahk#9226] Mulligan
+   16.25  [madokahk#9226]Draw1Don
+   19.00  [madokahk#9226]EndTurn
+   20.25  [CF123456#4579]Draw1Card
+   20.75  [CF123456#4579]Draw2Don
+   23.00  [CF123456#4579]EndTurn
+   23.00  [madokahk#9226]Draw1Card
+   28.00  [madokahk#9226]Draw2Don
+   29.00  [madokahk#9226]EndTurn
+   29.00  [CF123456#4579]Draw1Card
+   29.50  [CF123456#4579]Draw2Don
+   32.50  [CF123456#4579]Attach2DontoEnel
+   32.50  [OP05-098](2Total)
+   34.00  [CF123456#4579]Enel[OP05-098]
+   34.00  attackingDraculeMihawk[OP14-020]
+   44.50  Enel[OP05-098][7000]vsDraculeMihawk
+   44.50  [OP14-020][5000]
+   44.50  DraculeMihawk[OP14-020]hit for1
+   44.50  damage
+   44.50  [CF123456#4579]iamyourfans
+   47.25  [CF123456#4579]DeploySentomaru
+   47.25  [EB04-053]
+   47.50  [CF123456#4579]EndTurn
+   48.00  [madokahk#9226]Draw1Card
+   48.00  [madokahk#9226]Draw2Don
+   75.00  [madokahk#9226]ty!
+   75.75  [madokahk#9226]Deploy Tashigi[OP14-
+   75.75  029]
+   83.75  [madokahk#9226] End Turn
+   83.75  [CF123456#4579]Draw1Card
+   84.75  [CF123456#4579]Draw2Don
+  107.50  [CF123456#4579]DeployBorsalino[EB04-
+  107.50  058]
+  107.50  [CF123456#4579]EndTurn
+  113.25  [madokahk#9226]Draw1Card
+  113.25  [madokahk#9226]Draw2Don
+  115.25  [madokahk#9226]Deploy Shanks[OP14-
+  115.25  0271
+  116.25  [madokahk#9226] Dracule Mihawk[OP14-
+  116.25  020]:RestShanks[OP14-027]
+  116.75  [madokahk#9226]DraculeMihawk[OP14
+  116.75  020]:Activate1 Don
+  116.75  [madokahk#9226]DraculeMihawk[OP14
+  116.75  020|:Activate1Don
+  116.75  [madokahk#9226]DraculeMihawk[OP14
+  116.75  020j:Activate 1Don
+  116.75  [madokahk#9226]DraculeMihawk[OP14
+  116.75  020]:Can'tplayCost1 OrMore Characters
+  116.75  for theTurn!
+  116.75  [madokahk#9226]Shanks[OP14-027]:Rest
+  116.75  Borsalino[EB04-058]
+  119.75  [madokahk#9226] Tashigi[OP14-029]:Rest
+  119.75  Don[Don]
+  119.75  [madokahk#9226] Tashigi[OP14-029]:Rest
+  119.75  Don[Don]
+  119.75  [madokahk#9226]Tashigi[OP14-029]
+  119.75  GrantTashigi[OP14-029]2000until
+  119.75  opponent'snext turn end
+  130.00  [madokahk#9226]Tashigi[OP14-029]
+  130.00  attacking Borsalino[EB04-058]
+  130.00  Tashigi[OP14-029][8000]vsBorsalino
+  130.00  [EB04-058][6000]
+  130.00  [CF123456#4579]Borsalino[EB04-058]
+  130.00  Destroyed
+  141.50  [madokahk#9226] End Turn
+  142.75  [CF123456#4579]Draw1Card
+  145.00  [CF123456#4579]Draw2Don
+  145.75  [CF123456#4579]Attach8DontoEnel
+  145.75  [OP05-098](8Total)
+  145.75  [CF123456#4579]Enel[OP05-098]
+  145.75  attacking Shanks[OP14-027]
+  153.25  [madokahk#9226]Billion-foldWorld
+  153.25  Trichiliocosm[OP06-038]:ActivateCounter
+  153.25  [madokahk#9226]Billion-foldWorld
+  153.25  Trichiliocosm[OP06-038]:Rest1Don
+  158.50  [madokahk#9226]Billion-foldWorld
+  158.50  Trichiliocosm[OP06-038]:BuffShanks
+  158.50  [OP14-027]2000fortheCombat
+  158.50  [madokahk#9226]Billion-foldWorld
+  158.50  Trichiliocosm[OP06-038]:BuffShanks
+  158.50  [OP14-027]2000fortheCombat
+  159.25  [madokahk#9226]Discard Jewelry Bonney
+  159.25  [OP12-118]forCounter1000
+  159.25  Enel[OP05-098][13000]vsShanks[OP14-
+  159.25  027][14000]
+  159.25  AttackFails
+  159.75  [CF123456#4579]EndTurn
+  160.00  [madokahk#9226]Draw1Card
+  163.00  [madokahk#9226]Draw2Don
+  164.75  [madokahk#9226]DeployPerona[OP12
+  174.00  0341
+  174.00  [madokahk#9226]Perona[OP12-034]:
+  174.00  Reveal and DrawLaw&Bepo[ST24
+  174.00  0041
+  174.00  [madokahk#9226]Placing Cardson
+  174.00  BottomofDeck
+  174.00  [madokahk#9226] Shanks[OP14-027]
+  174.00  attacking Enel[OP05-098]
+  175.75  [madokahk#9226]Shanks[OP14-027]:Rest
+  175.75  Sentomaru[EB04-053]
+  175.75  Shanks[OP14-027][9000]vs Enel[OP05-
+  175.75  098][5000]
+  175.75  Enel [OP05-098]hit for1 damage
+  176.75  [CF123456#4579]Heso!![OP15-117]:
+  176.75  ActivateTrigger
+  176.75  [CF123456#4579]Heso!![OP15-117]:Draw
+  176.75  2Card
+  182.50  [madokahk#9226]DraculeMihawk[OP14
+  182.50  020]attackingSentomaru[EB04-053]
+  183.50  DraculeMihawk[OP14-020][5000]vs
+  183.50  Sentomaru[EB04-053][1000]
+  183.50  [CF123456#4579]Sentomaru[EB04-053]
+  183.50  Destroyed
+  188.25  [madokahk#9226]DeployTrafalgarLaw
+  188.25  [OP13-031]
+  189.00  [madokahk#9226]TrafalgarLaw[OP13
+  189.00  031]:ReturnPerona[OP12-034]toHand
+  192.25  [madokahk#9226]TrafalgarLaw[OP13-
+  192.25  031]:DeployJewelryBonney[OP12-118]
+  192.25  [madokahk#9226]JewelryBonney[OP12-
+  192.25  118]:Draw2Card
+  193.00  [madokahk#9226]Jewelry Bonney[OP12
+  193.00  118]:Trash Electrical Luna[OP08-036]
+  193.00  [madokahk#9226] Jewelry Bonney[OP12-
+  193.00  118]:Activate1Don
+  212.75  [madokahk#9226]DeployPerona[OP12
+  212.75  034]
+  229.00  [madokahk#9226] Perona [OP12-034]:
+  229.00  RevealandDrawBillion-foldWorld
+  229.00  Trichiliocosm[OP06-038]
+  229.00  [madokahk#9226]Placing Cardson
+  229.00  BottomofDeck
+  229.00  [madokahk#9226]Tashigi[OP14-029]:Res
+  229.00  Perona[OP12-034]
+  229.00  [madokahk#9226] Tashigi[OP14-029]:Res
+  229.00  TrafalgarLaw[OP13-031]
+  229.00  [madokahk#9226]Tashigi[OP14-029]
+  229.00  GrantTashigi[OP14-029]2000 until
+  229.00  opponent'snext turn end
+  230.50  [madokahk#9226] Tashigi[OP14-029]
+  230.50  attacking Enel [OP05-098]
+  231.50  TashigiOP14-029][8000]vsEnel[OP05-
+  231.50  098][5000]
+  231.50  Enel [Op05-098]hit for1 damage
+  237.75  [madokahk#9226]EndTurn
+  238.50  [CF123456#4579]Draw1Card
+  239.25  [CF123456#4579]Draw2Don
+  269.75  [CF123456#4579]Attach8Don toEnel
+  269.75  [OP05-098](8Total)
+  271.50  [CF123456#4579]Enel[OP05-098]
+  271.50  attackingShanks[OP14-027]
+  276.25  [madokahk#9226]Billion-foldWorld
+  276.25  Trichiliocosm[OP06-038]:Activate Counte
+  276.25  [madokahk#9226]Billion-foldWorld
+  276.25  Trichiliocosm[OP06-038]:Rest1Don
+  276.25  [madokahk#9226]Billion-foldWorld
+  276.25  Trichiliocosm[OP06-038]:BuffShanks
+  276.25  [OP14027]2000fortheCombat
+  276.25  [madokahk#9226]Billion-foldWorld
+  276.25  Trichiliocosm[OP06-038]:Buff Shanks
+  276.25  [OP14-027]2000fortheCombat
+  280.25  [madokahk#9226]Discard RoronoaZoro
+  280.25  [PRB02-006]forCounter2000
+  282.25  Enel[OP05-098][13000]vsShanks[OP14-
+  282.25  027][15000]
+  282.25  AttackFails
+  282.25  [CF123456#4579]EndTurn
+  310.75  [madokahk#9226]Draw1Card
+  310.75  [madokahk#9226]Draw2Don
+  310.75  [madokahk#9226]DraculeMihawk[OP14
+  310.75  020]attackingEnel[OP05-098]
+  314.25  [CF123456#4579]DiscardDoctorHogback
+  314.25  [OP14-110]forCounter1000
+  322.25  DraculeMihawk[OP14-020][5000]vsEnel
+  322.25  [OP05-098][6000]
+  322.25  AttackFails
+  326.25  [madokahk#9226]Deploy Coffin Boat
+  326.25  [OP14-039]
+  326.25  [madokahk#9226]Coffin Boat[OP14-039]:
+  326.25  Draw1Card
+  326.25  [madokahk#9226] Tashigi[OP14-029]:Rest
+  326.25  Perona[OP12-034]
+  326.25  [madokahk#9226]Tashigi[OP14-029]:Res
+  326.25  Coffin Boat[OP14-039]
+  326.25  [madokahk#9226] Tashigi[OP14-029]:
+  326.25  GrantTashigi[OP14-029]2000until
+  326.25  opponent'snext turn end
+  336.50  [madokahk#9226] TrashPerona [OP12-
+  336.50  034]
+  336.50  [madokahk#9226]DeployDracule Mihawk
+  336.50  [OP14-119]
+  336.50  [madokahk#9226]DraculeMihawk[OP14
+  336.50  020j:RestDraculeMihawk[OP14-119]
+  337.50  [madokahk#9226]DraculeMihawk[OP14
+  337.50  020]:Activate1Don
+  337.50  [madokahk#9226]DraculeMihawk[OP14
+  337.50  020]:Activate1Don
+  337.50  [madokahk#9226]DraculeMihawk[OP14-
+  337.50  020]:Activate1Don
+  337.50  [madokahk#9226]DraculeMihawk[OP14
+  337.50  020]:Can'tplayCost1OrMoreCharacters
+  337.50  for theTurn!
+  341.50  [madokahk#9226]Attach1Donto Jewelry
+  341.50  BonneyOP12-118](1Total)
+  341.50  [madokahk#9226]Jewelry Bonney[0P12-
+  341.50  118]attacking Enel[OP05-098]
+  363.25  [CF123456#4579]DiscardKumacy[OP14-
+  363.25  102]forCounter2000
+  364.50  [CF123456#4579]Discard Borsalino[EB04-
+  364.50  058]forCounter1000
+  376.75  JewelryBonney[OP12-118][7000]vsEnel
+  376.75  [OP05-098][8000]
+  376.75  AttackFails
+  376.75  [madokahk#9226]Tashigi[OP14-029]
+  376.75  attacking Enel [OP05-098]
+  378.00  Tashigi[OP14-029][8000]vs Enel[OP05-
+  378.00  098][5000]
+  378.00  Enel[OP05-098]hit for1damage
+  380.75  [madokahk#9226]Attach2Don to
+  380.75  TrafalgarLaw[OP13-031](2Total)
+  380.75  [madokahk#9226] Trafalgar Law[OP13-
+  380.75  031]attacking Enel[OP05-098]
+  385.50  TrafalgarLaw[OP13-031][8000]vsEnel
+  385.50  [OP05-098][5000]
+  385.50  Enel[OP05-098]hit for1damage
+  387.50  [CF123456#4579] TrashMonkeyD.Luffy
+  387.50  [EB04-061]
+  387.50  [CF123456#4579]Enel[OP05-098]:Add
+  387.50  card to top of LifefromDeck
+  387.50  [madokahk#9226] Shanks[OP14-027]
+  387.50  attacking Enel [OP05-098]
+  389.50  Shanks[OP14-027][9000] vsEnel[OP05-
+  389.50  098][5000]
+  396.00  Enel[OP05-098]hit for1 damage
+  396.00  [madokahk#9226]Coffin Boat[OP14-039]
+  396.00  Activate1Don
+  396.00  [madokahk#9226]End Turn
+  396.50  [CF123456#4579]Draw1Card
+  403.50  [CF123456#4579]Deploy Enel[EB02-052]
+  405.75  [CF123456#4579]Enel[EB02-052]
+  405.75  attacking Shanks[OP14-027]
+  409.25  [CF123456#4579]Enel[EB02-052]:Trash
+  409.25  GeckoMoria[OP14-104]
+  410.25  [CF123456#4579]Enel[EB02-052]:Add
+  410.25  card to top of LifefromDeck
+  410.25  [CF123456#4579]Enel[EB02-052]:Buff
+  413.75  Enel[EB02-052]1000
+  414.50  [madokahk#9226]Billion-foldWorld
+  414.50  Trichiliocosm[OP06-038]:ActivateCounter
+  414.50  [madokahk#9226] Billion-foldWorld
+  414.50  Trichiliocosm[OP06-038]:Rest1 Don
+  414.50  [madokahk#9226]Billion-fold World
+  414.50  Trichiliocosm[OP06-038]:BuffShanks
+  414.50  [OP14027]2000fortheCombat
+  414.50  [madokahk#9226]Billion-foldWorld
+  414.50  Trichiliocosm[OP06-038]:Buff Shanks
+  414.50  [OP14-027]2000fortheCombat
+  415.25  Enel[EB02-052][11000]vsShanks[OP14-
+  415.25  027][13000]
+  415.25  AttackFails
+  421.25  [CF123456#4579]EndTurn
+  428.50  [madokahk#9226]Draw1Card
+  428.50  [madokahk#9226]JewelryBonney[OP12-
+  428.50  118]attacking Enel[OP05-098]
+  431.00  [CF123456#4579]DiscardZeus[OP11-106]
+  431.00  forCounter2000
+  434.00  Jewelry BonneyOP12-118][6000]vs Enel
+  434.00  [OP05-098][7000]
+  434.00  AttackFails
+  434.75  [madokahk#9226] Trash Jeweiry Bonney
+  434.75  [OP12-118]
+  434.75  [madokahk#9226]DeployLaw&Bepo
+  434.75  [ST24004]
+  434.75  [madokahk#9226] Law&Bepo[ST24-004]
+  434.75  Enel [EB02-052] will notActivate during
+  434.75  nextRefresh
+  437.00  [madokahk#9226]Dracule Mihawk[OP14
+  437.00  020]:Rest CoffinBoat[OP14-039]
+  438.25  [madokahk#9226]DraculeMihawk[OP14
+  438.25  020l:Activate1Don
+  438.25  [madokahk#9226]DraculeMihawk[OP14
+  438.25  020]:Activate1Don
+  438.25  [madokahk#9226]DraculeMihawk[OP14-
+  438.25  020]:Activate1Don
+  438.25  [madokahk#9226]Dracule Mihawk[OP14
+  438.25  020j:Can'tplayCost1OrMoreCharacters
+  438.25  fortheTurn!
+  448.75  [madokahk#9226] Tashigi[OP14-029]:Res
+  448.75  Law&Bepo[ST24-004]
+  448.75  [madokahk#9226] Tashigi[OP14-029]:Res
+  448.75  Don[Don]
+  448.75  [madokahk#9226] Tashigi[OP14-029]
+  448.75  GrantTashigi[OP14-029]2000until
+  448.75  opponent's next turn end
+  459.25  [madokahk#9226] Trafalgar Law[OP13-
+  459.25  031]attacking Enel[OP05-098]
+  459.75  [CF123456#4579]DiscardPerona[OP14
+  459.75  111jforCounter1000
+  459.75  [CF123456#4579]DiscardSentomaru
+  459.75  [EB04-053]forCounter1000
+  460.50  TrafalgarLaw[OP13-031][6000]vsEnel
+  460.50  [OP05-098][7000]
+  460.50  AttackFails
+  465.25  [madokahk#9226]Attach2Don toDracule
+  465.25  Mihawk[OP14-020](2Total)
+  465.25  [madokahk#9226]Tashigi[OP14-029]
+  465.25  attacking Enel [OP05-098]
+  472.25  Tashigi[OP14-029][8000]vsEnel[OP05-
+  472.25  098][5000]
+  472.25  Enel[OP05-098]hit for1damage
+  472.25  [CF123456#4579] TrashMonkeyD.Luffy
+  472.25  [EB04-061]
+  472.25  [CF123456#4579]Enel[OP05-098]:Add
+  474.00  card to topofLifefromDeck
+  478.00  [madokahk#9226]DraculeMihawk[OP14-
+  478.00  020] attacking Enel[OP05-098]
+  478.00  DraculeMihawk[OP14-020][7000]vsEnel
+  478.00  [OP05-098][5000]
+  478.00  Enel [OP05-098]hit for1 damage
+  480.50  [madokahk#9226] Shanks[OP14-027]
+  480.50  attacking Enel [OP05-098]
+  483.75  ### CONCEDE letto sotto il popup (giocatore non leggibile) Concedes ###

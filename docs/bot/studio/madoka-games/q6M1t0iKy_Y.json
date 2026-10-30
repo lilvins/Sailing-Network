@@ -1,0 +1,1937 @@
+{
+ "video_id": "q6M1t0iKy_Y",
+ "url": "https://www.youtube.com/watch?v=q6M1t0iKy_Y",
+ "title": "Mihawk vs Y Enel (how to play against Y Enel)",
+ "mulligan": {
+  "Opponent": true,
+  "You": true
+ },
+ "source": "OCR del combat log di OPTCGSim visibile nel video (non sottotitoli)",
+ "you": "madoka_hk",
+ "leaders": {
+  "Opponent": {
+   "id": "OP05-098",
+   "name": "Enel"
+  },
+  "You": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  }
+ },
+ "first_player": "You",
+ "winner": "You",
+ "end": "concede",
+ "turns": [
+  {
+   "turn": 1,
+   "player": "You",
+   "events": [
+    {
+     "t": 16.25,
+     "type": "don",
+     "player": "You",
+     "n": 1,
+     "don_total": 1
+    },
+    {
+     "t": 19.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 0
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 1,
+     "when": "inizio",
+     "t": 16.9,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.873,
+      0.901,
+      0.922,
+      0.916,
+      0.897
+     ]
+    },
+    {
+     "turn": 1,
+     "when": "fine",
+     "t": 18.5,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.873,
+      0.901,
+      0.922,
+      0.916,
+      0.897
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 2,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 20.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 20.75,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 2
+    },
+    {
+     "t": 23.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 3,
+   "player": "You",
+   "events": [
+    {
+     "t": 23.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 28.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 3
+    },
+    {
+     "t": 29.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 3,
+     "when": "inizio",
+     "t": 23.6,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-035 Yosaku (?)",
+      "OP04-022 Eric (?)",
+      "OP10-034 Franky (?)",
+      "OP11-035 Fisher Tiger (?)"
+     ],
+     "scores": [
+      0.686,
+      0.591,
+      0.49,
+      0.409,
+      0.276
+     ]
+    },
+    {
+     "turn": 3,
+     "when": "fine",
+     "t": 28.5,
+     "n": 5,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-035 Yosaku (?)",
+      "OP04-022 Eric (?)",
+      "OP10-034 Franky (?)",
+      "OP11-035 Fisher Tiger (?)"
+     ],
+     "scores": [
+      0.677,
+      0.588,
+      0.491,
+      0.409,
+      0.266
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 4,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 29.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 29.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 4
+    },
+    {
+     "t": 32.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 2,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 2
+    },
+    {
+     "t": 34.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 44.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 47.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB04-053",
+     "name": "Sentomaru",
+     "category": "Character"
+    },
+    {
+     "t": 47.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [],
+     "Opponent": [
+      "EB04-053 Sentomaru"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 5,
+   "player": "You",
+   "events": [
+    {
+     "t": 48.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 48.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 5
+    },
+    {
+     "t": 75.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "category": "Character"
+    },
+    {
+     "t": 83.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi"
+     ],
+     "Opponent": [
+      "EB04-053 Sentomaru"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 5,
+     "when": "inizio",
+     "t": 48.6,
+     "n": 8,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.889,
+      0.936,
+      0.92,
+      0.906,
+      0.898,
+      0.868,
+      0.913,
+      0.846
+     ]
+    },
+    {
+     "turn": 5,
+     "when": "fine",
+     "t": 83.2,
+     "n": 7,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.896,
+      0.939,
+      0.92,
+      0.911,
+      0.902,
+      0.926,
+      0.845
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 6,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 83.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 84.75,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 6
+    },
+    {
+     "t": 107.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB04-058",
+     "name": "Borsalino",
+     "category": "Character"
+    },
+    {
+     "t": 107.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi"
+     ],
+     "Opponent": [
+      "EB04-053 Sentomaru",
+      "EB04-058 Borsalino"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 7,
+   "player": "You",
+   "events": [
+    {
+     "t": 113.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 113.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 7
+    },
+    {
+     "t": 115.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "category": "Character"
+    },
+    {
+     "t": 116.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestShanks<OP14-027>"
+    },
+    {
+     "t": 116.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 116.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 116.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "text": "RestBorsalino<EB04-058>"
+    },
+    {
+     "t": 119.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestDon[Don]",
+     "times": 2
+    },
+    {
+     "t": 119.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 130.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-029",
+     "attacker_name": "Tashigi",
+     "target": "EB04-058",
+     "target_name": "Borsalino",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 8000,
+     "defense_power": 6000
+    },
+    {
+     "t": 130.0,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "EB04-058",
+     "name": "Borsalino"
+    },
+    {
+     "t": 141.5,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": [
+      "EB04-053 Sentomaru"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 7,
+     "when": "inizio",
+     "t": 113.8,
+     "n": 7,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP12-034 Perona",
+      "OP13-031 Trafalgar Law"
+     ],
+     "scores": [
+      0.895,
+      0.925,
+      0.897,
+      0.886,
+      0.924,
+      0.868,
+      0.892
+     ]
+    },
+    {
+     "turn": 7,
+     "when": "fine",
+     "t": 141.0,
+     "n": 7,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP12-034 Perona",
+      "OP13-031 Trafalgar Law"
+     ],
+     "scores": [
+      0.898,
+      0.927,
+      0.896,
+      0.892,
+      0.925,
+      0.872,
+      0.892
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 8,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 142.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 145.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 8
+    },
+    {
+     "t": 145.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 8,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 8
+    },
+    {
+     "t": 145.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [
+      {
+       "player": "You",
+       "card": "OP12-118",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 13000,
+     "defense_power": 14000
+    },
+    {
+     "t": 153.25,
+     "type": "event_counter",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCounter"
+    },
+    {
+     "t": 153.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "Rest1Don"
+    },
+    {
+     "t": 158.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffShanks<OP14-027>2000fortheCombat",
+     "times": 2
+    },
+    {
+     "t": 159.25,
+     "type": "counter",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "value": 1000
+    },
+    {
+     "t": 159.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": [
+      "EB04-053 Sentomaru"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 9,
+   "player": "You",
+   "events": [
+    {
+     "t": 160.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 163.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 9
+    },
+    {
+     "t": 164.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 174.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 174.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-027",
+     "attacker_name": "Shanks",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 9000,
+     "defense_power": 5000
+    },
+    {
+     "t": 175.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "text": "RestSentomaru<EB04-053>"
+    },
+    {
+     "t": 175.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 176.75,
+     "type": "trigger",
+     "player": "Opponent",
+     "card": "OP15-117",
+     "name": "Heso!!",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 176.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-117",
+     "name": "Heso!!",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 182.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "EB04-053",
+     "target_name": "Sentomaru",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 5000,
+     "defense_power": 1000
+    },
+    {
+     "t": 183.5,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "EB04-053",
+     "name": "Sentomaru"
+    },
+    {
+     "t": 188.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 189.0,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnPerona<OP12-034>toHand"
+    },
+    {
+     "t": 192.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 192.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 193.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashElectricalLuna<OP08-036>"
+    },
+    {
+     "t": 193.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 212.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 229.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawBillion-foldWorldTrichiliocosm<OP06-038>"
+    },
+    {
+     "t": 229.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "ResPerona<OP12-034>"
+    },
+    {
+     "t": 229.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "ResTrafalgarLaw<OP13-031>"
+    },
+    {
+     "t": 229.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 230.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-029",
+     "attacker_name": "Tashigi",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 231.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 237.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 4
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "OP13-031 Trafalgar Law",
+      "OP12-118 Jewelry Bonney",
+      "OP12-034 Perona"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 9,
+     "when": "inizio",
+     "t": 160.6,
+     "n": 6,
+     "cards": [
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-034 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP08-036 Electrical Luna"
+     ],
+     "scores": [
+      0.893,
+      0.925,
+      0.91,
+      0.852,
+      0.905,
+      0.893
+     ]
+    },
+    {
+     "turn": 9,
+     "when": "fine",
+     "t": 237.2,
+     "n": 6,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "PRB02-006 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "EB01-015 Scratchmen Apoo",
+      "OP14-119 Dracule Mihawk",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.925,
+      0.914,
+      0.912,
+      0.926,
+      0.878,
+      0.911
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 10,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 238.5,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 239.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 10
+    },
+    {
+     "t": 269.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 8,
+     "to": "OP05-098",
+     "to_name": "Enel",
+     "total_on_card": 8
+    },
+    {
+     "t": 271.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-098",
+     "attacker_name": "Enel",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 13000,
+     "defense_power": 15000
+    },
+    {
+     "t": 276.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCounte"
+    },
+    {
+     "t": 276.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "Rest1Don"
+    },
+    {
+     "t": 276.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffShanks<OP14-027>2000fortheCombat",
+     "times": 2
+    },
+    {
+     "t": 280.25,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 282.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 4
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "OP13-031 Trafalgar Law",
+      "OP12-118 Jewelry Bonney",
+      "OP12-034 Perona"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 11,
+   "player": "You",
+   "events": [
+    {
+     "t": 310.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 310.75,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 11
+    },
+    {
+     "t": 310.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-110",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 6000
+    },
+    {
+     "t": 314.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-110",
+     "name": "Dr. Hogback",
+     "value": 1000
+    },
+    {
+     "t": 326.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 326.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 326.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "RestPerona<OP12-034>"
+    },
+    {
+     "t": 326.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "ResCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 326.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 336.5,
+     "type": "trash",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "from": "field"
+    },
+    {
+     "t": 336.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "category": "Character"
+    },
+    {
+     "t": 336.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestDraculeMihawk<OP14-119>"
+    },
+    {
+     "t": 337.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 337.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 341.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP12-118",
+     "to_name": "Jewelry Bonney",
+     "total_on_card": 1
+    },
+    {
+     "t": 341.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-118",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-102",
+       "value": 2000
+      },
+      {
+       "player": "Opponent",
+       "card": "EB04-058",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 363.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-102",
+     "name": "Kumacy",
+     "value": 2000
+    },
+    {
+     "t": 364.5,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "EB04-058",
+     "name": "Borsalino",
+     "value": 1000
+    },
+    {
+     "t": 376.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-029",
+     "attacker_name": "Tashigi",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 378.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 380.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP13-031",
+     "to_name": "Trafalgar Law",
+     "total_on_card": 2
+    },
+    {
+     "t": 380.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 385.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 387.5,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "EB04-061",
+     "name": "Monkey.D.Luffy",
+     "from": "hand"
+    },
+    {
+     "t": 387.5,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP05-098",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 387.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-027",
+     "attacker_name": "Shanks",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 9000,
+     "defense_power": 5000
+    },
+    {
+     "t": 396.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 396.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 396.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 0,
+     "You": 4
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "OP13-031 Trafalgar Law",
+      "OP12-118 Jewelry Bonney",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 11,
+     "when": "inizio",
+     "t": 311.4,
+     "n": 5,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "EB01-015 Scratchmen Apoo",
+      "OP14-119 Dracule Mihawk",
+      "OP14-039 Coffin Boat"
+     ],
+     "scores": [
+      0.919,
+      0.891,
+      0.906,
+      0.873,
+      0.881
+     ]
+    },
+    {
+     "turn": 11,
+     "when": "fine",
+     "t": 395.5,
+     "n": 4,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "EB01-015 Scratchmen Apoo",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.919,
+      0.892,
+      0.905,
+      0.841
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 12,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 396.5,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 403.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "category": "Character"
+    },
+    {
+     "t": 405.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "EB02-052",
+     "attacker_name": "Enel",
+     "target": "OP14-027",
+     "target_name": "Shanks",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 11000,
+     "defense_power": 13000
+    },
+    {
+     "t": 409.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "text": "TrashGeckoMoria<OP14-104>"
+    },
+    {
+     "t": 410.25,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 410.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB02-052",
+     "name": "Enel",
+     "text": "BuffEnel<EB02-052>1000"
+    },
+    {
+     "t": 414.5,
+     "type": "event_counter",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCounter"
+    },
+    {
+     "t": 414.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "Rest1Don"
+    },
+    {
+     "t": 414.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffShanks<OP14-027>2000fortheCombat"
+    },
+    {
+     "t": 414.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffShanks<OP14-027>2000"
+    },
+    {
+     "t": 421.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 1,
+     "You": 4
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "OP13-031 Trafalgar Law",
+      "OP12-118 Jewelry Bonney",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "Opponent": [
+      "EB02-052 Enel"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 13,
+   "player": "You",
+   "events": [
+    {
+     "t": 428.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 428.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-118",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP11-106",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 431.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP11-106",
+     "name": "Zeus",
+     "value": 2000
+    },
+    {
+     "t": 434.75,
+     "type": "trash",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "from": "field"
+    },
+    {
+     "t": 434.75,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 434.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "Enel<EB02-052>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 437.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 438.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 438.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 448.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "ResLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 448.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "ResDon[Don]"
+    },
+    {
+     "t": 448.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "text": "GrantTashigi<OP14-029>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 459.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-111",
+       "value": 1000
+      },
+      {
+       "player": "Opponent",
+       "card": "EB04-053",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 459.75,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-111",
+     "name": "Perona",
+     "value": 1000
+    },
+    {
+     "t": 459.75,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "EB04-053",
+     "name": "Sentomaru",
+     "value": 1000
+    },
+    {
+     "t": 465.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 465.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-029",
+     "attacker_name": "Tashigi",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 472.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 472.25,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "EB04-061",
+     "name": "Monkey.D.Luffy",
+     "from": "hand"
+    },
+    {
+     "t": 472.25,
+     "type": "life_gain",
+     "player": "Opponent",
+     "card": "OP05-098",
+     "name": "Enel",
+     "text": "AddcardtotopofLifefromDeck",
+     "life_after": 1
+    },
+    {
+     "t": 478.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 478.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP05-098",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 480.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-027",
+     "attacker_name": "Shanks",
+     "target": "OP05-098",
+     "target_name": "Enel",
+     "counters": [],
+     "result": null
+    },
+    {
+     "t": 480.5,
+     "type": "concede",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 0,
+     "You": 4
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-029 Tashigi",
+      "OP14-027 Shanks",
+      "OP13-031 Trafalgar Law",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "EB02-052 Enel"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 13,
+     "when": "inizio",
+     "t": 429.1,
+     "n": 4,
+     "cards": [
+      "ST24-004 Law & Bepo",
+      "EB01-015 Scratchmen Apoo",
+      "OP12-034 Perona",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.895,
+      0.893,
+      0.858,
+      0.916
+     ]
+    },
+    {
+     "turn": 13,
+     "when": "fine",
+     "t": 480.0,
+     "n": 3,
+     "cards": [
+      "EB01-015 Scratchmen Apoo",
+      "OP12-034 Perona",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.904,
+      0.828,
+      0.917
+     ]
+    }
+   ]
+  }
+ ],
+ "quality": {
+  "log_chars": 7405,
+  "parsed_fraction": 0.919,
+  "unparsed_fragments": [
+   "6s AttemptingtoconnecttoWD6PM9D口LeaderisEnel[OP05-SqueichOpponeot.urnorderHasConnectedLeaderisDraculeCADORALIVE9Klsus1994ChosetogoFirst5539MILION-STGRMRPROUNYPNCPNTS.DONOTCLOGETHEAPP.###AttemptingtoconnecttoWD6PM9DVersionis1.40a.60",
+   "6s [You]Willselectturnordermadokahk#9226HasConnectedVersionis1.40a.60",
+   "44s DraculeMihawk",
+   "44s [Opponent]iamyourfans",
+   "174s [You]PlacingCardsonBottomofDeck",
+   "184s DraculeMihawk",
+   "229s [You]PlacingCardsonBottomofDeck",
+   "322s DraculeMihawk",
+   "377s JewelryBonney",
+   "414s fortheCombatEnel",
+   "434s JewelryBonney",
+   "478s DraculeMihawk"
+  ],
+  "unknown_ids": [],
+  "log_gaps": 2
+ }
+}

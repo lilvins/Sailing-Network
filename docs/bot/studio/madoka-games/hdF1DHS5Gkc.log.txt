@@ -1,0 +1,628 @@
+    9.00  Attempting to connecttoWTL866W
+    9.00  Version is1.42a.34
+    9.00  [Opponent] Leader is Monkey D. Luffy
+    9.00  [OP13-001]
+    9.00  YourClientHasConnected
+    9.00  Versionis1.42a.34
+    9.00  [You]Leader isDraculeMihawk[OP14-
+    9.00  020]
+    9.00  [Opponent] Chose to go Second
+   16.00  [You]Draw1Don
+   17.75  [You]DeployPerona[OP12-034]
+   23.75  [You]Perona[OP12-034]:Revealand
+   23.75  Draw Electrical Luna [OP08-036]
+   23.75  [You]PlacingCardsonBottomofDeck
+   32.25  [You] EndTurn
+   32.25  [Opponent]Draw1Card
+   34.50  [Opponent]Draw2Don
+   34.50  [Opponent]DeployThousandSunny
+   34.50  [ST31-005]
+   40.50  [Opponent] Thousand Sunny[ST31-005]:
+   40.50  Revealand DrawNami[OP01-016]
+   40.50  [Opponent] Placing Cards on Bottom of
+   40.50  Deck
+   44.00  [Opponent] DeployNami[OP01-016]
+   48.75  [Opponent] Nami[OP01-016]:Reveal and
+   48.75  DrawSanji[OP13-027]
+   48.75  [Opponent] End Turn
+   49.00  [You]Draw1 Card
+   54.25  [You]Draw2Don
+   54.25  [You]DraculeMihawk[OP14-020]
+   54.25  attacking MonkeyD.Luffy[OP13-001]
+   55.00  DraculeMihawk[0P14-020][5000]vs
+   55.00  MonkeyD.Luffy[OP13-001][5000]
+   55.00  MonkeyD.Luffy[OP13-001]hitfor1
+   55.00  damage
+   57.75  [You] Attach3Don toPerona[OP12-034]
+   57.75  (3Total)
+   59.25  [You]Perona[OP12-034]attacking
+   59.25  MonkeyD.Luffy[OP13-001]
+   68.25  [Opponent]DiscardUsopp[OP14-022]for
+   68.25  Counter1000
+   69.25  Perona[OP12-034][5000] vsMonkeyD
+   69.25  Luffy[OP13-001][6000]
+   69.25  AttackFails
+   69.25  [You] End Turn
+   69.25  [Opponent]Draw1Card
+   69.25  [Opponent]Draw2Don
+   72.50  [Opponent] Nami [OP01-016] attacking
+   72.50  Perona[OP12-034]
+   73.25  Nami[OP01-016][2000]vsPerona[OP12
+   73.25  034][2000]
+   73.25  [You]Perona[OP12-034]Destroyed
+   74.50  [Opponent]DeployUsopp[OP14-022]
+   75.75  [Opponent] Thousand Sunny[ST31-005]:
+   75.75  Rest Thousand Sunny[ST31-005]
+   78.75  [Opponent] Thousand Sunny[ST31-005]
+   78.75  Attach 1 Rested Don to MonkeyD.Luffy
+   78.75  OP13-001]
+   78.75  [Opponent] Monkey D.Luffy[OP13-001]
+   78.75  attackingDraculeMihawk[OP14-020]
+   79.75  Monkey D.Luffy[OP13-001][6000]vs
+   79.75  DraculeMihawk[OP14-020][5000]
+   79.75  DraculeMihawk[OP14-020]hitfor1
+   79.75  damage
+   82.50  [Opponent]Usopp[OP14-022]:Activate1
+   82.50  Don
+   82.50  [Opponent]UsoppOP14-022]:Activate1
+   82.50  Don
+   82.50  [Opponent] End Turn
+   82.75  [You]Draw1Card
+  112.00  [You]Draw2Don
+  113.25  [You]Deploy Perona[OP14-033]
+  113.25  [You] Perona[OP14-033]:Nami [OP01-016
+  113.25  can'tbe rested until next turn ends
+  113.25  [You]Perona[OP14-033]:Usopp[OP14
+  113.25  022]can't berested until next turn ends
+  115.25  [You]DraculeMihawk[OP14-020]:Rest
+  115.25  Perona[OP14-033]
+  116.50  [You]DraculeMihawk[OP14-020]:Activate
+  116.50  1Don
+  116.50  [You]Dracule Mihawk[OP14-020]:Activate
+  116.50  1Don
+  116.50  [You]Dracule Mihawk[OP14-020]:Activate
+  116.50  1Don
+  116.50  [You] Dracule Mihawk[OP14-020]:Can't
+  116.50  playCost1OrMoreCharactersforthe
+  116.50  Turn!
+  119.00  [You]Attach 1 Don toDraculeMihawk
+  119.00  [OP14-020](1Total)
+  119.00  [You] DraculeMihawk[OP14-020]
+  119.00  attackingNami[OP01-016]
+  123.50  DraculeMihawk[OP14-020][6000]vsNam
+  123.50  [OP01-016][2000]
+  123.50  [Opponent] Nami[OP01-016]Destroyed
+  128.25  [You] End Turn
+  128.25  [Opponent]Draw1Card
+  128.25  [Opponent]Draw2Don
+  131.00  [Opponent] DeploySanji [OP13-027]
+  131.75  [Opponent] Sanji [OP13-027]:Activate1
+  131.75  Don
+  131.75  [Opponent] Sanji[0P13-027]:Activate 1
+  131.75  Don
+  133.75  [Opponent] Deploy Nami[OP01-016]
+  137.25  [Opponent] Nami [OP01-016]:Reveal and
+  137.25  DrawThousand Sunny[ST31-005]
+  139.75  [Opponent] Thousand Sunny[ST31-005]:
+  139.75  Rest Thousand Sunny [ST31-005]
+  139.75  [Opponent] Thousand Sunny[ST31-005]:
+  139.75  Attach 1 Rested Don toMonkeyD.Luffy
+  139.75  [OP13-001]
+  141.75  [Opponent] Attach 1 Don to Monkey D
+  141.75  Luffy[OP13-001](2Total)
+  149.00  [Opponent] Monkey D.Luffy[OP13-001]
+  149.00  attackingDraculeMihawk[OP14-020]
+  154.50  Monkey D.Luffy[OP13-001][7000]vs
+  154.50  DraculeMihawk[OP14-020][5000]
+  154.50  DraculeMihawk[OP14-020]hitfor1
+  154.50  damage
+  154.50  [Opponent Usopp[OP14-022]:Activate1
+  154.50  Don
+  154.50  [Opponent] Usopp[OP14-022]:Activate1
+  154.50  Don
+  155.00  [Opponent] Sanji [OP13-027]:Activate1
+  155.00  Don
+  155.00  [Opponent]End Turn
+  155.25  [You]Draw1Card
+  175.25  [You]Draw2Don
+  185.25  [You] Deploy Dracule Mihawk[ST32-003]
+  186.50  [You] DraculeMihawk[ST32-003]:Deploy
+  186.50  Perona[OP14-033]
+  186.50  [You]PeronaOP14-033]:Usopp[0P14
+  186.50  022] can't be rested until next turn ends
+  186.50  [You]Perona[OP14-033]:Sanji[OP13-027]
+  186.50  can'tbe rested until next turn ends
+  189.50  [You] End Turn
+  189.50  [Opponent]Draw 1Card
+  189.50  [Opponent]Draw2Don
+  194.25  [Opponent] Deploy Sanji [OP13-027]
+  195.50  [Opponent]Sanji[OP13-027]:Activate1
+  195.50  Don
+  195.50  [pponent] Sanji[OP13-027]:Activate1
+  195.50  Don
+  196.75  [Opponent] Thousand Sunny[ST31-005]:
+  196.75  Rest Thousand Sunny[ST31-005]
+  197.50  [Opponent] Thousand Sunny[ST31-005]:
+  197.50  Attach 1 Rested Don to Monkey D.Luffy
+  197.50  [OP13-001]
+  199.75  [Opponent] Deploy Thousand Sunny
+  199.75  [ST31-005]
+  203.50  [Opponent] Thousand Sunny ST31-005]:
+  203.50  RevealandDrawRoronoaZoro
+  203.50  [EB04-007]
+  203.50  [Opponent] Placing Cards on Bottom of
+  203.50  Deck
+  206.75  [Opponent] Thousand Sunny[ST31-005]:
+  206.75  Rest Thousand Sunny [ST31-005]
+  206.75  [Opponent] Thousand Sunny[ST31-005]:
+  206.75  Attach 1 Rested Don to Monkey D.Luffy
+  206.75  [OP13-001]
+  211.25  [Opponent] Attach 1 Don to Monkey D.
+  211.25  Luffy[OP13-001](3Total)
+  214.00  [Opponent] Monkey D.Luffy [OP13-001]
+  214.00  attackingDraculeMihawk[OP14-020]
+  218.50  MonkeyD.Luffy[OP13-001][8000]vs
+  218.50  DraculeMihawk[OP14-020][5000]
+  218.50  DraculeMihawk[OP14-020]hitfor1
+  218.50  damage
+  218.50  [Opponent] Sanji[OP13-027]:Activate1
+  218.50  Don
+  220.00  [Opponent] Sanji[OP13-027]:Activate1
+  220.00  Don
+  221.00  [Opponent] End Turn
+  221.25  [You]Draw1Card
+  232.50  [You]Draw2Don
+  234.75  [You]DeployDraculeMihawk[OP14-119]
+  234.75  [You]Dracule Mihawk[OP14-020]:Rest
+  234.75  DraculeMihawk[OP14-119]
+  236.25  [You]DraculeMihawk[OP14-020]:Activate
+  236.25  1Don
+  236.25  [You]Dracule Mihawk[OP14-020]:Activate
+  236.25  1Don
+  236.25  [You] DraculeMihawk[OP14-020]:Activate
+  236.25  1Don
+  236.25  [You]Dracule Mihawk[OP14-020]:Can't
+  236.25  playCost1OrMoreCharactersforthe
+  236.25  Turn!
+  237.00  [You]DraculeMihawk[OP14-119]:Sanji
+  237.00  [OP13-027]can'tberesteduntilnext turn
+  237.00  ends
+  250.00  [You] DraculeMihawk[ST32-003] attacking
+  250.00  Monkey D.Luffy[OP13-001]
+  250.00  [You]DraculeMihawk[ST32-003]:Draw1
+  250.00  Card
+  268.25  [You]DraculeMihawk[ST32-003]:Trash
+  268.25  Kouzuki Oden[ST32-002]
+  268.25  [Opponent] Monkey D.Luffy [OP13-001]:
+  268.25  RestDon[Don]
+  268.25  [Opponent] Monkey D.Luffy [OP13-001]:
+  268.25  Rest Don[Don]
+  268.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  268.75  Buff MonkeyD.Luffy[OP13-001]4000 for
+  268.75  theCombat
+  271.75  Dracule Mihawk[ST32-003][7000] vs
+  271.75  MonkeyD.Luffy[OP13-001j[9000]
+  271.75  AttackFails
+  271.75  [You] Attach 1 Don to Perona[OP14-033]
+  271.75  (1Total)
+  273.00  [You]Perona[OP14-033] attacking
+  273.00  MonkeyD.Luffy[OP13-001]
+  276.50  [Opponent] MonkeyD.Luffy[OP13-001]:
+  276.50  Rest Don[Don]
+  276.50  [Opponent] Monkey D.Luffy [OP13-001]:
+  276.50  Rest Don[Don]
+  277.25  [Opponent] Monkey D.Luffy [OP13-001]:
+  277.25  BuffMonkeyD.Luffy[OP13-001]4000for
+  277.25  theCombat
+  281.25  Perona[OP14-033]17000] vs MonkeyD.
+  281.25  Luffy[OP13-001][9000]
+  281.25  AttackFails
+  281.25  [You] Attach 1 Don to Perona[OP14-033]
+  281.25  (1Total)
+  282.25  [You]Perona[OP14-033]attacking
+  282.25  MonkeyD.Luffy[OP13-001]
+  284.75  Perona[OP14-033][7000]vsMonkeyD
+  284.75  Luffy[OP13-001][5000]
+  284.75  MonkeyD.Luffy[OP13-001]hit for1
+  284.75  damage
+  289.75  [You] Deploy Coffin Boat[OP14-039]
+  289.75  [You]CoffinBoat[OP14-039]:Draw1 Card
+  289.75  [You] Coffin Boat[OP14-039]:Activate1
+  289.75  Don
+  289.75  [You] End Turn
+  289.75  [Opponent]Draw1Card
+  289.75  [Opponent]Draw2Don
+  294.00  [Opponent] Deploy Roronoa Zoro[EB04-
+  294.00  0071
+  295.00  [Opponent] Roronoa Zoro[EB04-007]:
+  295.00  Grant Monkey D.Luffy[OP13-001]2000
+  295.00  until opponent'snext turn end
+  296.00  [Opponent] Thousand Sunny[ST31-005]:
+  296.00  Rest Thousand Sunny[ST31-005]
+  296.25  [Opponent] Thousand Sunny[ST31-005]:
+  296.25  Attach 1 RestedDon to Monkey D.Luffy
+  296.25  [OP13-001]
+  301.25  [Opponent] Attach 2 Don to Monkey D.
+  301.25  Luffy[OP13-001](3Total)
+  303.00  [Opponent] Monkey D.Luffy[OP13-001]
+  303.00  attackingDraculeMihawk[OP14-020]
+  309.50  MonkeyD.Luffy[OP13-001][10000]vs
+  309.50  DraculeMihawk[OP14-020][5000]
+  309.50  DraculeMihawk[OP14-020]hitfor1
+  309.50  damage
+  324.75  [You]Electrical Luna[OP08-036]:Activate
+  324.75  Trigger
+  324.75  [You] Electrical Luna[OP08-036]:Rest Sanji
+  324.75  [OP13-027]
+  330.00  [Opponent]Usopp[OP14-022]:Activate1
+  330.00  Don
+  330.00  [Opponent]Usopp[OP14-022]:Activate1
+  330.00  Don
+  331.50  [Opponent] Sanji [OP13-027]:Activate 1
+  331.50  Don
+  332.00  [Opponent] Sanji [OP13-027]:Activate 1
+  332.00  Don
+  332.25  [Opponent] End Turn
+  332.25  [You]Draw1Card
+  340.00  [You]Draw2Don
+  341.25  [You]DeployLaw&Bepo[ST24-004]
+  341.25  [You]Law&Bepo[ST24-004]:Rest
+  341.25  RoronoaZoro EB04-007]
+  341.25  [You] Law&Bepo[ST24.004]:Roronoa
+  341.25  Zoro[EB04-007] will not Activate during
+  341.25  next Refresh
+  341.25  [You] Law&Bepo[ST24-004]:Grant
+  341.25  DraculeMihawk[OP14-020]2000until
+  341.25  opponent'snextturnend
+  343.25  [You]Dracule Mihawk[OP14-020]:Rest
+  343.25  CoffinBoat[OP14-039]
+  344.50  [You]Dracule Mihawk[OP14-020]:Activate
+  344.50  1Don
+  344.50  [You]Dracule Mihawk[OP14-020]:Activate
+  344.50  1Don
+  344.50  [You]DraculeMihawk[OP14-020]:Activate
+  344.50  1Don
+  344.50  [You] Dracule Mihawk[OP14-020]:Can't
+  344.50  playCost1OrMoreCharactersforthe
+  344.50  Turn!
+  377.50  [You]DeployCoffinBoat[OP14-039]
+  377.50  [You]CoffinBoat[OP14-039]:Draw1Card
+  377.50  [You]Attach1Don toDraculeMihawk
+  377.50  [OP14-119](1Total)
+  378.75  [You] DraculeMihawk[OP14-119]
+  378.75  attacking MonkeyD.Luffy[OP13-001]
+  380.00  [You] DraculeMihawk[OP14-119]:Sanji
+  380.00  [OP13-027]can'tberesteduntil next turn
+  380.00  ends
+  383.50  [Opponent] Monkey D.Luffy [OP13-001]:
+  383.50  RestDon[Don]
+  383.50  [Opponent] Monkey D.Luffy [OP13-001]:
+  383.50  RestDon[Don]
+  383.50  [Opponent] Monkey D.Luffy [OP13-001]:
+  383.50  RestDon[Don]
+  384.00  [Opponent] Monkey D.Luffy [OP13-001]:
+  384.00  Buff MonkeyD.Luffy[OP13-001]6000 for
+  384.00  theCombat
+  384.75  DraculeMihawk[0P14-119][11000]vs
+  384.75  MonkeyD.Luffy[OP13-001][13000]
+  384.75  AttackFails
+  391.50  [You] Dracule Mihawk[ST32-003] attacking
+  391.50  MonkeyD.Luffy[OP13-001]
+  391.50  [You]Dracule Mihawk[ST32-003]:Draw1
+  391.50  Card
+  393.25  [You] DraculeMihawk[ST32-003]:Trash
+  393.25  Kin'emon[ST32-001]
+  393.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  393.75  RestDon[Don]
+  394.50  [Opponent]Monkey D.Luffy[OP13-001]:
+  394.50  BuffMonkeyD.Luffy[OP13-001]2000for
+  394.50  theCombat
+  394.50  DraculeMihawk[ST32-003][7000] vs
+  394.50  MonkeyD.Luffy[OP13-001][9000]
+  394.50  AttackFails
+  399.25  [You] DraculeMihawk[OP14-020]
+  399.25  attacking MonkeyD.Luffy[OP13-001]
+  401.25  [Opponent] Monkey D.Luffy [OP13-001]:
+  401.25  RestDon[Don]
+  401.25  [Opponent] Monkey D.Luffy [OP13-001]:
+  401.25  Buff MonkeyD.Luffy[OP13-001]2000 for
+  401.25  theCombat
+  401.75  DraculeMihawk[0P14-020][7000] vs
+  401.75  MonkeyD.Luffy[OP13-001][9000]
+  401.75  AttackFails
+  402.75  [You] Attach 1 Don to Perona [OP14-033]
+  402.75  (1Total)
+  404.00  [You]Perona[OP14-033]attacking
+  404.00  MonkeyD.Luffy[OP13-001]
+  406.50  [Opponent] Discard Roronoa Zoro[OP13-
+  406.50  037]forCounter1000
+  407.00  Perona[OP14-033][7000]vs Monkey D
+  407.00  Luffy[OP13-001][8000]
+  407.00  AttackFails
+  409.00  [You] Coffin Boat [OP14-039]:Activate1
+  409.00  Don
+  409.25  [You]End Turn
+  417.00  [Opponent] Draw 1 Card
+  417.00  [Opponent] Trash Nami [OP01-016]
+  417.00  [Opponent] Deploy Roronoa Zoro[EBO4-
+  417.00  0071
+  417.75  [Opponent] Roronoa Zoro[EB04-007]:
+  417.75  Grant MonkeyD.Luffy[OP13-001]2000
+  417.75  until opponent's next turn end
+  418.50  [Opponent] Thousand Sunny[ST31-005]:
+  418.50  Rest Thousand Sunny[ST31-005]
+  420.25  [Opponent] Thousand Sunny[ST31-005]:
+  420.25  Attach 1 Rested Don to Monkey D.Luffy
+  420.25  [OP13-001]
+  423.00  [Opponent] Roronoa ZoroEB04-007]:Give
+  423.00  RoronoaZoro[EB04-007]CharacterRush
+  423.00  [Opponent]RoronoaZoro[EB04-007]
+  423.00  attackingDraculeMihawk[ST32-003]
+  426.00  RoronoaZoro[EB04-007][9000]vs Dracule
+  426.00  Mihawk[ST32-003][7000]
+  426.00  [You] DraculeMihawk[ST32-003]
+  426.00  Destroyed
+  434.75  [Opponent]Sanji[OP13-027] attacking
+  434.75  DraculeMihawk[OP14-020]
+  435.50  [You]Discard Kin'emon[ST32-001] for
+  435.50  Counter1000
+  437.50  Sanji[OP13-027][7000]vsDraculeMihawk
+  437.50  [OP14-020][8000]
+  437.50  AttackFails
+  437.50  [Opponent]Attach2Don toMonkeyD
+  437.50  Luffy[OP13-001](3Total)
+  439.75  [Opponent]Monkey D.Luffy[OP13-001]
+  443.75  attackingDraculeMihawk[OP14-020]
+  444.25  [You]Billion-foldWorld Trichiliocosm
+  444.25  [OP06-038]:ActivateCounter
+  444.25  [You]Billion-foldWorld Trichiliocosm
+  444.25  [OP06-038]:Rest1Don
+  444.25  [You]Billion-foldWorldTrichiliocosm
+  444.25  OP06-038]:BuffDraculeMihawk[OP14-
+  444.25  020l2000fortheCombat
+  444.25  [You] Billion-fold World Trichiliocosm
+  444.25  OP06-038]:BuffDracule Mihawk[OP14-
+  444.25  020]2000fortheCombat
+  445.25  MonkeyD.Luffy[OP13-001][10000]vs
+  445.25  DraculeMihawk[OP14-020][11000]
+  445.25  AttackFails
+  449.50  [Opponent] Usopp[OP14-022]:Activate1
+  449.50  Don
+  449.50  [Opponent]Usopp[OP14-022]:Activate1
+  449.50  Don
+  449.50  [Opponent] Sanji[OP13-027]:Activate1
+  449.50  Don
+  449.75  [Opponent] Sanji [OP13-027]:Activate 1
+  449.75  Don
+  449.75  [Opponent] End Turn
+  465.00  [You]Draw1 Card
+  466.00  [You]DeployLaw&Bepo[ST24-004]
+  468.00  [You] Law&Bepo[ST24-004]:Rest Usopp
+  468.00  [OP14-022]
+  468.00  [You]Law&Bepo[ST24-004]:Usopp
+  468.00  [OP14-022] willnotActivate during next
+  468.00  Refresh
+  468.00  [You]Law&Bepo[ST24-004]:Grant
+  468.00  Dracule Mihawk[OP14-020]2000until
+  468.00  opponent'snext turn end
+  468.00  [You] Perona[OP14-033] attacking Usopp
+  468.00  [OP14-022]
+  476.50  Perona[OP14-033][6000]vsUsopp[OP14
+  476.50  022][5000]
+  476.50  [Opponent]UsoppOP14-022]Destroyed
+  476.50  [You]DraculeMihawk[OP14-020]:Rest
+  476.50  Coffin Boat[OP14-039]
+  478.25  [You]DraculeMihawk[OP14-020]:Activate
+  478.25  1Don
+  478.25  [You]Dracule Mihawk[OP14-020]:Activate
+  478.25  1Don
+  478.25  [You]Dracule Mihawk[OP14-020]:Activate
+  478.25  1Don
+  478.25  [You] DraculeMihawk[OP14-020]:Can't
+  478.25  playCost1OrMoreCharactersforthe
+  478.25  Turn!
+  480.00  [You]DraculeMihawk[OP14-119]
+  480.00  attacking MonkeyD.Luffy[OP13-001]
+  480.25  [You] DraculeMihawk[OP14-119]:Sanji
+  480.25  [OP13-027]can'tberesteduntil next turn
+  480.25  ends
+  482.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  482.75  RestDon[Don]
+  482.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  482.75  RestDon[Don]
+  483.25  [Opponent] Monkey D.Luffy [OP13-001]:
+  483.25  BuffMonkeyD.Luffy[OP13-001]4000 for
+  483.25  theCombat
+  484.00  DraculeMihawk[0P14-119][10000]vs
+  484.00  MonkeyD.Luffy[OP13-001][11000]
+  484.00  AttackFails
+  486.75  [You]Law&Bepo[ST24-004]attacking
+  486.75  MonkeyD.Luffy[OP13-001]
+  490.50  [Opponent] MonkeyD.Luffy[OP13-001]:
+  490.50  Rest Don[Don]
+  490.50  [Opponent]Monkey D.Luffy [OP13-001]:
+  490.50  Rest Don[Don]
+  490.50  [Opponent] Monkey D.Luffy [OP13-001]:
+  490.50  Rest Don[Don]
+  491.00  [Opponent] Monkey D.Luffy [OP13-001]:
+  491.00  Buff MonkeyD.Luffy[OP13-001]6000 for
+  491.00  theCombat
+  492.00  Law&Bepo[ST24-004][11000] vsMonkey
+  492.00  D.Luffy[OP13-001][13000]
+  492.00  AttackFails
+  493.75  [You] DraculeMihawk[OP14-020]
+  493.75  attacking Monkey D.Luffy[OP13-001]
+  496.00  [Opponent]DiscardUsopp[OP14-022]for
+  496.00  Counter1000
+  496.50  DraculeMihawk[OP14-020][7000] vs
+  496.50  MonkeyD.Luffy[OP13-001][8000]
+  496.50  AttackFails
+  499.00  [You] Electrical Luna[OP08-036]:Rest3
+  500.25  Don
+  500.25  [You] Electrical Luna [OP08-036]:Sanji
+  500.25  [OP13-027] will not Activate during next
+  500.25  Refresh
+  500.25  [You] Electrical Luna[OP08-036]:Roronoa
+  500.25  Zoro [EB04-007] will not Activate during
+  500.25  next Refresh
+  500.25  [You] Electrical Luna [OP08-036]:Roronoa
+  500.25  Zoro [EB04-007] will not Activate during
+  500.25  next Refresh
+  500.25  [You]CoffinBoat[OP14-039]:Activate1
+  500.25  Don
+  500.25  [You] End Turn
+  500.50  [Opponent]Draw1Card
+  506.25  [Opponent]DeployMonkeyD.Luffy
+  506.25  [ST31-004]
+  507.75  [Opponent] Monkey D.Luffy [ST31-004]:
+  507.75  BuffDraculeMihawk[OP14-119]-7000
+  507.75  [Opponent] Thousand Sunny[ST31-005]:
+  507.75  Rest Thousand Sunny[ST31-005]
+  508.50  [Opponent] Thousand Sunny[ST31-005]:
+  508.50  Attach 1 Rested Don to Monkey D.Luffy
+  508.50  [OP13-001]
+  513.25  [Opponent] Monkey D.Luffy[OP13-001]
+  513.25  attackingDraculeMihawk[OP14-119]
+  520.50  [You] Billion-foldWorld Trichiliocosm
+  520.50  [OP06-038]:Activate Counter
+  520.50  [You]Billion-foldWorld Trichiliocosm
+  520.50  [OP06-038]:Rest1Don
+  520.50  [You]Billion-foldWorld Trichiliocosm
+  520.50  OP06-038]:BuffDraculeMihawk[OP14-
+  520.50  119]2000fortheCombat
+  520.50  [You]Billion-foldWorld Trichiliocosm
+  520.50  OP06-038]:BuffDraculeMihawk[OP14-
+  520.50  119]2000fortheCombat
+  521.25  MonkeyD.Luffy[OP13-001][6000]vs
+  521.25  DraculeMihawk[OP14-119][7000]
+  521.25  AttackFails
+  534.00  [Opponent] Sanji[OP13-027]:Activate 1
+  534.00  Don
+  534.50  [Opponent]Sanji[OP13-027]:Activate1
+  534.50  Don
+  534.75  [Opponent] End Turn
+  541.00  [You]Draw1Card
+  545.25  [You] Perona[OP14-033]attacking
+  545.25  MonkeyD.Luffy[OP13-001]
+  545.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  545.75  Rest Don[Don]
+  546.50  [Opponent] MonkeyD.Luffy[OP13-001]:
+  546.50  Buff Monkey D.Luffy[OP13-001]2000 for
+  546.50  the Combat
+  546.50  Perona[OP14-033][6000]vs Monkey D
+  546.50  Luffy[OP13-001][7000]
+  546.50  AttackFails
+  552.00  [You] TrashPerona[OP14-033]
+  552.00  [You]DeployLaw&Bepo[ST24-004]
+  552.00  [You]Law&Bepo[ST24-004]:Rest
+  552.00  Monkey D.Luffy[ST31-004]
+  552.00  [You]Law&Bepo[ST24-004]:MonkeyD.
+  552.00  Luffy[ST31-004] will not Activate during
+  552.00  next Refresh
+  552.00  [You]Law&Bepo[ST24-004]:Grant
+  552.00  Dracule MihawkOP14-020]2000 until
+  552.00  opponent'snext tun end
+  560.25  [You] Perona[OP14-033] attacking
+  560.25  MonkeyD.Luffy[OP13-001]
+  560.25  [Opponent] Monkey D.Luffy[OP13-001]:
+  561.00  RestDon[Don]
+  561.50  [Opponent] Monkey D.Luffy [OP13-001]:
+  561.50  Buff Monkey D.Luffy[OP13-001]2000 for
+  561.50  theCombat
+  561.50  Perona [OP14-033][6000]vsMonkey D.
+  561.50  Luffy[OP13-001][7000]
+  561.50  AttackFails
+  563.50  [You] DraculeMihawk[OP14-020]
+  563.50  attacking MonkeyD.Luffy[OP13-001]
+  574.25  [Opponent] Monkey D.Luffy[OP13-001]:
+  574.25  Rest Don[Don]
+  574.75  [Opponent] Monkey D.Luffy[OP13-001]:
+  574.75  Buff MonkeyD.Luffy[OP13-001]2000 for
+  574.75  the.Combat
+  577.00  [Opponent] Discard Nami[OP14-031] for
+  577.00  Counter1000
+  579.00  DraculeMihawk[OP14-020][7000] vs
+  579.00  MonkeyD.Luffy[OP13-001][8000]
+  579.00  AttackFails
+  579.00  [You] DraculeMihawk[OP14-119]
+  579.00  attacking Monkey D.Luffy[OP13-001]
+  579.50  [You] Dracule Mihawk[OP14-119]:Sanji
+  579.50  [OP13-027]can'tbe resteduntil next turn
+  579.50  ends
+  587.00  DraculeMihawk[OP14-119][10000]vs
+  587.00  MonkeyD.Luffy[OP13-001][5000]
+  587.00  Monkey D.Luffy[OP13-001]hit for1
+  587.00  damage
+  597.25  [You]Law&Bepo[ST24-004]attacking
+  597.25  MonkeyD.Luffy [OP13-001]
+  597.25  Law&Bepo[ST24-004][11000]vsMonkey
+  597.25  D.Luffy[OP13-001][5000]
+  597.25  MonkeyD.Luffy[OP13-001]hitfor1
+  597.25  damage
+  599.50  [You] Law&Bepo[ST24-004] attacking
+  599.50  MonkeyD.Luffy[OP13-001]
+  601.75  [Opponent] MonkeyD.Luffy[OP13-001]:
+  601.75  RestDon[Don]
+  601.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  601.75  RestDon[Don]
+  601.75  [Opponent] Monkey D.Luffy [OP13-001]:
+  601.75  BuffMonkeyD.Luffy[OP13-001]4000for
+  601.75  theCombat
+  603.25  [Opponent] Discard Laboon[OP15-035]
+  603.25  forCounter2000
+  605.25  [Opponent] Discard Nami[OP14-031] for
+  605.25  Counter1000
+  605.75  Law&Bepo[ST24-004][11000]vsMonkey
+  605.75  D.Luffy[OP13-001][12000]
+  605.75  AttackFails
+  608.75  [You]DraculeMihawk[OP14-020]:Rest
+  608.75  Coffin Boat[OP14-039]
+  608.75  [You]Dracule Mihawk[OP14-020]:Activate
+  608.75  1Don
+  608.75  [You] Dracule Mihawk[OP14-020j:Activate
+  608.75  1Don
+  608.75  [You]Dracule Mihawk[OP14-020]:Activate
+  608.75  1Don
+  608.75  [You]Dracule Mihawk[OP14-020]:Can't
+  608.75  playCost1 OrMoreCharactersforthe
+  608.75  Turn!
+  610.25  [You] Electrical Luna [OP08-036]:Rest3
+  611.50  [OP13-027]will notActivate duringnext
+  611.50  Refresh
+  611.50  [You] Electrical Luna[OP08-036]:Roronoa
+  611.50  Zoro[EB04-007] will not Activate during
+  611.50  next Refresh
+  611.50  [You] Electrical Luna[OP08-036]:Roronoa
+  611.50  Zoro[EB04-007] will not Activate during
+  611.50  next Refresh
+  611.50  [You] Electrical Luna[OP08-036]:Monkey
+  611.50  D.Luffy[ST31-004]will not Activate during
+  611.50  next Refresh
+  611.75  [You]Coffin Boat[OP14-039]:Activate1
+  611.75  Don
+  611.75  [You]End Turn
+  611.75  [Opponent]Draw1Card
+  619.25  [Opponent] Trash Roronoa Zoro[EB04-
+  619.25  0071
+  619.25  [Opponent]DeployBrook[OP15-032]
+  620.75  [Opponent]Brook[OP15-032]Rest1
+  620.75  Opponent Don
+  622.75  [Opponent] Thousand Sunny[ST31-005]:
+  622.75  Rest Thousand Sunny[ST31-005]
+  623.25  [Opponent] Thousand Sunny[ST31-005]:
+  623.25  Attach 1 Rested Don to Monkey D.Luffy
+  623.25  [OP13-001]
+  627.25  [Opponent]Attach3Don toMonkeyD
+  627.25  Luffy[OP13-001](4Total)
+  630.50  [Opponent] Monkey D.Luffy[OP13-001]
+  630.50  attackingDraculeMihawk[OP14-020]
+  633.75  [You]DraculeMihawk[OP14-119]:Trash
+  633.75  Billion-foldWorld Trichiliocosm[OP06-
+  633.75  038]
+  635.00  [You]DraculeMihawk[OP14-119]:Buff
+  635.00  DraculeMihawk[OP14-020]2000forthe
+  635.00  Combat
+  635.75  [You]Discard Perona[OP12-034]for
+  635.75  Counter 1000
+  635.75  [Opponent] Concedes!
+  635.75  LuffyiOP13

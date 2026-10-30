@@ -1,0 +1,574 @@
+    2.25  Waiting fora Connection with Room
+    2.25  ID:W9Q8DNW
+    2.25  madokahk#9226HasConnected
+    2.25  [You]Quits!
+    2.25  Opponent Has Disconnected!
+    2.25  Attempting to connect toW7RR8RG
+    2.25  Version is1.38a
+    2.25  [jairoojj#5976]LeaderisLucy[OP15-002]
+    2.25  madokahk#9226HasConnected
+    2.25  Version is1.38a
+    2.25  [madokahk#9226]LeaderisDracule
+    2.25  Mihawk[OP14-020]
+    2.25  [jairooj#5976]ChosetogoSecond
+    8.00  [madokahk#9226] Mulligan
+   11.25  [madokahk#9226]Draw1Don
+   11.25  [madokahk#9226]EndTurn
+   11.25  [jairooj#5976]Draw1Card
+   11.25  [jairoojj#5976]Draw2Don
+   14.00  jairooj#5976]DeployDressrosaKingdom
+   14.00  [OP15-057]
+   14.00  [jairooji#5976]DressrosaKingdom[OP15
+   14.00  057]:Draw1Card
+   15.25  [jairoojj#5976]DeployRebecca[OP15-053
+   20.75  [jairooj#5976] Rebecca[OP15-053]:
+   20.75  Revealand DrawLeo[OP15-052]
+   20.75  [jairooj#5976]PlacingCardsonBottomof
+   20.75  Deck
+   22.75  [jairoojj#5976]End Turn
+   34.00  [madokahk#9226]Draw1Card
+   34.00  [madokahk#9226]Draw2Don
+   39.00  [madokahk#9226]DeployKid&Killer
+   39.00  [ST24-002]
+   43.75  [madokahk#9226]Kid &Killer[ST24-002]
+   43.75  Reveal and Draw Jewelry Bonney
+   43.75  [OP12-118]
+   43.75  [madokahk#9226]PlacingCardson
+   43.75  BottomofDeck
+   44.25  [madokahk#9226]DeployScratchmen
+   44.25  Ap00[EB01-015]
+   44.25  [madokahk#9226]ScratchmenApoo
+   44.25  [EB01-015]:RestRebecca[OP15-053]
+   45.50  [madokahk#9226] DraculeMihawk[OP14
+   45.50  020]attackingRebecca[OP15-053]
+   47.50  DraculeMihawk[OP14-020][5000]vs
+   47.50  Rebecca[OP15-053]0]
+   47.50  [jairooj#5976]Rebecca[OP15-053]
+   47.50  Destroyed
+   49.00  [madokahk#9226] EndTurn
+   49.00  [jairooj#5976]Draw1Card
+   49.00  [jairoojj#5976]Draw2Don
+   50.50  [jairooj#5976] Lucy[0P15-002]attacking
+   50.50  DraculeMihawk[OP14-020]
+   52.50  Lucy[OP15-002][5000]vsDraculeMihawk
+   52.50  [OP14-020][5000]
+   52.50  DraculeMihawk[OP14-020]hitfor1
+   52.50  damage
+   53.50  [jairoojj#5976]DeployCavendish[OP10-
+   54.00  045]
+   54.00  [jairooj#5976]End Turn
+   54.25  [madokahk#9226]Draw1Card
+   62.25  [madokahk#9226]Draw2Don
+   62.25  [madokahk#9226]DraculeMihawk[OP14
+   62.25  020]attacking Lucy[OP15-002]
+   66.00  DraculeMihawk[OP14-020][5000] vs Lucy
+   66.00  [OP15-002][5000]
+   66.00  LucyOP15-002]hit for1damage
+   69.25  [madokahk#9226]Kid &Killer[ST24-002]
+   69.25  attackingLucy[OP15-002]
+   72.50  Kid &Killer[ST24-002][2000]vsLucy
+   72.50  [OP15-002][5000]
+   72.50  AttackFails
+   72.50  [madokahk#9226] Scratchmen Apoo
+   72.50  [EB01-015]attackingLucy[OP15-002]
+   75.00  Scratchmen Apoo[EB01-015][1000]vs
+   75.00  Lucy[OP15-002][5000]
+   75.00  AttackFails
+   96.75  [madokahk#9226]Deploy JewelryBonney
+   96.75  [OP12-118]
+   96.75  [madokahk#9226] Jewelry Bonney[OP12-
+   96.75  118]:Draw2Card
+   97.25  [madokahk#9226] Jewelry Bonney[OP12-
+   97.25  118]:TrashJewelryBonney[OP12-118]
+   98.50  madokahk#9226]JewelryBonney[OP12
+   98.50  118]:Activate 1 Don
+  100.00  [madokahk#9226]DeployJewelryBonney
+  100.00  [ST02-007]
+  101.00  [madokahk#9226]DraculeMihawk[OP14
+  101.00  020]:RestJewelryBonney[OP12-118]
+  101.00  [madokahk#9226]DraculeMihawk[OP14
+  101.00  020]:Activate1Don
+  101.00  [madokahk#9226]DraculeMihawk[OP14
+  101.00  020j:Activate1Don
+  101.00  [madokahk#9226]DraculeMihawk[OP14
+  101.00  020]:Activate1Don
+  101.00  [madokahk#9226]DraculeMihawk[OP14
+  101.00  020]:Can'tplay Cost 1OrMoreCharacters
+  101.00  fortheTurn!
+  116.00  [madokahk#9226] JewelryBonney[ST02-
+  116.00  007]:Rest Jewelry Bonney [ST02-007]
+  121.00  [madokahk#9226] Jewelry Bonney[ST02-
+  121.00  007]:Reveal and Draw Trafalgar Law
+  121.00  [OP13-031]
+  121.00  [madokahk#9226]Placing Cardson
+  121.00  Bottom ofDeck
+  121.00  [madokahk#9226]EndTurn
+  121.00  [jairooj#5976]Draw1Card
+  123.50  [jairooj#5976]Draw2Don
+  125.75  [airoojj#5976]Lucy[0P15-002]attacking
+  125.75  Jewelry Bonney[ST02-007]
+  125.75  Lucy[OP15-002][5000] vs Jewelry Bonney
+  125.75  [ST02-007][1000]
+  125.75  [madokahk#9226] Jewelry Bonney[ST02-
+  125.75  007]Destroyed
+  130.25  [jairooj#5976]Cavendish[0P10-045]
+  130.25  attackingKid&Killer[ST24-002]
+  130.25  [jairoojj#5976]Cavendish[0P10-045]:
+  130.25  Draw2Card
+  138.75  [jairooj#5976]Cavendish[0P10-045]:
+  138.75  TrashWouldYou LetMeEat..TheFlame-
+  138.75  FlameFruit?[OP15-056]
+  138.75  [madokahk#9226]Kid &Killer[ST24-002]:
+  138.75  TrashKid&Killer[ST24-002]
+  139.50  [madokahk#9226]Kid&Killer[ST24-002]
+  139.50  Activate1Don
+  152.25  [jairooj#5976] Bari-Bari Pistol[OP10-060]:
+  152.25  SendJewelryBonney[OP12-118]toDeck
+  152.25  Bottom
+  153.25  [jairooj#5976]Lucy[OP15002]:Draw1
+  153.25  Card
+  155.50  [jairooj#5976]DeployRebecca[OP15053
+  157.50  [jairoojj#5976] Rebecca[OP15-053]:
+  157.50  Revealand Draw SaboOP15-046]
+  157.50  [jairooj#5976]Placing CardsonBottomof
+  157.50  Deck
+  159.25  [jairoojj#5976]EndTurn
+  159.50  [madokahk#9226]Draw1Card
+  171.00  [madokahk#9226]Draw2Don
+  171.00  [madokahk#9226]DeployTrafalgarLaw
+  171.00  [OP13-031]
+  172.00  [madokahk#9226] Trafalgar Law[OP13-
+  172.00  031]:ReturnScratchmenApoo[EB01-015]
+  172.00  toHand
+  173.75  [madokahk#9226]TrafalgarLaw[OP13-
+  173.75  031]:DeployPerona[OP14-033]
+  180.75  [madokahk#9226]Perona[OP14-033]:
+  180.75  Cavendish [OP10-045]can'tbe rested unti
+  180.75  next turn ends
+  180.75  [madokahk#9226]Perona[OP14-033]:
+  180.75  Rebecca[OP15-053]can'tberested until
+  180.75  nextturnends
+  180.75  [madokahk#9226]DraculeMihawk[OP14-
+  181.75  020]:Rest Don[Don]
+  182.75  [madokahk#9226]DraculeMihawk[OP14
+  182.75  020]:Activate1Don
+  182.75  [madokahk#9226]DraculeMihawk[OP14-
+  182.75  020j:Activate1Don
+  182.75  [madokahk#9226]DraculeMihawk[OP14
+  182.75  020]:Activate1Don
+  182.75  [madokahk#9226]DraculeMihawk[OP14
+  182.75  020j:Can'tplayCost1OrMoreCharacters
+  182.75  fortheTurn!
+  182.75  [madokahk#9226]Attach3DontoDracule
+  182.75  Mihawk[OP14-020](3Total)
+  183.50  [madokahk#9226]DraculeMihawk[OP14-
+  183.50  020]attackingCavendish[OP10045]
+  194.00  [jairooj#5976]DiscardLeo[OP15-052]for
+  194.00  Counter2000
+  194.25  [jairoojj#5976]DiscardLeo[OP15-052]for
+  194.25  Counter2000
+  196.25  DraculeMihawk[OP14-020][8000]vs
+  196.25  Cavendish[OP10-045][10000]
+  196.25  AttackFails
+  196.25  [madokahk#9226]EndTurn
+  196.25  [jairooj#5976]Draw1Card
+  196.25  [jairoojj#5976]Draw2Don
+  199.75  [jairooj#5976]DeploySabo[0P15-046]
+  201.25  [jairooj#5976]Sabo[0P15-046]:Activates
+  201.25  It'sa Memento of Him,and No One Else
+  201.25  CanHaveIt[OP15-054]
+  202.00  [jairoojj#5976] It'sa Memento ofHim,and
+  202.00  No One ElseCan HaveIt[OP15-054]:Draw
+  202.00  2Card
+  204.00  [jairoojj#5976]It'sa MementoofHim,and
+  204.00  No One ElseCan HaveIt[OP15-054]:Trash
+  204.00  Cavendish[OP10-045]
+  204.50  [jairoojj#5976] It's a Memento of Him,and
+  204.50  No OneElseCanHaveIt[OP15-054]:
+  204.50  Deploy Cavendish[OP10-045]
+  206.00  [jairooj#5976]Lucy[OP15-002]:Draw1
+  206.00  Card
+  218.50  [jairooj#5976]Attach1DontoLucy
+  218.50  [OP15-002](1Total)
+  223.50  [jairooj#5976]Lucy[OP15-002]attacking
+  223.50  DraculeMihawk[OP14-020]
+  225.00  Lucy[OP15-002][6000]vsDraculeMihawk
+  225.00  [OP14-020][5000]
+  225.00  DraculeMihawk[OP14-020]hitfor1
+  225.00  damage
+  225.25  [jairoojj#5976]EndTurn
+  225.25  [madokahk#9226]Draw1Card
+  242.25  [madokahk#9226]Draw2Don
+  242.25  [madokahk#9226]DraculeMihawk[OP14
+  242.25  020]attackingLucy[OP15-002]
+  246.50  [jairooj#5976]Lucy[OP15-002]:Trash
+  246.50  Bari-Bari Pistol[OP10-060]
+  246.50  [jairooj#5976] Lucy[OP15-002]:Buff Lucy
+  246.50  [OP15-002]1000fortheCombat
+  250.50  Dracule Mihawk[OP14-020][5000]vsLucy
+  250.50  [OP15-002][6000]
+  250.50  AttackFails
+  250.50  [madokahk#9226]PeronaOP14-033]
+  250.50  attackingLucy[OP15-002]
+  253.00  Perona [OP14-033][6000]vsLucy[OP15-
+  253.00  002][5000]
+  253.00  Lucy[OP15-002]hit for1 damage
+  257.00  [madokahk#9226]TrafalgarLaw[OP13-
+  257.00  031]attacking Lucy[OP15-002]
+  259.75  [jairooj#5976]Sabo[OP15046] Blocks
+  263.50  Trafalgar.Law[OP13-031][6000]vsSabo
+  263.50  [OP15-046][9000]
+  263.50  AttackFails
+  276.25  [madokahk#9226] Deploy Jewelry Bonney
+  276.25  [OP12-118]
+  276.25  [madokahk#9226]JewelryBonney[OP12-
+  276.25  118]:Draw2Card
+  277.00  [madokahk#9226]Jewelry Bonney[OP12-
+  277.00  118]:TrashDraculeMihawk[OP14-119]
+  278.75  [madokahk#9226]Jewelry Bonney[OP12-
+  278.75  118]:Activate1Don
+  281.00  [madokahk#9226] DeployPerona[OP14-
+  281.00  033]
+  281.00  [madokahk#9226] Perona[OP14-033]:
+  281.00  Cavendish[OP10-045]can'tberested unti
+  281.00  nextturnends
+  281.00  [madokahk#9226]Perona[OP14-033]:
+  281.00  Cavendish[OP10-045]can'tberested until
+  281.00  nextturnends
+  283.75  [madokahk#9226]DraculeMihawk[OP14
+  283.75  020]:RestPerona[OP14033]
+  284.75  [madokahk#9226]DraculeMihawk[OP14
+  284.75  020]:Activate1Don
+  284.75  [madokahk#9226]DraculeMihawk[OP14
+  284.75  020]:Activate1Don
+  284.75  [madokahk#9226]DraculeMihawk[OP14
+  284.75  020]:Activate1Don
+  284.75  [madokahk#9226]DraculeMihawk[OP14-
+  284.75  020]:Can'tplay Cost 1 OrMoreCharacters
+  284.75  fortheTurn!
+  286.25  [madokahk#9226] EndTurn
+  286.25  [jairooj#5976]Draw1Card
+  286.25  [jairooj#5976]Draw2Don
+  289.75  [jairoojj#5976]DeploySabo[0P15-046]
+  291.25  [jairoojj#5976]Sabo[0P15-046]:Activates
+  291.25  Bari-BariPistol[OP10-060]
+  292.25  [jairooj#5976] Bari-Bari Pistol[OP10-060]
+  292.25  Send JewelryBonney[OP12-118]toDeck
+  292.25  Bottom
+  292.25  [jairooj#5976]Lucy[OP15-002]:Draw1
+  292.25  Card
+  302.75  [jairooj#5976]Attach1Don toLucy
+  302.75  [OP15-002](1Total)
+  304.00  [jairoojj#5976] Lucy[OP15-002]attacking
+  304.00  TrafalgarLaw[OP13031]
+  308.50  [madokahk#9226]DiscardRoronoaZoro
+  308.50  [PRB02-006]forCounter2000
+  308.50  Lucy[OP15-002][6000]vsTrafalgarLaw
+  308.50  [OP13-031][8000]
+  308.50  AttackFails
+  325.25  [jairoojj#5976]Attach 1Don toRebecca
+  325.25  [OP15-053](1Total)
+  325.25  [jairooj#5976] End Turn
+  325.50  [madokahk#9226]Draw1Card
+  325.50  [madokahk#9226]Draw2Don
+  352.50  [madokahk#9226] Perona[OP14-033]
+  352.50  attackingLucy[OP15-002]
+  367.25  [airoojj#5976]DiscardSabo[OP10-049]
+  367.25  forCounter2000
+  367.50  Perona[OP14-033][6000] vs Lucy[OP15-
+  367.50  002][7000]
+  367.50  AttackFails
+  369.25  [madokahk#9226]Attach1DontoPerona
+  369.25  [OP14-033](1 Total)
+  370.25  [madokahk#9226] Perona[OP14-033]
+  370.25  attackingLucy[OP15002]
+  377.75  [jairooj#5976]Sabo[OP15-046]Blocks
+  379.75  PeronaOP14-033][7000]vsSabo[OP15-
+  379.75  046][9000]
+  379.75  AttackFails
+  379.75  [madokahk#9226]Attach1Donto
+  379.75  TrafalgarLaw[OP13-031](1Total)
+  381.00  [madokahk#9226]TrafalgarLaw[OP13-
+  381.00  031] attacking LucyOP15-002]
+  385.75  [jairooj#5976]Rebecca[OP15053]Blocks
+  386.00  TrafalgarLaw[OP13-031][7000]vs
+  386.00  Rebecca[OP15-053]0]
+  386.00  [jairooj#5976]Rebecca[OP15-053]
+  386.00  Destroyed
+  391.25  [madokahk#9226]Attach2DontoDracule
+  391.25  Mihawk[OP14-020](2Total)
+  399.75  [madokahk#9226]DraculeMihawk[OP14
+  399.75  020]attacking Lucy[OP15-002]
+  406.00  Dracule Mihawk[OP14-020][7000] vs Lucy
+  406.00  [OP15-002][5000]
+  406.00  Lucy[OP15-002]hit for1damage
+  407.00  [madokahk#9226]DeployTrafalgarLaw
+  407.00  [OP13-031]
+  407.75  [madokahk#9226]TrafalgarLaw[OP13-
+  407.75  031]:ReturnPerona [OP14-033] toHand
+  409.00  [madokahk#9226]TrafalgarLaw[OP13-
+  409.00  031]:DeployPerona[OP14-033]
+  409.00  [madokahk#9226]Perona[OP14-033]:
+  409.00  Cavendish[OP10-045]can'tbe rested until
+  409.00  nextturnends
+  409.00  [madokahk#9226]Perona[OP14-033]:
+  409.00  Cavendish[OP10-045]can'tbe rested unti
+  409.00  nextturn ends
+  424.00  ### SALTO: righe mancanti ###
+  424.00  020]:Rest Trafalgar Law[OP13-031]
+  424.00  [madokahk#9226]DraculeMihawk[OP14
+  424.00  020]:Activate1Don
+  424.00  [madokahk#9226]DraculeMihawk[OP14-
+  424.00  020l:Activate1Don
+  424.00  [madokahk#9226]DraculeMihawk[OP14
+  424.00  020j:Activate1Don
+  424.00  [madokahk#9226]DraculeMihawk[OP14
+  424.00  020):Can't play Cost 1 Or MoreCharacters
+  424.00  fortheTurn!
+  424.00  [madokahk#9226] IKnow You're Strong..
+  424.00  SoIllGoAllOut[OP13-040]:Sabo[OP15
+  424.00  046jwillnotActivateduringnextRefresh
+  424.75  [madokahk#9226]EndTurn
+  424.75  [jairoojj#5976]Draw1Card
+  430.75  [jairoojj#5976]DeployViola[OP15-040]
+  433.25  [jairoojj#5976]Viola[OP15-040]:Reveal
+  433.25  and DrawFollow...me...and... I...
+  433.25  wil...guide...you...all...!! op10
+  433.25  059]
+  433.25  [jairoojj#5976]Placing CardsonBottomof
+  433.25  Deck
+  436.00  [jairooj5976]Follow...me...and...I..wil..
+  436.00  guide...you...al.! [OP10-059]: Reveal
+  436.00  andDrawSabo[OP15-046]
+  436.00  [jairoojj#5976]PlacingCardsonBottomof
+  436.00  Deck
+  447.00  [jairooj#5976]Attach 1Don toLucy
+  447.00  [OP15-002](1Total)
+  448.25  [jairoojj#5976] Lucy[0P15-002]attacking
+  448.25  TrafalgarLaw[OP13-031]
+  451.25  [madokahk#9226]DiscardKid&Killer
+  451.25  [ST24-002]forCounter1000
+  451.25  Lucy[OP15-002][6000]vsTrafalgarLaw
+  451.25  [OP13-031][7000]
+  451.25  AttackFails
+  454.25  [jairoojj#5976]TrashViola[0P15-040]
+  454.25  [jairooj#5976]DeploySabo[0P15-046]
+  455.25  [jairoojj#5976]Sabo[0P15-046]:Activates
+  455.25  Bari-BariPistol[OP10-060]
+  456.50  [jairooj#5976] Bari-Bari Pistol [0P10-060]:
+  456.50  SendTrafalgarLaw[OP13-031] toDeck
+  456.50  Bottom
+  465.75  [jairooj#5976]Lucy[OP15-002]:Draw1
+  465.75  Card
+  465.75  [jairoojj#5976]End Turn
+  475.25  [madokahk#9226]Draw1Card
+  475.25  [madokahk#9226]Perona[OP14-033]
+  475.25  attackingLucy[OP15-002]
+  479.00  [jairooj#5976]DiscardSabo[OP10-049]
+  479.00  forCounter2000
+  481.00  PeronaOP14-033][6000]vsLucy[OP15-
+  481.00  002][7000]
+  481.00  AttackFails
+  481.00  [madokahk#9226]Attach1Don toPerona
+  481.00  [OP14-033](1 Total)
+  482.25  [madokahk#9226]PeronaOP14-033]
+  482.25  attackingLucy[OP15-002]
+  492.00  [jairooj#5976]Sabo[0P15-046] Blocks
+  495.25  Perona[OP14-033][7000]vsSabo[OP15-
+  495.25  046][9000]
+  495.25  AttackFails
+  495.25  [madokahk#9226]Attach1Donto
+  495.25  TrafalgarLaw[OP13-031](1Total)
+  496.50  [madokahk#9226]TrafalgarLaw[OP13-
+  496.50  031]attackingLucy[OP15-002]
+  501.50  [jairoojj#5976]Lucy[OP15-002]:Trash It's
+  501.50  a Memento of Him,and No One Else Can
+  501.50  HaveIt[OP15-054]
+  501.50  [jairoojj#5976] Lucy[OP15-002]:Buff Lucy
+  501.50  [OP15-002]1000fortheCombat
+  503.00  [jairooji#5976]DiscardViola[OP15-040]
+  503.00  forCounter2000
+  503.25  TrafalgarLaw[OP13-031][7000] vsLucy
+  503.25  [OP15-002][8000]
+  503.25  AttackFails
+  505.75  [madokahk#9226]DraculeMihawk[OP14
+  505.75  020] attacking Lucy[OP15-002]
+  513.50  [jairoojj#5976] Lucy[OP15-002]:Trash Fire
+  513.50  Fist[OP05-019]
+  513.50  [jairoojj#5976] Lucy[OP15-002]:Buff Lucy
+  513.50  [OP15002]1000fortheCombat
+  517.00  DraculeMihawk[OP14-020][5000]vs Lucy
+  517.00  [OP15-002][6000]
+  517.00  AttackFails
+  518.50  [madokahk#9226]DeployTrafalgarLaw
+  518.50  [OP13-031]
+  519.50  [madokahk#9226] Trafalgar Law[OP13-
+  519.50  031]:ReturnPerona[OP14-033] toHand
+  519.50  [madokahk#9226]TrafalgarLaw[OP13-
+  519.50  031]:DeployPeronaOP14033]
+  521.00  [madokahk#9226]Perona[OP14-033]:
+  521.00  Cavendish[OP10-045] can'tberested until
+  521.00  nextturnends
+  521.00  [madokahk#9226]Perona[OP14-033]:
+  521.00  Cavendish[OP10-045]can'tberested unti
+  521.00  nextturnends
+  523.25  [madokahk#9226]DraculeMihawk[OP14
+  523.25  020]:Rest Don[Don]
+  524.25  [madokahk#9226]DraculeMihawk[OP14-
+  524.25  020]:Activate1Don
+  524.25  [madokahk#9226]DraculeMihawk[OP14-
+  524.25  020]:Activate1Don
+  524.25  [madokahk#9226]DraculeMihawk[OP14
+  524.25  020j:Activate1Don
+  524.25  [madokahk#9226]DraculeMihawk[OP14-
+  524.25  020j:Can'tplayCost1 OrMore Characters
+  524.25  fortheTurn!
+  528.25  [madokahk#9226] IKnowYou'reStrong.
+  528.25  SoIllGoAllOut[OP13-040]:Sabo[OP15
+  528.25  046]willnotActivateduringnextRefresh
+  528.25  [madokahk#9226] I KnowYou're Strong..
+  528.25  SoIlGoAllOut[OP13-040]:Sabo[OP15
+  528.25  046]willnotActivateduring nextRefresh
+  528.25  [madokahk#9226] EndTurn
+  549.75  [jairooj#5976]Draw1Card
+  552.50  [jairoojj#5976] Trash Cavendish[OP10
+  552.50  045]
+  552.50  [jairoojj#5976]DeployBeloBetty[OP05-
+  552.50  015]
+  558.00  [jairooj#5976] BeloBetty[OP05-015]:
+  558.00  RevealandDrawFireFist[OP15-020]
+  560.25  [jairoojj#5976]FireFist[OP15-020]:Buff
+  560.25  Lucy[OP15-002]3000
+  560.75  [jairoojj#5976]FireFist[OP15-020]:Grant
+  560.75  TrafalgarLaw[OP13-031]-8000untilnext
+  560.75  turnend
+  563.00  [jairooj#5976]Lucy[OP15-002]:Draw1
+  563.00  Card
+  564.75  [jairooj#5976]Lucy[OP15-002]attacking
+  564.75  TrafalgarLaw[OP13-031]
+  573.00  [madokahk#9226]DiscardScratchmen
+  573.00  Apoo[EB01-015]forCounter2000
+  573.75  [madokahk#9226]DiscardScratchmen
+  573.75  Apoo[EB01-015]forCounter2000
+  573.75  Lucy[OP15-002][8000]vsTrafalgarLaw
+  573.75  [OP13-031][10000]
+  573.75  AttackFails
+  579.50  [jairoojj#5976]EndTurn
+  583.75  [madokahk#9226] Draw1Card
+  586.00  [madokahk#9226]DeployDraculeMihawk
+  586.00  [OP14-119]
+  586.00  [madokahk#9226]DraculeMihawk[OP14-
+  586.00  020]:RestDraculeMihawk[OP14-119
+  587.50  [madokahk#9226]DraculeMihawk[OP14
+  587.50  020l:Activate1Don
+  587.50  [madokahk#9226]DraculeMihawk[OP14-
+  587.50  020j:Activate1Don
+  587.50  [madokahk#9226]DraculeMihawk[OP14
+  587.50  020j:Activate 1Don
+  587.50  [madokahk#9226]DraculeMihawk[OP14-
+  587.50  020j:Can'tplayCost 1OrMoreCharacters
+  587.50  fortheTurn!
+  588.00  [madokahk#9226]DraculeMihawk[OP14
+  588.00  119]:Sabo[OP15-046]can'tberested until
+  588.00  nextturnends
+  609.00  [madokahk#9226]DraculeMihawk[OP14
+  609.00  020]attacking Lucy[OP15-002]
+  612.50  [jairoojj#5976] Lucy[OP15002]:TrashFire
+  612.50  Fist[OP15-020]
+  612.50  [jairooj#5976]Lucy[OP15-002]:Buff Lucy
+  612.50  [OP15-002]1000fortheCombat
+  612.50  DraculeMihawk[OP14-020][5000]vsLucy
+  612.50  [OP15-002][6000]
+  612.50  AttackFails
+  614.50  [madokahk#9226]Attach2Don toPerona
+  614.50  [OP14-033](2Total)
+  616.00  [madokahk#9226]Perona[OP14-033]
+  616.00  attackingLucy[OP15-002]
+  620.75  Perona [OP14-033][8000]vsLucy[OP15-
+  620.75  002][5000]
+  620.75  Lucy[OP15-002]hitfor1damage
+  623.00  [madokahk#9226]Attach2Don toPerona
+  623.00  [OP14-033](2Total)
+  624.50  [madokahk#9226]Perona[OP14-033]
+  624.50  attackingLucy[OP15-002]
+  635.50  [jairoojj#5976] JustWatch Me..Ace!!!
+  635.50  [OP15-021]:ActivateCounter
+  636.00  [jairooj#5976] JustWatch Me...Ace!!!
+  636.00  [OP15-021]:Buff Perona[OP14-033]-3000
+  638.25  [jairoojj#5976]DiscardRebecca[OP15
+  638.25  053]forCounter1000
+  638.25  Perona[OP14-033][5000]vsLucy[OP15-
+  638.25  002][6000]
+  638.25  AttackFails
+  651.25  [madokahk#9226] TrafalgarLaw[OP13-
+  651.25  031]attacking Lucy[OP15-002]
+  654.50  [jairooj#5976]DiscardViola[OP15-040]
+  654.50  forCounter2000
+  654.75  TrafalgarLaw[OP13-031][6000] vsLucy
+  654.75  [OP15-002][7000]
+  654.75  AttackFails
+  660.25  [madokahk#9226] EndTurn
+  666.75  [jairooj#5976]Draw1Card
+  667.25  [jairooj#5976] FireFist[0P15-020]:Buff
+  667.25  Lucy[OP15-002]3000
+  667.25  [jairooj#5976] Fire Fist[OP15-020]:Grant
+  667.25  DraculeMihawk[OP14-119]-8000until
+  667.25  nextturnend
+  672.75  [jairoojj#5976]Lucy[OP15-002]:Draw1
+  672.75  Card
+  674.00  [jairoojj#5976]Attach 1Don toBeloBetty
+  674.00  [OP05-015](1Total)
+  674.00  [jairooj#5976]BeloBetty[OP05-015]
+  674.00  attackingDraculeMihawk[OP14-119]
+  676.50  BeloBetty[OP05-015][3000]vsDracule
+  676.50  Mihawk[0P14-119][2000]
+  676.50  [madokahk#9226]DraculeMihawk[OP14
+  676.50  119jDestroyed
+  692.25  [jairooj#5976] Lucy[OP15-002]attacking
+  692.25  TrafalgarLaw[OP13-031]
+  692.25  Lucy[OP15-002][8000]vsTrafalgarLaw
+  692.25  [OP13-031][6000]
+  692.25  [madokahk#9226] Trafalgar Law[OP13-
+  692.25  031]Destroyed
+  694.75  [jairooj#5976]Attach 1Don toCavendish
+  694.75  [OP10-045](1Total)
+  698.50  [jairoojj#5976]Cavendish[0P10-045]
+  698.50  attackingPeronaOP14-033]
+  698.50  [jairoojj#5976]Cavendish[0P10-045]:
+  698.50  Draw2Card
+  698.50  [jairoojj#5976]Cavendish[0P10045]:
+  698.50  TrashGol D.Roger[OP09-118]
+  708.50  [madokahk#9226]DiscardRoronoaZoro
+  713.50  [PRB02-006]forCounter2000
+  722.00  Cavendish[OP10-045]7000]vsPerona
+  722.00  [OP14-033][8000]
+  722.00  AttackFails
+  722.00  [jairooj#5976]Sabo[0P15-046]attacking
+  722.00  Perona[OP14-033]
+  724.50  Sabo[OP15-046][9000] vs Perona[OP14
+  724.50  033]6000]
+  724.50  [madokahk#9226]Perona[OP14-033]
+  724.50  Destroyed
+  732.00  [jairooj#5976] Sabo[0P15-046]attacking
+  732.00  Perona[OP14-033]
+  734.00  Sabo[OP15-046][9000]vsPerona[OP14-
+  734.00  033[6000]
+  734.00  [madokahk#9226]Perona[OP14-033]
+  734.00  Destroyed
+  738.75  [jairoojj#5976]EndTurn
+  781.75  [madokahk#9226]Draw1Card
+  781.75  [madokahk#9226]Attach6Donto
+  781.75  TrafalgarLaw[OP13-031](6Total)
+  783.00  [madokahk#9226] TrafalgarLaw[OP13-
+  783.00  031]attackingLucy[OP15-002]
+  796.75  [jairooj#5976]Sabo[OP15-046]Blocks
+  799.75  TrafalgarLaw[OP13-031][12000]vsSabo
+  799.75  [OP15-046][9000]
+  799.75  [jairooj#5976]Sabo[0P15-046]Destroyed
+  799.75  [madokahk#9226]Attach4DontoDracule
+  799.75  Mihawk[OP14-020](4Total)
+  801.00  [madokahk#9226]DraculeMihawk[OP14
+  801.00  020] attacking Lucy[OP15-002]
+  820.50  Dracule Mihawk[OP14-020][9000] vsLucy
+  820.50  [OP15-002][5000]
+  820.50  Lucy[OP15-002] hit for1 damage
