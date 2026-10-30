@@ -354,8 +354,8 @@ function payNextCost(db: CardDb, state: AutoGameState, log: GameEvent[], ): bool
 
       case "returnDonToDeck": { // DON!!−X (8-3-1-6)
         const given = Object.values(p.don.given).reduce((s, n) => s + n, 0);
-        if (given === 0) {
-          // only cost-area DON available: auto-compose, rested first (never worse)
+        if (given === 0 && (p.don.active === 0 || p.don.rested === 0)) {
+          // one kind of DON!! on the field: nothing to choose, pay it
           const fromRested = Math.min(item.count, p.don.rested);
           const fromActive = item.count - fromRested;
           emit(state, log, { type: "donPaid", player: r.controller, fromActive, fromRested, fromGiven: {} });
@@ -363,7 +363,8 @@ function payNextCost(db: CardDb, state: AutoGameState, log: GameEvent[], ): bool
           r.costIndex += 1;
           continue;
         }
-        // attached DON make the composition a real choice
+        // active AND rested (or attached) DON!!: which ones go back is the
+        // player's call (8-3-1-6) — keeping an active one may pay a later cost
         state.pendingChoice = { kind: "payDon", player: r.controller, sourceIid: r.sourceIid, amount: item.count };
         return true;
       }

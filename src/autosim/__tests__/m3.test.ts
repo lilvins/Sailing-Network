@@ -358,15 +358,28 @@ describe("DON!! costs and manipulation", () => {
     expect(ctx.s.players.alice.zones.hand).toHaveLength(handBefore + 1); // drew 1
   });
 
-  it("DON!!−X without attached DON auto-composes (rested first) — no pause", () => {
+  it("DON!!−X with one kind of DON!! on the field is paid without a pause", () => {
     const ctx = newCtx(M3_DECK, VAN_DECK);
     const pd = playNow(ctx, "alice", "NC-PAYDON"); // paying 1 rests 1 DON
     until(ctx, () => ctx.s.turnPlayer === "alice" && ctx.s.players.alice.don.active >= 2
       && ctx.s.players.alice.zones.characterArea.includes(pd));
-    const deckBefore = ctx.s.players.alice.don.deck;
+    const don = ctx.s.players.alice.don;
+    Object.assign(don, { active: don.active + don.rested, rested: 0 }); // all active: nothing to choose
+    const deckBefore = don.deck;
     run(ctx, [{ type: "activateMain", player: "alice", iid: pd, effectIndex: 0 }]);
     expect(ctx.s.pendingChoice).toBeNull();
     expect(ctx.s.players.alice.don.deck).toBe(deckBefore + 2);
+  });
+
+  it("DON!!−X with active AND rested DON!! lets the player choose (8-3-1-6)", () => {
+    const ctx = newCtx(M3_DECK, VAN_DECK);
+    const pd = playNow(ctx, "alice", "NC-PAYDON");
+    until(ctx, () => ctx.s.turnPlayer === "alice" && ctx.s.players.alice.don.active >= 2
+      && ctx.s.players.alice.zones.characterArea.includes(pd));
+    const don = ctx.s.players.alice.don;
+    Object.assign(don, { active: don.active + don.rested - 1, rested: 1 });
+    run(ctx, [{ type: "activateMain", player: "alice", iid: pd, effectIndex: 0 }]);
+    expect(ctx.s.pendingChoice).toMatchObject({ kind: "payDon", player: "alice", amount: 2 });
   });
 
   it("standDon sets rested DON!! active again", () => {
