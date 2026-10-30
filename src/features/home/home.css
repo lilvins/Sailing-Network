@@ -220,7 +220,7 @@
 .hu-sec-link:hover{color:var(--brass-hi);text-decoration:underline;text-underline-offset:3px;}
 
 /* ---- Play band ---- */
-.hu-play{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.hu-play{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
 /* photographic mode cards: REAL card art (scripts/build-mode-cards.mjs →
    public/assets/bg/mode-*.png) behind a flat scrim; micro-zoom on hover */
 .hu-mode{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;min-height:168px;padding:14px 16px 13px;border:1px solid #33363b;border-top:3px solid #565b63;background:#141518;color:#f2f3f5;cursor:pointer;transition:border-color .1s;}
@@ -331,6 +331,7 @@
 
 /* ---- responsive: social stays high AND the grid fills the width ---- */
 @media (max-width:1180px){
+  .hu-play{grid-template-columns:repeat(3,1fr);}
   /* align-items:stretch: the base grid uses start, which would shrink every
      stacked block to content width (the "half-empty page" bug) */
   .hu-grid{display:flex;flex-direction:column;align-items:stretch;}
