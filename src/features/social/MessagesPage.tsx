@@ -9,6 +9,7 @@ import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Real direct messages — every message is persisted server-side. Threads and the
    active conversation poll every few seconds so two browser tabs can chat. */
@@ -138,7 +139,8 @@ export function MessagesPage() {
   };
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header title="Messages" sub="Talk to your crew" hero="/assets/bg/sec-messages.png" heroSlim />
       <div className="snp-body">
         <div className="snp-wrap">

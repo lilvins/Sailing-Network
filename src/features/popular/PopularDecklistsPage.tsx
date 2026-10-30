@@ -6,6 +6,7 @@ import { useUiStore } from "../../app/uiStore";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./popular.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Popular Decklists — real data scraped from egmanevents into
    public/data/popular.json (run `npm run scrape` to refresh). Click a list to
@@ -121,7 +122,8 @@ export function PopularDecklistsPage() {
 
   if (!data) {
     return (
-      <div className="sn snp">
+      <div className="sn snp px">
+        <PixelScene kind="sunset" />
         <Header title="Popular Decklists" sub="Top lists from recent regionals" hero="/assets/bg/sec-popular.png" />
         <div className="snp-body">
           <div className="snp-wrap">
@@ -136,7 +138,8 @@ export function PopularDecklistsPage() {
   }
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="sunset" />
       <Header title="Popular Decklists" sub="Top lists from recent regionals · egmanevents" hero="/assets/bg/sec-popular.png" />
       <div className="snp-body">
         <div className="snp-wrap pd-layout">

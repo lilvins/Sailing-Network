@@ -14,6 +14,7 @@ import { Dock, HeaderDock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./deckbuilder.css";
+import { PixelScene } from "../pixel/PixelScene";
 const { useState, useMemo, useRef, useEffect } = React;
 
 /* ---------- icons (self-contained) ---------- */
@@ -402,7 +403,8 @@ function DeckBuilder() {
   // loading screen (keeps the shell + back button while the catalog fetches)
   if (loading) {
     return (
-      <div className="sn snp db">
+      <div className="sn snp px db">
+        <PixelScene kind="ocean" />
         <header className="snp-head db-head">
           <button className="snp-back" title="Back to My Decks" onClick={() => setView("my-decks")}><I n="back" /></button>
           <div className="snp-head-title"><h1>Deck Constructor</h1><span className="sn-kicker">Loading card database…</span></div>
@@ -413,7 +415,8 @@ function DeckBuilder() {
   }
 
   return (
-    <div className="sn snp db">
+    <div className="sn snp px db">
+      <PixelScene kind="ocean" />
       {/* header */}
       <header className="snp-head db-head has-hero slim" style={{ "--hero-img": 'url("/assets/bg/sec-decks.png")' }}>
         <button className="snp-back" title="Back to My Decks" onClick={() => setView("my-decks")}><I n="back" /></button>

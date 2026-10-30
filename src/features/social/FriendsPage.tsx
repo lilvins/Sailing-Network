@@ -10,6 +10,7 @@ import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Friends — real data: accepted friends, incoming requests, outgoing requests,
    plus a "Find captains" tab to send requests to any captain on the network. */
@@ -89,7 +90,8 @@ export function FriendsPage() {
   ];
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header
         title="Friends"
         sub={`${accepted.length} friend${accepted.length === 1 ? "" : "s"}${incoming.length ? ` · ${incoming.length} pending` : ""}`}

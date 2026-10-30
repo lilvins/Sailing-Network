@@ -5,6 +5,7 @@ import { Header, Dock, Ico, type IconName } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Notifications — unified feed (friend requests/accepts, DMs, system).
    Opening the page marks everything read. */
@@ -48,7 +49,8 @@ export function NotificationsPage() {
   };
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header title="Notifications" sub={loading ? "loading…" : `${items.length} recent`} />
       <div className="snp-body">
         <div className="snp-wrap">

@@ -3,6 +3,7 @@ import "../home/home.css";
 import "../profiles/profiles.css";
 import "@fontsource/silkscreen/700.css"; // pixel section heads
 import "./credits.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /**
  * Credits — every artwork, font and data source the site shows, with its
@@ -30,7 +31,7 @@ const ART: Credit[] = [
     source: "https://opengameart.org/content/moon-and-sea-pixel-art-background",
     license: "OGA-BY 3.0",
     licenseUrl: "https://opengameart.org/content/oga-by-30-faq",
-    where: "The night sky over the Home, the login and the Play Auto table",
+    where: "The night sky over the Home, the login, the Play Auto table, the profile and social pages",
     preview: "/assets/bg/night-sea/full.png",
   },
   {
@@ -40,7 +41,7 @@ const ART: Credit[] = [
     source: "https://opengameart.org/node/158492",
     license: "OGA-BY 3.0",
     licenseUrl: "https://opengameart.org/content/oga-by-30-faq",
-    where: "The Duel Room",
+    where: "The Duel Room, Leaderboard, Duel Records, Statistics, Meta and Popular Decks",
     preview: "/assets/bg/sunset-sea/sky.png",
   },
   {
@@ -50,7 +51,7 @@ const ART: Credit[] = [
     source: "https://opengameart.org/node/133444",
     license: "CC0",
     licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
-    where: "Behind the Play Auto deck pick",
+    where: "Behind the Play Auto deck pick, the deck pages, Admin and this page",
     preview: "/assets/bg/ocean-view/back.png",
   },
   {
@@ -89,7 +90,8 @@ function Row({ c }: { c: Credit }) {
 
 export function CreditsPage() {
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="ocean" />
       <Header title="Credits" sub="The artists, fonts and data behind Sailing Network" hero="/assets/bg/sunset-sea/sky.png" />
       <div className="snp-body">
         <div className="snp-wrap cr">

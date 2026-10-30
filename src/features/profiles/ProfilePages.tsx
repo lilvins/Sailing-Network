@@ -6,6 +6,7 @@ import { loadLeaders, loadCardsById, cardColorHex, type Card } from "../cards/ca
 import { LeaderAvatar } from "../cards/LeaderAvatar";
 import "../home/home.css"; // shared .sn vars + atoms (kicker, buttons, livedot)
 import "./profiles.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Ported from Claude design (profiles.jsx → ProfileViewer, MyProfile,
    DuelRecords, Rankings). Root is `.sn snp` so the design palette vars and
@@ -274,7 +275,8 @@ export function ProfileViewer() {
   const losses = data?.profile.losses ?? 0;
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header
         title="Profile Viewer"
         sub="Captain dossier"
@@ -443,7 +445,8 @@ export function MyProfile() {
 
   if (loading) {
     return (
-      <div className="sn snp">
+      <div className="sn snp px">
+        <PixelScene kind="night" />
         <Header title="My Profile" sub="Customize your captain" />
         <div className="snp-body"><div className="snp-wrap"><div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>Loading…</div></div></div>
         <Dock />
@@ -452,7 +455,8 @@ export function MyProfile() {
   }
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header
         title="My Profile"
         sub="Customize your captain"
@@ -560,7 +564,8 @@ export function DuelRecords() {
   const lcolor = (id: string | null) => { const c = id ? cards?.get(id) : null; return c ? cardColorHex(c) : "#3a4a5e"; };
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="sunset" />
       <Header
         title="Duel Records"
         sub="Your recent matches"
@@ -721,7 +726,8 @@ export function Rankings() {
   const podium = [ranked[1], ranked[0], ranked[2]].filter(Boolean);
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="sunset" />
       <Header
         title="Rankings"
         sub="Captain leaderboard"

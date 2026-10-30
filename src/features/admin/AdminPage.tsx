@@ -5,6 +5,7 @@ import { api, type AuthUser, type Role } from "../../lib/api";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./admin.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 const fmtDate = (ms: number) =>
   new Date(ms).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
@@ -57,7 +58,8 @@ export function AdminPage() {
   const adminCount = users.filter((u) => u.role === "admin").length;
 
   return (
-    <div className="sn snp adm">
+    <div className="sn snp px adm">
+      <PixelScene kind="ocean" />
       <header className="snp-head">
         <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}>
           <BackIcon />

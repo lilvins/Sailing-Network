@@ -9,6 +9,7 @@ import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 const winRate = (w: number, l: number) => Math.round((w / Math.max(1, w + l)) * 100);
 
@@ -53,7 +54,8 @@ export function DirectoryPage() {
   );
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header title="Player Directory" sub={`${users.length} captain${users.length === 1 ? "" : "s"}`} hero="/assets/bg/sec-directory.png" />
       <div className="snp-body">
         <div className="snp-wrap">

@@ -1,0 +1,99 @@
+/* ===========================================================
+   Pixel pages — the Duel Room / Play Auto register on every `.snp` page.
+   Page root: `.sn snp px` with <PixelScene kind=… /> as first child.
+   1. the scene: real pixel-art PNG layers, scaled up pixel-sharp under a
+      dark wash so text stays readable (art + licenses: CREDITS.md)
+   2. the pass: Silkscreen titles and panel heads, VT323 for big numbers,
+      2px frames with hard drop shadows, buttons that press onto their shadow.
+      Small text and form fields keep the sans face (pixel type under ~16px
+      turns to mush). Colour changes only in the dark theme.
+   =========================================================== */
+.snp.px{
+  --hud:"Silkscreen",system-ui,sans-serif;
+  --pixel:"VT323",ui-monospace,monospace;
+  --px-frame:2px solid rgba(242,243,245,0.18);
+  --px-shadow:4px 4px 0 rgba(0,0,0,0.55);
+  --px-shadow-sm:3px 3px 0 rgba(0,0,0,0.5);
+}
+.snp.px::before{display:none;} /* the old card-wall texture */
+
+/* ---------------- 1. the scene ---------------- */
+.pxs{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#0b1020;container-type:size;}
+.pxs i{position:absolute;inset:0;background-size:cover;background-position:center bottom;background-repeat:no-repeat;image-rendering:pixelated;}
+.pxs .shade{background:linear-gradient(180deg,rgba(6,9,18,0.30) 0%,rgba(6,9,18,0.52) 50%,rgba(6,9,18,0.74) 100%);}
+
+/* night: "Moon and Sea" (CraftPix, OGA-BY 3.0), the Home's sky */
+.pxs-night .base{background-image:url("/assets/bg/night-sea/base.png");}
+.pxs-night .moon{background-image:url("/assets/bg/night-sea/moon.png");}
+.pxs-night .clouds{background-image:url("/assets/bg/night-sea/clouds.png");left:-3%;right:-3%;}
+.pxs-night .refl{background-image:url("/assets/bg/night-sea/reflections.png");}
+
+/* sunset: "Sunset Clouds Over The Sea" (CraftPix, OGA-BY 3.0), the Duel Room's sky */
+.pxs-sunset{background:#8aa4ad;}
+.pxs-sunset .sky{background-image:url("/assets/bg/sunset-sea/sky.png");}
+.pxs-sunset .cloud{background-image:url("/assets/bg/sunset-sea/cloud.png");left:-3%;right:-3%;}
+.pxs-sunset .refl{background-image:url("/assets/bg/sunset-sea/reflection.png");}
+
+/* ocean: "Ocean View" night set (ansimuz, CC0) — narrow tiles, so repeat-x
+   at full height instead of cover, like the Play Auto deck pick */
+.pxs-ocean{background:#0f3a4f;}
+.pxs-ocean i:not(.shade){background-size:auto 100%;background-repeat:repeat-x;background-position:0 0;}
+.pxs-ocean .back{background-image:url("/assets/bg/ocean-view/back.png");}
+.pxs-ocean .clouds{background-image:url("/assets/bg/ocean-view/clouds.png");opacity:0.85;}
+.pxs-ocean .waves{background-image:url("/assets/bg/ocean-view/waves.png");}
+
+@media (prefers-reduced-motion: no-preference){
+  /* clouds drift a few native pixels and back; the water shimmers */
+  .pxs-night .clouds,.pxs-sunset .cloud{animation:pxs-drift 48s steps(24) infinite alternate;}
+  .pxs-night .refl,.pxs-sunset .refl{animation:pxs-shimmer 3.2s steps(4) infinite;}
+  /* ocean: one native pixel per step (steps = tile width) so nothing blurs */
+  .pxs-ocean .clouds{animation:pxs-oc-clouds 160s steps(320) infinite;}
+  .pxs-ocean .waves{animation:pxs-oc-waves 12s steps(144) infinite;}
+  @keyframes pxs-drift{from{transform:translateX(-1.2%);}to{transform:translateX(1.2%);}}
+  @keyframes pxs-shimmer{0%,100%{opacity:1;}50%{opacity:0.82;}}
+  @keyframes pxs-oc-clouds{to{background-position-x:calc(-320 / 240 * 100cqh);}}
+  @keyframes pxs-oc-waves{to{background-position-x:calc(-144 / 240 * 100cqh);}}
+}
+
+/* the art's credit, bottom-right (the social dock owns bottom-left) */
+.pxs-credit{position:absolute;right:12px;bottom:8px;z-index:6;padding:3px 8px;font-size:11px;color:rgba(242,243,245,0.7);background:rgba(6,9,18,0.62);text-shadow:1px 1px 0 rgba(0,0,0,0.7);white-space:nowrap;}
+.pxs-credit a,.pxs-credit button{color:inherit;font:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;}
+.pxs-credit a:hover,.pxs-credit button:hover{color:#fff;}
+@media (max-width:640px){ .pxs-credit{left:auto;max-width:calc(100% - 140px);overflow:hidden;text-overflow:ellipsis;} }
+
+/* ---------------- 2. the pass ---------------- */
+/* see-through panels so the scene reads between and behind them (dark only) */
+:root:not([data-theme="light"]) .snp.px{
+  --glass:rgba(12,16,28,0.86); --glass2:rgba(9,12,22,0.9);
+  --elev:rgba(14,18,30,0.86); --elev2:rgba(24,29,44,0.92);
+}
+/* header: a dark band over the scene, no card-art photo */
+:root:not([data-theme="light"]) .snp.px .snp-head{background:rgba(6,9,18,0.72);}
+.snp.px .snp-head{border-bottom:2px solid rgba(242,243,245,0.14);}
+.snp.px .snp-head.has-hero{min-height:0;}
+.snp.px .snp-head.has-hero::before,.snp.px .snp-head.has-hero::after{display:none;}
+.snp.px .snp-head-title h1{font-family:var(--hud);font-weight:700;font-size:22px;letter-spacing:2px;text-transform:uppercase;text-shadow:3px 3px 0 rgba(0,0,0,0.6);}
+/* Silkscreen is wide: on a phone the title would wrap word by word */
+@media (max-width:640px){ .snp.px .snp-head-title h1{font-size:14px;letter-spacing:1px;text-shadow:2px 2px 0 rgba(0,0,0,0.6);} }
+
+/* panel heads + section titles */
+.snp.px .so-card-h,.snp.px .snp-body h2,.snp.px .snp-body h3{font-family:var(--hud);font-weight:700;letter-spacing:1px;}
+.snp.px .so-card-h{font-size:14px;border-bottom:2px solid rgba(242,243,245,0.14);}
+.snp.px .snp-body h2{font-size:16px;}
+.snp.px .snp-body h3{font-size:13px;}
+
+/* panels: 2px frame + hard shadow */
+.snp.px :is(.so-card,.st-kpi,.msg-list,.msg-thread,.fr-list,.gc-room,.adm-table,.md-deck,.pv-stats,.pv-bio,.pv-deck,.mp-bio-box,.rec-table,.rk-pod,.snp-frame){border:var(--px-frame);box-shadow:var(--px-shadow);}
+.snp.px :is(.pd-modal,.md-modal,.db-modal){border:var(--px-frame);box-shadow:6px 6px 0 rgba(0,0,0,0.6);}
+
+/* big numbers in VT323 */
+.snp.px .st-kpi-val{font-family:var(--pixel);font-weight:400;font-size:44px;line-height:1;}
+.snp.px .st-kpi-lbl{font-family:var(--hud);font-weight:400;font-size:10px;}
+
+/* chunky buttons: a hard shadow under them, pressed = sits on it */
+.snp.px :is(.snp-back,.snp-iconbtn,.sn-btn-ghost,.sn-btn-primary,.rec-replay,.pv-follow,.md-new,.db-save){border-width:2px;box-shadow:var(--px-shadow-sm);transition:filter .1s,transform .06s,box-shadow .06s;}
+.snp.px :is(.snp-back,.snp-iconbtn,.sn-btn-ghost,.sn-btn-primary,.rec-replay,.pv-follow,.md-new,.db-save):active{transform:translate(3px,3px);box-shadow:0 0 0 transparent;}
+.snp.px .snp-back:hover{transform:none;}
+.snp.px :is(.sn-btn-ghost,.sn-btn-primary){font-family:var(--hud);font-weight:700;letter-spacing:1px;}
+.snp.px :is(input,select,textarea){border-width:2px;}
+.snp.px .sn-pill{border-width:2px;box-shadow:var(--px-shadow-sm);}

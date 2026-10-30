@@ -5,6 +5,7 @@ import { loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* My Statistics — pick one of your real decks, then see its win rate (overall /
    going 1st / going 2nd) and the win rate vs each leader you've actually faced.
@@ -77,7 +78,8 @@ export function StatisticsPage() {
   const hasOverflow = over.left || over.right;
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="sunset" />
       <Header
         title="My Statistics"
         sub="Win rate by deck & matchup"

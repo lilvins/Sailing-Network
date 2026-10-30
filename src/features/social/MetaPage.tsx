@@ -6,6 +6,7 @@ import { loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Meta analytics — leader popularity + win rate aggregated from the real match
    history (/api/meta). No placeholders. */
@@ -32,7 +33,8 @@ export function MetaPage() {
   const totalGames = rows.reduce((a, r) => a + r.games, 0);
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="sunset" />
       <Header
         title="Meta Analytics"
         sub="Leader popularity & win rate"

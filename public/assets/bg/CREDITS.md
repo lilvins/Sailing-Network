@@ -5,13 +5,15 @@
 Source: https://opengameart.org/content/moon-and-sea-pixel-art-background
 License: **OGA-BY 3.0** (attribution required — keep this file).
 Layers renamed: 1→base, 2→moon, 3→clouds, 4→reflections, 5→full (2304x1296 composite).
+Used on the Home, login, Play Auto and the profile/social pages (PixelScene).
 
 ## sunset-sea/ (sky, cloud, reflection)
 "Sunset Clouds Over The Sea Pixel Background" by **CraftPix.net 2D Game Assets**
 Source: https://opengameart.org/node/158492 (also https://craftpix.net)
 License: **OGA-BY 3.0** (attribution required — keep this file). CraftPix's own
 freebie terms allow commercial use; no reselling of the files, no AI training.
-Layers renamed: 1→sky, 2→cloud, 3→reflection. Used behind the Duel Room.
+Layers renamed: 1→sky, 2→cloud, 3→reflection. Used behind the Duel Room and the
+competitive pages (Leaderboard, Records, Statistics, Meta, Popular) via PixelScene.
 
 ## fx/water-sheet.png
 "Animated water texture 128px" by **YCbCr**
@@ -25,7 +27,8 @@ Drawn pixel by pixel in `scripts/build-pixel-fx.mjs` (project-original).
 ## ocean-view/ (back, clouds, waves)
 "Ocean View" by **Luis Zuno (@ansimuz)** — https://opengameart.org/node/133444
 License: **CC0** (credit not required, given anyway). Night set, layers
-Back/Clouds/Middle renamed back/clouds/waves. Used behind the Play Auto deck pick.
+Back/Clouds/Middle renamed back/clouds/waves. Used behind the Play Auto deck pick
+and the deck, admin and credits pages (PixelScene).
 
 ## public/cards/BACK.webp, BACK-leader.webp, BACK-don.webp
 Official ONE PIECE CARD GAME card back (© Bandai/Shueisha/Eiichiro Oda —

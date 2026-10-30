@@ -6,6 +6,7 @@ import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
+import { PixelScene } from "../pixel/PixelScene";
 
 /* Global chat — one shared room, every message persisted server-side, polled. */
 
@@ -75,7 +76,8 @@ export function GlobalChatPage() {
   const imgOf = (id: string | null) => (id ? cards?.get(id)?.image || null : null);
 
   return (
-    <div className="sn snp">
+    <div className="sn snp px">
+      <PixelScene kind="night" />
       <Header title="Global Chat" sub="One room · all captains" />
       <div className="snp-body">
         <div className="snp-wrap">

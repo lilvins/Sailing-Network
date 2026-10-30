@@ -12,6 +12,7 @@ import { Dock, HeaderDock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./mydecks.css";
+import { PixelScene } from "../pixel/PixelScene";
 const { useState, useEffect, useRef } = React;
 
 const MD_ICON = {
@@ -105,7 +106,8 @@ function MyDecks() {
   };
 
   return (
-    <div className="sn snp md">
+    <div className="sn snp px md">
+      <PixelScene kind="ocean" />
       <header className="snp-head has-hero" style={{ "--hero-img": 'url("/assets/bg/sec-decks.png")' }}>
         <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}><I n="back" /></button>
         <div className="snp-head-title">
