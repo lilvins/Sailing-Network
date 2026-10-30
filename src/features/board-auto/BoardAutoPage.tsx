@@ -557,6 +557,9 @@ function GameScreen() {
   const aiDelay = useAutoStore((s) => s.aiDelay);
   const setAiPaused = useAutoStore((s) => s.setAiPaused);
   const setAiDelay = useAutoStore((s) => s.setAiDelay);
+  // fewer confirmations by default (user request); the table switch brings them back
+  const confirmPicks = useAutoStore((s) => s.confirmPicks);
+  const setConfirmPicks = useAutoStore((s) => s.setConfirmPicks);
   const hasAi = seats.some((s) => s.controller === "ai");
   // take-backs: the last move a person made, and the open request (if any)
   const history = useAutoStore((s) => s.history);
@@ -674,6 +677,16 @@ function GameScreen() {
     setDonPick([]);
     setNumberPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
+
+  // windows with nothing to decide close by themselves (unless "confirm every
+  // choice" is on): no [Blocker] to block with, nothing usable to counter with
+  const noCounters = pc?.kind === "counterWindow" && lm.counterCards.length + lm.counterEvents.length === 0;
+  const noBlockers = pc?.kind === "blockWindow" && pc.blockers.length === 0;
+  useEffect(() => {
+    if (confirmPicks || !pc || isAiSeat(seats, pc.player)) return;
+    if (noBlockers) dispatch({ type: "respondBlock", player: pc.player, blockerIid: null });
+    else if (noCounters) dispatch({ type: "passCounter", player: pc.player });
+  }, [pc, noBlockers, noCounters, confirmPicks, seats, dispatch]);
 
   // keyboard: Esc drops the current selection, E ends the turn (not while typing)
   useEffect(() => {
@@ -1054,11 +1067,13 @@ function GameScreen() {
       explain("Not a legal target for this effect.", "Legal targets carry the red corner ring.");
       return;
     }
-    setPicked((prev) => {
-      if (prev.includes(iid)) return prev.filter((x) => x !== iid);
-      const max = Math.min(pc.count, pc.candidates.length);
-      return prev.length >= max ? prev : [...prev, iid];
-    });
+    const max = Math.min(pc.count, pc.candidates.length);
+    const next = picked.includes(iid) ? picked.filter((x) => x !== iid) : picked.length >= max ? picked : [...picked, iid];
+    setPicked(next);
+    // the last target needed resolves the choice (unless "confirm every choice" is on)
+    if (!confirmPicks && next.length === max && next.length > picked.length && setOk(pc, next)) {
+      dispatch({ type: "respondTargets", player: pc.player, iids: next });
+    }
   };
 
   const whyNotPlayable = (owner: PID, iid: Iid) => {
@@ -1236,10 +1251,12 @@ function GameScreen() {
     const total = next.active.length + next.rested.length + Object.values(next.given).reduce((a, b) => a + b, 0);
     if (total > pc.amount) return;
     setPayPick(next);
-    if (total === pc.amount) {
-      const fromGiven = Object.fromEntries(Object.entries(next.given).filter(([, n]) => n > 0));
-      dispatch({ type: "respondPayDon", player: pc.player, fromActive: next.active.length, fromRested: next.rested.length, fromGiven });
-    }
+    if (total === pc.amount && !confirmPicks) payDonWith(next);
+  };
+  const payDonWith = (pick: typeof payPick) => {
+    if (pc?.kind !== "payDon") return;
+    const fromGiven = Object.fromEntries(Object.entries(pick.given).filter(([, n]) => n > 0));
+    dispatch({ type: "respondPayDon", player: pc.player, fromActive: pick.active.length, fromRested: pick.rested.length, fromGiven });
   };
 
   /** One click on a DON!! (or the DON!! deck) toward a DON!!-moving effect;
@@ -1251,7 +1268,7 @@ function GameScreen() {
       ? (full ? [] : [...donPick, donPick.length + 1])
       : donPick.includes(index) ? donPick.filter((i) => i !== index) : full ? donPick : [...donPick, index];
     setDonPick(next);
-    if (next.length === donChoice.max && donChoice.max > 0) dispatch(donChoice.answer(next.length));
+    if (!confirmPicks && next.length === donChoice.max && donChoice.max > 0) dispatch(donChoice.answer(next.length));
     return true;
   };
 
@@ -1327,6 +1344,11 @@ function GameScreen() {
           </span>
           {picked > 0 && (
             <button className="ba-btn" data-act="paydon-clear" onClick={() => setPayPick({ active: [], rested: [], given: {} })}>Clear</button>
+          )}
+          {confirmPicks && (
+            <button className="ba-btn primary" data-act="paydon-confirm" disabled={picked !== pc.amount} onClick={() => payDonWith(payPick)}>
+              Confirm ({picked})
+            </button>
           )}
         </div>
       );
@@ -1677,6 +1699,9 @@ function GameScreen() {
         ref={reg(iid)}
         {...dragHandlers}
         {...attackDragHandlers}
+        // no native image drag: its ghost picture "lifted" the card and ate the
+        // pointer moves, so the attack arrow only showed after the drop
+        onDragStart={(e) => e.preventDefault()}
         onClick={(e) => {
           e.stopPropagation();
           if (suppressClick.current) { suppressClick.current = false; return; }
@@ -2556,6 +2581,14 @@ function GameScreen() {
           </div>
         )}
         <div className="ba-railfill" />
+        <button
+          className={`ba-btn${confirmPicks ? " primary" : ""}`}
+          data-act="confirm-picks"
+          title={confirmPicks ? "Every choice waits for a Confirm" : "Complete choices resolve at once; nothing-to-do windows are skipped"}
+          onClick={() => setConfirmPicks(!confirmPicks)}
+        >
+          Confirm every choice: {confirmPicks ? "on" : "off"}
+        </button>
         <button
           className="ba-btn ba-undo"
           data-act="undo"

@@ -74,6 +74,12 @@ export function getCardDb(): CardDb | null {
 
 let bannerSeq = 1;
 
+/** The "confirm every choice" table setting, remembered per browser. */
+const CONFIRM_KEY = "sn-auto-confirm-picks";
+function readConfirmPicks(): boolean {
+  try { return localStorage.getItem(CONFIRM_KEY) === "1"; } catch { return false; }
+}
+
 /** Turn an EngineError message into "why + what to do" (grammar rule #7:
  *  refusals are explained, never a flat no). */
 function hintFor(message: string): string | undefined {
@@ -104,6 +110,10 @@ interface AutoStoreState {
   /** AI seats: paused, and the pause between their moves (ms). */
   aiPaused: boolean;
   aiDelay: number;
+  /** Table setting: false (default) = a choice that is complete resolves at
+   *  once and windows with nothing to do are skipped; true = every choice
+   *  waits for a Confirm / button press. Remembered in this browser. */
+  confirmPicks: boolean;
   /** Every move of this game, oldest first (take-backs). */
   history: HistoryEntry[];
   /** A player asked to take back their last move; the opponent must answer. */
@@ -126,6 +136,7 @@ interface AutoStoreState {
   answerUndo: (accept: boolean) => void;
   setAiPaused: (paused: boolean) => void;
   setAiDelay: (ms: number) => void;
+  setConfirmPicks: (on: boolean) => void;
   explain: (text: string, hint?: string, tone?: Banner["tone"]) => void;
   dismissBanner: () => void;
   /** Back to the roll with the same decks (rematch) or to the deck pick. */
@@ -145,6 +156,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   aiOpponent: false,
   aiPaused: false,
   aiDelay: 700,
+  confirmPicks: readConfirmPicks(),
   history: [],
   undoRequest: null,
 
@@ -270,6 +282,10 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   newGame: (aiOpponent) => set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }),
   setAiPaused: (aiPaused) => set({ aiPaused }),
   setAiDelay: (aiDelay) => set({ aiDelay }),
+  setConfirmPicks: (confirmPicks) => {
+    try { localStorage.setItem(CONFIRM_KEY, confirmPicks ? "1" : "0"); } catch { /* storage off: this session only */ }
+    set({ confirmPicks });
+  },
 
   explain: (text, hint, tone) => set({ banner: { id: bannerSeq++, text, hint, tone } }),
   dismissBanner: () => set({ banner: null }),

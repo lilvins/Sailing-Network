@@ -590,7 +590,7 @@
   background: var(--signal);
   border: 1px solid #fff;
   color: #fff;
-  font: 700 15px var(--hud);
+  font: 400 20px/1 var(--pixel);
 }
 .ba-donempty { font: 700 9px var(--serif); letter-spacing: 0.14em; color: rgba(201, 151, 59, 0.45); padding: 0 6px; }
 
@@ -1162,7 +1162,8 @@
 .ba-bh-row { display: flex; align-items: center; gap: 18px; }
 .ba-bh-side { display: flex; flex-direction: column; align-items: center; min-width: 140px; }
 .ba-bh-side i { font: 500 13px var(--serif); font-style: normal; color: var(--ivory); max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ba-bh-side b { font: 700 30px/1 var(--hud); color: #ffd23f; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7); }
+/* numbers in VT323: Silkscreen bold draws a 2 that reads as an 8 (user report) */
+.ba-bh-side b { font: 400 40px/0.9 var(--pixel); color: #ffd23f; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7); }
 .ba-bh-side.def b { color: #9fd2ff; }
 .ba-bh-vs { font: 700 26px var(--hud); color: var(--lc, #fff); }
 .ba-bh-need { font: 600 13px var(--serif); }
@@ -1191,7 +1192,7 @@
 }
 .ba-fx-amount {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  font: 700 34px/1 var(--hud); color: #9fd2ff; background: rgba(8, 11, 22, 0.85);
+  font: 400 44px/0.9 var(--pixel); color: #9fd2ff; background: rgba(8, 11, 22, 0.85);
   border: 2px solid #9fd2ff; padding: 4px 8px; text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8); white-space: nowrap;
 }
 @keyframes ba-counterfly {
@@ -1248,5 +1249,5 @@
 .ba-pile.ba-pickpile .ba-pcard { outline: 3px solid #ffd23f; outline-offset: 2px; animation: ba-readyglow 1.6s steps(8) infinite; }
 .ba-pickcount {
   position: absolute; top: 18px; right: 2px; z-index: 8;
-  font: 700 16px var(--hud); color: #1a1300; background: #ffd23f; border: 2px solid #1a1300; padding: 1px 6px;
+  font: 400 22px/1 var(--pixel); color: #1a1300; background: #ffd23f; border: 2px solid #1a1300; padding: 1px 6px;
 }
