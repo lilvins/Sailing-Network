@@ -5,7 +5,7 @@
 Source: https://opengameart.org/content/moon-and-sea-pixel-art-background
 License: **OGA-BY 3.0** (attribution required — keep this file).
 Layers renamed: 1→base, 2→moon, 3→clouds, 4→reflections, 5→full (2304x1296 composite).
-Used on the Home, login, Play Auto and the profile/social pages (PixelScene).
+Used on the Home banner, login, Play Auto and the profile/social pages (PixelScene).
 
 ## sunset-sea/ (sky, cloud, reflection)
 "Sunset Clouds Over The Sea Pixel Background" by **CraftPix.net 2D Game Assets**
@@ -44,3 +44,8 @@ Generated locally by `scripts/build-backgrounds.mjs` from the self-hosted card
 art in `public/cards/` (© Bandai/Shueisha/Eiichiro Oda — personal/fan use, same
 caveat as the card images themselves; see CLAUDE.md data architecture note).
 Regenerate with: `node scripts/build-backgrounds.mjs`
+
+## world-map/ (map, sparkle-a, sparkle-b, ship)
+The One Piece world as a pixel sea chart behind the whole Home, drawn pixel by
+pixel in `scripts/build-world-map.mjs` (project-original). A placeholder until
+the map is commissioned from an artist. Rebuild: `node scripts/build-world-map.mjs`

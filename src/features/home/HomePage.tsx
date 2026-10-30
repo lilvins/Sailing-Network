@@ -14,6 +14,7 @@ import {
 import { loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { NightSea } from "./NightSea";
+import { WorldMap } from "./WorldMap";
 import { useAutoStore } from "../board-auto/autoStore";
 import "./home.css";
 
@@ -285,6 +286,7 @@ export function HomePage() {
 
   return (
     <div className="sn sn-hub">
+      <WorldMap />
       <header className="hu-head">
         <Logo />
         <div className="hu-head-r">
@@ -521,7 +523,7 @@ export function HomePage() {
           {/* the night sky above is OGA-BY: its credit sits where people see it */}
           <footer className="hu-credits">
             Night sky: <a href="https://opengameart.org/content/moon-and-sea-pixel-art-background" target="_blank" rel="noopener noreferrer">“Moon and Sea”</a> by
-            CraftPix.net (OGA-BY 3.0) ·{" "}
+            CraftPix.net (OGA-BY 3.0) · World map: drawn in pixels for Sailing Network ·{" "}
             <button className="hu-credits-link" onClick={() => setView("credits")}>All credits</button>
           </footer>
         </main>

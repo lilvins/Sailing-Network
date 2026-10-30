@@ -31,7 +31,7 @@ const ART: Credit[] = [
     source: "https://opengameart.org/content/moon-and-sea-pixel-art-background",
     license: "OGA-BY 3.0",
     licenseUrl: "https://opengameart.org/content/oga-by-30-faq",
-    where: "The night sky over the Home, the login, the Play Auto table, the profile and social pages",
+    where: "The night sky over the Home banner, the login, the Play Auto table, the profile and social pages",
     preview: "/assets/bg/night-sea/full.png",
   },
   {
@@ -60,7 +60,7 @@ const ART: Credit[] = [
     source: "https://opengameart.org/content/animated-water-texture-128px",
     license: "CC0",
     licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
-    where: "The shimmering sea on the Home",
+    where: "The shimmering sea on the Home banner and the login",
   },
 ];
 
@@ -99,8 +99,9 @@ export function CreditsPage() {
             <h2>Pixel art</h2>
             <ul>{ART.map((c) => <Row key={c.what} c={c} />)}</ul>
             <p className="cr-note">
-              Stars, gulls, the little ship and the white DON!! back are drawn for this site
-              (<code>scripts/build-pixel-fx.mjs</code>, <code>scripts/build-mode-cards.mjs</code>,{" "}
+              The world map on the Home, stars, gulls, the little ships and the white DON!! back
+              are drawn for this site (<code>scripts/build-world-map.mjs</code>,{" "}
+              <code>scripts/build-pixel-fx.mjs</code>, <code>scripts/build-mode-cards.mjs</code>,{" "}
               <code>scripts/build-don-back.mjs</code>).
             </p>
           </section>

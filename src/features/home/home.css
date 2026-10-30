@@ -174,7 +174,27 @@
    desktop, stacked below the scene on mobile. ---- */
 .hu-hero-wrap{position:relative;margin:0 calc(-1*var(--pad-x));}
 .hu-hero-sea{position:relative;overflow:hidden;height:clamp(240px,24vw,330px);background:#0a0f1e;border-bottom:2px solid #26282d;}
-.hu-hero-sea .nsea{--nsea-pos:center 30%;--nsea-py:.3;}
+/* ---- the world map behind the whole Home (WorldMap.tsx): a 384×216 chart
+   fixed to the viewport, scaled up pixel-sharp and cover-sized; % positions
+   inside .wmap-art are positions on the chart. The hub isolates so the map
+   (z-index -1) paints above the hub's own background, under everything else. */
+.sn.sn-hub{isolation:isolate;}
+.wmap{position:fixed;inset:0;z-index:-1;container-type:size;background:#0e1f45;pointer-events:none;}
+.wmap-art{position:absolute;aspect-ratio:16/9;width:max(100cqw,calc(100cqh * 16 / 9));left:calc((100cqw - max(100cqw,calc(100cqh * 16 / 9)))/2);top:calc((100cqh - max(100cqh,calc(100cqw * 9 / 16)))/2);}
+.wmap-art img{image-rendering:pixelated;display:block;}
+.wmap-layer{position:absolute;inset:0;width:100%;height:100%;}
+.wmap-spark.b{opacity:0;}
+.wmap-shade{position:absolute;inset:0;background:rgba(6,9,18,0.28);}
+/* 7×6 ship, its hull on the dashed route (y 109 of 216) */
+.wmap-ship{position:absolute;width:calc(7 / 384 * 100%);height:calc(6 / 216 * 100%);top:calc(104 / 216 * 100%);left:52%;}
+@media (prefers-reduced-motion: no-preference){
+  .wmap-spark.a{animation:wmap-glint 1.8s steps(1) infinite;}
+  .wmap-spark.b{animation:wmap-glint 1.8s steps(1) infinite reverse;}
+  /* Paradise first, then round the world into the New World: one chart pixel per step */
+  .wmap-ship{animation:wmap-sail 240s steps(480) infinite;animation-delay:-120s;}
+  @keyframes wmap-glint{0%{opacity:1;}50%{opacity:0;}}
+  @keyframes wmap-sail{from{left:-1.5%;}to{left:100%;}}
+}
 /* announcements panel, floating in the empty sky left of the moon */
 .hu-log{position:absolute;z-index:2;top:50%;transform:translateY(-50%);left:var(--pad-x);width:min(470px,44%);background:rgba(11,12,14,0.84);border:1px solid rgba(242,243,245,0.22);color:#f2f3f5;}
 .hu-log-h{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(242,243,245,0.16);font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;}
