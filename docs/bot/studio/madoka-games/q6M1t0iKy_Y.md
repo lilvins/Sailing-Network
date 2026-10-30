@@ -1,0 +1,37 @@
+### q6M1t0iKy_Y — Mihawk vs Y Enel (how to play against Y Enel)
+
+- Leader: madoka Dracule Mihawk vs avv. Enel (OP05-098); primo: madoka; vincitore: madoka (concede)
+
+**T1 madoka** — +1 DON!! (tot 1)
+  - mano madoka a inizio turno (riconoscimento immagini, 5 carte): Jewelry Bonney, Shanks, Tashigi, The Billion-fold World Trichiliocosm, Roronoa Zoro
+  - fine turno: vite madoka 5 / avv. 4; campo madoka: -; campo avv.: -
+**T2 avv.** — +2 DON!! (tot 2)
+  - fine turno: vite madoka 5 / avv. 4; campo madoka: -; campo avv.: -
+**T3 madoka** — +2 DON!! (tot 3)
+  - mano madoka a inizio turno (riconoscimento immagini, 5 carte): Jewelry Bonney, Yosaku (?), Eric (?), Franky (?), Fisher Tiger (?)
+  - fine turno: vite madoka 5 / avv. 4; campo madoka: -; campo avv.: -
+**T4 avv.** — +2 DON!! (tot 4); 2 DON!! su Enel; ATTACCO Enel -> Dracule Mihawk 7000 vs 5000 => hit;   OP14-020 perde 1 vita (vite 4); gioca Sentomaru [EB04-053]
+  - fine turno: vite madoka 4 / avv. 4; campo madoka: -; campo avv.: Sentomaru
+**T5 madoka** — +2 DON!! (tot 5); gioca Tashigi [OP14-029]
+  - mano madoka a inizio turno (riconoscimento immagini, 8 carte): Jewelry Bonney, Shanks, Tashigi, The Billion-fold World Trichiliocosm, Roronoa Zoro, Jewelry Bonney, The Billion-fold World Trichiliocosm, Perona
+  - fine turno: vite madoka 4 / avv. 4; campo madoka: Tashigi; campo avv.: Sentomaru
+**T6 avv.** — +2 DON!! (tot 6); gioca Borsalino [EB04-058]
+  - fine turno: vite madoka 4 / avv. 4; campo madoka: Tashigi; campo avv.: Sentomaru, Borsalino
+**T7 madoka** — +2 DON!! (tot 7); gioca Shanks [OP14-027]; effetto Dracule Mihawk: RestShanks<OP14-027>; effetto Dracule Mihawk: Activate1Don x3; effetto Dracule Mihawk: Can'tplayCost1OrMoreCharactersfortheTurn!; effetto Shanks: RestBorsalino<EB04-058>; effetto Tashigi: RestDon[Don] x2; effetto Tashigi: GrantTashigi<OP14-029>2000untilopponent'snextturnend; ATTACCO Tashigi -> Borsalino 8000 vs 6000 => ko;   K.O. Borsalino (avv.)
+  - mano madoka a inizio turno (riconoscimento immagini, 7 carte): Jewelry Bonney, The Billion-fold World Trichiliocosm, Roronoa Zoro, Jewelry Bonney, The Billion-fold World Trichiliocosm, Perona, Trafalgar Law
+  - fine turno: vite madoka 4 / avv. 4; campo madoka: Tashigi, Shanks; campo avv.: Sentomaru
+**T8 avv.** — +2 DON!! (tot 8); 8 DON!! su Enel; ATTACCO Enel -> Shanks 13000 vs 14000, counter 1000 (Jewelry Bonney) => fail;   [madoka] counter evento The Billion-fold World Trichiliocosm; effetto The Billion-fold World Trichiliocosm: Rest1Don; effetto The Billion-fold World Trichiliocosm: BuffShanks<OP14-027>2000fortheCombat x2
+  - fine turno: vite madoka 4 / avv. 4; campo madoka: Tashigi, Shanks; campo avv.: Sentomaru
+**T9 madoka** — +2 DON!! (tot 9); gioca Perona [OP12-034]; effetto Perona: RevealandDrawLaw&Bepo<ST24-004>; ATTACCO Shanks -> Enel 9000 vs 5000 => hit; effetto Shanks: RestSentomaru<EB04-053>;   OP05-098 perde 1 vita (vite 3);   [avv.] trigger Heso!!; effetto Heso!!: Draw2Card; ATTACCO Dracule Mihawk -> Sentomaru 5000 vs 1000 => ko;   K.O. Sentomaru (avv.); gioca Trafalgar Law [OP13-031]; effetto Trafalgar Law: rimanda in mano/mazzo (ReturnPerona<OP12-034>toHand); gioca Jewelry Bonney [OP12-118]; effetto Jewelry Bonney: Draw2Card; effetto Jewelry Bonney: TrashElectricalLuna<OP08-036>; effetto Jewelry Bonney: Activate1Don; gioca Perona [OP12-034]; effetto Perona: RevealandDrawBillion-foldWorldTrichiliocosm<OP06-038>; effetto Tashigi: ResPerona<OP12-034>; effetto Tashigi: ResTrafalgarLaw<OP13-031>; effetto Tashigi: GrantTashigi<OP14-029>2000untilopponent'snextturnend; ATTACCO Tashigi -> Enel 8000 vs 5000 => hit;   OP05-098 perde 1 vita (vite 2)
+  - mano madoka a inizio turno (riconoscimento immagini, 6 carte): Jewelry Bonney, The Billion-fold World Trichiliocosm, Roronoa Zoro, Perona, Trafalgar Law, Electrical Luna
+  - fine turno: vite madoka 4 / avv. 2; campo madoka: Tashigi, Shanks, Trafalgar Law, Jewelry Bonney, Perona; campo avv.: -
+**T10 avv.** — +2 DON!! (tot 10); 8 DON!! su Enel; ATTACCO Enel -> Shanks 13000 vs 15000, counter 2000 (Roronoa Zoro) => fail; effetto The Billion-fold World Trichiliocosm: ActivateCounte; effetto The Billion-fold World Trichiliocosm: Rest1Don; effetto The Billion-fold World Trichiliocosm: BuffShanks<OP14-027>2000fortheCombat x2
+  - fine turno: vite madoka 4 / avv. 2; campo madoka: Tashigi, Shanks, Trafalgar Law, Jewelry Bonney, Perona; campo avv.: -
+**T11 madoka** — +2 DON!! (tot 11); ATTACCO Dracule Mihawk -> Enel 5000 vs 6000, counter 1000 (Dr. Hogback) => fail; gioca Coffin Boat [OP14-039]; effetto Coffin Boat: Draw1Card; effetto Tashigi: RestPerona<OP12-034>; effetto Tashigi: ResCoffinBoat<OP14-039>; effetto Tashigi: GrantTashigi<OP14-029>2000untilopponent'snextturnend; scarta Perona (dal campo); gioca Dracule Mihawk [OP14-119]; effetto Dracule Mihawk: RestDraculeMihawk<OP14-119>; effetto Dracule Mihawk: Activate1Don x3; effetto Dracule Mihawk: Can'tplayCost1OrMoreCharactersfortheTurn!; 1 DON!! su Jewelry Bonney; ATTACCO Jewelry Bonney -> Enel 7000 vs 8000, counter 2000 (Kumacy), counter 1000 (Borsalino) => fail; ATTACCO Tashigi -> Enel 8000 vs 5000 => hit;   OP05-098 perde 1 vita (vite 1); 2 DON!! su Trafalgar Law; ATTACCO Trafalgar Law -> Enel 8000 vs 5000 => hit;   OP05-098 perde 1 vita (vite 0); scarta Monkey.D.Luffy (dalla mano); effetto Enel: +1 vita (vite 1); ATTACCO Shanks -> Enel 9000 vs 5000 => hit;   OP05-098 perde 1 vita (vite 0); effetto Coffin Boat: Activate1Don
+  - mano madoka a inizio turno (riconoscimento immagini, 5 carte): The Billion-fold World Trichiliocosm, Law & Bepo, Scratchmen Apoo, Dracule Mihawk, Coffin Boat
+  - fine turno: vite madoka 4 / avv. 0; campo madoka: Tashigi, Shanks, Trafalgar Law, Jewelry Bonney, Dracule Mihawk; campo avv.: -
+**T12 avv.** — gioca Enel [EB02-052]; ATTACCO Enel -> Shanks 11000 vs 13000 => fail; effetto Enel: TrashGeckoMoria<OP14-104>; effetto Enel: +1 vita (vite 1); effetto Enel: BuffEnel<EB02-052>1000;   [madoka] counter evento The Billion-fold World Trichiliocosm; effetto The Billion-fold World Trichiliocosm: Rest1Don; effetto The Billion-fold World Trichiliocosm: BuffShanks<OP14-027>2000fortheCombat; effetto The Billion-fold World Trichiliocosm: BuffShanks<OP14-027>2000
+  - fine turno: vite madoka 4 / avv. 1; campo madoka: Tashigi, Shanks, Trafalgar Law, Jewelry Bonney, Dracule Mihawk; campo avv.: Enel
+**T13 madoka** — ATTACCO Jewelry Bonney -> Enel 6000 vs 7000, counter 2000 (Zeus) => fail; scarta Jewelry Bonney (dal campo); gioca Law & Bepo [ST24-004]; effetto Law & Bepo: Enel<EB02-052>willnotActivateduringnextRefresh; effetto Dracule Mihawk: RestCoffinBoat<OP14-039>; effetto Dracule Mihawk: Activate1Don x3; effetto Dracule Mihawk: Can'tplayCost1OrMoreCharactersfortheTurn!; effetto Tashigi: ResLaw&Bepo<ST24-004>; effetto Tashigi: ResDon[Don]; effetto Tashigi: GrantTashigi<OP14-029>2000untilopponent'snextturnend; ATTACCO Trafalgar Law -> Enel 6000 vs 7000, counter 1000 (Perona), counter 1000 (Sentomaru) => fail; 2 DON!! su Dracule Mihawk; ATTACCO Tashigi -> Enel 8000 vs 5000 => hit;   OP05-098 perde 1 vita (vite 0); scarta Monkey.D.Luffy (dalla mano); effetto Enel: +1 vita (vite 1); ATTACCO Dracule Mihawk -> Enel 7000 vs 5000 => hit;   OP05-098 perde 1 vita (vite 0); ATTACCO Shanks -> Enel => ?; avv. CONCEDE
+  - mano madoka a inizio turno (riconoscimento immagini, 4 carte): Law & Bepo, Scratchmen Apoo, Perona, The Billion-fold World Trichiliocosm
+  - fine turno: vite madoka 4 / avv. 0; campo madoka: Tashigi, Shanks, Trafalgar Law, Dracule Mihawk, Law & Bepo; campo avv.: Enel

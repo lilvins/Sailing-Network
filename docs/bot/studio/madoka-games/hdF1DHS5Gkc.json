@@ -1,0 +1,3076 @@
+{
+ "video_id": "hdF1DHS5Gkc",
+ "url": "https://www.youtube.com/watch?v=hdF1DHS5Gkc",
+ "title": "Mihawk vs RG Luffy (that's how you win RG as Mihawk)",
+ "source": "OCR del combat log di OPTCGSim visibile nel video (non sottotitoli)",
+ "you": "madoka_hk",
+ "leaders": {
+  "Opponent": {
+   "id": "OP13-001",
+   "name": "Monkey.D.Luffy"
+  },
+  "You": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  }
+ },
+ "first_player": "You",
+ "winner": "You",
+ "end": "concede",
+ "turns": [
+  {
+   "turn": 1,
+   "player": "You",
+   "events": [
+    {
+     "t": 9.0,
+     "type": "don",
+     "player": "You",
+     "n": 1,
+     "don_total": 1
+    },
+    {
+     "t": 16.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 17.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawElectricalLuna<OP08-036>"
+    },
+    {
+     "t": 23.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 0
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 1,
+     "when": "inizio",
+     "t": 9.6,
+     "n": 5,
+     "cards": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "scores": [
+      0.899,
+      0.92,
+      0.87,
+      0.902,
+      0.896
+     ]
+    },
+    {
+     "turn": 1,
+     "when": "fine",
+     "t": 23.2,
+     "n": 4,
+     "cards": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "scores": [
+      0.897,
+      0.92,
+      0.899,
+      0.897
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 2,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 32.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 32.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 2
+    },
+    {
+     "t": 34.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "category": "Stage"
+    },
+    {
+     "t": 34.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RevealandDrawNami<OP01-016>"
+    },
+    {
+     "t": 40.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP01-016",
+     "name": "Nami",
+     "category": "Character"
+    },
+    {
+     "t": 44.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP01-016",
+     "name": "Nami",
+     "text": "RevealandDrawSanji<OP13-027>"
+    },
+    {
+     "t": 48.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona"
+     ],
+     "Opponent": [
+      "OP01-016 Nami"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 3,
+   "player": "You",
+   "events": [
+    {
+     "t": 48.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 49.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 3
+    },
+    {
+     "t": 54.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 55.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP13-001",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 55.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 3,
+     "to": "OP12-034",
+     "to_name": "Perona",
+     "total_on_card": 3
+    },
+    {
+     "t": 57.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-022",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 6000
+    },
+    {
+     "t": 59.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "value": 1000
+    },
+    {
+     "t": 69.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 5
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona"
+     ],
+     "Opponent": [
+      "OP01-016 Nami"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 3,
+     "when": "inizio",
+     "t": 49.4,
+     "n": 6,
+     "cards": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-005 Roronoa Zoro"
+     ],
+     "scores": [
+      0.906,
+      0.918,
+      0.907,
+      0.883,
+      0.879,
+      0.831
+     ]
+    },
+    {
+     "turn": 3,
+     "when": "fine",
+     "t": 68.8,
+     "n": 6,
+     "cards": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-005 Roronoa Zoro"
+     ],
+     "scores": [
+      0.906,
+      0.918,
+      0.908,
+      0.883,
+      0.881,
+      0.831
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 4,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 69.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 69.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 4
+    },
+    {
+     "t": 69.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP01-016",
+     "attacker_name": "Nami",
+     "target": "OP12-034",
+     "target_name": "Perona",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 2000,
+     "defense_power": 2000
+    },
+    {
+     "t": 73.25,
+     "type": "ko",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona"
+    },
+    {
+     "t": 73.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "category": "Character"
+    },
+    {
+     "t": 74.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 75.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 78.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 79.75,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 79.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 82.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 4
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [],
+     "Opponent": [
+      "OP01-016 Nami",
+      "OP14-022 Usopp"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 5,
+   "player": "You",
+   "events": [
+    {
+     "t": 82.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 82.75,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 5
+    },
+    {
+     "t": 112.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 113.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Nami<OP01-016>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 113.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Usopp<OP14-022>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 113.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestPerona<OP14-033>"
+    },
+    {
+     "t": 115.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 116.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 116.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 1
+    },
+    {
+     "t": 119.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP01-016",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 2000
+    },
+    {
+     "t": 123.5,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP01-016",
+     "name": "Nami"
+    },
+    {
+     "t": 123.5,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 4
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 5,
+     "when": "inizio",
+     "t": 83.1,
+     "n": 8,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP14-033 Perona",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "ST32-003 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-002 Kouzuki Oden"
+     ],
+     "scores": [
+      0.792,
+      0.895,
+      0.902,
+      0.914,
+      0.89,
+      0.915,
+      0.882,
+      0.907
+     ]
+    },
+    {
+     "turn": 5,
+     "when": "fine",
+     "t": 123.0,
+     "n": 7,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "ST32-003 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-002 Kouzuki Oden"
+     ],
+     "scores": [
+      0.792,
+      0.914,
+      0.912,
+      0.895,
+      0.912,
+      0.89,
+      0.911
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 6,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 128.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 128.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 6
+    },
+    {
+     "t": 128.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "category": "Character"
+    },
+    {
+     "t": 131.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 131.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP01-016",
+     "name": "Nami",
+     "category": "Character"
+    },
+    {
+     "t": 133.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP01-016",
+     "name": "Nami",
+     "text": "RevealandDrawThousandSunny<ST31-005>"
+    },
+    {
+     "t": 137.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 139.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 139.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP13-001",
+     "to_name": "Monkey.D.Luffy",
+     "total_on_card": 2
+    },
+    {
+     "t": 141.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 154.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 154.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 155.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 155.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP01-016 Nami"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 7,
+   "player": "You",
+   "events": [
+    {
+     "t": 155.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 175.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 7
+    },
+    {
+     "t": 185.25,
+     "type": "play",
+     "player": "You",
+     "card": "ST32-003",
+     "name": "Dracule Mihawk",
+     "category": "Character"
+    },
+    {
+     "t": 186.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character",
+     "via": "ST32-003 Dracule Mihawk"
+    },
+    {
+     "t": 186.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Usopp<OP14-022>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 186.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Sanji<OP13-027>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 189.5,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP01-016 Nami"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 7,
+     "when": "inizio",
+     "t": 155.8,
+     "n": 9,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "ST32-003 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-002 Kouzuki Oden",
+      "OP14-033 Perona",
+      "OP08-036 Electrical Luna"
+     ],
+     "scores": [
+      0.801,
+      0.91,
+      0.91,
+      0.887,
+      0.908,
+      0.894,
+      0.918,
+      0.906,
+      0.896
+     ]
+    },
+    {
+     "turn": 7,
+     "when": "fine",
+     "t": 189.0,
+     "n": 7,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-002 Kouzuki Oden",
+      "OP08-036 Electrical Luna"
+     ],
+     "scores": [
+      0.791,
+      0.916,
+      0.913,
+      0.898,
+      0.89,
+      0.92,
+      0.898
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 8,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 189.5,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 189.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 8
+    },
+    {
+     "t": 194.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "category": "Character"
+    },
+    {
+     "t": 195.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don[pponent]Sanji<OP13-027>:Activate1Don"
+    },
+    {
+     "t": 196.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 197.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 199.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "category": "Stage"
+    },
+    {
+     "t": 203.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RevealandDrawRoronoaZoro<EB04-007>"
+    },
+    {
+     "t": 206.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 206.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 211.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP13-001",
+     "to_name": "Monkey.D.Luffy",
+     "total_on_card": 3
+    },
+    {
+     "t": 214.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 218.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 218.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 221.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 2
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP01-016 Nami",
+      "OP13-027 Sanji"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 9,
+   "player": "You",
+   "events": [
+    {
+     "t": 221.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 232.5,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 9
+    },
+    {
+     "t": 234.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "category": "Character"
+    },
+    {
+     "t": 234.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestDraculeMihawk<OP14-119>"
+    },
+    {
+     "t": 236.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 236.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 237.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "Sanji<OP13-027>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 250.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST32-003",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 250.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST32-003",
+     "name": "Dracule Mihawk",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 268.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST32-003",
+     "name": "Dracule Mihawk",
+     "text": "TrashKouzukiOden<ST32-002>"
+    },
+    {
+     "t": 268.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]",
+     "times": 2
+    },
+    {
+     "t": 268.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>4000"
+    },
+    {
+     "t": 271.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 273.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail"
+    },
+    {
+     "t": 276.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]",
+     "times": 2
+    },
+    {
+     "t": 277.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>4000fortheCombatPerona<OP14-033>17000]vsMonkeyD.Luffy<OP13-001>[9000]"
+    },
+    {
+     "t": 281.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 281.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 284.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP13-001",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 284.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 289.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 289.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 289.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 2
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP01-016 Nami",
+      "OP13-027 Sanji"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 9,
+     "when": "inizio",
+     "t": 221.8,
+     "n": 9,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP14-119 Dracule Mihawk",
+      "OP08-036 Electrical Luna",
+      "ST32-002 Kouzuki Oden",
+      "OP08-036 Electrical Luna",
+      "ST32-001 Kin'emon",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.8,
+      0.908,
+      0.909,
+      0.887,
+      0.891,
+      0.924,
+      0.891,
+      0.94,
+      0.87
+     ]
+    },
+    {
+     "turn": 9,
+     "when": "fine",
+     "t": 289.2,
+     "n": 8,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP08-036 Electrical Luna",
+      "OP08-036 Electrical Luna",
+      "ST32-001 Kin'emon",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo"
+     ],
+     "scores": [
+      0.794,
+      0.911,
+      0.905,
+      0.894,
+      0.863,
+      0.946,
+      0.864,
+      0.903
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 10,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 289.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 289.75,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 10
+    },
+    {
+     "t": 289.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB04-007",
+     "name": "Roronoa Zoro",
+     "category": "Character"
+    },
+    {
+     "t": 294.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB04-007",
+     "name": "Roronoa Zoro",
+     "text": "GrantMonkeyD.Luffy<OP13-001>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 295.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 296.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 296.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 2,
+     "to": "OP13-001",
+     "to_name": "Monkey.D.Luffy",
+     "total_on_card": 3
+    },
+    {
+     "t": 301.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 10000,
+     "defense_power": 5000
+    },
+    {
+     "t": 309.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 309.5,
+     "type": "trigger",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 324.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "RestSanji<OP13-027>"
+    },
+    {
+     "t": 324.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 330.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 332.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 1
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP01-016 Nami",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 11,
+   "player": "You",
+   "events": [
+    {
+     "t": 332.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 332.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 11
+    },
+    {
+     "t": 340.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 341.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RestRoronoaZoro<EB04-007>"
+    },
+    {
+     "t": 341.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RoronoaZoro<EB04-007>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 341.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 341.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 343.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 344.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 344.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 377.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 377.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-119",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 1
+    },
+    {
+     "t": 377.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-119",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 11000,
+     "defense_power": 13000
+    },
+    {
+     "t": 378.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "Sanji<OP13-027>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 380.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]",
+     "times": 3
+    },
+    {
+     "t": 383.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>6000"
+    },
+    {
+     "t": 384.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST32-003",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 391.5,
+     "type": "effect",
+     "player": "You",
+     "card": "ST32-003",
+     "name": "Dracule Mihawk",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 391.5,
+     "type": "effect",
+     "player": "You",
+     "card": "ST32-003",
+     "name": "Dracule Mihawk",
+     "text": "TrashKin'emon<ST32-001>"
+    },
+    {
+     "t": 393.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 393.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>2000"
+    },
+    {
+     "t": 394.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 399.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 401.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>2000"
+    },
+    {
+     "t": 401.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 402.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP13-037",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 404.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP13-037",
+     "name": "Roronoa Zoro",
+     "value": 1000
+    },
+    {
+     "t": 407.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 409.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "ST32-003 Dracule Mihawk",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP01-016 Nami",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 11,
+     "when": "inizio",
+     "t": 332.9,
+     "n": 9,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP12-034 Perona",
+      "ST32-001 Kin'emon",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP08-036 Electrical Luna",
+      "OP08-036 Electrical Luna",
+      "OP14-039 Coffin Boat"
+     ],
+     "scores": [
+      0.801,
+      0.873,
+      0.945,
+      0.908,
+      0.906,
+      0.91,
+      0.89,
+      0.897,
+      0.92
+     ]
+    },
+    {
+     "turn": 11,
+     "when": "fine",
+     "t": 408.5,
+     "n": 8,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP12-034 Perona",
+      "ST32-001 Kin'emon",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP08-036 Electrical Luna",
+      "OP08-036 Electrical Luna",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.793,
+      0.866,
+      0.938,
+      0.914,
+      0.893,
+      0.895,
+      0.881,
+      0.91
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 12,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 409.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 417.0,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP01-016",
+     "name": "Nami",
+     "from": "field"
+    },
+    {
+     "t": 417.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB04-007",
+     "name": "Roronoa Zoro",
+     "category": "Character"
+    },
+    {
+     "t": 417.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB04-007",
+     "name": "Roronoa Zoro",
+     "text": "GrantMonkeyD.Luffy<OP13-001>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 417.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 418.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 420.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB04-007",
+     "name": "Roronoa Zoro",
+     "text": "GiveRoronoaZoro<EB04-007>CharacterRush"
+    },
+    {
+     "t": 423.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "EB04-007",
+     "attacker_name": "Roronoa Zoro",
+     "target": "ST32-003",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 9000,
+     "defense_power": 7000
+    },
+    {
+     "t": 426.0,
+     "type": "ko",
+     "player": "You",
+     "card": "ST32-003",
+     "name": "Dracule Mihawk"
+    },
+    {
+     "t": 426.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-027",
+     "attacker_name": "Sanji",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [
+      {
+       "player": "You",
+       "card": "ST32-001",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 434.75,
+     "type": "counter",
+     "player": "You",
+     "card": "ST32-001",
+     "name": "Kin'emon",
+     "value": 1000
+    },
+    {
+     "t": 437.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 2,
+     "to": "OP13-001",
+     "to_name": "Monkey.D.Luffy",
+     "total_on_card": 3
+    },
+    {
+     "t": 437.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 10000,
+     "defense_power": 11000
+    },
+    {
+     "t": 443.75,
+     "type": "event_counter",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCounter"
+    },
+    {
+     "t": 444.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "Rest1Don"
+    },
+    {
+     "t": 444.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffDraculeMihawk<OP14-020>2000fortheCombat"
+    },
+    {
+     "t": 444.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffDraculeMihawk<OP14-020>2000"
+    },
+    {
+     "t": 445.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 449.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 449.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP14-022 Usopp",
+      "OP13-027 Sanji",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro",
+      "EB04-007 Roronoa Zoro"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 13,
+   "player": "You",
+   "events": [
+    {
+     "t": 449.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 465.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 466.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RestUsopp<OP14-022>"
+    },
+    {
+     "t": 468.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "Usopp<OP14-022>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 468.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 468.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP14-022",
+     "target_name": "Usopp",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 476.5,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp"
+    },
+    {
+     "t": 476.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 476.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 478.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 478.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-119",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 10000,
+     "defense_power": 11000
+    },
+    {
+     "t": 480.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "Sanji<OP13-027>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 480.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]",
+     "times": 2
+    },
+    {
+     "t": 482.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>4000"
+    },
+    {
+     "t": 484.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-004",
+     "attacker_name": "Law & Bepo",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 11000,
+     "defense_power": 13000
+    },
+    {
+     "t": 486.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]",
+     "times": 3
+    },
+    {
+     "t": 490.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>6000"
+    },
+    {
+     "t": 492.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-022",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 493.75,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-022",
+     "name": "Usopp",
+     "value": 1000
+    },
+    {
+     "t": 496.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Rest3Don"
+    },
+    {
+     "t": 500.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Sanji<OP13-027>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 500.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "RoronoaZoro<EB04-007>willnotActivateduringnextRefresh",
+     "times": 2
+    },
+    {
+     "t": 500.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 500.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP13-027 Sanji",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro",
+      "EB04-007 Roronoa Zoro"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 13,
+     "when": "inizio",
+     "t": 450.4,
+     "n": 7,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "OP08-036 Electrical Luna",
+      "OP08-036 Electrical Luna",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.792,
+      0.878,
+      0.912,
+      0.912,
+      0.89,
+      0.889,
+      0.91
+     ]
+    },
+    {
+     "turn": 13,
+     "when": "fine",
+     "t": 499.8,
+     "n": 5,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo",
+      "OP08-036 Electrical Luna",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.835,
+      0.87,
+      0.898,
+      0.897,
+      0.91
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 14,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 500.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 500.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST31-004",
+     "name": "Monkey.D.Luffy",
+     "category": "Character"
+    },
+    {
+     "t": 506.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-004",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffDraculeMihawk<OP14-119>-7000"
+    },
+    {
+     "t": 507.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 507.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 508.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-119",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 513.25,
+     "type": "event_counter",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCounter"
+    },
+    {
+     "t": 520.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "Rest1Don"
+    },
+    {
+     "t": 520.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffDraculeMihawk<OP14-119>2000fortheCombat"
+    },
+    {
+     "t": 520.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffDraculeMihawk<OP14-119>2000"
+    },
+    {
+     "t": 521.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-027",
+     "name": "Sanji",
+     "text": "Activate1Don",
+     "times": 2
+    },
+    {
+     "t": 534.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP13-027 Sanji",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro",
+      "EB04-007 Roronoa Zoro",
+      "ST31-004 Monkey.D.Luffy"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 15,
+   "player": "You",
+   "events": [
+    {
+     "t": 534.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 541.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 545.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 545.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>2000"
+    },
+    {
+     "t": 546.5,
+     "type": "trash",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "from": "field"
+    },
+    {
+     "t": 552.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 552.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RestMonkeyD.Luffy<ST31-004>"
+    },
+    {
+     "t": 552.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "MonkeyD.Luffy<ST31-004>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 552.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snexttunend"
+    },
+    {
+     "t": 552.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 560.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 561.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>2000"
+    },
+    {
+     "t": 561.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP14-031",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 563.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 574.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>2000forthe.Combat"
+    },
+    {
+     "t": 574.75,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-031",
+     "name": "Nami",
+     "value": 1000
+    },
+    {
+     "t": 579.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-119",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 10000,
+     "defense_power": 5000
+    },
+    {
+     "t": 579.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "Sanji<OP13-027>"
+    },
+    {
+     "t": 587.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP13-001",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 587.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-004",
+     "attacker_name": "Law & Bepo",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 11000,
+     "defense_power": 5000
+    },
+    {
+     "t": 597.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP13-001",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 597.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-004",
+     "attacker_name": "Law & Bepo",
+     "target": "OP13-001",
+     "target_name": "Monkey.D.Luffy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP15-035",
+       "value": 2000
+      },
+      {
+       "player": "Opponent",
+       "card": "OP14-031",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 11000,
+     "defense_power": 12000
+    },
+    {
+     "t": 599.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "RestDon[Don]",
+     "times": 2
+    },
+    {
+     "t": 601.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP13-001",
+     "name": "Monkey.D.Luffy",
+     "text": "BuffMonkeyD.Luffy<OP13-001>4000fortheCombat"
+    },
+    {
+     "t": 601.75,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP15-035",
+     "name": "Laboon",
+     "value": 2000
+    },
+    {
+     "t": 603.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP14-031",
+     "name": "Nami",
+     "value": 1000
+    },
+    {
+     "t": 605.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 608.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 608.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 608.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "Rest3<OP13-027>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 611.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "RoronoaZoro<EB04-007>willnotActivateduringnextRefresh",
+     "times": 2
+    },
+    {
+     "t": 611.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP08-036",
+     "name": "Electrical Luna",
+     "text": "MonkeyD.Luffy<ST31-004>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 611.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 611.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 0,
+     "You": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP13-027 Sanji",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro",
+      "EB04-007 Roronoa Zoro",
+      "ST31-004 Monkey.D.Luffy"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 15,
+     "when": "inizio",
+     "t": 535.4,
+     "n": 5,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP12-034 Perona",
+      "ST24-004 Law & Bepo",
+      "OP08-036 Electrical Luna",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.835,
+      0.872,
+      0.899,
+      0.898,
+      0.91
+     ]
+    },
+    {
+     "turn": 15,
+     "when": "fine",
+     "t": 611.2,
+     "n": 3,
+     "cards": [
+      "ST32-005 Roronoa Zoro",
+      "OP12-034 Perona",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.835,
+      0.869,
+      0.911
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 16,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 611.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 611.75,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "EB04-007",
+     "name": "Roronoa Zoro",
+     "from": "field"
+    },
+    {
+     "t": 619.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-032",
+     "name": "Brook",
+     "category": "Character"
+    },
+    {
+     "t": 619.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-032",
+     "name": "Brook",
+     "text": "Rest1"
+    },
+    {
+     "t": 622.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "RestThousandSunny<ST31-005>"
+    },
+    {
+     "t": 623.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST31-005",
+     "name": "Thousand Sunny",
+     "text": "Attach1RestedDontoMonkeyD.Luffy<OP13-001>"
+    },
+    {
+     "t": 627.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 3,
+     "to": "OP13-001",
+     "to_name": "Monkey.D.Luffy",
+     "total_on_card": 4
+    },
+    {
+     "t": 630.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP13-001",
+     "attacker_name": "Monkey.D.Luffy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [
+      {
+       "player": "You",
+       "card": "OP12-034",
+       "value": 1000
+      }
+     ],
+     "result": null
+    },
+    {
+     "t": 633.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "TrashBillion-foldWorldTrichiliocosm<OP06-038>"
+    },
+    {
+     "t": 635.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "BuffDraculeMihawk<OP14-020>2000fortheCombat"
+    },
+    {
+     "t": 635.75,
+     "type": "counter",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "value": 1000
+    },
+    {
+     "t": 635.75,
+     "type": "concede",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 0,
+     "You": 1
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "OP13-027 Sanji",
+      "OP13-027 Sanji",
+      "EB04-007 Roronoa Zoro",
+      "ST31-004 Monkey.D.Luffy",
+      "OP15-032 Brook"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": "ST31-005 Thousand Sunny"
+    }
+   },
+   "hand_you": []
+  }
+ ],
+ "quality": {
+  "log_chars": 15135,
+  "parsed_fraction": 0.949,
+  "unparsed_fragments": [
+   "9s AttemptingtoconnecttoWTL866WVersionis1.42a.34",
+   "9s YourClientHasConnectedVersionis1.42a.34",
+   "24s [You]PlacingCardsonBottomofDeck",
+   "40s [Opponent]PlacingCardsonBottomofDeck",
+   "54s DraculeMihawk",
+   "55s MonkeyD.Luffy",
+   "79s MonkeyD.Luffy",
+   "80s DraculeMihawk",
+   "119s DraculeMihawk",
+   "149s MonkeyD.Luffy",
+   "154s DraculeMihawk",
+   "204s [Opponent]PlacingCardsonBottomofDeck",
+   "218s MonkeyD.Luffy",
+   "218s DraculeMihawk",
+   "269s fortheCombatDraculeMihawk",
+   "285s MonkeyD.Luffy",
+   "303s MonkeyD.Luffy",
+   "310s DraculeMihawk",
+   "384s fortheCombatDraculeMihawk",
+   "394s fortheCombatDraculeMihawk",
+   "401s fortheCombatDraculeMihawk",
+   "444s fortheCombatMonkeyD.Luffy",
+   "483s fortheCombatDraculeMihawk",
+   "491s fortheCombatLaw&Bepo",
+   "496s DraculeMihawk",
+   "520s fortheCombatMonkeyD.Luffy",
+   "546s fortheCombatPerona",
+   "562s fortheCombatPerona",
+   "577s DraculeMihawk",
+   "580s can'tberesteduntilnextturnendsDraculeMihawk",
+   "587s MonkeyD.Luffy",
+   "597s MonkeyD.Luffy",
+   "621s [Opponent]Don"
+  ],
+  "unknown_ids": [],
+  "log_gaps": 0
+ }
+}

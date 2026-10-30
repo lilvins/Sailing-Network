@@ -1,0 +1,551 @@
+    0.00  Settingupa Relay Room...
+    0.00  Connected toServer:asia northeast1
+    0.00  Waiting fora Connection withRoom
+    0.00  D:EDWJKRD
+    0.00  madokahk#9226HasConnected
+    0.00  Versionis1.35a
+    0.00  madokahk#9226]LeaderisDracule
+    0.00  Mihawk[OP14-020]
+    0.00  MrClausse#6375HasConnected
+    0.00  Version is1.35a
+    0.00  MrClausse#6375]Leader isNami[OP11-
+    0.00  041]
+    4.00  [MrClausse#6375]Chose togoFirst
+    4.00  [MrClausse#6375]Mulligan
+    6.50  MrClausse#6375]Draw1Don
+    8.25  MrClausse#6375]EndTurn
+    8.25  madokahk#9226]Draw1Card
+   11.25  madokahk#9226]Draw2Don
+   16.00  [madokahk#9226]DeployPerona[OP12
+   16.00  034]
+   16.00  madokahk#9226]Perona[OP12-034]:
+   16.00  RevealandDrawLaw&Bepo[ST24
+   16.00  004]
+   16.00  [madokahk#9226]PlacingCardson
+   16.00  BottomofDeck
+   27.00  [madokahk#9226]DeployPerona[OP12-
+   27.00  034]
+   27.00  [madokahk#9226]Perona[OP12-034]:
+   27.00  RevealandDrawShanks[OP14-027]
+   27.00  madokahk#9226]PlacingCardson
+   27.00  BottomofDeck
+   32.50  madokahk#9226]End Turn
+   34.00  [MrClausse#6375]Draw1Card
+   34.25  MrClausse#6375]Draw2Don
+   40.50  MrClausse#6375]DeployYoung Girl[P
+   40.50  096]
+   40.50  MrClausse#6375] Young Girl[P-096]:
+   40.50  Draw1Card
+   42.00  [MrClausse#6375]Young Girl[P-096]:
+   42.00  rash IfI Give Into The"Force"There'll Be
+   42.00  NoPoint ToMyLife[OP13-057]
+   42.00  MrClausse#6375]Young Girl[P-096]:
+   42.00  Attach1Rested Don toNami[OP11-041]
+   44.00  MrClausse#6375]Attach1Don toNami
+   44.00  OP11-041)(2Total)
+   44.00  [MrClausse#6375]Nami[OP11-041]
+   44.00  attackingDraculeMihawk[OP14 020]
+   57.00  madokahk#9226]DiscardRoronoaZoro
+   57.00  PRB02-006]forCounter2000
+   58.00  [madokahk#9226]Discard JewelryBonney
+   58.00  OP12-118]forCounter1000
+   58.00  Nami[OP11-041j[7000]vsDraculeMihawk
+   58.00  OP14-020][8000]
+   58.00  AttackFails
+   60.50  [MrClausse#6375]EndTurn
+   60.50  madokahk#9226]Draw1Card
+   62.50  madokahk#9226]Draw2Don
+   62.50  [madokahk#9226]DeployPerona[OP12-
+   62.50  034]
+   73.75  madokahk#9226]Perona[OP12-034]:
+   73.75  RevealandDrawRoronoaZoro
+   73.75  PRB02-006]
+   73.75  [madokahk#9226]PlacingCardson
+   73.75  BottomofDeck
+   76.25  [madokahk#9226]DeployScratchmen
+   76.25  Ap0o[EB01-015]
+   76.75  [madokahk#9226]ScratchmenApoo
+   76.75  EB01-015]:RestYoung Gir[P-096]
+   81.75  madokahk#9226]Perona[OP12-034]
+   81.75  attacking Young Girl [P-096]
+   81.75  Perona[OP12-034][2000]vsYoungGirl[P
+   81.75  09610]
+   81.75  [MrClausse#6375]Young Girl[P-096]
+   81.75  Destroyed
+   86.50  madokahk#9226]Attach2Don toDracule
+   86.50  Mihawk[OP14-020](2Total)
+   86.50  madokahk#9226]DraculeMihawk[OP14
+   86.50  020]attackingNami[OP11-041]
+   88.25  DraculeMihawk[OP14-020][7000]vsNam
+   88.25  OP11-041][5000]
+   88.25  Nami[OP11-041]hitfor1damage
+   90.50  madokahk#9226]EndTurn
+   91.75  [MrClausse#6375]Draw1Card
+   92.00  MrClausse#6375]Draw2Don
+   93.75  MrClausse#6375]DeployNami[EB03053
+   95.00  MrClausse#6375]Nami[EB03-053]:Attach
+   95.00  1Rested Don toNami[OP11-041]
+   95.00  MrClausse#6375]Nami[EB03-053]:Send
+   95.00  1Life toHand
+   95.50  MrClausse#6375]Nami[OP11-041]:Draw
+   95.50  1Card
+   97.25  [MrClausse#6375]Nami[OP11-041]
+   97.25  attackingDraculeMihawk[OP14-020]
+   98.75  Nami[OP11-041][6000]vsDracule Mihaw
+   98.75  OP14-020][5000]
+   98.75  DraculeMihawk[OP14-020]hitfor1
+   98.75  damage
+  101.50  [MrClausse#6375]End Turn
+  101.50  madokahk#9226]Draw1Card
+  107.25  madokahk#9226]Draw2Don
+  107.25  madokahk#9226]ScratchmenApoo
+  107.25  EB01-015]attackingNami[OP11-041]
+  109.75  ScratchmenApoo[EB01-015][1000]vs
+  109.75  Nami[OP11-041][5000]
+  109.75  AttackFails
+  111.25  [madokahk#9226]Perona[OP12-034]
+  111.25  attackingNami [OP11-041]
+  113.75  Perona[OP12-034][2000]vsNami[OP11-
+  113.75  041][5000]
+  113.75  AttackFails
+  113.75  [madokahk#9226]Perona[OP12-034]
+  113.75  attackingNami[OP11-041]
+  114.75  Perona[OP12-034][2000]vsNami[OP11
+  114.75  041][5000]
+  114.75  AttackFails
+  116.50  [madokahk#9226]DeployJewelryBonney
+  116.50  OP12-118]
+  116.50  madokahk#9226]JewelryBonney[OP12-
+  116.50  118]:Draw2Card
+  131.50  madokahk#9226]Jewelry Bonney[OP12-
+  131.50  118]:TrashTashigi[OP14-029]
+  134.75  madokahk#9226]JewelryBonney[OP12-
+  134.75  118]:Activate1Don
+  134.75  madokahk#9226]TrashScratchmenApo0
+  134.75  EB01-015]
+  134.75  madokahk#9226]DeployKid&Killer
+  134.75  ST24-002]
+  142.00  madokahk#9226]Kid&Killer[ST24-002]
+  142.00  Reveal andDrawJewelryBonney
+  142.00  ST02-007]
+  142.00  madokahk#9226]PlacingCardson
+  142.00  BottomofDeck
+  147.50  [madokahk#9226]DraculeMihawk[OP14
+  147.50  020]:RestPerona[OP12034]
+  150.25  madokahk#9226]DraculeMihawk[OP14
+  150.25  020]:Activate1Don
+  150.25  madokahk#9226]DraculeMihawk[OP14
+  150.25  020]:Activate1Don
+  150.25  madokahk#9226]DraculeMihawk[OP14
+  150.25  020]:Activate1Don
+  150.25  madokahk#9226]DraculeMihawk[OP14
+  150.25  020]:Can'tplayCost 1 OrMoreCharacters
+  150.25  fortheTurn!
+  155.50  madokahk#9226]Attach2Don toDracule
+  155.50  Mihawk[OP14-020]（2Total)
+  155.50  madokahk#9226]Attach 1Don toDracule
+  155.50  Mihawk[OP14-020](3Total)
+  156.50  madokahk#9226]DraculeMihawk[OP14
+  156.50  020]attackingNami[OP11-041]
+  159.75  MrClausse#6375]Nami[OP11-041]:Trash
+  159.75  Young Girl[P-096]
+  159.75  MrClausse#6375]Nami[OP11-041]:Buff
+  159.75  Nami[OP11-041]2000
+  164.50  MrClausse#6375]DiscardFranky[OP07
+  164.50  107]forCounter2000
+  165.75  DraculeMihawk[OP14-020][8000]vsNami
+  165.75  OP11-041][9000]
+  165.75  AttackFails
+  165.75  [madokahk#9226]EndTurn
+  166.75  [MrClausse#6375]Draw1Card
+  167.00  MrClausse#6375]Draw2Don
+  174.75  [MrClausse#6375]DeployCharlotte
+  174.75  Pudding[OP06-047]
+  174.75  [MrClausse#6375]Forcing opponent to
+  174.75  resolve CardAction!
+  174.75  [madokahk#9226]CharlottePudding
+  177.75  OP06-0471:Draw5Card
+  179.00  MrClausse#6375]Attach 1Don toNami
+  179.00  EB03-053](1Total)
+  179.00  [MrClausse#6375]Nami[EB03-053]
+  179.00  attackingDraculeMihawk[OP14020]
+  186.25  madokahk#9226]JewelryBonney[OP12
+  186.25  118]Blocks
+  186.25  madokahk#9226]DiscardScratchmen
+  186.25  Apoo[EB01-015]forCounter2000
+  187.00  Nami[EB03-053][7000]vsJewelryBonney
+  187.00  OP12-118[8000]
+  187.00  AttackFails
+  189.75  MrClausse#6375]Attach2Don toNami
+  189.75  OP11041)(2Total)
+  195.25  MrClausse#6375]Nami[OP11-041]
+  195.25  attackingJewelryBonney[OP12-118]
+  198.25  [madokahk#9226]Kid &Killer[ST24-002]:
+  198.25  TrashKid&Killer[ST24002]
+  199.00  [madokahk#9226]Kid &Killer[ST24-002]
+  199.00  Activate 1Don
+  200.50  madokahk#9226]Billion-foldWorld
+  200.50  Trichiliocosm[OP06-038]:ActivateCounte
+  200.50  madokahk#9226]Billion-foldWorld
+  200.50  Trichiliocosm[OP06-038]:Buff Jewelry
+  200.50  3onney[OP12-118]2000fortheCombat
+  200.50  madokahk#9226]Billion-foldWorld
+  200.50  Trichiliocosm[OP06-038]:Buff Jewelry
+  200.50  Bonney[OP12-118]2000fortheCombat
+  201.00  Nami[OP11-041][7000]vsJewelryBonney
+  201.00  OP12-118][10000]
+  201.00  AttackFails
+  203.00  [MrClausse#6375]EndTurn
+  203.00  madokahk#9226]Draw1Card
+  208.25  madokahk#9226]Draw2Don
+  208.25  [madokahk#9226]DeployShanks[OP14-
+  208.25  027]
+  210.25  madokahk#9226]DraculeMihawk[OP14
+  210.25  020]:RestShanks[OP14 027]
+  212.25  madokahk#9226]DraculeMihawk[OP14-
+  212.25  020:Activate1Don
+  212.25  madokahk#9226]DraculeMihawkOP14
+  212.25  020]:Activate1Don
+  212.25  madokahk#9226]DraculeMihawk[OP14
+  212.25  020]:Activate1Don
+  212.25  madokahk#9226]DraculeMihawk[OP14
+  212.25  020]:Can'tplay Cost 1OrMoreCharacters
+  212.25  ortheTurn!
+  212.25  madokahk#9226]Shanks[OP14-027]:Rest
+  212.25  CharlottePudding[OP06-047]
+  218.25  madokahk#9226]Attach2 Don toPerona
+  218.25  OP12-0341(2Total)
+  219.75  [madokahk#9226]Perona[OP12-034]
+  219.75  attackingCharlottePudding[OP06-047]
+  221.75  Perona[OP12-034][4000]vsCharlotte
+  221.75  Pudding[OP06-047][4000]
+  221.75  [MrClausse#6375]CharlottePudding
+  221.75  OP06-047Destroyed
+  235.25  madokahk#9226]DraculeMihawkOP14
+  235.25  020]attackingNami[OP11-041]
+  243.75  MrClausse#6375]Nami[OP11-041]:Trash
+  243.75  Otama[OP13-043]
+  243.75  MrClausse#6375]Nami[OP11-041]:Buff
+  243.75  Nami[OP11-041]2000
+  243.75  DraculeMihawk[OP14-020][5000]vsNam
+  243.75  OP11-041][7000]
+  243.75  AttackFails
+  246.25  [madokahk#9226]Attach2DontoJewelry
+  246.25  Bonney[OP12-11.8](2Total)
+  246.25  madokahk#9226]JewelryBonney[OP12
+  246.25  118]attacking Nami[EB03-053]
+  252.50  ewelryBonney[OP12-118][8000]vsNami
+  252.50  EB03-053][6000]
+  252.50  MrClausse#6375]Nami[EB03-053]
+  252.50  Destroyed
+  255.75  [madokahk#9226]EndTurn
+  257.50  [MrClausse#6375]Draw1Card
+  257.50  MrClausse#6375]Draw2Don
+  264.25  MrClausse#6375]Gum-GumRedRoc
+  264.25  OP04-056]:SendShanks[OP14-027] to
+  264.25  DeckBottom
+  264.25  [MrClausse#6375]Attach3Don toNami
+  264.25  OP11-041)(3Total)
+  267.00  MrClausse#6375]Nami[OP11-041]
+  267.00  attackingJewelryBonney[OP12-118]
+  267.00  Nami[OP11-041j[8000]vsJewelry Bonney
+  267.00  OP12-118][6000]
+  267.00  madokahk#9226]Jewelry Bonney[OP12-
+  267.00  118]Destroyed
+  269.25  MrClausse#6375]End Turn
+  269.25  madokahk#9226]Draw1Card
+  275.50  madokahk#9226]Draw2Don
+  275.50  madokahk#9226]DeployKid&Killer
+  278.00  ST24-002]
+  278.00  madokahk#9226]Kid&Killer[ST24-002]
+  278.00  Reveal andDrawJewelryBonney
+  278.00  ST02-007]
+  278.00  [madokahk#9226]PlacingCards on
+  278.00  BottomofDeck
+  280.25  [madokahk#9226]DeployJewelryBonney
+  280.25  ST02-0071
+  282.50  [madokahk#9226]TrashPerona[OP12-
+  282.50  034]
+  282.50  [madokahk#9226]DeployShanks[OP14-
+  282.50  027]
+  284.75  madokahk#9226]DraculeMihawk[OP14
+  291.00  020]:Can'tplay Cost 1OrMoreCharacters
+  291.00  ortheTurn!
+  291.00  madokahk#9226]JewelryBonney[ST02
+  291.00  007]:Rest Jewelry Bonney[ST02-007]
+  291.00  madokahk#9226]JewelryBonney[ST02-
+  291.00  007]:Reveal and Draw Jewelry Bonney
+  291.00  ST02-007]
+  291.00  madokahk#9226]PlacingCardson
+  291.00  BottomofDeck
+  291.00  madokahk#9226]Attach2Don toDracule
+  291.00  Mihawk[OP14-020](2Total)
+  291.75  madokahk#9226]DraculeMihawk[OP14
+  291.75  020]attacking Nami[OP11-041]
+  300.25  DraculeMihawk[OP14-020][7000]vsNam
+  300.25  OP11-041][5000]
+  300.25  Nami[OP11-041]hitfor1damage
+  300.25  [madokahk#9226]EndTurn
+  301.25  MrClausse#6375]Draw1Card
+  301.50  MrClausse#6375]Draw2Don
+  305.50  MrClausse#6375]Nami[OP11-041]
+  305.50  attackingJewelryBonney[ST02-007]
+  306.50  Nami[OP11-041][5000]vsJewelryBonney
+  306.50  ST02-007][1000]
+  309.75  [madokahk#9226]Jewelry Bonney[ST02-
+  309.75  007]Destroyed
+  311.00  MrClausse#6375]Gum-GumRed Roc
+  311.00  OP04-056]:SendShanks[OP14-027]to
+  311.00  DeckBottom
+  311.00  MrClausse#6375]DeploySanji[ST29 004]
+  313.50  MrClausse#6375]Sanji[ST29-004]:Revea
+  313.50  and DrawNami[EB03-053]
+  313.50  [MrClausse#6375]PlacingCardson
+  313.50  BottomofDeck
+  315.25  MrClausse#6375]EndTurn
+  315.25  [madokahk#9226]Draw1Card
+  321.75  [madokahk#9226]DeployJewelryBonney
+  321.75  ST02-007]
+  321.75  madokahk#9226]DeployDraculeMihawk
+  321.75  OP14-119]
+  323.25  madokahk#9226]DraculeMihawk[OP14
+  323.25  020]:RestDraculeMihawk[OP14 119]
+  324.75  madokahk#9226]DraculeMihawkOP14
+  324.75  020j:Activate 1Don
+  324.75  madokahk#9226]DraculeMihawk[OP14
+  324.75  020j:Activate1Don
+  324.75  madokahk#9226]DraculeMihawk[OP14
+  324.75  020]:Activate1Don
+  324.75  madokahk#9226]DraculeMihawk[OP14
+  324.75  020):Can'tplayCost1OrMoreCharacters
+  324.75  ortheTurn!
+  324.75  madokahk#9226]DraculeMihawk[OP14
+  324.75  119]:Sanji [ST29-004] can't berested until
+  324.75  nextturnends
+  326.00  [madokahk#9226]Jewelry Bonney[ST02-
+  326.00  007]:Rest Jewelry Bonney[ST02-007]
+  329.75  madokahk#9226]JewelryBonney[ST02
+  329.75  007]:RevealandDrawKid&Killer
+  329.75  ST24-002]
+  329.75  madokahk#9226]PlacingCards on
+  329.75  BottomofDeck
+  332.00  madokahk#9226]Attach2DontoDracule
+  332.00  Mihawk[OP14-020](2Total)
+  333.25  madokahk#9226]DraculeMihawk[OP14
+  333.25  020]attacking Nami[OP11041]
+  336.25  OraculeMihawk[OP14-020][7000]vsNam
+  336.25  OP11-041][5000]
+  336.25  Nami[OP11-041]hitfor1damage
+  336.25  MrClausse#6375]WillYouBeMyServant?
+  336.25  EB03-060]:ActivateTrigger
+  341.75  MrClausse#6375]WillYouBeMyServant?
+  341.75  EB03-060]:RevealandDrawNojiko
+  341.75  OP03-048]
+  341.75  [MrClausse#6375]PlacingCardson
+  341.75  BottomofDeck
+  344.00  [madokahk#9226]EndTurn
+  344.75  [MrClausse#6375]Draw1Card
+  352.00  MrClausse#6375]Gum-GumRedRoc
+  352.00  OP04-056]:SendDraculeMihawk[OP14-
+  352.00  119]toDeckBottom
+  360.00  MrClausse#6375]Attach 1Don toNami
+  360.00  OP11-041j(1Total)
+  363.50  MrClausse#6375]Nami[OP11-041]
+  363.50  attackingJewelryBonney[ST02-007]
+  364.75  Nami[0P11-041][6000]vsJewelryBonney
+  364.75  ST02-007][1000]
+  364.75  madokahk#9226]JewelryBonney[ST02-
+  364.75  007]Destroyed
+  367.00  [MrClausse#6375]EndTurn
+  367.00  madokahk#9226]Draw1Card
+  373.25  [madokahk#9226]Perona[OP12-034]
+  373.25  attackingNami [OP11-041]
+  376.50  Perona[OP12-034][2000] vsNami[OP11
+  376.50  041][5000]
+  376.50  AttackFails
+  377.75  [madokahk#9226]Perona[OP12-034]
+  377.75  attackingNami [OP11-041]
+  378.75  Perona[OP12-034][2000]vsNami[OP11
+  378.75  041][5000]
+  378.75  AttackFails
+  380.00  [madokahk#9226]Kid &Killer[ST24-002]
+  380.00  attackingNami[OP11 041]
+  381.25  Kid&Killer[ST24-002][2000]vsNami
+  381.25  OP11-041][5000]
+  382.50  AttackFails
+  386.75  [madokahk#9226]DeployJewelryBonney
+  386.75  [OP12-118]
+  386.75  madokahk#9226]Jewelry Bonney[OP12-
+  386.75  118]:Draw2Card
+  387.50  madokahk#9226]JewelryBonney[OP12-
+  387.50  118]:TrashKid&Killer[ST24-002]
+  387.50  madokahk#9226]JewelryBonney[OP12
+  387.50  118]:Activate1 Don
+  396.75  madokahk#9226]DeployCoffinBoat
+  396.75  OP14-039]
+  396.75  [madokahk#9226]Coffin Boat[OP14-039]:
+  396.75  Draw1Card
+  399.25  [madokahk#9226]DeployJewelryBonney
+  399.25  OP12-1181
+  399.25  madokahk#9226]JewelryBonney[OP12-
+  399.25  118]:Draw2Card
+  399.25  madokahk#9226]Jewelry Bonney[OP12-
+  399.25  118]:TrashShanks[OP14-027]
+  400.00  madokahk#9226]Jewelry Bonney[OP12-
+  400.00  118]:Activate 1 Don
+  402.50  [madokahk#9226]Trash Perona[OP12-
+  402.50  034]
+  402.50  [madokahk#9226]DeployJewelryBonney
+  415.00  007]:Rest Jewelry Bonney[ST02-007]
+  415.00  madokahk#9226]Jewelry Bonney[ST02-
+  415.00  007]:Reveal and DrawJewelry Bonney
+  415.00  OP07-026]
+  415.00  [madokahk#9226]Placing Cards on
+  415.00  BottomofDeck
+  416.75  020j:Activate1Don
+  416.75  madokahk#9226]DraculeMihawk[OP14
+  416.75  020j:Activate1Don
+  416.75  madokahk#9226]DraculeMihawk[OP14
+  416.75  020j:Can'tplayCost 1OrMoreCharacters
+  416.75  ortheTurn!
+  416.75  madokahk#9226]JewelryBonney[ST02
+  416.75  007]:Rest Jewelry Bonney[ST02-007]
+  416.75  madokahk#9226]JewelryBonney[ST02-
+  416.75  007]:Revealand Draw Jewelry Bonney
+  416.75  OP07-026]
+  416.75  madokahk#9226]PlacingCardson
+  416.75  BottomofDeck
+  417.00  madokahk#9226]Attach2Don toDracule
+  417.00  Mihawk[OP14-020](2Total)
+  418.00  madokahk#9226]DraculeMihawkOP14
+  418.00  020]attacking Nami[OP11 041]
+  429.75  MrClausse#6375]Nami[OP11-041]:Trash
+  429.75  ustass"Captain"Kid[OP10-112]
+  429.75  MrClausse#6375]Nami[OP11-041]:Buff
+  429.75  Nami[OP11-041]2000
+  429.75  MrClausse#6375]DiscardNicoRobin
+  429.75  ST29-009]forCounter2000
+  430.25  DraculeMihawk[OP14-020][7000]vsNam
+  430.25  OP11-041][9000]
+  430.25  AttackFails
+  431.75  [madokahk#9226]CoffinBoat[OP14-039]:
+  431.75  Activate1Don
+  431.75  madokahk#9226]EndTurn
+  432.75  [MrClausse#6375]Draw1Card
+  447.25  [MrClausse#6375]Attach 1Don toSanji
+  447.25  [ST29-004](1Total)
+  449.00  MrClausse#6375]Sanji[ST29-004]
+  449.00  attackingJewelryBonney[ST02-007]
+  450.00  madokahk#9226]JewelryBonney[OP12
+  450.00  118]Blocks
+  450.00  [madokahk#9226]Discard JewelryBonney
+  450.00  [OP07-026]forCounter1000
+  450.50  Sanji [ST29-004][6000] vsJewelry Bonney
+  450.50  OP12-118][7000]
+  450.50  AttackFails
+  454.00  MrClausse#6375]DeployNojikoOP03
+  454.00  048]
+  458.00  MrClausse#6375]Nojiko[OP03-048]:
+  458.00  Send JewelryBonney[OP12-118]toHand
+  458.00  MrClausse#6375]DeployNami[EB03-053
+  459.00  MrClausse#6375]Nami[EB03-053]:Attach
+  459.00  1RestedDon toNami[OP11041]
+  459.50  [MrClausse#6375]Nami[EB03-053]:Send
+  459.50  1LifetoHand
+  460.00  [MrClausse#6375]Nami[OP11-041]:Draw
+  460.00  1Card
+  461.75  MrClausse#6375]Attach1Don toNami
+  461.75  OP11-041)(2Total)
+  465.00  MrClausse#6375]Attach1Don toNami
+  465.00  OP11-041)(3Total)
+  466.25  MrClausse#6375]Nami[OP11-041]
+  466.25  attackingDraculeMihawk[OP14020]
+  471.00  Nami[OP11-041][8000]vsDraculeMihawk
+  471.00  OP14-020][5000]
+  471.00  DraculeMihawk[OP14-020]hitfor1
+  471.00  damage
+  471.00  MrClausse#6375]EndTurn
+  471.00  madokahk#9226]Draw1Card
+  481.75  madokahk#9226]DeployLaw&Bepo
+  481.75  [ST24004]
+  482.75  madokahk#9226]Law&Bepo[ST24-004]
+  482.75  RestNami[EB03-053]
+  482.75  madokahk#9226]Law&Bepo[ST24-004]
+  482.75  Nami[EB03-053]will notActivateduring
+  482.75  nextRefresh
+  482.75  madokahk#9226]Law&Bepo[ST24-004]
+  482.75  GrantDraculeMihawk[OP14-020]2000
+  482.75  untilopponent'snextturnend
+  484.25  madokahk#9226]DraculeMihawk[OP14
+  484.25  020]:RestCoffinBoat[OP14-039]
+  485.25  madokahk#9226]DraculeMihawk[OP14
+  485.25  020]:Activate1Don
+  485.25  madokahk#9226]DraculeMihawk[OP14
+  485.25  020]:Activate1Don
+  485.25  madokahk#9226]DraculeMihawk[OP14
+  485.25  020]:Activate1Don
+  485.25  madokahk#9226]DraculeMihawk[OP14
+  485.25  020]:Can'tplay Cost1 OrMore Characters
+  485.25  fortheTurn!
+  486.25  madokahk#9226]JewelryBonney[ST02
+  486.25  007]:RestJewelryBonney[ST02-007]
+  490.00  madokahk#9226]Jewelry Bonney[ST02-
+  490.00  007]:RevealandDrawIKnowYou're
+  490.00  Strong...SoI'll GoAll Out[OP13-
+  490.00  040]
+  490.00  madokahk#9226]PlacingCardson
+  501.00  BottomofDeck
+  508.50  madokahk#9226]DraculeMihawkOP14
+  508.50  020]attackingNami[OP11-041]
+  510.25  MrClausse#6375]Nami[OP11-041]:Trash
+  510.25  EustassCaptain”Kid[OP10-112]
+  510.25  MrClausse#6375]Nami[OP11-041]:Buff
+  510.25  Nami[OP11-041]2000
+  511.00  MrClausse#6375]Discard Sanji[ST29-004]
+  511.00  orCounter1000
+  511.00  DraculeMihawk[OP14-020][7000]vsNami
+  511.00  OP11-041][8000]
+  511.00  AttackFails
+  527.25  madokahk#9226]Attach1DontoJewelry
+  527.25  Bonney[OP12118](1 Total)
+  528.25  madokahk#9226]JewelryBonney[OP12-
+  528.25  118]attacking Nami [OP11041]
+  531.00  MrClausse#6375]Discard Franky[OP07-
+  531.00  107]forCounter2000
+  533.00  Jewelry Bonney[0P12-118][7000]vsNami
+  533.00  OP11-041][9000]
+  533.00  AttackFails
+  533.00  madokahk#9226]CoffinBoat[OP14-039]
+  533.00  Activate1Don
+  533.00  madokahk#9226]EndTurn
+  535.25  [MrClausse#6375]Draw1Card
+  552.50  MrClausse#6375]Attach3Don toNami
+  552.50  OP11-0411(3Total)
+  552.50  MrClausse#6375]Nami[OP11-041]
+  552.50  attackingJewelryBonney[OP12118]
+  560.00  madokahk#9226]DiscardRoronoaZoro
+  560.00  PRB02-006]forCounter2000
+  560.00  madokahk#9226]DiscardTashigi[OP14
+  560.00  029]forCounter1000
+  568.00  Nami[OP11-041][8000]vsJewelryBonney
+  568.00  OP12-118][9000]
+  568.00  AttackFails
+  568.00  [MrClausse#6375]Attach 5Don toSanji
+  568.00  ST29004](5Total)
+  574.00  MrClausse#6375]Sanji[ST29-004]
+  574.00  attacking JewelryBonney[OP12-118]
+  574.00  Sanji[ST29-004][10000]vsJewelryBonney
+  574.00  OP12-118][6000]
+  574.00  madokahk#9226]Jewelry Bonney[OP12-
+  574.00  118]Destroyed
+  578.00  [MrClausse#6375]Attach1Don toNojiko
+  578.00  OP03-048](1Total)
+  580.50  MrClausse#6375]Nojiko[OP03-048]
+  580.50  attacking JewelryBonney[ST02-007]
+  582.50  Nojiko[OP03-048][1000]vs Jewelry
+  582.50  Bonney[ST02-007][1000]
+  582.50  [madokahk#9226] Jewelry Bonney[ST02-
+  582.50  007]Destroyed
+  584.75  [MrClausse#6375]EndTurn
+  584.75  madokahk#9226]Draw1Card
+  595.25  [MrClausse#6375]Concedes!

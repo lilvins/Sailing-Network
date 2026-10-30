@@ -23,7 +23,9 @@
     "test:api": "node tests/api-test.mjs",
     "qa:bot": "node scripts/qa-bot.mjs",
     "compile:optcg": "node scripts/compile-optcg.mjs",
-    "bench:autosim": "node scripts/bench-autosim.mjs"
+    "bench:autosim": "node scripts/bench-autosim.mjs",
+    "gauntlet:autosim": "node scripts/gauntlet-autosim.mjs",
+    "train:autosim": "node scripts/train-autosim.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

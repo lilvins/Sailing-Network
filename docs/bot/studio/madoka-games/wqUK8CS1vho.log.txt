@@ -1,0 +1,589 @@
+    0.00  Enel[OP05-098]hit for1damage
+    0.00  Giovanilombrdozz#9450]Quits!
+    0.00  Opponent HasDisconnected!
+    0.00  Giovanilombrdozz#9450]Quits!
+    0.00  SettingupaRelayRoom...
+    0.00  Connected toServer.asia-southeastl
+    0.00  Waiting fora ConnectionwithRoom
+    0.00  D:WT86D7M
+    0.00  madokahk#9226HasConnected
+    0.00  Versionis1.38a
+    0.00  madokahk#9226]LeaderisDracule
+    0.00  Mihawk[OP14-020]
+    2.00  JF19#9819 HasConnected
+    2.00  Versionis1.38a
+    2.00  JF19#9819]LeaderisEnel[OP05-098]
+    2.00  madokahk#9226]Will selectturnorder
+    2.00  madokahk#9226]ChosetogoFirst
+    9.25  madokahk#9226]Mulligan
+   13.00  madokahk#9226]Draw1Don
+   13.00  [madokahk#9226]EndTurn
+   13.25  [JF19#9819]Draw1Card
+   14.75  [F19#9819]Draw2Don
+   14.75  [JF19#9819]EndTurn
+   14.75  madokahk#9226]Draw1Card
+   18.25  madokahk#9226]Draw2Don
+   18.25  madokahk#9226]DraculeMihawk
+   18.25  020]attacking Enel[OP05098]
+   21.25  JF19#9819]Discard Perona[OP14-111]fo
+   21.25  Counter1000
+   21.75  DraculeMihawk[OP14-020][5000]vsEnel
+   21.75  OP05-098][6000]
+   21.75  AttackFails
+   24.25  madokahk#9226]EndTurn
+   24.25  [JF19#9819]Draw1Card
+   26.00  [JF19#9819]Draw2Don
+   26.00  [F19#9819] Enel[OP05-098]attacking
+   26.00  DraculeMihawk[OP14020]
+   33.25  Enel[OP05-098][5000]vsDraculeMihawk
+   33.25  OP14-020][5000]
+   33.25  DraculeMihawk[OP14-020]hitfor1
+   33.25  damage
+   35.00  [F19#9819]Deploy Basil Hawkins[OP10-
+   35.00  109]
+   35.75  [JF19#9819]EndTurn
+   35.75  madokahk#9226]Draw1Card
+   43.75  madokahk#9226]Draw2Don
+   43.75  madokahk#9226]DraculeMihawk[OP14
+   43.75  020]attacking Enel[OP05 098]
+   45.75  DraculeMihawk[OP14-020][5000]vsEnel
+   45.75  OP05-098][5000]
+   45.75  Enel[OP05-098]hitfor1damage
+   49.50  [madokahk#9226]DeployPerona[OP14-
+   50.00  033]
+   50.75  madokahk#9226]Perona[OP14-033]:
+   50.75  Basil Hawkins[OP10-109]can'tbe rested
+   50.75  untilnextturn ends
+   52.75  madokahk#9226]EndTurn
+   53.00  [F19#9819]Draw1Card
+   53.00  [F19#9819]Draw2Don
+   61.50  [F19#9819]Attach5Don toEnel[OP05-
+   61.50  098](5Total)
+   64.50  [F19#9819] Enel[OP05-098]attacking
+   64.50  DraculeMihawk[OP14-020]
+   64.50  Enel[OP05-098][10000]vsDraculeMihawk
+   64.50  OP14-020][5000]
+   64.50  DraculeMihawk[OP14-020]hitfor1
+   64.50  damage
+   65.25  [JF19#9819]EndTurn
+   65.25  madokahk#9226]Draw1Card
+   71.00  madokahk#9226jDraw2Don
+   71.00  madokahk#9226]DraculeMihawk[OP14
+   71.00  020]attacking Enel[OP05098]
+   78.75  DraculeMihawk[OP14-020][5000]vsEnel
+   78.75  OP05-098][5000]
+   78.75  Enel[OP05-098]hitfor1damage
+   78.75  [madokahk#9226]Perona[OP14-033]
+   78.75  attacking Enel[OP05-098]
+   81.25  Perona[OP14-033][6000]vsEnel[OP05
+   81.25  098][5000]
+   81.25  Enel[OP05-098]hitfor1damage
+   81.25  [F19#9819]Kumacy[OP14-102]:Activate
+   81.25  Trigger
+   82.25  [JF19#9819]Kumacy[OP14-102]
+   82.25  DeployedPerona[OP14-111]fromTrash
+   83.00  JF19#9819]Perona[OP14-111]:Perona
+   83.00  OP14-033]can'tattacknext tum
+   86.00  [madokahk#9226]DeployScratchmen
+   86.00  Ap0o[EB01-015]
+   88.75  madokahk#9226]DeployTrafalgar Law
+   88.75  [OP13-031]
+   90.25  madokahk#9226]TrafalgarLaw[OP13-
+   90.25  031]:Return Scratchmen Apoo[EB01-015]
+   90.25  toHand
+   90.25  [madokahk#9226]TrafalgarLaw[OP13-
+   90.25  031]:Deploy Perona[OP14033]
+   91.25  madokahk#9226]Perona[OP14-033]:
+   91.25  Basil Hawkins[OP10-109]can'tberested
+   91.25  until nextturn ends
+   91.25  madokahk#9226]Perona[OP14-033]:
+   91.25  Perona[OP14-111]can'tberested until
+   91.25  nextturnends
+   97.25  madokahk#9226]DraculeMihawk[OP14
+   97.25  020]:Rest TrafalgarLaw[OP13-031]
+   98.50  madokahk#9226]DraculeMihawk[OP14
+   98.50  020]:Activate1Don
+   98.50  madokahk#9226]DraculeMihawk[OP14
+   98.50  020]:Activate1Don
+   98.50  madokahk#9226]DraculeMihawk[OP14
+   98.50  020]:Activate1Don
+   98.50  madokahk#9226]DraculeMihawk[OP14
+   98.50  020]:Can'tplayCost1OrMoreCharacters
+   98.50  fortheTurn!
+   99.25  madokahk#9226]Perona[OP14-033]isn0
+   99.25  longerblocked from attacking
+   99.25  [madokahk#9226]EndTurn
+   99.50  [JF19#9819]Draw1Card
+  101.50  [F19#9819]Draw2Don
+  101.75  JF19#9819]DeployBartholomewKuma
+  101.75  [EB04-054]
+  102.75  [F19#9819]BartholomewKuma[EB04-
+  102.75  054]:Add card totopof LifefromDeck
+  102.75  [F19#9819]Attach 1Don to Enel[OP05-
+  102.75  098](1Total)
+  111.50  [F19#9819] Enel[OP05-098]attacking
+  111.50  TrafalgarLaw[OP13-031]
+  111.50  madokahk#9226]Discard RoronoaZoro
+  111.50  PRB02-006]forCounter2000
+  112.25  Enel[OP05-098][6000]vsTrafalgarLaw
+  112.25  OP13-031][8000]
+  112.25  AttackFails
+  113.00  [JF19#9819]EndTurn
+  113.00  madokahk#9226]Draw1Card
+  123.00  madokahk#9226]Draw2Don
+  125.25  [madokahk#9226]Perona[OP14-033]
+  125.25  attacking Enel[OP05-098]
+  130.50  Perona[OP14-033][6000]vsEnel[OP05-
+  130.50  098][5000]
+  130.50  Enel [OP05-098]hitfor1damage
+  130.50  madokahk#9226]Attach1Don toPerona
+  130.50  OP14-033](1Total)
+  131.75  [madokahk#9226]Perona[OP14-033]
+  131.75  attackingEnel[OP05-098]
+  133.50  Perona[OP14-033][7000] vsEnel[OP05
+  133.50  098][5000]
+  133.50  Enel[OP05098]hit for1damage
+  137.50  JF19#9819] TrashPortgasD.Ace[OP07-
+  137.50  119]
+  137.50  [F19#9819] Enel[OP05-098]:Add card to
+  137.50  topofLifefromDeck
+  143.75  madokahk#9226]Attach1Don to
+  143.75  TrafalgarLaw[OP13-031](1Total)
+  145.00  [madokahk#9226]TrafalgarLaw[OP13-
+  145.00  031]attackingEnel[OP05-098]
+  149.75  [F19#9819]DiscardKumacy[OP14-102]
+  149.75  orCounter2000
+  150.75  [F19#9819]DiscardKumacy[OP14-102]
+  150.75  orCounter2000
+  151.50  TrafalgarLaw[OP13-031][7000]vsEnel
+  151.50  OP05-098][9000]
+  151.50  AttackFails
+  154.00  [madokahk#9226]DeployScratchmen
+  154.00  Apoo[EB01-015]
+  156.50  madokahk#9226]DeployTrafalgarLaw
+  156.50  OP13-031]
+  157.25  madokahk#9226]TrafalgarLaw[OP13
+  157.25  031]:Return Scratchmen Apoo[EB01-015]
+  157.25  toHand
+  158.25  madokahk#9226]TrafalgarLaw[OP13-
+  158.25  031]:DeployJewelry Bonney[OP07-026]
+  159.25  madokahk#9226]JewelryBonney[OP07
+  159.25  026]:Don [Don] will not Activate during
+  159.25  nextRefresh
+  166.25  ### SALTO: righe mancanti ###
+  166.25  020j:Activate1Don
+  166.25  madokahk#9226]DraculeMihawk[OP14
+  166.25  020]:Activate1Don
+  166.25  madokahk#9226]DraculeMihawk[OP14
+  166.25  020j:Can't playCost 1 OrMore Characters
+  166.25  fortheTurn!
+  166.25  madokahk#9226]Attach2Don toDracule
+  166.25  Mihawk[OP14-020](2Total)
+  166.25  madokahk#9226]DraculeMihawk[OP14
+  166.25  020]attacking Enel[OP05-098]
+  166.25  DraculeMihawk[OP14-020j[7000]vs Enel
+  166.25  OP05-098][5000]
+  166.25  Enel[OP05098]hit for1damage
+  167.50  JF19#9819]You'retheonewhoshould
+  167.50  disappear![OP06-115]:ActivateTrigger
+  167.50  JF19#9819]You'retheonewhoshould
+  167.50  disappear![OP06-115]:Add card to topof
+  167.50  LifefromDeck
+  170.75  JF19#9819]You'retheonewhoshould
+  170.75  disappear![OP06-115]:TrashKingdom
+  170.75  Come[EB01-059]
+  170.75  madokahk#9226]EndTurn
+  170.75  [F19#9819]Draw1Card
+  170.75  [F19#9819]Draw2Don
+  190.50  JF19#9819]Attach1Don toBasil Hawkins
+  190.50  OP10-1091(1Total)
+  192.25  JF19#9819]BasilHawkins[OP10-109]
+  192.25  attackingTrafalgarLaw[OP13-031]
+  195.75  [madokahk#9226]DiscardScratchmen
+  195.75  Apoo[EB01-015]forCounter2000
+  196.25  Basil Hawkins[OP10-109][6000]vs
+  196.25  TrafalgarLaw[OP13-031][8000]
+  196.25  AttackFails
+  200.00  [JF19#9819]BartholomewKuma[EB04
+  200.00  054]attackingTrafalgarLaw[OP13-031]
+  200.00  madokahk#9226]Discard RoronoaZoro
+  200.00  PRB02-006]forCounter2000
+  200.50  BartholomewKuma[EB04-054][7000]vs
+  200.50  TrafalgarLaw[OP13-031][8000]
+  200.50  AttackFails
+  201.50  [F19#9819]Attach 1Don toPerona
+  201.50  OP14111)(1Total)
+  202.75  [F19#9819]Perona[OP14-111]attacking
+  202.75  TrafalgarLaw[OP13031]
+  203.75  Perona[OP14-111][6000]vsTrafalgarLaw
+  203.75  OP13-031][6000]
+  203.75  [madokahk#9226]TrafalgarLaw[OP13-
+  203.75  031]Destroyed
+  210.50  [JF19#9819]Attach2Don toEnel[OP05-
+  210.50  098](2Total)
+  210.50  [F19#9819] Enel[OP05-098]attacking
+  210.50  TrafalgarLaw[OP13031]
+  211.75  Enel[OP05-098][7000]vsTrafalgarLaw
+  211.75  OP13-031][6000]
+  211.75  [madokahk#9226]TrafalgarLaw[OP13-
+  211.75  031]Destroyed
+  213.25  JF19#9819]DeployBorsalino[EB04-058]
+  214.00  [JF19#9819]Borsalino[EB04-058]:Add
+  214.00  card totopofLifefromDeck
+  214.00  [JF19#9819]EndTurn
+  214.00  madokahk#9226]Draw1Card
+  218.25  madokahk#9226]Draw2Don
+  218.25  [madokahk#9226]DeployLaw&Bepo
+  218.25  ST24-004]
+  222.25  madokahk#9226]Law&Bepo[ST24-004]
+  222.25  RestBorsalino[EB04-058]
+  222.25  madokahk#9226]Law&Bepo[ST24-004]
+  222.25  Borsalino[EB04-058]willnotActivate
+  222.25  during nextRefresh
+  222.25  madokahk#9226]Law&Bepo[ST24-004]
+  222.25  GrantDraculeMihawk[OP14-020]2000
+  222.25  untilopponent'snextturn end
+  222.25  [madokahk#9226]PeronaOP14-033]
+  222.25  attackingEnel[OP05098]
+  223.75  Perona[OP14-033][6000]vsEnel [OP05
+  223.75  098][5000]
+  223.75  Enel[OP05-098]hitfor1damage
+  233.25  madokahk#9226]Perona[OP14-033]
+  233.25  attackingEnel[OP05-098]
+  233.25  [F19#9819]DiscardZeus[OP11-106]for
+  233.25  Counter2000
+  241.75  Perona[OP14-033][6000]vsEnel[OP05-
+  241.75  0981[7000]
+  241.75  AttackFails
+  244.00  madokahk#9226]JewelryBonney[OP07
+  244.00  026] attacking Enel[OP05-098]
+  244.00  Jewelry Bonney[OP07-026][6000]vsEnel
+  244.00  OP05-098][5000]
+  244.00  Enel[OP05-098]hitfor1damage
+  250.75  JF19#9819] TrashPortgas D.Ace[OP07-
+  250.75  119]
+  250.75  JF19#9819] Enel[OP05-098]:Add card to
+  250.75  topof LifefromDeck
+  252.50  madokahk#9226]DraculeMihawk[OP14
+  252.50  020]attacking Enel[OP05-098]
+  254.00  Dracule Mihawk[OP14-020][7000] vs Enel
+  254.00  OP05-098][5000]
+  254.00  Enel[OP05-098]hitfor1damage
+  255.25  JF19#9819]You'retheonewhoshould
+  255.25  disappear![OP06-115]:ActivateTrigger
+  255.25  JF19#9819]You're theonewhoshould
+  255.25  disappear![Op06-115]:Addcard to topof
+  255.25  LifefromDeck
+  264.50  JF19#9819]You're theonewhoshould
+  264.50  disappear![OP06-115]:TrashBartholomew
+  264.50  <uma[EB04-054]
+  264.50  [madokahk#9226]DraculeMihawk[OP14
+  264.50  020]:RestLaw&Bepo[ST24004]
+  265.75  madokahk#9226]DraculeMihawk[OP14
+  265.75  020]:Activate1Don
+  265.75  madokahk#9226]DraculeMihawk[OP14-
+  265.75  020]:Activate1Don
+  265.75  madokahk#9226]DraculeMihawk[OP14-
+  265.75  020]:Activate1Don
+  265.75  madokahk#9226]DraculeMihawk[OP14
+  265.75  020]:Can'tplay Cost1 OrMoreCharacters
+  265.75  fortheTurn!
+  267.25  madokahk#9226]Electrical Luna[OP08
+  267.25  036]:BasilHawkins[OP10-109]willnot
+  267.25  Activate during nextRefresh
+  267.25  madokahk#9226]Electrical Luna[OP08-
+  267.25  036]:Perona[OP14-111]willnotActivate
+  267.25  during nextRefresh
+  267.25  [madokahk#9226] Electrical Luna[OP08-
+  267.25  036]:BartholomewKuma[EB04-054]will
+  267.25  notActivate during nextRefresh
+  267.25  madokahk#9226]Electrical Luna[OP08
+  267.25  036]:Borsalino[EB04-058]willnotActivate
+  267.25  during nextRefresh
+  277.50  [madokahk#9226] Electrical Luna[OP08-
+  277.50  036]:BartholomewKuma[EB04-054]will
+  277.50  notActivate during nextRefresh
+  277.50  madokahk#9226]Electrical Lune
+  277.50  036]:Borsalin
+  277.50  during
+  277.50  [madok
+  277.50  UF19#9
+  277.75  ### SALTO: righe mancanti ###
+  277.75  036]:Basil Hawkins[OP10-109] will not
+  277.75  Activate during next Refresh
+  277.75  madokahk#9226]Electrical Luna[OP08-
+  277.75  036]:Perona[OP14-111]willnotActivate
+  277.75  during nextRefresh
+  277.75  [madokahk#9226] Electrical Luna[OP08-
+  277.75  036]:BartholomewKuma[EB04-054]will
+  277.75  notActivate during next Refresh
+  277.75  madokahk#9226]ElectricalLuna[OP08
+  277.75  036]:Borsalino[EB04-058]willnotActivate
+  277.75  duringnext Refresh
+  277.75  [madokahk#9226]EndTurn
+  277.75  [JF19#9819]Draw1Card
+  283.75  [F19#9819]Kingdom Come[EB01-059]:
+  283.75  DestroyLaw&Bepo[ST24004]
+  285.25  [F19#9819]DeployRoronoaZoro[OP15-
+  285.25  113]
+  286.50  [F19#9819]RoronoaZoro[OP15-113]:
+  286.50  TrashBartholomewKuma[EB04-054]
+  288.00  [F19#9819]RoronoaZoro[OP15-113]:
+  288.00  Addcard totopof LifefromDeck
+  288.00  [JF19#9819]EndTurn
+  288.00  madokahk#9226]Draw1Card
+  304.00  madokahk#9226]Attach1Don toPerona
+  304.00  OP14-033](1Total)
+  305.00  [madokahk#9226]Perona[OP14-033]
+  305.00  attacking Enel[OP05-098]
+  308.00  Perona[OP14-033][7000]vsEnel [OP05-
+  308.00  098][5000]
+  308.00  Enel[OP05-098]hitfor1damage
+  308.00  JF19#9819]BasilHawkins[OP10-109]:
+  308.00  ActivateTrigger
+  308.00  [JF19#9819] BasilHawkins[OP10-109]:
+  308.00  Draw2Card
+  310.25  JF19#9819]BasilHawkins[OP10-109]:
+  310.25  TrashRoronoaZoro[OP15-113]
+  312.25  madokahk#9226]Attach1 Don toPerona
+  312.25  OP14-033](1Total)
+  313.50  [madokahk#9226]Perona[OP14-033]
+  313.50  attackingEnel[OP05098]
+  320.25  Perona[OP14033][7000]vsEnel[OP05
+  320.25  098][5000]
+  320.25  Enel [OP05-098]hitfor1damage
+  320.25  JF19#9819] Franky[OP07-107]:Activate
+  320.25  Trigger
+  320.25  [JF19#9819]Franky[OP07-107]:Draw1
+  320.25  Card
+  321.00  [F19#9819]TrashPerona[OP14-111]
+  321.00  [F19#9819] Franky[OP07-107]:Deploy
+  321.00  Franky[OP07-107]
+  332.75  [F19#9819] TrashGeckoMoria[OP14-
+  332.75  104]
+  332.75  JF19#9819]Enel[OP05-098]:Addcard to
+  332.75  topofLifefromDeck
+  332.75  madokahk#9226]Attach1DontoJewelry
+  332.75  Bonney[OP07-026](1 Total)
+  334.00  madokahk#9226]JewelryBonney[OP07-
+  334.00  026]attacking Enel[OP05-098]
+  335.75  [F19#9819]DiscardPerona[OP14-111]fo
+  335.75  Counter1000
+  336.25  [F19#9819]DiscardZeus[OP11-106]for
+  336.25  Counter2000
+  337.00  Jewelry Bonney[OP07-026][7000]vsEnel
+  337.00  OP05-098][8000]
+  337.00  AttackFails
+  375.50  madokahk#9226]DraculeMihawk[OP14
+  375.50  020] attacking Enel[OP05-098]
+  375.50  OraculeMihawk[OP14-020][5000]vsEnel
+  375.50  OP05-098[5000]
+  375.50  Enel[OP05-098]hitfor1damage
+  376.50  JF19#9819]You'retheonewhoshould
+  376.50  disappear![OP06-115]:ActivateTrigger
+  376.50  JF19#9819]You'retheonewhoshould
+  376.50  disappear![OP06-115]:Add card to top of
+  376.50  LifefromDeck
+  377.50  JF19#9819]You'retheonewhoshould
+  377.50  disappear![OP06-115]:Trash Enel[EB02-
+  388.75  0521
+  388.75  [madokahk#9226]DeployJewelryBonney
+  388.75  ST02-007]
+  391.00  madokahk#9226]JewelryBonney[ST02
+  391.00  007]:Rest Jewelry Bonney[ST02 007]
+  401.50  madokahk#9226]JewelryBonney[ST02-
+  401.50  007]:RevealandDrawRoronoaZoro
+  401.50  PRB02-006]
+  401.50  madokahk#9226]PlacingCardson
+  401.50  BottomofDeck
+  401.50  [madokahk#9226]DeployJewelryBonney
+  401.50  OP07-026]
+  403.00  madokahk#9226]JewelryBonney[OP07
+  403.00  026]:BartholomewKuma[EB04-054]will
+  403.00  notActivate duringnextRefresh
+  406.25  madokahk#9226]DraculeMihawk[OP14
+  406.25  020]:RestJewelryBonney[OP07-026]
+  406.25  madokahk#9226]DraculeMihawk[OP14
+  406.25  020j:Activate1Don
+  406.25  madokahk#9226]DraculeMihawk[OP14
+  406.25  020]:Activate 1Don
+  406.25  madokahk#9226]DraculeMihawk[OP14
+  406.25  020]:Activate1Don
+  406.25  madokahk#9226]DraculeMihawk[OP14
+  406.25  020]:Can'tplayCost1OrMoreCharacters
+  406.25  fortheTurn!
+  410.75  madokahk#9226] IKnowYou'reStrong..
+  410.75  SoI'llGoAllOut[OP13-040]:BasilHawkins
+  410.75  OP10-109]will not Activate during next
+  410.75  Refresh
+  410.75  [madokahk#9226]IKnowYou'reStrong...
+  410.75  SoIllGoAllOut[OP13-040]:Borsalino
+  410.75  EB04-058]willnotActivateduring next
+  410.75  Refresh
+  410.75  [madokahk#9226]EndTurn
+  410.75  [JF19#9819]Draw 1Card
+  416.25  [F19#9819] Franky[OP07-107]attacking
+  416.25  Jewelry Bonney[ST02-007]
+  417.50  ranky[OP07-107][5000]vsJewelry
+  417.50  Bonney[ST02-007][1000]
+  417.50  [madokahk#9226]Jewelry Bonney[ST02-
+  417.50  007]Destroyed
+  420.50  [JF19#9819]RoronoaZoro[OP15-113]
+  420.50  attackingJewelryBonney[OP07-026]
+  422.25  madokahk#9226]Discard RoronoaZoro
+  422.25  PRB02-006]forCounter2000
+  422.25  RoronoaZoro[OP15-113][6000]vsJewelry
+  422.25  Bonney[OP07-026][8000]
+  422.25  AttackFails
+  428.00  [JF19#9819]TrashFranky[OP07-107]
+  428.00  JF19#9819]DeployEnel[EB02-052]
+  433.25  [F19#9819]Enel[EB02-052]attacking
+  433.25  Perona[OP14-033]
+  434.00  JF19#9819]Enel[EB02-052]:Trash Gecko
+  434.00  Moria[OP14-104]
+  434.00  JF19#9819] Enel[EB02-052]:Addcardto
+  434.00  topofLifefromDeck
+  434.00  [F19#9819] Enel[EB02-052]:Buff Enel
+  434.00  EB02-0521000
+  434.75  Enel [EB02-052][12000]vsPerona[OP14-
+  434.75  033][6000]
+  434.75  [madokahk#9226]Perona[OP14-033]
+  434.75  Destroyed
+  437.25  [F19#9819]EndTurn
+  437.25  madokahk#9226]Draw1Card
+  443.50  [madokahk#9226]Jewelry Bonney[OP07-
+  443.50  026]attacking Enel[OP05098]
+  445.50  ewelryBonney[OP07-026][6000]vsEnel
+  445.50  OP05-098][5000]
+  445.50  Enel[OP05-098]hitfor1damage
+  450.75  JF19#9819]GeckoMoria[OP14-104]
+  450.75  ActivateTrigger
+  460.50  [F19#9819]TrashRoronoaZoro[OP15-
+  460.50  113]
+  460.50  JF19#9819]GeckoMoria[OP14-104]
+  460.50  DeployedPerona[OP14-111]fromTrash
+  460.50  [F19#9819] Perona[OP14-111]:Perona
+  460.50  [OP14-033]can'tattacknext turn
+  466.00  [madokahk#9226]DeployPerona[OP12-
+  466.00  034]
+  468.50  madokahk#9226]Pickednocardsto
+  468.50  Draw
+  468.50  madokahk#9226]PlacingCardson
+  468.50  BottomofDeck
+  475.25  [madokahk#9226]Attach5DontoJewelry
+  475.25  Bonney[OP07-026](5Total)
+  484.25  madokahk#9226]JewelryBonney[OP07-
+  484.25  026]attacking Enel[EB02-052]
+  485.75  ewelryBonney[OP07-026][11000]vsEnel
+  485.75  EB02-052][11000]
+  485.75  [F19#9819]Enel[EB02052]Destroyed
+  490.75  madokahk#9226]Attach1 Don toDracule
+  490.75  Mihawk[OP14-020]（1Total)
+  492.25  madokahk#9226]DraculeMihawk[OP14
+  492.25  020]attacking Borsalino[EB04-058]
+  499.00  DraculeMihawk[OP14-020][6000]vs
+  499.00  Borsalino[EB04-058][6000]
+  499.00  JF19#9819]Borsalino[EB04-058]
+  499.00  Destroyed
+  499.00  [madokahk#9226]Perona[OP14-033]isnc
+  499.00  longerblocked from attacking
+  499.00  [madokahk#9226]EndTurn
+  499.00  [JF19#9819]Draw1Card
+  507.25  JF19#9819]Attach 1Don toBasil Hawkins
+  507.25  OP10-109](1Total)
+  508.25  JF19#9819]BasilHawkins[OP10-109]
+  508.25  attackingJewelryBonney[Op07026]
+  509.25  Basil Hawkins[OP10-109][6000]vsJewelry
+  509.25  Bonney[OP07-026][6000]
+  509.25  [madokahk#9226] Jewelry Bonney[OP07-
+  509.25  026]Destroyed
+  511.25  [JF19#9819]BartholomewKuma[EB04-
+  511.25  054]attacking JewelryBonney[OP07-026]
+  512.00  BartholomewKuma[EB04-054][7000]vs
+  512.00  ewelryBonney[OP07-026][6000]
+  512.00  [madokahk#9226]JewelryBonney[OP07-
+  512.00  026]Destroyed
+  514.50  [F19#9819]Perona[OP14-111]attacking
+  514.50  DraculeMihawk[OP14-020]
+  515.50  Perona[OP14-111][5000]vsDracule
+  515.50  Mihawk[OP14-020][5000]
+  515.50  DraculeMinawk[OP14-020]hit for1
+  515.50  damage
+  518.25  [JF19#9819]Attach 1Donto Enel[OP05-
+  518.25  098](1Total)
+  518.25  [F19#9819]Enel[OP05-098]attacking
+  518.25  DraculeMihawk[OP14-020]
+  518.75  Enel[OP05-098][6000]vsDraculeMihawk
+  518.75  OP14-020][5000]
+  518.75  DraculeMihawk[OP14-020]hitfor1
+  518.75  damage
+  520.75  [F19#9819]DeployGeckoMoria[OP14-
+  520.75  104]
+  523.75  [JF19#9819]GeckoMoria[OP14-104]:Add
+  523.75  Kumacy[OP14-102]totopofLife
+  524.50  [JF19#9819]EndTurn
+  538.75  [madokahk#9226]Draw1Card
+  538.75  madokahk#9226]DeployKid&Killer
+  595.25  ST24-002]
+  627.75  madokahk#9226]Kid&Killer[ST24-002]
+  627.75  RevealandDrawTrafalgar Law
+  627.75  OP13-031]
+  627.75  [madokahk#9226]Placing Cardson
+  627.75  BottomofDeck
+  640.25  madokahk#9226]DeployKid&Killer
+  640.25  ST24002]
+  644.00  madokahk#9226]Kid &Killer[ST24-002]
+  644.00  RevealandDrawScratchmenApoo
+  644.00  EB01-015]
+  644.00  [madokahk#9226]Placing Cardson
+  644.00  BottomofDeck
+  674.00  madokahk#9226]Perona[OP14-033]
+  674.00  attackingPerona[OP14-111]
+  675.25  Perona[OP14-033][6000]vsPerona[OP14
+  675.25  111][5000]
+  675.25  [JF19#9819]Perona[OP14-111]Destroyed
+  675.25  [F19#9819]Perona[OP14-111]:Perona
+  675.25  [OP12-034]can'tattacknextturn
+  686.75  madokahk#9226]DeployTrafalgar Law
+  686.75  [OP13-031]
+  688.25  [madokahk#9226]TrafalgarLaw[OP13-
+  688.25  031]:ReturnPerona[OP12-034]toHand
+  690.00  [madokahk#9226]TrafalgarLaw[OP13-
+  690.00  031]:Deploy JewelryBonney[OP07-026]
+  691.75  madokahk#9226]JewelryBonney[OP07
+  691.75  026]:BartholomewKuma[EB04-054]will
+  691.75  notActivate duringnextRefresh
+  701.25  [madokahk#9226]DraculeMihawk[OP14
+  701.25  020]:RestKid&Killer[ST24-002]
+  703.50  madokahk#9226]DraculeMihawk[OP14
+  703.50  020]:Activate1Don
+  703.50  madokahk#9226]DraculeMihawk[OP14
+  703.50  020]:Activate1Don
+  703.50  madokahk#9226]DraculeMihawk[OP14
+  703.50  020]:Activate1Don
+  703.50  madokahk#9226]DraculeMihawk[OP14
+  703.50  020]:Can'tplay Cost1 OrMoreCharacters
+  703.50  fortheTurn!
+  706.75  madokahk#9226]EndTurn
+  706.75  [F19#9819]Draw1Card
+  713.50  JF19#9819]Attach 4Don toBasil Hawkins
+  713.50  OP10109](4Total)
+  715.25  [F19#9819]BasilHawkins[OP10-109]
+  715.25  attackingDraculeMihawk[OP14020]
+  722.75  Basil Hawkins[OP10-109][9000]vsDracule
+  722.75  Mihawk[OP14-020][5000]
+  722.75  OraculeMihawk[OP14-020]hitfor1
+  722.75  damage
+  722.75  [F19#9819]GeckoMoria[OP14-104]
+  722.75  attackingDraculeMihawk[OP14-020]
+  725.75  madokahk#9226]TrafalgarLaw[OP13-
+  725.75  031]Blocks
+  725.75  Gecko Moria[OP14-104][10000]vs
+  725.75  TrafalgarLaw[OP13-031][6000]
+  725.75  madokahk#9226]TrafalgarLaw[OP13-
+  725.75  031]Destroyed
+  728.50  [JF19#9819]Attach6Don toEnel[OP0S-
+  728.50  098](6Total)
+  729.75  [F19#9819]Enel[OP05-098]attacking
+  729.75  DraculeMihawk[OP14-020]
+  730.75  madokahk#9226]Concedes!
