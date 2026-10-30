@@ -45,7 +45,9 @@ art in `public/cards/` (© Bandai/Shueisha/Eiichiro Oda — personal/fan use, sa
 caveat as the card images themselves; see CLAUDE.md data architecture note).
 Regenerate with: `node scripts/build-backgrounds.mjs`
 
-## world-map/ (map, sparkle-a, sparkle-b, ship)
-The One Piece world as a pixel sea chart behind the whole Home, drawn pixel by
-pixel in `scripts/build-world-map.mjs` (project-original). A placeholder until
-the map is commissioned from an artist. Rebuild: `node scripts/build-world-map.mjs`
+
+## home-pattern/ (tile, boat)
+The Home backdrop: a 24x24 wave tile repeated on one night-blue colour, and a
+little sailboat, drawn pixel by pixel in `scripts/build-home-pattern.mjs`
+(project-original). Rebuild: `node scripts/build-home-pattern.mjs`
+

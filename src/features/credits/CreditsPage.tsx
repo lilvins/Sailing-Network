@@ -99,8 +99,8 @@ export function CreditsPage() {
             <h2>Pixel art</h2>
             <ul>{ART.map((c) => <Row key={c.what} c={c} />)}</ul>
             <p className="cr-note">
-              The world map on the Home, stars, gulls, the little ships and the white DON!! back
-              are drawn for this site (<code>scripts/build-world-map.mjs</code>,{" "}
+              The Home's wave pattern and boat, stars, gulls, the little ship and the white DON!! back
+              are drawn for this site (<code>scripts/build-home-pattern.mjs</code>,{" "}
               <code>scripts/build-pixel-fx.mjs</code>, <code>scripts/build-mode-cards.mjs</code>,{" "}
               <code>scripts/build-don-back.mjs</code>).
             </p>

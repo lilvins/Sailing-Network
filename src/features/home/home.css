@@ -174,26 +174,33 @@
    desktop, stacked below the scene on mobile. ---- */
 .hu-hero-wrap{position:relative;margin:0 calc(-1*var(--pad-x));}
 .hu-hero-sea{position:relative;overflow:hidden;height:clamp(240px,24vw,330px);background:#0a0f1e;border-bottom:2px solid #26282d;}
-/* ---- the world map behind the whole Home (WorldMap.tsx): a 384×216 chart
-   fixed to the viewport, scaled up pixel-sharp and cover-sized; % positions
-   inside .wmap-art are positions on the chart. The hub isolates so the map
-   (z-index -1) paints above the hub's own background, under everything else. */
+/* ---- the Home backdrop (PixelBackdrop.tsx): one night-blue colour with a
+   pixel wave pattern drifting diagonally, twinkling stars, a little boat and
+   two gulls (scripts/build-home-pattern.mjs, fx/gull.png). Fixed to the
+   viewport; the hub isolates so it (z-index -1) paints above the hub's own
+   background, under everything else. Still under prefers-reduced-motion. ---- */
 .sn.sn-hub{isolation:isolate;}
-.wmap{position:fixed;inset:0;z-index:-1;container-type:size;background:#0e1f45;pointer-events:none;}
-.wmap-art{position:absolute;aspect-ratio:16/9;width:max(100cqw,calc(100cqh * 16 / 9));left:calc((100cqw - max(100cqw,calc(100cqh * 16 / 9)))/2);top:calc((100cqh - max(100cqh,calc(100cqw * 9 / 16)))/2);}
-.wmap-art img{image-rendering:pixelated;display:block;}
-.wmap-layer{position:absolute;inset:0;width:100%;height:100%;}
-.wmap-spark.b{opacity:0;}
-.wmap-shade{position:absolute;inset:0;background:rgba(6,9,18,0.28);}
-/* 7×6 ship, its hull on the dashed route (y 109 of 216) */
-.wmap-ship{position:absolute;width:calc(7 / 384 * 100%);height:calc(6 / 216 * 100%);top:calc(104 / 216 * 100%);left:52%;}
+.hbg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#101b36 url("/assets/bg/home-pattern/tile.png") 0 0/72px 72px repeat;image-rendering:pixelated;}
+.hbg img,.hbg i{position:absolute;image-rendering:pixelated;}
+.hbg-star{width:10px;opacity:.75;}
+.hbg-star.b{width:6px;}
+.hbg-boat{width:27px;height:24px;left:-40px;bottom:16%;}
+.hbg-gull{display:block;width:36px;height:10px;left:-60px;background:url("/assets/bg/fx/gull.png") 0 0/200% 100%;}
+.hbg-gull.g1{top:22%;}
+.hbg-gull.g2{top:31%;}
 @media (prefers-reduced-motion: no-preference){
-  .wmap-spark.a{animation:wmap-glint 1.8s steps(1) infinite;}
-  .wmap-spark.b{animation:wmap-glint 1.8s steps(1) infinite reverse;}
-  /* Paradise first, then round the world into the New World: one chart pixel per step */
-  .wmap-ship{animation:wmap-sail 240s steps(480) infinite;animation-delay:-120s;}
-  @keyframes wmap-glint{0%{opacity:1;}50%{opacity:0;}}
-  @keyframes wmap-sail{from{left:-1.5%;}to{left:100%;}}
+  /* the pattern moves one native pixel (3px) per step: 24 steps = one tile */
+  .hbg{animation:hbg-drift 36s steps(24) infinite;}
+  .hbg-star{animation:hbg-twinkle 3s steps(1) infinite;}
+  .hbg-boat{animation:hbg-sail 150s linear infinite,hbg-bob 2.4s steps(2,jump-none) infinite alternate;animation-delay:-40s,0s;}
+  .hbg-gull{animation:hbg-fly 38s linear infinite,hbg-flap .56s steps(2) infinite;}
+  .hbg-gull.g2{animation-duration:52s,.64s;animation-delay:-20s,0s;}
+  @keyframes hbg-drift{to{background-position:72px 72px;}}
+  @keyframes hbg-twinkle{0%,100%{opacity:.75;}50%{opacity:.2;}}
+  @keyframes hbg-sail{from{left:-40px;}to{left:calc(100% + 40px);}}
+  @keyframes hbg-bob{to{transform:translateY(-3px);}}
+  @keyframes hbg-fly{from{left:-60px;}to{left:calc(100% + 60px);}}
+  @keyframes hbg-flap{to{background-position:-200% 0;}}
 }
 /* announcements panel, floating in the empty sky left of the moon */
 .hu-log{position:absolute;z-index:2;top:50%;transform:translateY(-50%);left:var(--pad-x);width:min(470px,44%);background:rgba(11,12,14,0.84);border:1px solid rgba(242,243,245,0.22);color:#f2f3f5;}
