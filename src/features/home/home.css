@@ -230,6 +230,9 @@
 .hu-mode.m-lab::before{background-image:url("/assets/bg/mode-lab.png");}
 .hu-mode.m-auto::before{background-image:url("/assets/bg/mode-auto.png");}
 .hu-mode.m-duel::before{background-image:url("/assets/bg/mode-duel.png");}
+.hu-mode.m-decks::before{background-image:url("/assets/bg/sec-decks.png");}
+.hu-mode.m-rank::before{background-image:url("/assets/bg/sec-rankings.png");}
+.hu-mode.m-popular::before{background-image:url("/assets/bg/sec-popular.png");}
 @media (hover: hover) and (pointer: fine){
   .hu-mode:hover{border-top-color:#f2f3f5;}
   .hu-mode:hover::before{transform:scale(1.05);}

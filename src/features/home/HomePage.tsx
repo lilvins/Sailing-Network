@@ -96,43 +96,6 @@ interface Mode {
 
 const MODES: Mode[] = [
   {
-    id: "board",
-    badge: "Manual",
-    name: "Board",
-    sub: "DuelingBook-style table. You make every move.",
-    go: "Open table",
-    view: "board",
-    cls: "m-board",
-  },
-  {
-    id: "board2",
-    badge: "Manual · alt layout",
-    name: "Layout Lab",
-    sub: "OPTCGSim-style arrangement of the same table.",
-    go: "Open table",
-    view: "board2",
-    cls: "m-lab",
-  },
-  {
-    id: "board-auto",
-    badge: "Full rules · engine beta",
-    name: "Play Auto",
-    sub: "Engine-driven duels. Costs, battles and rules enforced.",
-    go: "Play",
-    view: "board-auto",
-    cls: "m-auto",
-  },
-  {
-    // same Play Auto table, seat B already given to the AI
-    id: "board-auto-ai",
-    badge: "Full rules · AI",
-    name: "Play vs Bot",
-    sub: "Play Auto against the AI — or watch two AIs play.",
-    go: "Play",
-    view: "board-auto",
-    cls: "m-auto",
-  },
-  {
     id: "duel-room",
     badge: "Multiplayer",
     name: "Duel Room",
@@ -140,6 +103,43 @@ const MODES: Mode[] = [
     go: "Enter",
     view: "duel-room",
     cls: "m-duel",
+  },
+  {
+    id: "decks",
+    badge: "Decks",
+    name: "Deck Constructor",
+    sub: "Build, edit and import your decks.",
+    go: "Open",
+    view: "my-decks",
+    cls: "m-decks",
+  },
+  {
+    id: "rankings",
+    badge: "Ranked",
+    name: "Leaderboard",
+    sub: "Every captain by rating. Climb the board.",
+    go: "Open",
+    view: "rankings",
+    cls: "m-rank",
+  },
+  {
+    id: "popular",
+    badge: "Meta",
+    name: "Popular Decks",
+    sub: "Top lists from the regionals.",
+    go: "Open",
+    view: "popular-decklists",
+    cls: "m-popular",
+  },
+  {
+    // the Play Auto table, seat B already given to the AI
+    id: "board-auto-ai",
+    badge: "Full rules · AI",
+    name: "Play vs Bot",
+    sub: "Play against the AI — or watch two AIs play.",
+    go: "Play",
+    view: "board-auto",
+    cls: "m-auto",
   },
 ];
 
