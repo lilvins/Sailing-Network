@@ -163,9 +163,6 @@ interface Tile {
 }
 
 const TILES: Tile[] = [
-  { id: "decks", label: "Deck Builder", sub: "Your decks & editor", icon: "deck", view: "my-decks", art: "/assets/bg/sec-decks.png" },
-  { id: "popular", label: "Popular Decks", sub: "Top regional lists", icon: "trophy", view: "popular-decklists", art: "/assets/bg/sec-popular.png" },
-  { id: "rank", label: "Rankings", sub: "Climb the leaderboard", icon: "rank", view: "rankings", art: "/assets/bg/sec-rankings.png" },
   { id: "meta", label: "Meta Analytics", sub: "What's winning", icon: "globe", view: "meta", art: "/assets/bg/sec-meta.png" },
   { id: "directory", label: "Directory", sub: "Every captain aboard", icon: "friends", view: "directory", art: "/assets/bg/sec-directory.png" },
   { id: "friends", label: "Friends", sub: "Manage your crew", icon: "friends", view: "friends", art: "/assets/bg/sec-friends.png" },
