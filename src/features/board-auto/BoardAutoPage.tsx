@@ -513,6 +513,7 @@ function GameScreen() {
   // AI seats: one move per tick while it is their move
   const aiStep = useAutoStore((s) => s.aiStep);
   const aiPaused = useAutoStore((s) => s.aiPaused);
+  const aiPlan = useAutoStore((s) => s.aiPlan);
   const aiDelay = useAutoStore((s) => s.aiDelay);
   const setAiPaused = useAutoStore((s) => s.setAiPaused);
   const setAiDelay = useAutoStore((s) => s.setAiDelay);
@@ -2083,8 +2084,24 @@ function GameScreen() {
             <span className="ba-aictl-tag">AI · Pro</span>
             <div className="ba-aictl-row">
               <button className="ba-btn" data-act="ai-pause" onClick={() => setAiPaused(!aiPaused)}>{aiPaused ? "▶ Play" : "❚❚ Pause"}</button>
-              <button className="ba-btn" data-act="ai-step" disabled={!aiPaused || !aiActing} onClick={aiStep}>Step</button>
+              <button className="ba-btn" data-act="ai-step" disabled={!aiPaused || !aiActing} onClick={aiStep}>{aiPlan ? "Play it" : "Think"}</button>
             </div>
+            {/* coach mode: what the AI is about to do, and what else it weighed */}
+            {aiPlan && (
+              <div className="ba-aiplan" data-ai-plan>
+                <div className="ba-aiplan-next">{seats.find((x) => x.pid === aiPlan.pid)?.name}: <b>{aiPlan.text}</b></div>
+                {aiPlan.candidates.length > 1 && (
+                  <ol className="ba-aiplan-list">
+                    {aiPlan.candidates.map((c, i) => (
+                      <li key={i} className={i === 0 ? "chosen" : ""}>
+                        <span>{c.text}</span>
+                        <span className="ba-aiplan-score">{c.mean} · {c.rollouts}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            )}
             <div className="ba-aictl-row">
               {AI_SPEEDS.map((sp) => (
                 <button key={sp.ms} className={`ba-btn${aiDelay === sp.ms ? " primary" : ""}`} data-act={`ai-speed-${sp.label.toLowerCase()}`} onClick={() => setAiDelay(sp.ms)}>{sp.label}</button>

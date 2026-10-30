@@ -20,7 +20,9 @@ import { EngineError, type PlayerIntent } from "../../autosim/engine/intents";
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, CardDb, PID } from "../../autosim/engine/state";
 import { agentStep, actorOf, type Agent } from "../../autosim/ai/agent";
-import { createProAgent } from "../../autosim/ai/pro";
+import { createProAgent, type ProAgent } from "../../autosim/ai/pro";
+import { makePlan, type AiPlan } from "./aiPlan";
+import { clearGame, loadGame, saveGame } from "./savedGame";
 import { makeCardDb } from "./compile";
 import type { DeckChoice } from "./decks";
 
@@ -50,7 +52,7 @@ export interface Banner {
 let cardsById: Map<string, Card> | null = null;
 let cardDb: CardDb | null = null;
 /** One agent per AI seat, made when the game starts (they keep their own RNG). */
-let agents: Record<PID, Agent> = {};
+let agents: Record<PID, ProAgent> = {};
 
 export function getCardsById(): Map<string, Card> | null {
   return cardsById;
@@ -89,6 +91,8 @@ interface AutoStoreState {
   /** AI seats: paused, and the pause between their moves (ms). */
   aiPaused: boolean;
   aiDelay: number;
+  /** Coach mode: while paused, Step first shows the move the AI is about to make (and why), the next Step plays it. */
+  aiPlan: AiPlan | null;
   /** Set by Home's "Play vs Bot": the deck pick opens with seat B on the Pro bot. */
   vsBot: boolean;
   setVsBot: (vsBot: boolean) => void;
@@ -123,6 +127,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   banner: null,
   aiPaused: false,
   aiDelay: 700,
+  aiPlan: null,
   vsBot: false,
   setVsBot: (vsBot) => set({ vsBot }),
 
@@ -135,6 +140,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
       cardsById = await loadCardsById();
       cardDb = makeCardDb(cardsById);
       set({ catalogReady: true, catalogError: null });
+      // a reload in the middle of a game resumes it (AI seats paused, so nothing moves by surprise)
+      const saved = loadGame();
+      if (saved && saved.game.phase !== "over") {
+        agents = makeAgents(saved.seats, `${saved.game.seed}:resumed`);
+        set({ stage: "play", seats: saved.seats, game: saved.game, events: saved.events, aiDelay: saved.aiDelay, aiPaused: true, aiPlan: null });
+      }
     } catch (e) {
       set({ catalogError: e instanceof Error ? e.message : "failed to load the card catalog" });
     }
@@ -169,8 +180,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
         ],
         firstPlayer: seats[firstIdx].pid,
       });
-      agents = Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createProAgent(`${state.seed}:${s.pid}`)]));
-      set({ game: state, events, stage: "play", banner: null, aiPaused: false });
+      agents = makeAgents(seats, state.seed);
+      set({ game: state, events, stage: "play", banner: null, aiPaused: false, aiPlan: null });
     } catch (e) {
       // deck construction failed (user decks can be illegal) → back to pick
       const msg = e instanceof Error ? e.message : String(e);
@@ -190,7 +201,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     }
     try {
       const r = applyIntent(cardDb, game, intent);
-      set({ game: r.state, events: [...events, ...r.events] });
+      set({ game: r.state, events: [...events, ...r.events], aiPlan: null });
       return true;
     } catch (e) {
       if (e instanceof EngineError) {
@@ -203,13 +214,20 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   aiStep: () => {
-    const { game, events } = get();
+    const { game, events, aiPaused, aiPlan } = get();
     if (!game || !cardDb || game.phase === "over") return;
-    const agent = agents[actorOf(cardDb, game)];
+    const pid = actorOf(cardDb, game);
+    const agent = agents[pid];
     if (!agent) return;
     try {
-      const r = agentStep(cardDb, game, agent);
-      set({ game: r.state, events: [...events, ...r.events] });
+      // coach mode: a paused Step first SHOWS the move and its candidates
+      if (aiPaused && !aiPlan) {
+        const intent = agent.decide(cardDb, game, pid);
+        set({ aiPlan: makePlan(game, cardsById, pid, intent, agent.lastThoughts()) });
+        return;
+      }
+      const r = aiPlan ? playPlanned(cardDb, game, aiPlan, agent) : agentStep(cardDb, game, agent);
+      set({ game: r.state, events: [...events, ...r.events], aiPlan: null });
     } catch (e) {
       // the agent and every fallback were refused: stop and say so
       set({ aiPaused: true, banner: { id: bannerSeq++, text: `AI stuck: ${e instanceof Error ? e.message : String(e)}`, hint: "The AI is paused. Concede for that seat, or change decks." } });
@@ -221,6 +239,31 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   explain: (text, hint, tone) => set({ banner: { id: bannerSeq++, text, hint, tone } }),
   dismissBanner: () => set({ banner: null }),
 
-  rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null }),
-  reset: () => set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }),
+  rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null, aiPlan: null }),
+  reset: () => set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null, aiPlan: null }),
 }));
+
+/** The move shown in coach mode; if the engine refuses it, the agent's usual step (with its fallback). */
+function playPlanned(db: CardDb, game: AutoGameState, plan: AiPlan, agent: Agent) {
+  try {
+    return applyIntent(db, game, plan.intent);
+  } catch {
+    return agentStep(db, game, agent);
+  }
+}
+
+// DEV: coaching tools read the live game (seed, state) from the console
+if (import.meta.env.DEV && typeof window !== "undefined") (window as unknown as { __autoStore?: typeof useAutoStore }).__autoStore = useAutoStore;
+
+/** One Pro agent per AI seat, seeded from the game. */
+function makeAgents(seats: SeatSetup[], seed: string): Record<PID, ProAgent> {
+  return Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createProAgent(`${seed}:${s.pid}`)]));
+}
+
+// keep the game in progress across a page reload (savedGame.ts); a finished or abandoned one is dropped
+useAutoStore.subscribe((s, prev) => {
+  if (s.game === prev.game && s.stage === prev.stage) return;
+  if (s.stage === "play" && s.game && s.seats && s.game.phase !== "over") saveGame({ seats: s.seats, game: s.game, events: s.events, aiDelay: s.aiDelay });
+  else clearGame();
+});
+
