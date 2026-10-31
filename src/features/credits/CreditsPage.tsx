@@ -31,7 +31,7 @@ const ART: Credit[] = [
     source: "https://opengameart.org/content/moon-and-sea-pixel-art-background",
     license: "OGA-BY 3.0",
     licenseUrl: "https://opengameart.org/content/oga-by-30-faq",
-    where: "The night sky over the Home banner, the login, the Play Auto table, the profile and social pages",
+    where: "The night sky over the Home banner, the login, the Play Auto table, the profile and social pages; the moon avatar used when a captain has none",
     preview: "/assets/bg/night-sea/full.png",
   },
   {

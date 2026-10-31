@@ -420,6 +420,9 @@ function PickScreen() {
         >
           To the starting roll →
         </button>
+        <span className="ba-credit pick">
+          Background: <a href="https://opengameart.org/node/133444" target="_blank" rel="noopener noreferrer">“Ocean View”</a> by Luis Zuno (CC0)
+        </span>
       </footer>
     </div>
   );
@@ -2581,6 +2584,8 @@ function GameScreen() {
           </div>
         )}
         <div className="ba-railfill" />
+        {/* the night sea behind the table is OGA-BY 3.0: credited on screen */}
+        <span className="ba-credit">Night sky: <a href="https://opengameart.org/content/moon-and-sea-pixel-art-background" target="_blank" rel="noopener noreferrer">“Moon and Sea”</a> by CraftPix.net (OGA-BY 3.0)</span>
         <button
           className={`ba-btn${confirmPicks ? " primary" : ""}`}
           data-act="confirm-picks"

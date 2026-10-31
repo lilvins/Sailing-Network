@@ -214,6 +214,8 @@ export function LoginPage() {
           <span className="val">{stats ? stats.matches.toLocaleString() : "—"}</span>
           <span className="lbl">Matches logged</span>
         </div>
+        {/* OGA-BY 3.0: the art's credit where people see it */}
+        <span className="snlogin-credit">Night sky: <a href="https://opengameart.org/content/moon-and-sea-pixel-art-background" target="_blank" rel="noopener noreferrer">“Moon and Sea”</a> by CraftPix.net (OGA-BY 3.0)</span>
       </main>
     </div>
   );
