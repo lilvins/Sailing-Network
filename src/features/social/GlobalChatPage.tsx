@@ -83,7 +83,12 @@ export function GlobalChatPage() {
         <div className="snp-wrap">
           <div className="gc-room">
             <div className="gc-scroll" ref={scrollRef} onScroll={onScroll}>
-              {messages.length === 0 && <div className="gc-empty">No messages yet — say something to the crew.</div>}
+              {messages.length === 0 && (
+                <div className="gc-empty snp-empty">
+                  <span className="px-critter crabby" aria-hidden />
+                  The tavern is quiet. Say something to the crew.
+                </div>
+              )}
               {messages.map((m) => (
                 <div className={"gc-line" + (m.fromMe ? " me" : "")} key={m.id}>
                   <LeaderAvatar name={m.displayName} color={m.avatarColor} image={imgOf(m.favoriteLeader)} size={34} />

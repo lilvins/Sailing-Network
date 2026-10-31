@@ -15,6 +15,13 @@ freebie terms allow commercial use; no reselling of the files, no AI training.
 Layers renamed: 1→sky, 2→cloud, 3→reflection. Used behind the Duel Room and the
 competitive pages (Leaderboard, Records, Statistics, Meta, Popular) via PixelScene.
 
+## ../ui/ (board, paper, captain-idle, crabby-idle)
+"Treasure Hunters" by **Pixel Frog** — https://pixelfrog-assets.itch.io/treasure-hunters
+License: **CC0** (attribution not required, given anyway). Wood board and paper 9-slices
+assembled from the "Wood and Paper UI" tiles, idle strips from Captain Clown Nose and
+Crabby, by `node scripts/build-pixel-ui.mjs "<extracted Treasure Hunters folder>"`.
+Used by `src/styles/pixel-ui.css` (window frames, notices, empty states).
+
 ## fx/water-sheet.png
 "Animated water texture 128px" by **YCbCr**
 Source: https://opengameart.org/content/animated-water-texture-128px

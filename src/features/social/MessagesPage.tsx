@@ -188,7 +188,10 @@ export function MessagesPage() {
                   </div>
                   <div className="msg-scroll" ref={scrollRef}>
                     {messages.length === 0 && (
-                      <div style={{ margin: "auto", color: "var(--muted)", fontSize: 13 }}>No messages yet — say hi.</div>
+                      <div className="snp-empty" style={{ margin: "auto" }}>
+                        <span className="px-critter captain" aria-hidden />
+                        Nothing in the logbook yet. Say ahoy.
+                      </div>
                     )}
                     {messages.map((m) => (
                       <div key={m.id} className={"msg-bubble " + (m.fromMe ? "me" : "them")}>{m.body}</div>
@@ -211,8 +214,8 @@ export function MessagesPage() {
               ) : (
                 <div className="msg-scroll" style={{ alignItems: "center", justifyContent: "center" }}>
                   <div className="snp-empty">
-                    <img src="/assets/bg/avatar-moon.png" alt="" />
-                    Pick a conversation to start chatting.
+                    <span className="px-critter crabby" aria-hidden />
+                    No letter open. Pick a captain on the left.
                   </div>
                 </div>
               )}

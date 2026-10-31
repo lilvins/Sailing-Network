@@ -55,6 +55,16 @@ const ART: Credit[] = [
     preview: "/assets/bg/ocean-view/back.png",
   },
   {
+    what: "Treasure Hunters",
+    author: "Pixel Frog",
+    authorUrl: "https://pixelfrog-assets.itch.io",
+    source: "https://pixelfrog-assets.itch.io/treasure-hunters",
+    license: "CC0",
+    licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+    where: "The timber window frames, the parchment notices, Captain Clown Nose and Crabby in the empty pages",
+    preview: "/assets/ui/board.png",
+  },
+  {
     what: "Animated water texture 128px",
     author: "YCbCr",
     source: "https://opengameart.org/content/animated-water-texture-128px",

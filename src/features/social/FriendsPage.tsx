@@ -137,8 +137,8 @@ export function FriendsPage() {
               })}
               {accepted.length === 0 && (
                 <div className="snp-empty">
-                  <img src="/assets/bg/avatar-moon.png" alt="" />
-                  No friends yet. Try the "Find captains" tab.
+                  <span className="px-critter captain" aria-hidden />
+                  No crewmates yet. Try the "Find captains" tab.
                 </div>
               )}
             </div>
