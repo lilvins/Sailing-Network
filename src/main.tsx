@@ -12,9 +12,11 @@ import "@fontsource/sora/700.css";
 import "@fontsource/sora/800.css";
 import "./index.css";
 import { App } from "./app/App.tsx";
+import { WelcomeDialog } from "./features/welcome/WelcomeDialog";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
+    <WelcomeDialog />
   </StrictMode>,
 );

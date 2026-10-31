@@ -1,0 +1,46 @@
+/* First-login welcome: an RPG text box — black, a thick white frame, big
+   pixel type, a pixel face on the left; the page behind is only dimmed. */
+.wl-veil {
+  position: fixed; inset: 0; z-index: 400;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 16px 6vh;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.wl-box {
+  position: relative;
+  width: min(880px, 100%);
+  min-height: 170px;
+  display: grid; grid-template-columns: 118px 1fr; align-items: start; gap: 18px;
+  padding: 22px 26px 26px;
+  background: #000;
+  border: 6px solid #fff;
+  box-shadow: 0 0 0 4px #000;
+  color: #fff;
+  animation: wl-in 160ms steps(4) both;
+}
+@keyframes wl-in { from { transform: translateY(14px); opacity: 0; } }
+.wl-face { width: 112px; height: 88px; object-fit: contain; image-rendering: pixelated; margin-top: 6px; }
+.wl-text {
+  margin: 0;
+  font: 400 34px/1.15 "VT323", ui-monospace, monospace;
+  letter-spacing: 0.5px;
+  white-space: pre-wrap;
+}
+/* the rest of the line is laid out but invisible, so the text never reflows while it types */
+.wl-ghost { visibility: hidden; }
+.wl-next { position: absolute; right: 20px; bottom: 10px; font: 400 22px "VT323", monospace; animation: wl-blink 0.7s steps(2) infinite; }
+@keyframes wl-blink { 50% { opacity: 0; } }
+.wl-tools { position: absolute; right: 10px; top: -36px; display: flex; gap: 6px; }
+.wl-tools button {
+  font: 400 20px/1 "VT323", monospace; color: #fff; background: #000;
+  border: 3px solid #fff; padding: 2px 10px; cursor: pointer;
+}
+.wl-tools button:hover { background: #fff; color: #000; }
+.wl-hint { position: absolute; left: 26px; bottom: -30px; font: 400 18px "VT323", monospace; color: rgba(255, 255, 255, 0.7); }
+@media (max-width: 560px) {
+  .wl-box { grid-template-columns: 1fr; }
+  .wl-face { display: none; }
+  .wl-text { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .wl-box, .wl-next { animation: none; } }
