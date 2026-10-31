@@ -13,7 +13,9 @@
   --px-wood-dk: #b77357;   /* timber shade */
   --px-brick: #985252;
   --px-paper: #f2d3a0;
-  --px-night: rgba(13, 16, 28, 0.92);
+  --px-night: #2b201c;     /* window inside: dark stained walnut, the timber's own family */
+  /* plank seams every 26px, 2px dark (pixel-exact, no blur) */
+  --px-planks: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 26px);
   --px-gold: #ffd23f;
   --px-red: #d63024;
   --px-hud: "Silkscreen", "Sora", system-ui, sans-serif;
@@ -26,6 +28,7 @@
   border: 16px solid transparent !important;
   border-image: url("/assets/ui/board.png") 8 / 16px / 0 repeat !important;
   background-color: var(--px-night) !important;
+  background-image: var(--px-planks) !important;
   background-clip: padding-box !important;
   image-rendering: pixelated;
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5) !important;
@@ -126,7 +129,45 @@
 }
 
 /* ---- light theme: the same timber, parchment inside (its text is dark) ---- */
-:root[data-theme="light"] { --px-night: #f3dfbc; }
+:root[data-theme="light"] { --px-night: #f3dfbc; --px-planks: repeating-linear-gradient(180deg, rgba(120, 70, 40, 0.12) 0 2px, transparent 2px 26px); }
 /* the Ship's Log floats on the night sky and keeps its light text: it stays night glass */
-:root[data-theme="light"] .hu-log { background-color: rgba(13, 16, 28, 0.92) !important; }
+:root[data-theme="light"] .hu-log { background-color: #2b201c !important; }
 :root[data-theme="light"] .hu-panel-h { border-bottom-color: rgba(51, 50, 61, 0.3) !important; }
+
+/* ---- Duel Records on a phone: one card per duel instead of a 760px table ----
+   children of a row: 1 avatar, 2 opponent, 3 your deck, 4 format, 5 result,
+   6 points, 7 opponent leader, 8 date, 9 went 1st/2nd */
+@media (max-width: 620px) {
+  .rec-table { overflow-x: visible !important; }
+  .rec-head { display: none !important; }
+  .rec-row {
+    min-width: 0 !important; height: auto !important;
+    grid-template-columns: 44px minmax(0, 1fr) auto !important;
+    grid-template-areas: "av opp res" "av deck pts" "av lead fmt" "av date play";
+    row-gap: 4px !important; column-gap: 10px !important; padding: 10px 12px !important;
+    align-items: center;
+  }
+  .rec-row > :nth-child(1) { grid-area: av; align-self: start; }
+  .rec-row > .rec-opp { grid-area: opp; }
+  .rec-row > .rec-mydeck { grid-area: deck; font-size: 13px !important; }
+  .rec-row > :nth-child(4) { grid-area: fmt; justify-self: end; }
+  .rec-row > .rec-res { grid-area: res; justify-self: end; }
+  .rec-row > .rec-pts { grid-area: pts; justify-self: end; }
+  .rec-row > :nth-child(7) { grid-area: lead; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+  .rec-row > .rec-date { grid-area: date; font-size: 12px; }
+  .rec-row > .rec-new { grid-area: play; justify-self: end; font-size: 12px !important; }
+  .rec-summary { flex-wrap: wrap; }
+}
+
+/* ---- page headers on a phone: smaller pixel title, the right side wraps under it ---- */
+@media (max-width: 620px) {
+  .snp-head { flex-wrap: wrap !important; gap: 10px !important; padding: 14px 16px !important; padding-right: 64px !important; }
+  .snp-head-title h1 { font-size: 18px !important; letter-spacing: 0.04em !important; }
+  .sn-kicker { font-size: 17px !important; }
+  .snp-head .rec-summary, .snp-head .snp-head-r { margin-right: 0 !important; }
+}
+
+/* ---- background credits stay whole on a phone: they wrap instead of being cut ---- */
+@media (max-width: 640px) {
+  .pxs-credit { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; max-width: calc(100% - 24px) !important; font-size: 10px !important; line-height: 1.3; }
+}
