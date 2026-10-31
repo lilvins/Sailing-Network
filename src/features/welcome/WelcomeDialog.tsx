@@ -5,12 +5,13 @@ import "./welcome.css";
 
 /**
  * The first-login welcome, in the manner of an RPG text box: one line at a
- * time, typed out with a soft blip per letter. Shown once per account on
- * this browser (localStorage), never again after it is closed or skipped.
+ * time, typed out with a soft blip per letter. Shown once per IP address
+ * (the server keeps a hash of the addresses that have seen it, see
+ * server/welcome.mjs); this browser also remembers it, to skip the request.
  * Z / Enter / Space / click: finish the line, then the next one. Esc: skip.
  */
 const PAGES = [
-  "* Ahoy, pirate!",
+  "* Hi, pirate!",
   "* I'm Vins, a game design student.",
   "* Inspired by the legendary Dueling Network, I'm trying to build a place like it for the One Piece TCG...",
   "* ...mostly because I wanted to be one of its users.",
@@ -20,13 +21,21 @@ const PAGES = [
 /** ms per letter, and the longer beat after punctuation */
 const TYPE_MS = 34;
 const PAUSE_MS = 220;
-const seenKey = (userId: string) => `sn-welcome-seen:${userId}`;
+const SEEN_KEY = "sn-welcome-seen";
 
-function wasSeen(userId: string): boolean {
-  try { return localStorage.getItem(seenKey(userId)) === "1"; } catch { return true; } // no storage: never nag
+function seenHere(): boolean {
+  try { return localStorage.getItem(SEEN_KEY) === "1"; } catch { return false; }
 }
-function markSeen(userId: string): void {
-  try { localStorage.setItem(seenKey(userId), "1"); } catch { /* private mode: it shows again next time */ }
+/** Has this IP already seen it? On any error: yes (never nag twice). */
+async function seenByIp(): Promise<boolean> {
+  try {
+    const r = await fetch("/api/welcome", { credentials: "include" });
+    return r.ok ? ((await r.json()) as { seen: boolean }).seen : true;
+  } catch { return true; }
+}
+function markSeen(): void {
+  try { localStorage.setItem(SEEN_KEY, "1"); } catch { /* private mode: the server still knows */ }
+  void fetch("/api/welcome/seen", { method: "POST", credentials: "include" }).catch(() => {});
 }
 
 /** A short square-wave blip, the RPG "voice" (quiet; muted with the ♪ button). */
@@ -60,8 +69,14 @@ export function WelcomeDialog() {
   const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
-    if (user && !wasSeen(user.id)) { setOpen(true); setPage(0); setShown(0); }
-    else setOpen(false);
+    if (!user || seenHere()) { setOpen(false); return; }
+    let alive = true;
+    void seenByIp().then((seen) => {
+      if (!alive) return;
+      if (seen) { try { localStorage.setItem(SEEN_KEY, "1"); } catch { /* no storage */ } return; }
+      setOpen(true); setPage(0); setShown(0);
+    });
+    return () => { alive = false; };
   }, [user]);
 
   const text = PAGES[page] ?? "";
@@ -82,9 +97,9 @@ export function WelcomeDialog() {
   }, [open, shown, text, done, reduce, blip]);
 
   const close = useCallback(() => {
-    if (user) markSeen(user.id);
+    markSeen();
     setOpen(false);
-  }, [user]);
+  }, []);
 
   const advance = useCallback(() => {
     if (!done) { setShown(text.length); return; }
