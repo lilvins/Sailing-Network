@@ -1,6 +1,6 @@
 /* Build the site's pixel UI pieces from Pixel Frog's "Treasure Hunters"
    (CC0, https://pixelfrog-assets.itch.io/treasure-hunters):
-   - 9-slice frames (wood board, paper, gold and green buttons) assembled
+   - 9-slice frames (wood board, paper) assembled
      from the pack's numbered tiles (1..9 = top-left .. bottom-right);
    - horizontal sprite sheets for the idle animations used in empty states.
    Usage: node scripts/build-pixel-ui.mjs "<path to the extracted Treasure Hunters folder>"
@@ -45,7 +45,5 @@ async function strip(folder, out) {
 
 await nineSlice("Yellow Board", "board.png");
 await nineSlice("Yellow Paper", "paper.png");
-await nineSlice("Yellow Button", "button-gold.png");
-await nineSlice("Green Button", "button-green.png");
 await strip(join(SRC, "Captain Clown Nose", "Sprites", "Captain Clown Nose", "Captain Clown Nose without Sword", "01-Idle"), "captain-idle.png");
 await strip(join(SRC, "The Crusty Crew", "Sprites", "Crabby", "01-Idle"), "crabby-idle.png");
