@@ -276,6 +276,11 @@ export function DuelRoomPage() {
   const [cards, setCards] = useState<Map<string, Card> | null>(null);
   const [deckId, setDeckId] = useState("");
   const [showLogResult, setShowLogResult] = useState(false);
+  // a real number in the header (registered captains), never an invented "online" count
+  const [captains, setCaptains] = useState<number | null>(null);
+  useEffect(() => {
+    api.siteStats().then((s) => setCaptains(s.captains)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     Promise.all([api.myDecks(), loadCardsById()])
@@ -373,7 +378,7 @@ export function DuelRoomPage() {
         <h1 className="dr-title">Duel Room</h1>
         <div className="dr-head-r">
           <div className="sn-pill">
-            <span className="sn-livedot" /> 12,483 online
+            <span className="sn-livedot" /> {captains === null ? "…" : captains.toLocaleString("en-US")} captains aboard
           </div>
           <Avatar color="#2f5e44" size={36} />
         </div>
@@ -416,6 +421,7 @@ export function DuelRoomPage() {
         <div className="dr-open">
           <div className="dr-open-head">
             <span className="dr-open-title">Open Duels</span>
+            <span className="dr-sample" title="Live tables arrive with matchmaking">Sample tables — live duels arrive with matchmaking</span>
             <div className="dr-open-arrows">
               <button onClick={() => scrollFmt(-1)} aria-label="Scroll left">
                 <Icon name="caret" size={16} />

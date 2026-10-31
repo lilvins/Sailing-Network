@@ -246,3 +246,5 @@
 .dr-credit + .dr-foot-ico.mute{margin-left:0;}
 .dr-credit-all{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline dotted;text-underline-offset:2px;cursor:pointer;}
 .dr-credit-all:hover{color:#fff;}
+/* the open duels are examples until matchmaking exists: say so */
+.dr-sample{margin-right:auto;margin-left:12px;font:400 18px/1 "VT323",monospace;color:#daab76;}
