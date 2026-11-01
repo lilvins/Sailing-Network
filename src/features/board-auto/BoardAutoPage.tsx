@@ -19,6 +19,7 @@ import "@fontsource/vt323/400.css"; // pixel type for the log + chat (--pixel in
 import "@fontsource/silkscreen/400.css"; // HUD labels (--hud)
 import "@fontsource/silkscreen/700.css";
 import "./boardauto.css";
+import { PixelIcon } from "../pixel/PixelIcon";
 
 /* =============================================================================
    BOARD AUTO — the AUTOSIM full-rules board (AUTOSIM_PLAN.md §7).
@@ -1526,7 +1527,7 @@ function GameScreen() {
         <span className="ba-bh-step">{stepLabel}{blocked ? " · blocked" : ""}</span>
         <div className="ba-bh-row">
           <span className="ba-bh-side"><i>{name(b.attackerIid)}</i><b>{atk}</b></span>
-          <span className="ba-bh-vs">⚔</span>
+          <span className="ba-bh-vs"><PixelIcon name="swords" size={24} /></span>
           <span className="ba-bh-side def"><i>{name(b.targetIid)}</i><b>{def}</b></span>
         </div>
         <span className={`ba-bh-need${need >= 0 ? " hits" : " safe"}`}>
@@ -1743,7 +1744,7 @@ function GameScreen() {
             DON!! ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
           </span>
         )}
-        {highlightSets.ready.has(iid) && !isAiSeat(seats, owner) && <span className="ba-readybadge" title="Ready to attack — tap or drag">⚔</span>}
+        {highlightSets.ready.has(iid) && !isAiSeat(seats, owner) && <span className="ba-readybadge" title="Ready to attack — tap or drag"><PixelIcon name="swords" size={12} /></span>}
         {/* in-place PLAY: the selected hand card, when the play is legal now */}
         {inHand && selectedHand === iid && !pc && owner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === iid) && (
           <button
