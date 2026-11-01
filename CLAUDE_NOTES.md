@@ -506,6 +506,22 @@ entry in `src/state/types.ts`. No functions/Maps/class instances in state.
   the createDeck payload). Gated on login (routes to `"login"` if signed out);
   after success the button becomes "View in My Decks" (→ `"my-decks"`).
 
+## Stats, leaderboard, profiles (2026-10-30)
+- **`server/stats/`** (README inside): Glicko-2 ladder replayed from `matches`,
+  shown as **Bounty** (rating × 1M Berries), monthly seasons with soft reset,
+  provisional "?" while RD > 110, tiers East Blue → Emperor + Pirate King (#1).
+  All numbers in `server/stats/tuning.json`. Meta with Wilson 95% range,
+  1st/2nd, opponent-adjusted WR, movers, leader × leader matrix.
+- Pages: `profiles/ProfileViewer.tsx` (dossier: Bounty chart, record, leaders →
+  matchups, recent games with ΔBounty, past seasons, real follow, country),
+  `profiles/Rankings.tsx` (season ladder, leader/country filters, tier bar,
+  "How the Bounty works"), `social/MetaPage.tsx`, `social/StatisticsPage.tsx`
+  (time window, by deck / by leader). Shared bits in `src/features/stats/`.
+- DB: `profiles.country`, `follows` table (migrations M3/M4). Demo data:
+  `npm run seed:ladder`. `user_ratings` (queue) is NOT updated by the ladder yet.
+- Comparison with the other OPTCG sims + plan: `docs/stats-profili-piano.md`.
+- `npm run dev:alt` = a second dev copy on :5193/:8817 (same DB).
+
 ## Recent work (2026-06 — own DB + self-hosted art; merged with dotgg fix)
 - **Card data → own DB, images → self-hosted (from dotgg).** New files:
   `server/card-art.mjs` (fallback proxy), `server/seed-cards.mjs`,
