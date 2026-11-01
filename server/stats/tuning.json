@@ -35,5 +35,12 @@
     "matrixLeaders": 10,
     "moversDays": 7
   },
+  "metaReport": {
+    "comment": "Meta Analytics page: matchup grid + best lists, after the format / date / Bounty filters.",
+    "gridMinGames": 20,
+    "gridMaxLeaders": 16,
+    "bestListMoreThanGames": 30,
+    "bestListsPerLeader": 5
+  },
   "recentMatches": 15
 }

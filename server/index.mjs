@@ -32,7 +32,7 @@ import {
   createNotification, listNotifications, countUnreadNotifications, markNotificationsRead, notificationToClient,
   banUser, unbanUser, getActiveBan, listBans, banToClient,
 } from "./store.mjs";
-import { leaderboard as ladderBoard, profileStats, meta as metaStats } from "./stats/index.mjs";
+import { leaderboard as ladderBoard, profileStats, meta as metaStats, metaReport } from "./stats/index.mjs";
 
 const COOKIE = "sn_session";
 const isProd = process.env.NODE_ENV === "production";
@@ -861,6 +861,21 @@ app.post("/api/me/notifications/read", async (req, reply) => {
 });
 
 // ---- meta analytics (global, from real match history) ----
+// Meta Analytics page: matchup grid + best lists.
+// ?format=OP15 · ?from=&to= (ms) · ?minBounty=&maxBounty= (Berries, the player's Bounty going into the game)
+app.get("/api/meta/report", async (req, reply) => {
+  if (!(await requireUser(req, reply))) return;
+  const q = req.query || {};
+  const num = (v) => (v === undefined || v === "" ? null : Number.isFinite(Number(v)) ? Number(v) : null);
+  return reply.send(await metaReport({
+    format: typeof q.format === "string" ? q.format.slice(0, 30) : "",
+    from: num(q.from),
+    to: num(q.to),
+    minBounty: num(q.minBounty),
+    maxBounty: num(q.maxBounty),
+  }));
+});
+
 // ?days=7|30|0 (0 = all time) · ?min= minimum games for a leader to be "enough" data
 app.get("/api/meta", async (req, reply) => {
   if (!(await requireUser(req, reply))) return;

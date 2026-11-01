@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { all } from "../db.mjs";
 import { buildLadder, seasonOf } from "./ladder.mjs";
 import { wilson } from "./wilson.mjs";
+import { buildMetaReport } from "./metaReport.mjs";
 
 export const TUNING = JSON.parse(readFileSync(new URL("./tuning.json", import.meta.url), "utf8"));
 
@@ -269,4 +270,55 @@ export async function meta({ days = 0, minGames = TUNING.meta.minGames } = {}) {
   );
 
   return { days, minGames, totalGames: rows.length, leaders, matrix: { leaders: top, cells: matrix } };
+}
+
+// ---------- Meta Analytics page: matchup grid + best lists ----------
+/**
+ * Filters: format ("" = every format), from/to (ms, inclusive), minBounty /
+ * maxBounty (Berries; the player's Bounty going into the game).
+ */
+export async function metaReport({ format = "", from = null, to = null, minBounty = null, maxBounty = null } = {}) {
+  const ladder = await getLadder();
+  const rows = await all(
+    `SELECT id, user_id, my_deck_id, my_leader_id, opp_leader_id, result, format, created_at FROM matches WHERE my_leader_id IS NOT NULL`,
+  );
+  const deckRows = await all(`SELECT id, name, cards FROM decks WHERE id IN (SELECT DISTINCT my_deck_id FROM matches)`);
+  const decks = new Map(
+    deckRows.map((d) => {
+      let cards = [];
+      try { cards = JSON.parse(d.cards || "[]"); } catch { /* a broken list just isn't shown */ }
+      return [d.id, { name: d.name, cards }];
+    }),
+  );
+  const start = TUNING.glicko.startRating;
+  const withRating = rows.map((r) => ({ ...r, created_at: Number(r.created_at), rating: ladder.ratingAt.get(r.id) ?? start }));
+
+  const perPoint = TUNING.bounty.berriesPerPoint;
+  const report = buildMetaReport(withRating, decks, TUNING, {
+    format: format || undefined,
+    from: from ?? undefined,
+    to: to ?? undefined,
+    minRating: minBounty != null ? minBounty / perPoint : undefined,
+    maxRating: maxBounty != null ? maxBounty / perPoint : undefined,
+  });
+
+  // what the filters can offer
+  const fmt = new Map();
+  for (const r of withRating) {
+    const f = fmt.get(r.format) || { format: r.format, games: 0, lastAt: 0 };
+    f.games++; f.lastAt = Math.max(f.lastAt, r.created_at);
+    fmt.set(r.format, f);
+  }
+  const ratings = withRating.map((r) => r.rating);
+  return {
+    ...report,
+    options: {
+      formats: [...fmt.values()].filter((f) => f.format).sort((a, b) => b.lastAt - a.lastAt),
+      bountyRange: ratings.length ? [bountyOf(Math.min(...ratings)), bountyOf(Math.max(...ratings))] : [0, 0],
+      tiers: TUNING.tiers.map((t) => ({ id: t.id, name: t.name, minBounty: t.min * perPoint })),
+      firstAt: withRating.length ? Math.min(...withRating.map((r) => r.created_at)) : null,
+      bestListMoreThanGames: TUNING.metaReport.bestListMoreThanGames,
+      gridMinGames: TUNING.metaReport.gridMinGames,
+    },
+  };
 }

@@ -81,6 +81,7 @@ export function buildLadder(rows, cfg, now) {
   const sorted = [...rows].sort((a, b) => Number(a.created_at) - Number(b.created_at) || String(a.id).localeCompare(String(b.id)));
   const players = new Map();
   const matchDelta = new Map(); // match id -> {before, after}
+  const ratingAt = new Map(); // match id -> the owner's rating going into that game (every row)
   const currentSeason = seasonOf(now);
 
   const playerOf = (uid, season) => {
@@ -96,6 +97,7 @@ export function buildLadder(rows, cfg, now) {
     const me = playerOf(m.user_id, season);
     const win = m.result === "win";
     const onPlay = !!Number(m.on_play);
+    ratingAt.set(m.id, me.rating);
 
     addResult(me.seasonRecord, win, onPlay);
     if (m.my_leader_id) {
@@ -145,5 +147,5 @@ export function buildLadder(rows, cfg, now) {
     p.tier = tierFor(p.rating, p.rank, cfg);
   }
 
-  return { season: currentSeason, players, ranked, matchDelta };
+  return { season: currentSeason, players, ranked, matchDelta, ratingAt };
 }
