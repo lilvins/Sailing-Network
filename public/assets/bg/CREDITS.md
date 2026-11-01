@@ -60,3 +60,8 @@ The Home backdrop: a 24x24 wave tile repeated on one night-blue colour, and a
 little sailboat, drawn pixel by pixel in `scripts/build-home-pattern.mjs`
 (project-original). Rebuild: `node scripts/build-home-pattern.mjs`
 
+## Pixel icons (src/features/pixel/icons.ts)
+The site's icon set (46 icons on a 12x12 grid) is drawn for this site, pixel by
+pixel, as text grids (project-original). The site mark is the first frame of
+Pixel Frog's ship helm (Treasure Hunters, CC0, see above).
+
