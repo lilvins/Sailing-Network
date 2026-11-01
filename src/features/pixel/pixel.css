@@ -11,9 +11,8 @@
 .snp.px{
   --hud:"Silkscreen",system-ui,sans-serif;
   --pixel:"VT323",ui-monospace,monospace;
-  --px-frame:2px solid rgba(242,243,245,0.18);
-  --px-shadow:4px 4px 0 rgba(0,0,0,0.55);
-  --px-shadow-sm:3px 3px 0 rgba(0,0,0,0.5);
+  /* sizes and shadows come from tokens.css (--px-border, --px-shadow…) */
+  --px-plank-border:var(--px-border) solid var(--px-ink);
 }
 .snp.px::before{display:none;} /* the old card-wall texture */
 
@@ -64,8 +63,9 @@
 /* ---------------- 2. the pass ---------------- */
 /* see-through panels so the scene reads between and behind them (dark only) */
 :root:not([data-theme="light"]) .snp.px{
-  --glass:rgba(12,16,28,0.86); --glass2:rgba(9,12,22,0.9);
-  --elev:rgba(14,18,30,0.86); --elev2:rgba(24,29,44,0.92);
+  /* walnut glass (tokens.css), a little see-through so the scene reads behind */
+  --glass:rgba(43,32,28,0.9); --glass2:rgba(29,20,17,0.92);
+  --elev:rgba(43,32,28,0.9); --elev2:rgba(58,43,37,0.94);
 }
 /* header: a dark band over the scene, no card-art photo */
 :root:not([data-theme="light"]) .snp.px .snp-head{background:rgba(6,9,18,0.72);}
@@ -83,8 +83,8 @@
 .snp.px .snp-body h3{font-size:13px;}
 
 /* panels: 2px frame + hard shadow */
-.snp.px :is(.so-card,.st-kpi,.msg-list,.msg-thread,.fr-list,.gc-room,.adm-table,.md-deck,.pv-stats,.pv-bio,.pv-deck,.mp-bio-box,.rec-table,.rk-pod,.snp-frame){border:var(--px-frame);box-shadow:var(--px-shadow);}
-.snp.px :is(.pd-modal,.md-modal,.db-modal){border:var(--px-frame);box-shadow:6px 6px 0 rgba(0,0,0,0.6);}
+.snp.px :is(.so-card,.st-kpi,.msg-list,.msg-thread,.fr-list,.gc-room,.adm-table,.md-deck,.pv-stats,.pv-bio,.pv-deck,.mp-bio-box,.rec-table,.rk-pod,.snp-frame){border:var(--px-plank-border);box-shadow:var(--px-shadow);}
+.snp.px :is(.pd-modal,.md-modal,.db-modal){border:var(--px-plank-border);box-shadow:6px 6px 0 rgba(0,0,0,0.6);}
 
 /* big numbers in VT323 */
 .snp.px .st-kpi-val{font-family:var(--pixel);font-weight:400;font-size:44px;line-height:1;}

@@ -5,24 +5,10 @@
    dark night glass inside; notices are parchment; buttons are chunky pixel
    blocks with a hard shadow. Pixel type only where it reads (titles, small
    flavour lines); body text keeps the sans face. Loaded after every page's
-   own CSS (src/main.tsx), so it restyles them without touching their files.
+   own CSS (src/main.tsx → pixel/index.css), so it restyles them without
+   touching their files. Windows, buttons, titles and props of the pages.
    =========================================================================== */
-:root {
-  --px-ink: #33323d;       /* Pixel Frog outline */
-  --px-wood: #daab76;      /* light timber */
-  --px-wood-dk: #b77357;   /* timber shade */
-  --px-brick: #985252;
-  --px-paper: #f2d3a0;
-  --px-night: #2b201c;     /* the walnut a window falls back to */
-  /* window inside: the wood board's own centre tile (Pixel Frog), 2x, under a
-     dark wash so light text reads on it — texture, never a flat colour */
-  --px-wash: rgba(28, 19, 17, 0.8);
-  --px-inside: linear-gradient(var(--px-wash), var(--px-wash)), url("/assets/ui/board-fill.png") 0 0 / 64px 64px repeat;
-  --px-gold: #ffd23f;
-  --px-red: #d63024;
-  --px-hud: "Silkscreen", "Sora", system-ui, sans-serif;
-  --px-flavor: "VT323", ui-monospace, monospace;
-}
+/* palette, sizes and art: tokens.css */
 
 /* ---- windows: timber frame, night inside (2× the 8px frame of the art) ---- */
 .hu-panel, .hu-log, .dr .card, .db-list, .db-deck, .db-detail, .rec-table,

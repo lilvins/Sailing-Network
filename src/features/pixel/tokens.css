@@ -1,0 +1,94 @@
+/* ===========================================================================
+   Pixel UI — tokens. The ONE place for the pixel palette, sizes and art.
+   Every colour comes from the wood / parchment / sea of the art we use
+   (Pixel Frog "Treasure Hunters", CC0; the CraftPix and ansimuz seas).
+   Change a number here, not in a page's CSS.
+   =========================================================================== */
+:root {
+  /* ---- wood & paper (sampled from Pixel Frog's board, paper and buttons) ---- */
+  --px-ink: #33323d;        /* the outline every piece of the art is drawn with */
+  --px-wood: #daab76;       /* light timber */
+  --px-wood-lt: #ecc893;    /* timber highlight */
+  --px-wood-dk: #b77357;    /* timber shade */
+  --px-brick: #985252;
+  --px-paper: #f2d3a0;
+  --px-paper-dk: #d9ac72;
+
+  /* ---- walnut: the dark wood inside windows and wells, darkest first ---- */
+  --px-walnut-0: #130d0b;   /* wells: inputs, chat boxes */
+  --px-walnut-1: #1d1411;   /* sunken rows */
+  --px-walnut-2: #2b201c;   /* a window's inside / a plank */
+  --px-walnut-3: #3a2b25;   /* a raised plank, hover */
+  --px-walnut-4: #4d3a30;   /* pressed / selected plank */
+  --px-night: var(--px-walnut-2); /* what a window falls back to without its texture */
+
+  /* ---- signals (from the art: the gold coin, the red flag, the green button) ---- */
+  --px-gold: #ffd23f;
+  --px-red: #d63024;
+  --px-green: #3f8f6a;
+  --px-sea: #0f3a4f;
+  --px-good: #7bd88f;       /* wins, online */
+  --px-bad: #ff8a73;        /* losses, errors */
+
+  /* ---- text ---- */
+  --px-text: #f6ead7;       /* light text on walnut */
+  --px-text-muted: #c9b294; /* secondary text on walnut (AA on --px-walnut-2) */
+  --px-text-ink: var(--px-ink); /* text on wood, paper and gold */
+
+  /* ---- lines inside windows ---- */
+  --px-line: rgba(218, 171, 118, 0.2);
+  --px-line-strong: rgba(218, 171, 118, 0.42);
+
+  /* ---- sizes: the art is 8px-ish, shown at 2x ---- */
+  --px-frame: 16px;          /* timber window frame */
+  --px-paper-frame: 12px;    /* parchment notice frame */
+  --px-btn-frame: 8px 8px 12px; /* pixel button: 3px top/sides, 6px bottom in the art → 2x */
+  --px-border: 3px;          /* plank outline */
+  --px-press: 3px;           /* how far a button sinks when pressed */
+  --px-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+  --px-shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.5);
+
+  /* ---- art (built by scripts/build-pixel-ui.mjs into public/assets/ui) ---- */
+  --px-img-board: url("/assets/ui/board.png");
+  --px-img-board-fill: url("/assets/ui/board-fill.png");
+  --px-img-paper: url("/assets/ui/paper.png");
+  --px-img-btn-red: url("/assets/ui/button-red.png");
+  --px-img-btn-gold: url("/assets/ui/button-gold.png");
+  --px-img-btn-green: url("/assets/ui/button-green.png");
+  /* a window's inside: the board's centre tile at 2x under a dark wash */
+  --px-wash: rgba(28, 19, 17, 0.8);
+  --px-inside: linear-gradient(var(--px-wash), var(--px-wash)), var(--px-img-board-fill) 0 0 / 64px 64px repeat;
+
+  /* ---- type: pixel faces only where they read (titles, labels, big numbers) ---- */
+  --px-hud: "Silkscreen", "Sora", system-ui, sans-serif;
+  --px-flavor: "VT323", ui-monospace, monospace;
+}
+
+/* ---------------------------------------------------------------------------
+   The site's older "night" chrome tokens, re-pointed at the walnut palette.
+   Pages that still paint with --night-*, --glass, --elev, --edge… now get
+   wood instead of flat navy/black, without touching their CSS. Dark theme
+   only: the light theme keeps its own values (theme.css).
+   --------------------------------------------------------------------------- */
+:root:not([data-theme="light"]) {
+  --night-1: var(--px-walnut-1);
+  --night-2: var(--px-walnut-2);
+  --night-3: var(--px-walnut-3);
+  --surface: var(--px-walnut-2);
+  --surface-2: var(--px-walnut-3);
+  --brass: var(--px-wood-dk);
+  --brass-dim: var(--px-line-strong);
+  --ivory: var(--px-text);
+  --ivory-muted: var(--px-text-muted);
+}
+:root:not([data-theme="light"]) .sn {
+  --elev: var(--px-walnut-2);
+  --elev2: var(--px-walnut-3);
+  --glass: var(--px-walnut-2);
+  --glass2: var(--px-walnut-1);
+  --edge: var(--px-line);
+  --edge2: var(--px-line-strong);
+  --brass: var(--px-wood-dk);
+  --brass-dim: var(--px-line-strong);
+  --muted: var(--px-text-muted);
+}

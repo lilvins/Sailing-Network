@@ -1,0 +1,5 @@
+/* Pixel UI — load order (imported last by src/main.tsx, after every page's CSS).
+   tokens → reusable pieces → skins that map older page markup onto them. */
+@import "./tokens.css";
+@import "./components.css";
+@import "./skin-core.css";

@@ -16,7 +16,7 @@ import { WelcomeDialog } from "./features/welcome/WelcomeDialog";
 // after App (and every page's CSS): the site-wide pixel UI restyles them
 import "@fontsource/silkscreen/700.css";
 import "@fontsource/vt323/400.css";
-import "./styles/pixel-ui.css";
+import "./features/pixel/index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
