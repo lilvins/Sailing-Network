@@ -61,7 +61,7 @@ const ART: Credit[] = [
     source: "https://pixelfrog-assets.itch.io/treasure-hunters",
     license: "CC0",
     licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
-    where: "The timber window frames, the parchment notices, Captain Clown Nose and Crabby in the empty pages",
+    where: "The timber windows and their wood inside, the parchment notices, the pixel buttons (the red ones recoloured), the candle, flag, chest and helm beside page titles, Captain Clown Nose and Crabby in the empty pages",
     preview: "/assets/ui/board.png",
   },
   {

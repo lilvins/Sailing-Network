@@ -59,7 +59,7 @@ export function AdminPage() {
 
   return (
     <div className="sn snp px adm">
-      <PixelScene kind="ocean" />
+      <PixelScene kind="night" />
       <header className="snp-head">
         <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}>
           <BackIcon />

@@ -13,9 +13,11 @@
   --px-wood-dk: #b77357;   /* timber shade */
   --px-brick: #985252;
   --px-paper: #f2d3a0;
-  --px-night: #2b201c;     /* window inside: dark stained walnut, the timber's own family */
-  /* plank seams every 26px, 2px dark (pixel-exact, no blur) */
-  --px-planks: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 26px);
+  --px-night: #2b201c;     /* the walnut a window falls back to */
+  /* window inside: the wood board's own centre tile (Pixel Frog), 2x, under a
+     dark wash so light text reads on it — texture, never a flat colour */
+  --px-wash: rgba(28, 19, 17, 0.8);
+  --px-inside: linear-gradient(var(--px-wash), var(--px-wash)), url("/assets/ui/board-fill.png") 0 0 / 64px 64px repeat;
   --px-gold: #ffd23f;
   --px-red: #d63024;
   --px-hud: "Silkscreen", "Sora", system-ui, sans-serif;
@@ -27,8 +29,8 @@
 .gc-room, .pv-stats, .pv-bio, .cr-sec, .snp-frame, .msg-list, .msg-thread, .fr-list {
   border: 16px solid transparent !important;
   border-image: url("/assets/ui/board.png") 8 / 16px / 0 repeat !important;
+  background: var(--px-inside) !important;
   background-color: var(--px-night) !important;
-  background-image: var(--px-planks) !important;
   background-clip: padding-box !important;
   image-rendering: pixelated;
   box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5) !important;
@@ -53,30 +55,42 @@
   text-transform: none !important;
   color: var(--px-wood) !important;
 }
-.snp-head { background: rgba(10, 12, 22, 0.9) !important; border-bottom: 4px solid var(--px-ink) !important; }
+/* page headers: a timber deck strip, not a flat bar */
+.snp-head { background: linear-gradient(rgba(20, 13, 12, 0.72), rgba(20, 13, 12, 0.72)), url("/assets/ui/board-fill.png") 0 0 / 64px 64px repeat !important; border-bottom: 4px solid var(--px-ink) !important; image-rendering: pixelated; }
 
-/* ---- buttons: chunky blocks that press onto their shadow ---- */
-.sn-btn-primary, .dr-host-btn, .dr-pool-btn, .dr-join, .md-new, .db-save, .rec-exit {
-  border: 3px solid var(--px-ink) !important;
+/* ---- buttons: Pixel Frog's buttons (9-slice, relief + shadow drawn in the art).
+   Red (recoloured from the green) = the primary action, gold = secondary,
+   green = watch. Frame: 3px top/sides, 6px bottom in the art → 2x. ---- */
+.sn-btn-primary, .dr-host-btn, .dr-pool-btn, .dr-join, .md-new, .db-save, .rec-exit,
+.sn-btn-ghost, .snp-back, .dr-back, .hu-sec-link, .snp-iconbtn, .hu-feed-open, .md-act, .mp-redeem, .fr-btn, .dr-join.watch {
+  border-style: solid !important;
+  border-width: 8px 8px 12px !important;
   border-radius: 0 !important;
-  box-shadow: 0 4px 0 var(--px-ink) !important;
+  background: none !important;
+  box-shadow: none !important;
+  image-rendering: pixelated;
+  transition: transform 60ms, filter 100ms !important;
+}
+.sn-btn-primary, .dr-host-btn, .dr-pool-btn, .dr-join, .md-new, .db-save, .rec-exit {
+  border-image: url("/assets/ui/button-red.png") 4 4 6 fill / 8px 8px 12px / 0 stretch !important;
+  color: #fff !important;
+  text-shadow: 1px 1px 0 #6c1a20;
   font-family: var(--px-hud) !important;
   letter-spacing: 0.05em !important;
-  transition: transform 60ms, box-shadow 60ms, filter 100ms !important;
 }
-.sn-btn-ghost, .snp-back, .dr-back, .hu-sec-link, .snp-iconbtn, .hu-feed-open, .md-act {
-  background: var(--px-wood) !important;
+.sn-btn-ghost, .snp-back, .dr-back, .hu-sec-link, .snp-iconbtn, .hu-feed-open, .md-act, .mp-redeem, .fr-btn {
+  border-image: url("/assets/ui/button-gold.png") 4 4 6 fill / 8px 8px 12px / 0 stretch !important;
   color: var(--px-ink) !important;
-  border: 3px solid var(--px-ink) !important;
-  border-radius: 0 !important;
-  box-shadow: 0 3px 0 var(--px-ink) !important;
 }
-.sn-btn-ghost:hover, .snp-back:hover, .dr-back:hover, .hu-sec-link:hover, .snp-iconbtn:hover, .hu-feed-open:hover, .md-act:hover { background: #e8c08f !important; }
+.fr-btn.primary { border-image: url("/assets/ui/button-red.png") 4 4 6 fill / 8px 8px 12px / 0 stretch !important; color: #fff !important; }
+.dr-join.watch { border-image: url("/assets/ui/button-green.png") 4 4 6 fill / 8px 8px 12px / 0 stretch !important; color: #fff !important; text-shadow: 1px 1px 0 #315b5d; }
+.sn-btn-primary:hover, .dr-host-btn:hover, .dr-pool-btn:hover, .dr-join:hover, .md-new:hover, .db-save:hover, .rec-exit:hover,
+.sn-btn-ghost:hover, .snp-back:hover, .dr-back:hover, .hu-sec-link:hover, .snp-iconbtn:hover, .hu-feed-open:hover, .md-act:hover { filter: brightness(1.08); }
 .sn-btn-primary:active, .dr-host-btn:active, .dr-pool-btn:active, .dr-join:active, .md-new:active, .db-save:active, .rec-exit:active,
 .sn-btn-ghost:active, .snp-back:active, .dr-back:active, .hu-sec-link:active, .snp-iconbtn:active, .hu-feed-open:active, .md-act:active {
   transform: translateY(3px) !important;
-  box-shadow: 0 0 0 transparent !important;
 }
+.sn-btn-primary:disabled, .dr-host-btn:disabled, .db-save:disabled, .md-new:disabled { filter: grayscale(0.85) brightness(0.8); }
 
 /* ---- the Home's numbers: a parchment notice nailed to the timber, not KPI tiles ---- */
 .hu-gauges {
@@ -129,7 +143,7 @@
 }
 
 /* ---- light theme: the same timber, parchment inside (its text is dark) ---- */
-:root[data-theme="light"] { --px-night: #f3dfbc; --px-planks: repeating-linear-gradient(180deg, rgba(120, 70, 40, 0.12) 0 2px, transparent 2px 26px); }
+:root[data-theme="light"] { --px-night: #f3dfbc; --px-wash: rgba(243, 223, 188, 0.9); }
 /* the Ship's Log floats on the night sky and keeps its light text: it stays night glass */
 :root[data-theme="light"] .hu-log { background-color: #2b201c !important; }
 :root[data-theme="light"] .hu-panel-h { border-bottom-color: rgba(51, 50, 61, 0.3) !important; }
@@ -171,3 +185,43 @@
 @media (max-width: 640px) {
   .pxs-credit { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; max-width: calc(100% - 24px) !important; font-size: 10px !important; line-height: 1.3; }
 }
+
+/* ---- small notices (supporter pass, record chips): parchment, not plain grey ---- */
+.mp-supporter, .rec-chip {
+  border: 10px solid transparent !important;
+  border-image: url("/assets/ui/paper.png") 6 fill / 10px / 0 repeat !important;
+  background: none !important;
+  color: var(--px-ink) !important;
+  image-rendering: pixelated;
+}
+.mp-supporter * { color: var(--px-ink) !important; }
+
+/* ---- art that says what a page is for: one prop next to every title ----
+   the crew (night harbour) a candle · competition (sunset) the colours ·
+   your decks (open sea) the treasure chest · the Duel Room the helm.
+   All Pixel Frog "Treasure Hunters" (CC0), 2x, animated in steps. */
+.pxs ~ .snp-head .snp-head-title { position: relative; padding-left: 84px; min-height: 64px; justify-content: center; }
+.pxs ~ .snp-head .snp-head-title::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 64px; height: 64px; image-rendering: pixelated; background-repeat: no-repeat;
+}
+.pxs-night ~ .snp-head .snp-head-title::before { background-image: url("/assets/ui/prop-candle.png"); background-size: 384px 64px; animation: px-prop6 0.8s steps(6) infinite; }
+.pxs-sunset ~ .snp-head .snp-head-title::before { width: 68px; background-image: url("/assets/ui/prop-flag.png"); background-size: 612px 186px; animation: px-flag 1s steps(9) infinite; }
+.pxs-ocean ~ .snp-head .snp-head-title::before { width: 76px; height: 42px; background-image: url("/assets/ui/prop-chest.png"); background-size: 760px 42px; animation: px-chest 1.4s steps(10) infinite; }
+.dr-title { display: inline-flex; align-items: center; gap: 14px; }
+.dr-title::before { content: ""; width: 62px; height: 64px; image-rendering: pixelated; background: url("/assets/ui/prop-helm.png") 0 0 / 372px 64px no-repeat; animation: px-helm 0.9s steps(6) infinite; }
+@keyframes px-prop6 { to { background-position-x: -384px; } }
+@keyframes px-flag { to { background-position-x: -612px; } }
+@keyframes px-chest { to { background-position-x: -760px; } }
+@keyframes px-helm { to { background-position-x: -372px; } }
+@media (prefers-reduced-motion: reduce) {
+  .pxs ~ .snp-head .snp-head-title::before, .dr-title::before { animation: none; }
+}
+@media (max-width: 620px) {
+  .pxs ~ .snp-head .snp-head-title { padding-left: 54px; min-height: 44px; }
+  .pxs ~ .snp-head .snp-head-title::before { transform: translateY(-50%) scale(0.66); transform-origin: left center; }
+  .dr-title::before { display: none; }
+}
+
+/* Duel Room: the JOIN buttons sit in narrow rows — a compact button keeps the names whole */
+.dr .dr-join { padding: 2px 8px !important; font-size: 11px !important; }
