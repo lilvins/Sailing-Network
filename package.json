@@ -15,6 +15,7 @@
     "seed:admin": "node server/seed-admin.mjs",
     "seed:demo": "node server/seed-demo.mjs",
     "seed:meta": "node server/seed-meta-decks.mjs",
+    "seed:ladder": "node server/seed-ladder.mjs",
     "fetch:meta": "node scripts/fetch-meta-decks.mjs",
     "seed:avatars": "node server/seed-avatars.mjs",
     "db:peek": "node server/peek.mjs",

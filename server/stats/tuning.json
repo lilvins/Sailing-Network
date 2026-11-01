@@ -1,0 +1,39 @@
+{
+  "glicko": {
+    "startRating": 1500,
+    "startRd": 350,
+    "startVol": 0.06,
+    "tau": 0.5,
+    "minRd": 45
+  },
+  "season": {
+    "comment": "One season per calendar month (UTC). At a new season every rating is pulled halfway back to the start rating and RD is raised so placements move fast again.",
+    "softResetKeep": 0.5,
+    "resetRd": 160
+  },
+  "bounty": {
+    "comment": "Bounty in Berries = rating x berriesPerPoint. 1500 rating = 1.5B.",
+    "berriesPerPoint": 1000000
+  },
+  "provisionalRd": 110,
+  "leaderboard": {
+    "minGames": 5,
+    "minGamesWithLeader": 5,
+    "topLeaders": 3
+  },
+  "tiers": [
+    { "id": "east-blue",  "name": "East Blue",  "min": 0 },
+    { "id": "grand-line", "name": "Grand Line", "min": 1400 },
+    { "id": "new-world",  "name": "New World",  "min": 1500 },
+    { "id": "supernova",  "name": "Supernova",  "min": 1600 },
+    { "id": "warlord",    "name": "Warlord",    "min": 1700 },
+    { "id": "emperor",    "name": "Emperor",    "min": 1800 }
+  ],
+  "topTier": { "id": "pirate-king", "name": "Pirate King", "topN": 1 },
+  "meta": {
+    "minGames": 20,
+    "matrixLeaders": 10,
+    "moversDays": 7
+  },
+  "recentMatches": 15
+}

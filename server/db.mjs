@@ -286,6 +286,23 @@ async function runMigrations() {
     CREATE INDEX IF NOT EXISTS idx_bans_user ON bans(user_id);
     CREATE INDEX IF NOT EXISTS idx_bans_exp  ON bans(expires_at);
   `);
+
+  // M3: country on the profile (ISO 3166 alpha-2, chosen by the user; '' = unset).
+  const profCols = await db.execute(`PRAGMA table_info(profiles)`);
+  if (!profCols.rows.some((c) => c.name === "country")) {
+    await db.execute(`ALTER TABLE profiles ADD COLUMN country TEXT NOT NULL DEFAULT ''`);
+  }
+
+  // M4: follows — one-way "I follow this captain" (friendships stay two-way).
+  await db.executeMultiple(`
+    CREATE TABLE IF NOT EXISTS follows (
+      follower_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      followee_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at  INTEGER NOT NULL,
+      PRIMARY KEY (follower_id, followee_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_follows_followee ON follows(followee_id);
+  `);
 }
 
 // thin query helpers

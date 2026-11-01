@@ -27,12 +27,12 @@ import {
   createMatchSession, getMatchSession, joinMatchSession, completeMatchSession, listActiveMatches, getUserMatches, matchSessionToClient,
   joinQueue, leaveQueue, getQueuedPlayers, findOpponentForQueue,
   findAndPairMatches, getQueueStatus, markMatchReady, expireStaleMatches, estimateWaitLabel,
-  ensureRating, getRating, updateRating, getLeaderboard,
+  ensureRating, getRating, updateRating,
   postGlobalMessage, listGlobalMessages, globalMessageToClient,
   createNotification, listNotifications, countUnreadNotifications, markNotificationsRead, notificationToClient,
   banUser, unbanUser, getActiveBan, listBans, banToClient,
-  computeMeta,
 } from "./store.mjs";
+import { leaderboard as ladderBoard, profileStats, meta as metaStats } from "./stats/index.mjs";
 
 const COOKIE = "sn_session";
 const isProd = process.env.NODE_ENV === "production";
@@ -248,6 +248,7 @@ const profilePatchSchema = z.object({
   avatarColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   favoriteLeader: z.string().max(20).nullable().optional(),
   supporter: z.boolean().optional(),
+  country: z.string().regex(/^([A-Z]{2})?$/).optional(),
 });
 const cardEntrySchema = z.object({ id: z.string().max(20), count: z.number().int().min(1).max(99) });
 const deckCreateSchema = z.object({
@@ -278,13 +279,15 @@ app.patch("/api/me/profile", async (req, reply) => {
   if (p.data.avatarColor !== undefined) fields.avatar_color = p.data.avatarColor;
   if (p.data.favoriteLeader !== undefined) fields.favorite_leader = p.data.favoriteLeader;
   if (p.data.supporter !== undefined) fields.supporter = p.data.supporter ? 1 : 0;
+  if (p.data.country !== undefined) fields.country = p.data.country;
   const profile = await updateProfile(user.id, fields);
   return reply.send({ profile: profileToClient(profile) });
 });
 
 // public profile by username (any logged-in user may view)
 app.get("/api/profiles/:username", async (req, reply) => {
-  if (!(await requireUser(req, reply))) return;
+  const viewer = await requireUser(req, reply);
+  if (!viewer) return;
   const target = await getUserByUsername(req.params.username);
   if (!target) return reply.code(404).send({ error: "User not found" });
   const profile = await ensureProfile(target.id);
@@ -293,7 +296,41 @@ app.get("/api/profiles/:username", async (req, reply) => {
     user: publicUser(target),
     profile: profileToClient(profile),
     decks: decks.map(deckSummary),
+    social: await followCounts(target.id, viewer.id),
   });
+});
+
+// ladder entry, rating history, per-leader stats and recent games of a captain
+app.get("/api/profiles/:username/stats", async (req, reply) => {
+  if (!(await requireUser(req, reply))) return;
+  const target = await getUserByUsername(req.params.username);
+  if (!target) return reply.code(404).send({ error: "User not found" });
+  return reply.send(await profileStats(target.id));
+});
+
+// ---- follows (one-way; friendships stay two-way) ----
+async function followCounts(userId, viewerId) {
+  const f = await get(`SELECT COUNT(*) AS c FROM follows WHERE followee_id=?`, [userId]);
+  const g = await get(`SELECT COUNT(*) AS c FROM follows WHERE follower_id=?`, [userId]);
+  const me = await get(`SELECT 1 AS x FROM follows WHERE follower_id=? AND followee_id=?`, [viewerId, userId]);
+  return { followers: Number(f.c), following: Number(g.c), isFollowing: !!me };
+}
+app.post("/api/follows/:username", async (req, reply) => {
+  const user = await requireUser(req, reply);
+  if (!user) return;
+  const target = await getUserByUsername(req.params.username);
+  if (!target) return reply.code(404).send({ error: "User not found" });
+  if (target.id === user.id) return reply.code(400).send({ error: "You can't follow yourself" });
+  await run(`INSERT OR IGNORE INTO follows (follower_id, followee_id, created_at) VALUES (?,?,?)`, [user.id, target.id, Date.now()]);
+  return reply.send({ social: await followCounts(target.id, user.id) });
+});
+app.delete("/api/follows/:username", async (req, reply) => {
+  const user = await requireUser(req, reply);
+  if (!user) return;
+  const target = await getUserByUsername(req.params.username);
+  if (!target) return reply.code(404).send({ error: "User not found" });
+  await run(`DELETE FROM follows WHERE follower_id=? AND followee_id=?`, [user.id, target.id]);
+  return reply.send({ social: await followCounts(target.id, user.id) });
 });
 
 // directory of captains
@@ -413,7 +450,9 @@ app.get("/api/me/stats", async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const decks = await listDecks(user.id);
-  const matches = await allMatches(user.id);
+  const days = Math.max(0, parseInt(req.query.days || 0) || 0);
+  const since = days ? Date.now() - days * 24 * 60 * 60 * 1000 : 0;
+  const matches = (await allMatches(user.id)).filter((m) => Number(m.created_at) >= since);
 
   const byDeck = new Map();
   for (const d of decks) {
@@ -774,19 +813,12 @@ app.post("/api/queue/tick", async (req, reply) => {
 });
 
 // ---- leaderboard ----
+// Season ladder built from the match history (server/stats). Filters: ?leader=OP11-041&country=IT
 app.get("/api/leaderboard", async (req, reply) => {
-  const limit = Math.min(parseInt(req.query.limit || 100), 1000);
-  const leaders = await getLeaderboard(limit);
-  const rows = leaders.map(l => ({
-    userId: l.user_id,
-    username: l.username,
-    displayName: l.display_name,
-    rating: l.rating,
-    rd: l.rd,
-    wins: l.wins || 0,
-    losses: l.losses || 0,
-  }));
-  return reply.send({ leaders: rows });
+  const limit = Math.min(parseInt(req.query.limit || 100) || 100, 1000);
+  const leader = typeof req.query.leader === "string" ? req.query.leader.slice(0, 20) : "";
+  const country = typeof req.query.country === "string" ? req.query.country.slice(0, 2).toUpperCase() : "";
+  return reply.send(await ladderBoard({ leader, country, limit }));
 });
 
 // ---- global chat ----
@@ -829,10 +861,12 @@ app.post("/api/me/notifications/read", async (req, reply) => {
 });
 
 // ---- meta analytics (global, from real match history) ----
+// ?days=7|30|0 (0 = all time) · ?min= minimum games for a leader to be "enough" data
 app.get("/api/meta", async (req, reply) => {
   if (!(await requireUser(req, reply))) return;
-  const leaders = await computeMeta();
-  return reply.send({ leaders });
+  const days = Math.max(0, Math.min(365, parseInt(req.query.days || 0) || 0));
+  const min = req.query.min !== undefined ? Math.max(1, parseInt(req.query.min) || 1) : undefined;
+  return reply.send(await metaStats({ days, ...(min ? { minGames: min } : {}) }));
 });
 
 // ---- consolidated polling: one call for all the badges ----

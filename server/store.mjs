@@ -32,6 +32,7 @@ export const profileToClient = (p) =>
     avatarColor: p.avatar_color,
     favoriteLeader: p.favorite_leader,
     supporter: !!p.supporter,
+    country: p.country || "",
     wins: p.wins,
     losses: p.losses,
   };
@@ -147,7 +148,7 @@ export const listMatches = (uid, limit = 60) =>
 
 // all matches (lean) for stats aggregation
 export const allMatches = (uid) =>
-  all(`SELECT my_deck_id, my_leader_id, opp_leader_id, result, on_play FROM matches WHERE user_id=?`, [uid]);
+  all(`SELECT my_deck_id, my_leader_id, opp_leader_id, result, on_play, created_at FROM matches WHERE user_id=?`, [uid]);
 
 export const matchToClient = (m) => ({
   id: m.id,
@@ -696,18 +697,6 @@ export async function updateRating(userId, newRating, newRd, newVol) {
   return get(`SELECT * FROM user_ratings WHERE user_id=?`, [userId]);
 }
 
-export async function getLeaderboard(limit = 100) {
-  return all(
-    `SELECT ur.*, u.username, u.display_name, p.wins, p.losses
-     FROM user_ratings ur
-     JOIN users u ON ur.user_id = u.id
-     LEFT JOIN profiles p ON ur.user_id = p.user_id
-     ORDER BY ur.rating DESC
-     LIMIT ?`,
-    [limit]
-  );
-}
-
 // ---------- presence reliability ----------
 // If a user's last heartbeat is older than this, treat them as offline even if
 // their stored status says otherwise (covers tabs closed without logout).
@@ -846,32 +835,4 @@ export const banToClient = (b) => ({
   active: b.expires_at == null || b.expires_at > Date.now(),
 });
 
-// ---------- meta analytics (from the real match history) ----------
-export async function computeMeta() {
-  // win rate per leader played (my_leader_id) + popularity (appearances as either side)
-  const played = await all(
-    `SELECT my_leader_id AS leader, COUNT(*) AS games, SUM(CASE WHEN result='win' THEN 1 ELSE 0 END) AS wins
-     FROM matches WHERE my_leader_id IS NOT NULL GROUP BY my_leader_id`
-  );
-  const faced = await all(
-    `SELECT opp_leader_id AS leader, COUNT(*) AS faced FROM matches WHERE opp_leader_id IS NOT NULL GROUP BY opp_leader_id`
-  );
-  const facedMap = new Map(faced.map((r) => [r.leader, Number(r.faced)]));
-  const totalGames = played.reduce((a, r) => a + Number(r.games), 0) || 1;
-  return played
-    .map((r) => {
-      const games = Number(r.games);
-      const wins = Number(r.wins);
-      const appearances = games + (facedMap.get(r.leader) || 0);
-      return {
-        leaderId: r.leader,
-        games,
-        wins,
-        losses: games - wins,
-        winRate: Math.round((wins / Math.max(1, games)) * 100),
-        appearances,
-        share: Math.round((games / totalGames) * 1000) / 10, // % of recorded games, 1 decimal
-      };
-    })
-    .sort((a, b) => b.appearances - a.appearances);
-}
+// Meta analytics and the ranked ladder live in server/stats/.

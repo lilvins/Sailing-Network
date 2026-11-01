@@ -11,6 +11,7 @@ Stack: **Fastify 5** · **libsql** (SQLite, prebuilt binaries — no compiler ne
 ```bash
 npm run seed:admin      # create the first admin (once)
 npm run seed:demo       # create demo captains + real egmanevents decklists (once)
+npm run seed:ladder     # ~40 more demo captains + 60 days of made-up games for the ladder (once)
 npm run server          # start API on http://localhost:8787
 ```
 
@@ -71,6 +72,10 @@ If the email/username already exists, that user is **promoted** to admin.
 | POST | `/api/threads/:username` | cookie | `{body}` | send a direct message |
 | POST | `/api/threads/:username/read` | cookie | — | mark thread as read |
 | GET | `/api/stats` | — | — | public counts (captains/decks/matches) |
+| GET | `/api/leaderboard` | — | `?limit&leader&country` | season ladder by Bounty, tier distribution, rules (`server/stats`) |
+| GET | `/api/profiles/:username/stats` | cookie | — | Bounty, rank, tier, history, past seasons, per-leader + matchup stats, recent games |
+| POST/DELETE | `/api/follows/:username` | cookie | — | follow / unfollow a captain (one-way) |
+| GET | `/api/meta` | cookie | `?days&min` | per-leader play rate, WR ± 95% range, 1st/2nd, adjusted WR, movers, matchup matrix |
 | GET | `/api/admin/users` | admin | — | list all users |
 | PATCH | `/api/admin/users/:id/role` | admin | `{role:"user"\|"admin"}` | can't demote the last admin |
 | GET | `/api/health` | — | — | `{ok:true}` |
