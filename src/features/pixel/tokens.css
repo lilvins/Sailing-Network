@@ -68,7 +68,7 @@
    The site's older "night" chrome tokens, re-pointed at the walnut palette.
    Pages that still paint with --night-*, --glass, --elev, --edge… now get
    wood instead of flat navy/black, without touching their CSS. Dark theme
-   only: the light theme keeps its own values (theme.css).
+   only.
    --------------------------------------------------------------------------- */
 :root:not([data-theme="light"]) {
   --night-1: var(--px-walnut-1);

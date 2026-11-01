@@ -128,12 +128,6 @@
   box-shadow: inset 0 0 0 2px var(--px-wood-dk), 5px 5px 0 rgba(0, 0, 0, 0.5) !important;
 }
 
-/* ---- light theme: the same timber, parchment inside (its text is dark) ---- */
-:root[data-theme="light"] { --px-night: #f3dfbc; --px-wash: rgba(243, 223, 188, 0.9); }
-/* the Ship's Log floats on the night sky and keeps its light text: it stays night glass */
-:root[data-theme="light"] .hu-log { background-color: #2b201c !important; }
-:root[data-theme="light"] .hu-panel-h { border-bottom-color: rgba(51, 50, 61, 0.3) !important; }
-
 /* ---- Duel Records on a phone: one card per duel instead of a 760px table ----
    children of a row: 1 avatar, 2 opponent, 3 your deck, 4 format, 5 result,
    6 points, 7 opponent leader, 8 date, 9 went 1st/2nd */

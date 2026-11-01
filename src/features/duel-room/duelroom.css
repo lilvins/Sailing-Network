@@ -16,8 +16,7 @@
 .dr-back{width:40px;height:40px;border-radius:0;background:var(--glass);border:1px solid var(--edge2);display:flex;align-items:center;justify-content:center;color:var(--txt);text-decoration:none;transition:border-color .1s,background .1s;}
 .dr-back:hover{border-color:var(--acc);background:rgba(226,59,50,0.12);}
 .dr-title{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:2px;text-transform:uppercase;text-align:center;}
-/* margin-right clears the fixed theme toggle (the .sn * reset zeroes the theme.css rule) */
-.dr-head-r{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-right:58px;}
+.dr-head-r{display:flex;align-items:center;justify-content:flex-end;gap:12px;}
 
 /* ---- TOP region: pool + open duels ---- */
 .dr-top{flex:1 1 auto;display:grid;grid-template-columns:300px 1fr;grid-template-rows:minmax(0, 1fr);gap:14px;min-height:0;overflow:hidden;}

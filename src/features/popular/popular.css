@@ -225,24 +225,6 @@
   }
 }
 
-/* light mode */
-[data-theme="light"] .pd-region:hover,
-[data-theme="light"] .pd-region {
-  border-color: rgba(20, 30, 45, 0.07);
-}
-[data-theme="light"] .pd-region:hover {
-  background: rgba(20, 30, 45, 0.05);
-}
-[data-theme="light"] .pd-list {
-  border-color: rgba(20, 30, 45, 0.07);
-}
-[data-theme="light"] .pd-btn {
-  background: rgba(20, 30, 45, 0.05);
-}
-[data-theme="light"] .pd-region-flag {
-  background: rgba(20, 30, 45, 0.05);
-}
-
 /* ---- enlarged elements ---- */
 .pd-region {
   padding: 16px;
@@ -289,9 +271,6 @@
   color: var(--muted);
   display: flex;
   align-items: center;
-}
-[data-theme="light"] .pd-list:hover {
-  background: rgba(20, 30, 45, 0.05);
 }
 
 /* ---- decklist popup (modal) ---- */

@@ -222,9 +222,7 @@
 
 /* header */
 .hu-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-/* margin-right clears the fixed theme toggle (the .sn * reset would zero the
-   theme.css clearance rule, so it lives here, after the reset) */
-.hu-head-r{display:flex;align-items:center;gap:12px;margin-right:60px;}
+.hu-head-r{display:flex;align-items:center;gap:12px;}
 .hu-me{display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;padding:3px 8px 3px 3px;cursor:pointer;color:var(--txt);transition:border-color .1s,background .1s;}
 .hu-me:hover{border-color:var(--edge2);background:var(--elev);}
 /* persistent social icons (Messages / Notifications), always in the header */

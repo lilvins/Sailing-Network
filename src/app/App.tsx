@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useUiStore, type View } from "./uiStore";
 import { useAuthStore } from "./authStore";
 import { usePresenceStore } from "../lib/presenceStore";
-import { ThemeToggle } from "./ThemeToggle";
 import { LoginPage } from "../features/login/LoginPage";
 import { HomePage } from "../features/home/HomePage";
 import { DuelRoomPage } from "../features/duel-room/DuelRoomPage";
@@ -15,7 +14,6 @@ import { FriendsPage } from "../features/social/FriendsPage";
 import { DirectoryPage } from "../features/social/DirectoryPage";
 import { GlobalChatPage } from "../features/social/GlobalChatPage";
 import { MetaPage } from "../features/social/MetaPage";
-import { NotificationsPage } from "../features/social/NotificationsPage";
 import { DeckBuilderPage } from "../features/deck-builder/DeckBuilderPage";
 import { MyDecksPage } from "../features/deck-builder/MyDecksPage";
 import { PopularDecklistsPage } from "../features/popular/PopularDecklistsPage";
@@ -112,8 +110,6 @@ function CurrentView({ view }: { view: View }) {
       return <GlobalChatPage />;
     case "meta":
       return <MetaPage />;
-    case "notifications":
-      return <NotificationsPage />;
     case "deck-constructor":
       return <DeckBuilderPage />;
     case "my-decks":
@@ -170,26 +166,11 @@ export function App() {
 
   if (status === "loading") return <AppLoading />;
 
-  if (!user) {
-    return (
-      <>
-        <LoginPage />
-        <ThemeToggle />
-      </>
-    );
-  }
+  if (!user) return <LoginPage />;
 
   // authenticated: bounce off login, and keep non-admins out of the admin area
   let effectiveView = view;
   if (view === "login") effectiveView = "home";
   if (view === "admin" && user.role !== "admin") effectiveView = "home";
-
-  // the play tables are full-screen game stages: no app chrome over them
-  const onTable = effectiveView === "board" || effectiveView === "board2" || effectiveView === "board-auto" || effectiveView === "board-bot";
-  return (
-    <>
-      <CurrentView view={effectiveView} />
-      {!onTable && <ThemeToggle />}
-    </>
-  );
+  return <CurrentView view={effectiveView} />;
 }

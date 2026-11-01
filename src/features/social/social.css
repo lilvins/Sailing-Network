@@ -691,17 +691,6 @@
   }
 }
 
-/* light mode */
-[data-theme="light"] .st2-deck:hover {
-  background: rgba(20, 30, 45, 0.05);
-}
-[data-theme="light"] .st2-deck {
-  border-color: rgba(20, 30, 45, 0.07);
-}
-[data-theme="light"] .st2-mu {
-  background: rgba(20, 30, 45, 0.03);
-}
-
 /* ============ STATS — section-title dropdown + Best lists ============ */
 .st2-mode {
   position: relative;
@@ -805,9 +794,6 @@
 }
 .st2-list-wr.good { color: #5fdd8f; }
 .st2-list-wr.bad { color: #ff8079; }
-
-[data-theme="light"] .st2-mode select option { background: #ffffff; color: #16202e; }
-[data-theme="light"] .st2-list-row { border-color: rgba(20, 30, 45, 0.07); }
 
 /* ============ Best lists — full decklist of the SAME deck ============ */
 .bl-panel {

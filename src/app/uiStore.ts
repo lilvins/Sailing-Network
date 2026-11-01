@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 /**
- * UI-only state: navigation + theme. Deliberately SEPARATE from the game store:
+ * UI-only state: navigation. Deliberately SEPARATE from the game store:
  * presentation, not game state, so the (serializable) GameState stays clean.
  */
 export type View =
@@ -20,7 +20,6 @@ export type View =
   | "friends"
   | "global-chat"
   | "meta"
-  | "notifications"
   | "popular-decklists"
   | "admin"
   | "credits" // artists, fonts and data sources
@@ -29,33 +28,9 @@ export type View =
   | "board-auto" // AUTOSIM full-rules board (engine-driven)
   | "board-bot"; // optcg-ai engine + bot (Play vs Bot)
 
-export type Theme = "dark" | "light";
-
-const THEME_KEY = "sn-theme";
-
-function readInitialTheme(): Theme {
-  if (typeof localStorage !== "undefined") {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-  }
-  return "dark";
-}
-
-/** Apply the theme to <html data-theme> so CSS can switch palettes globally. */
-function applyTheme(theme: Theme) {
-  if (typeof document !== "undefined") {
-    document.documentElement.dataset.theme = theme;
-  }
-}
-
-const initialTheme = readInitialTheme();
-applyTheme(initialTheme); // set before first paint
-
 interface UiState {
   view: View;
   setView: (view: View) => void;
-  theme: Theme;
-  toggleTheme: () => void;
   /** A decklist (cardId -> count) handed off to the Deck Builder via "Import". */
   pendingImport: Record<string, number> | null;
   setPendingImport: (deck: Record<string, number> | null) => void;
@@ -75,14 +50,6 @@ export const useUiStore = create<UiState>((set) => ({
   view: "login", // the landing/login is the entry screen
 
   setView: (view) => set({ view }),
-  theme: initialTheme,
-  toggleTheme: () =>
-    set((s) => {
-      const theme: Theme = s.theme === "dark" ? "light" : "dark";
-      if (typeof localStorage !== "undefined") localStorage.setItem(THEME_KEY, theme);
-      applyTheme(theme);
-      return { theme };
-    }),
   pendingImport: null,
   setPendingImport: (pendingImport) => set({ pendingImport }),
   editingDeckId: null,

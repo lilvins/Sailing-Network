@@ -24,10 +24,6 @@
 .snp .mono{font-variant-numeric:tabular-nums;}
 /* the .snp * reset above zeroes padding on shared buttons from home_styles.css — restore it */
 .snp .sn-btn-ghost,.snp .sn-btn-primary{padding:13px 22px;justify-content:center;}
-/* keep header-right content clear of the fixed theme toggle (the .snp * reset
-   zeroes the equivalent theme.css rule, so it must live after the reset) */
-.snp-head-r{margin-right:58px;}
-@media (max-width:480px){ .snp-head-r{margin-right:46px;} }
 
 /* ---------- shared header + photographic section hero ---------- */
 .snp-head{position:relative;isolation:isolate;}
