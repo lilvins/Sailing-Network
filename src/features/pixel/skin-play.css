@@ -105,3 +105,32 @@
 .bb-btn:hover { filter: brightness(1.08); }
 .bb-btn:active { transform: translateY(var(--px-press)); }
 .bb-sideblock { box-shadow: inset 0 0 0 1px var(--px-wood-dk); }
+
+/* ---- the matchmaking board (board/): its "choose your deck" window ---- */
+.ng-overlay { background: rgba(19, 13, 11, 0.92) !important; }
+.ng-panel {
+  border-radius: 0 !important;
+  border: var(--px-frame) solid transparent !important;
+  border-image: var(--px-img-board) 8 / var(--px-frame) / 0 repeat !important;
+  background: var(--px-inside) !important;
+  background-clip: padding-box !important;
+  backdrop-filter: none !important;
+  box-shadow: var(--px-shadow) !important;
+}
+.ng-kicker { color: var(--px-wood) !important; }
+.ng-title { font-family: var(--px-hud) !important; color: var(--px-text) !important; }
+.ng-sub, .ng-note, .ng-deck-sub { color: var(--px-text-muted) !important; }
+.ng-deck { border-radius: 0 !important; border: 2px solid var(--px-ink) !important; background: var(--px-walnut-2) !important; box-shadow: inset 0 0 0 1px var(--px-wood-dk) !important; }
+.ng-deck.on { background: rgba(218, 171, 118, 0.18) !important; box-shadow: inset 4px 0 0 var(--px-wood) !important; }
+.ng-deck-art { border-radius: 0 !important; }
+.ng-btn {
+  border-radius: 0 !important;
+  border-style: solid !important;
+  border-width: var(--px-btn-frame) !important;
+  border-image: var(--px-img-btn-gold) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important;
+  background: none !important;
+  color: var(--px-text-ink) !important;
+  box-shadow: none !important;
+  image-rendering: pixelated;
+}
+.ng-btn.primary { border-image-source: var(--px-img-btn-red) !important; color: #fff !important; text-shadow: 1px 1px 0 #6c1a20; }
