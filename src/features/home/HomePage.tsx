@@ -15,6 +15,7 @@ import { loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { NightSea } from "./NightSea";
 import { PixelBackdrop } from "./PixelBackdrop";
+import { formatBounty } from "../stats/format";
 import { useAutoStore } from "../board-auto/autoStore";
 import "./home.css";
 
@@ -118,7 +119,7 @@ const MODES: Mode[] = [
     id: "rankings",
     badge: "Ranked",
     name: "Leaderboard",
-    sub: "Every captain by rating. Climb the board.",
+    sub: "Season ladder by Bounty. Climb the board.",
     go: "Open",
     view: "rankings",
     cls: "m-rank",
@@ -265,7 +266,7 @@ export function HomePage() {
     [accepted, presences],
   );
 
-  /* ELO board when rated duels exist; otherwise real directory records (by wins) */
+  /* season Bounty ladder when it has ranked captains; otherwise real directory records (by wins) */
   const fallbackBoard = useMemo(
     () =>
       [...dir]
@@ -414,7 +415,7 @@ export function HomePage() {
               {board?.length === 0 && !useFallback && (
                 <div className="hu-empty">
                   <img src="/assets/bg/avatar-moon.png" alt="" />
-                  No rated duels yet. The board fills as ranked games land.
+                  No ranked captains this season yet. The board fills as games land.
                 </div>
               )}
               {useFallback &&
@@ -444,9 +445,7 @@ export function HomePage() {
                   <span className="hu-wl">
                     <span className="w">{l.wins}W</span> <span className="l">{l.losses}L</span>
                   </span>
-                  <span className="hu-num">
-                    {Math.round(l.rating)} <small>ELO</small>
-                  </span>
+                  <span className="hu-num">{formatBounty(l.bounty)}</span>
                 </button>
               ))}
             </div>

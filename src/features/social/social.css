@@ -1006,3 +1006,22 @@
 .notif-ico.t-friend_accept{color:#5fdd8f;}
 .notif-ico.t-message{color:#ffd98a;}
 .notif-dot{width:9px;height:9px;border-radius:0;background:var(--acc,#e23b32);flex:0 0 auto;align-self:center;}
+
+/* ===== Meta v2 ===== */
+.meta2-row{grid-template-columns:44px 1.6fr 1.3fr 1.5fr 0.7fr 0.8fr 0.8fr 0.6fr !important;}
+.meta2-row.meta2-thin{opacity:.6;}
+.meta2-sharenum{display:flex;flex-direction:column;align-items:flex-end;font:700 12.5px var(--display);color:var(--txt);min-width:46px;}
+.meta2-sharenum small{font-size:10.5px;}
+.meta2-wr{display:flex;flex-direction:column;gap:2px;}
+.meta2-small{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+.meta2-foot{margin-top:10px;}
+@media (max-width:900px){ .meta2-row{min-width:900px;} }
+
+/* ===== My Statistics v3 ===== */
+.st3-profile{padding:9px 14px;font-size:12.5px;}
+.st3-muh{justify-content:space-between;flex-wrap:wrap;}
+.st3-mu-wr{display:flex;flex-direction:column;gap:4px;align-items:center;width:100%;padding:0 6px;}
+.st3-mu-wr .sx-wrbar{width:100%;}
+.st2-mu.st3-small{opacity:.55;}
+.st2-content .st2-mu-wrap{flex:0 0 auto;}
+.st2-decks{max-height:calc(100dvh - 230px);overflow-y:auto;}

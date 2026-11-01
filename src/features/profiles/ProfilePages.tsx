@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState, type ReactNode, type CSSProperties } from "react";
 import { useUiStore } from "../../app/uiStore";
 import { useAuthStore } from "../../app/authStore";
-import { api, type DirectoryUser, type Match } from "../../lib/api";
+import { api, type Match } from "../../lib/api";
+import { COUNTRIES, countryName } from "../stats/format";
 import { loadLeaders, loadCardsById, cardColorHex, type Card } from "../cards/cardsDb";
 import { LeaderAvatar } from "../cards/LeaderAvatar";
 import "../home/home.css"; // shared .sn vars + atoms (kicker, buttons, livedot)
 import "./profiles.css";
 import { PixelScene } from "../pixel/PixelScene";
 
-/* Ported from Claude design (profiles.jsx → ProfileViewer, MyProfile,
-   DuelRecords, Rankings). Root is `.sn snp` so the design palette vars and
+/* Ported from Claude design (profiles.jsx → MyProfile, DuelRecords; the
+   Profile Viewer and Rankings live in ProfileViewer.tsx / Rankings.tsx). Root is `.sn snp` so the design palette vars and
    shared atoms resolve. Links wired to the uiStore router. */
 
 const SNP_ICON = {
@@ -209,7 +210,7 @@ export function Avatar2({ name, hue }: { name: string; hue: string }) {
 }
 
 /** Real leader portrait (full card art) with a colored glow fallback. */
-function LeaderArt({ card, fallbackName, color }: { card?: Card | null; fallbackName?: string; color?: string }) {
+export function LeaderArt({ card, fallbackName, color }: { card?: Card | null; fallbackName?: string; color?: string }) {
   const c = color || (card ? cardColorHex(card) : "#3a4a5e");
   return (
     <div className="snp-ph">
@@ -229,170 +230,7 @@ function LeaderArt({ card, fallbackName, color }: { card?: Card | null; fallback
   );
 }
 
-const winRatePct = (w: number, l: number) => Math.round((w / Math.max(1, w + l)) * 100);
-const fmtDate = (ms: number) => new Date(ms).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-const tierOf = (wins: number) => (wins >= 200 ? "Yonko Tier" : wins >= 100 ? "Warlord Tier" : wins >= 40 ? "Supernova Tier" : "Rookie Tier");
-
-/* ================= PROFILE VIEWER ================= */
-interface ProfileData {
-  user: { username: string; displayName: string; role: string; createdAt: number };
-  profile: { bio: string; avatarColor: string; favoriteLeader: string | null; supporter: boolean; wins: number; losses: number };
-  decks: { id: string; name: string; leaderId: string | null; leaderName: string; count: number; format: string; fav: boolean; wins: number; losses: number }[];
-}
-
-export function ProfileViewer() {
-  const setView = useUiStore((s) => s.setView);
-  const viewingUsername = useUiStore((s) => s.viewingUsername);
-  const openMessagesWith = useUiStore((s) => s.openMessagesWith);
-  const me = useAuthStore((s) => s.user);
-  const [dir, setDir] = useState<DirectoryUser[]>([]);
-  const [username, setUsername] = useState("");
-  const [data, setData] = useState<ProfileData | null>(null);
-  const [cards, setCards] = useState<Map<string, Card> | null>(null);
-  const [following, setFollowing] = useState(false);
-
-  useEffect(() => {
-    Promise.all([api.directory(), loadCardsById()])
-      .then(([d, m]) => {
-        setDir(d.users);
-        setCards(m);
-        const initial = viewingUsername || me?.username || d.users[0]?.username || "";
-        setUsername(initial);
-      })
-      .catch(() => {});
-  }, [me, viewingUsername]);
-
-  useEffect(() => {
-    if (!username) return;
-    setData(null);
-    setFollowing(false);
-    api.profileOf(username).then((d) => setData(d as ProfileData)).catch(() => setData(null));
-  }, [username]);
-
-  const favCard = data?.profile.favoriteLeader && cards ? cards.get(data.profile.favoriteLeader) : null;
-  const isSelf = data?.user.username === me?.username;
-  const wins = data?.profile.wins ?? 0;
-  const losses = data?.profile.losses ?? 0;
-
-  return (
-    <div className="sn snp px">
-      <PixelScene kind="night" />
-      <Header
-        title="Profile Viewer"
-        sub="Captain dossier"
-        hero={favCard?.image || "/assets/bg/sec-profile.png"}
-        right={
-          <span className="snp-select" style={{ minWidth: 180 }}>
-            <select value={username} onChange={(e) => setUsername(e.target.value)}>
-              {dir.map((u) => (
-                <option key={u.id} value={u.username}>
-                  {u.displayName} (@{u.username}){u.username === me?.username ? " — you" : ""}
-                </option>
-              ))}
-            </select>
-          </span>
-        }
-      />
-      <div className="snp-body">
-        {!data ? (
-          <div className="snp-wrap"><div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>Loading captain…</div></div>
-        ) : (
-          <div className="snp-wrap pv-grid">
-            <div className="pv-left">
-              <div className="snp-frame pv-portrait">
-                <div className="snp-screen">
-                  <LeaderArt card={favCard} fallbackName={data.user.displayName} color={data.profile.avatarColor} />
-                  <div className="snp-screen-scan" />
-                </div>
-              </div>
-              <div className="pv-id">
-                <div className="pv-username">{data.user.displayName}</div>
-                <div className="pv-badges">
-                  <span className="pv-badge"><span className="sn-livedot" /> {tierOf(wins)}</span>
-                  {data.profile.supporter && <span className="pv-badge gold">★ Supporter</span>}
-                  {data.user.role === "admin" && <span className="pv-badge gold">⚓ Admin</span>}
-                </div>
-              </div>
-            </div>
-
-            <div className="pv-right">
-              <dl className="pv-meta">
-                <dt>Username</dt>
-                <dd>@{data.user.username}</dd>
-                <dt>Registered</dt>
-                <dd>{fmtDate(data.user.createdAt)}</dd>
-                <dt>Favorite Leader</dt>
-                <dd>{favCard ? `${favCard.name} (${favCard.id})` : data.profile.favoriteLeader || "—"}</dd>
-                <dt>Decks</dt>
-                <dd>{data.decks.length}</dd>
-              </dl>
-
-              <div className="pv-stats">
-                <div className="pv-stats-h">
-                  <span className="lead">Record</span>
-                  <span className="col">Total</span>
-                  <span className="col">Win&nbsp;rate</span>
-                </div>
-                <div className="pv-srow"><span className="k">Wins</span><span className="v win mono">{wins}</span><span className="v mono">{winRatePct(wins, losses)}%</span></div>
-                <div className="pv-srow"><span className="k">Losses</span><span className="v loss mono">{losses}</span><span className="v mono">{wins + losses}</span></div>
-              </div>
-
-              <div>
-                <div className="pv-bio-h">Profile</div>
-                <div className="pv-bio">{data.profile.bio || "No bio yet."}</div>
-              </div>
-
-              {/* the captain's real decklists */}
-              <div>
-                <div className="pv-bio-h">Decks ({data.decks.length})</div>
-                <div className="pv-decks">
-                  {data.decks.length === 0 && <div className="pv-decks-empty">No decks yet.</div>}
-                  {data.decks.map((d) => {
-                    const lc = d.leaderId && cards ? cards.get(d.leaderId) : null;
-                    const c = lc ? cardColorHex(lc) : "#3a4a5e";
-                    return (
-                      <div className="pv-deck" key={d.id} style={{ ["--cc" as string]: c }}>
-                        {lc?.image
-                          ? <img className="pv-deck-art" src={lc.image} alt="" loading="lazy" draggable={false} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-                          : <span className="pv-deck-art ph" />}
-                        <span className="pv-deck-info">
-                          <b>{d.name}{d.fav && <span className="pv-deck-fav">★</span>}</b>
-                          <small>{d.leaderName || lc?.name || "—"} · {d.count}/50 · {d.format || "—"}</small>
-                        </span>
-                        <span className="pv-deck-wl"><b className="w">{d.wins}W</b> · <b className="l">{d.losses}L</b></span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="pv-actions">
-                {isSelf ? (
-                  <button className="pv-follow" onClick={() => setView("edit-profile")}>
-                    <Ico n="edit" size={18} /> Edit my profile
-                  </button>
-                ) : (
-                  <>
-                    <button className={"pv-follow" + (following ? " following" : "")} onClick={() => setFollowing((v) => !v)}>
-                      <Ico n="follow" size={18} /> {following ? "Following" : "Follow User"}
-                    </button>
-                    <button className="sn-btn-ghost" onClick={() => openMessagesWith(data.user.username)}>
-                      <Ico n="chat" size={16} /> Message
-                    </button>
-                  </>
-                )}
-                <button className="sn-btn-ghost" onClick={() => setView("rankings")}>
-                  <Ico n="play" size={16} /> Rankings
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-      <Dock />
-    </div>
-  );
-}
+export const fmtDate = (ms: number) => new Date(ms).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 
 /* ================= MY PROFILE ================= */
 export function MyProfile() {
@@ -403,6 +241,7 @@ export function MyProfile() {
   const [bio, setBio] = useState("");
   const [favId, setFavId] = useState<string | null>(null);
   const [supporter, setSupporter] = useState(false);
+  const [country, setCountry] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -413,6 +252,7 @@ export function MyProfile() {
         setBio(profile.bio || "");
         setFavId(profile.favoriteLeader);
         setSupporter(profile.supporter);
+        setCountry(profile.country || "");
         setLeaders(ls);
         setLoading(false);
       })
@@ -433,7 +273,7 @@ export function MyProfile() {
     if (saving) return;
     setSaving(true);
     try {
-      await api.updateProfile({ bio, favoriteLeader: favId, avatarColor: favColor, supporter });
+      await api.updateProfile({ bio, favoriteLeader: favId, avatarColor: favColor, supporter, country });
       setSaved(true);
       setTimeout(() => setSaved(false), 1600);
     } catch {
@@ -501,6 +341,15 @@ export function MyProfile() {
               ))}
             </div>
 
+            <div className="mp-bio-h">Country</div>
+            <span className="snp-select mp-country">
+              <select value={country} onChange={(e) => setCountry(e.target.value)}>
+                <option value="">Not shown</option>
+                {[...COUNTRIES].sort((a, b) => countryName(a).localeCompare(countryName(b))).map((c) => (
+                  <option key={c} value={c}>{countryName(c)}</option>
+                ))}
+              </select>
+            </span>
             <div className="mp-bio-h">Profile</div>
             <textarea className="mp-bio-box" value={bio} maxLength={280} onChange={(e) => setBio(e.target.value)} placeholder="Tell other captains about yourself…" />
             <div className="mp-bio-foot">
@@ -627,184 +476,6 @@ export function DuelRecords() {
               <Ico n="exit" size={16} /> Exit to Main Menu
             </button>
             <span className="mp-charcount">Showing {rows.length} of your {matches.length} most recent duels</span>
-          </div>
-        </div>
-      </div>
-      <Dock />
-    </div>
-  );
-}
-
-/* ================= RANKINGS ================= */
-interface RankedCaptain {
-  rank: number;
-  username: string;
-  displayName: string;
-  wins: number;
-  losses: number;
-  leaderName: string;
-  leaderColor: string;
-  leaderImage: string | null;
-  rating: number;
-  deckCount: number;
-  you: boolean;
-}
-
-const ratingOf = (w: number, l: number) => Math.max(0, 1000 + w * 6 - l * 3);
-
-function RankRow({ r }: { r: RankedCaptain }) {
-  const wr = winRatePct(r.wins, r.losses);
-  return (
-    <div className={"rec-row rk-row" + (r.you ? " me" : "")}>
-      <span className={"rk-rank r" + (r.rank <= 3 ? r.rank : "")}>{r.rank}</span>
-      <div className="rec-opp">
-        <LeaderAvatar name={r.displayName} color={r.leaderColor} image={r.leaderImage} size={48} />
-        <span className="name">
-          {r.displayName}
-          {r.you && <span className="rk-youtag">YOU</span>}
-        </span>
-      </div>
-      <span className="rk-lead">
-        <span className="rk-leaddot" style={{ background: r.leaderColor }} />
-        {r.leaderName}
-      </span>
-      <span className="rk-wr">
-        <span className="rk-wr-bar">
-          <span className="rk-wr-fill" style={{ width: wr + "%", background: wr >= 50 ? "linear-gradient(90deg,#1f8a5b,#46c98a)" : "linear-gradient(90deg,#9a3b34,#e26a62)" }} />
-        </span>
-        <span className="rk-wr-num">{wr}%</span>
-      </span>
-      <span className="rec-new">{r.rating}</span>
-      <span className="rk-record">
-        <b className="win">{r.wins}</b> – <b className="loss">{r.losses}</b>
-      </span>
-      <span className="rk-streak up">{r.deckCount}</span>
-    </div>
-  );
-}
-
-export function Rankings() {
-  const setView = useUiStore((s) => s.setView);
-  const me = useAuthStore((s) => s.user);
-  const [q, setQ] = useState("");
-  const [dir, setDir] = useState<DirectoryUser[]>([]);
-  const [cards, setCards] = useState<Map<string, Card> | null>(null);
-
-  useEffect(() => {
-    Promise.all([api.directory(), loadCardsById()])
-      .then(([d, m]) => { setDir(d.users); setCards(m); })
-      .catch(() => {});
-  }, []);
-
-  const ranked: RankedCaptain[] = useMemo(() => {
-    return dir
-      .map((u) => {
-        const lc = u.favoriteLeader && cards ? cards.get(u.favoriteLeader) : null;
-        return {
-          username: u.username,
-          displayName: u.displayName,
-          wins: u.wins,
-          losses: u.losses,
-          leaderName: lc?.name || "—",
-          leaderColor: lc ? cardColorHex(lc) : "#3a4a5e",
-          leaderImage: lc?.image || null,
-          rating: ratingOf(u.wins, u.losses),
-          deckCount: u.deckCount,
-          you: u.username === me?.username,
-          rank: 0,
-        };
-      })
-      .sort((a, b) => b.rating - a.rating)
-      .map((r, i) => ({ ...r, rank: i + 1 }));
-  }, [dir, cards, me]);
-
-  const rows = useMemo(
-    () => ranked.filter((r) => !q || r.displayName.toLowerCase().includes(q.toLowerCase()) || r.username.toLowerCase().includes(q.toLowerCase())),
-    [q, ranked],
-  );
-  const mine = ranked.find((r) => r.you);
-  const podium = [ranked[1], ranked[0], ranked[2]].filter(Boolean);
-
-  return (
-    <div className="sn snp px">
-      <PixelScene kind="sunset" />
-      <Header
-        title="Rankings"
-        sub="Captain leaderboard"
-        hero="/assets/bg/sec-rankings.png"
-        right={
-          mine && (
-            <div className="rk-myrank">
-              <span className="rk-myrank-k">Your rank</span>
-              <span className="rk-myrank-v">#{mine.rank}</span>
-            </div>
-          )
-        }
-      />
-      <div className="snp-body">
-        <div className="snp-wrap">
-          {podium.length === 3 && (
-            <div className="rk-podium">
-              {podium.map((p) => (
-                <div key={p.username} className={"rk-pod rk-pod-" + p.rank}>
-                  <div className="rk-pod-medal">{p.rank}</div>
-                  <div className="rk-pod-av">
-                    <LeaderAvatar name={p.displayName} color={p.leaderColor} image={p.leaderImage} fill />
-                  </div>
-                  <div className="rk-pod-name">{p.displayName}</div>
-                  <div className="rk-pod-elo">
-                    {p.rating} <span>PTS</span>
-                  </div>
-                  <div className="rk-pod-meta">
-                    <span className="rk-pod-wr">{winRatePct(p.wins, p.losses)}% WR</span>
-                    <span className="rk-pod-lead">
-                      <span className="rk-leaddot" style={{ background: p.leaderColor }} />
-                      {p.leaderName}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="rec-toolbar">
-            <div className="spacer" />
-            <div className="rec-search">
-              <Ico n="search" size={16} />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a captain…" />
-            </div>
-          </div>
-
-          {mine && (
-            <div className="rk-pinned-wrap">
-              <div className="rk-pinned-label">Your standing</div>
-              <div className="rec-table rk-pinned">
-                <RankRow r={mine} />
-              </div>
-            </div>
-          )}
-
-          <div className="rec-table">
-            <div className="rec-head rk-head">
-              <span className="ar">#</span>
-              <span>Captain</span>
-              <span>Favorite Leader</span>
-              <span>Win Rate</span>
-              <span className="ar">Rating</span>
-              <span className="ar">W – L</span>
-              <span className="ar">Decks</span>
-            </div>
-            {rows.map((r) => (
-              <RankRow key={r.username} r={r} />
-            ))}
-            {rows.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>No captains match your search.</div>}
-          </div>
-
-          <div className="rec-foot">
-            <button className="rec-exit" onClick={() => setView("home")}>
-              <Ico n="exit" size={16} /> Exit to Main Menu
-            </button>
-            <span className="mp-charcount">{ranked.length} captains</span>
           </div>
         </div>
       </div>

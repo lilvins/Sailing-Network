@@ -56,6 +56,7 @@ export interface Profile {
   avatarColor: string;
   favoriteLeader: string | null;
   supporter: boolean;
+  country: string; // ISO 3166 alpha-2, "" = not set
   wins: number;
   losses: number;
 }
@@ -199,7 +200,12 @@ export const api = {
     request<{ profile: Profile }>("/me/profile", { method: "PATCH", body: JSON.stringify(patch) }),
 
   profileOf: (username: string) =>
-    request<{ user: AuthUser; profile: Profile; decks: DeckSummary[] }>(`/profiles/${encodeURIComponent(username)}`),
+    request<{ user: AuthUser; profile: Profile; decks: DeckSummary[]; social: FollowState }>(`/profiles/${encodeURIComponent(username)}`),
+
+  profileStats: (username: string) => request<ProfileStats>(`/profiles/${encodeURIComponent(username)}/stats`),
+
+  follow: (username: string) => request<{ social: FollowState }>(`/follows/${encodeURIComponent(username)}`, { method: "POST" }),
+  unfollow: (username: string) => request<{ social: FollowState }>(`/follows/${encodeURIComponent(username)}`, { method: "DELETE" }),
 
   directory: () => request<{ users: DirectoryUser[] }>("/users"),
 
@@ -219,7 +225,7 @@ export const api = {
   // ---- matches / stats ----
   myMatches: () => request<{ matches: Match[] }>("/me/matches"),
 
-  myStats: () => request<{ decks: DeckStats[] }>("/me/stats"),
+  myStats: (days = 0) => request<{ decks: DeckStats[] }>(`/me/stats${days ? `?days=${days}` : ""}`),
 
   // public (no auth) — landing/home counters
   siteStats: () => request<SiteStats>("/stats"),
@@ -281,11 +287,15 @@ export const api = {
   markNotificationsRead: () => request<{ ok: true }>("/me/notifications/read", { method: "POST" }),
 
   // ---- meta analytics ----
-  meta: () => request<{ leaders: MetaLeader[] }>("/meta"),
+  meta: (days = 0) => request<MetaReport>(`/meta${days ? `?days=${days}` : ""}`),
 
-  // ---- rating leaderboard (top N) ----
-  leaderboard: (limit = 5) =>
-    request<{ leaders: LeaderboardEntry[] }>(`/leaderboard?limit=${limit}`),
+  // ---- season ladder (Bounty) ----
+  leaderboard: (limit = 100, filters: { leader?: string; country?: string } = {}) => {
+    const q = new URLSearchParams({ limit: String(limit) });
+    if (filters.leader) q.set("leader", filters.leader);
+    if (filters.country) q.set("country", filters.country);
+    return request<Leaderboard>(`/leaderboard?${q}`);
+  },
 
   // ---- consolidated badge poll ----
   sync: () => request<SyncState>("/me/sync"),
@@ -326,24 +336,134 @@ export interface Notification {
   createdAt: number;
 }
 
+/** A win/loss record as the stats module sends it. Rates are % with one decimal, null when 0 games. */
+export interface StatRecord {
+  games: number;
+  wins: number;
+  losses: number;
+  winRate: number | null;
+  /** 95% Wilson interval in %, null when 0 games */
+  ci: [number, number] | null;
+  games1: number;
+  wins1: number;
+  winRate1: number | null;
+  games2: number;
+  wins2: number;
+  winRate2: number | null;
+}
+
+export interface Tier {
+  id: string;
+  name: string;
+}
+
 export interface LeaderboardEntry {
   userId: string;
   username: string;
   displayName: string;
+  country: string;
+  favoriteLeader: string | null;
+  rank: number | null;
   rating: number;
   rd: number;
+  provisional: boolean;
+  bounty: number;
+  peakBounty: number;
+  tier: Tier;
   wins: number;
   losses: number;
+  games: number;
+  winRate: number | null;
+  topLeaders: { leaderId: string; games: number; winRate: number | null }[];
+  streak: number;
+  lastMatchAt: number | null;
+  /** only when the board is filtered by leader: this season's record with it */
+  withLeader?: StatRecord;
 }
 
-export interface MetaLeader {
+export interface Leaderboard {
+  season: string;
+  totalRanked: number;
+  tiers: (Tier & { players: number; share: number })[];
+  tierRules: {
+    tiers: (Tier & { min: number })[];
+    topTier: Tier & { topN: number };
+    provisionalRd: number;
+    minGames: number;
+    berriesPerPoint: number;
+  };
+  countries: string[];
+  leaders: LeaderboardEntry[];
+}
+
+export interface BountyPoint {
+  t: number;
+  bounty: number;
+}
+
+export interface ProfileStats {
+  season: string;
+  ladder:
+    | (LeaderboardEntry & {
+        allTimePeakBounty: number;
+        allTimePeakAt: number | null;
+        bestStreak: number;
+        history: BountyPoint[];
+        pastSeasons: {
+          season: string;
+          bounty: number;
+          peakBounty: number;
+          games: number;
+          wins: number;
+          rank: number | null;
+          tier: Tier | null;
+          history: BountyPoint[];
+        }[];
+      })
+    | null;
+  summary: StatRecord & { last30Days: number; firstMatchAt: number | null };
+  leaders: (StatRecord & { leaderId: string; matchups: (StatRecord & { oppLeaderId: string })[] })[];
+  recent: {
+    id: string;
+    opponent: { username: string | null; displayName: string };
+    myLeaderId: string | null;
+    oppLeaderId: string | null;
+    myDeckName: string;
+    result: "win" | "loss";
+    onPlay: boolean;
+    format: string;
+    bountyDelta: number | null;
+    createdAt: number;
+  }[];
+}
+
+export interface FollowState {
+  followers: number;
+  following: number;
+  isFollowing: boolean;
+}
+
+export interface MetaLeader extends StatRecord {
   leaderId: string;
-  games: number;
-  wins: number;
-  losses: number;
-  winRate: number;
-  appearances: number;
+  players: number;
   share: number;
+  adjustedWinRate: number | null;
+  shareDelta: number;
+  winRateDelta: number | null;
+  /** at least `minGames` games in the window */
+  enough: boolean;
+}
+
+export interface MetaReport {
+  days: number;
+  minGames: number;
+  totalGames: number;
+  leaders: MetaLeader[];
+  matrix: {
+    leaders: string[];
+    /** cells[row][col] = row leader vs col leader, null = no games */
+    cells: ({ games: number; wins: number; winRate: number | null; ci: [number, number] | null } | null)[][];
+  };
 }
 
 export interface SyncState {

@@ -1,0 +1,77 @@
+/* ===========================================================
+   Stats atoms: tier badge, country tag, win-rate cell & bar,
+   Bounty chart, matchup matrix. Used inside `.sn snp` pages, so
+   the palette vars (--txt, --muted, --edge, --glass…) resolve.
+   =========================================================== */
+
+.sn { --sx-good: #5fdd8f; --sx-bad: #ff8079; --sx-bounty: #e3b24c; }
+
+/* tier badge */
+.sx-tier{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid color-mix(in srgb,var(--tier) 55%,transparent);background:color-mix(in srgb,var(--tier) 12%,transparent);font:700 11px var(--display);letter-spacing:.6px;text-transform:uppercase;color:var(--txt);white-space:nowrap;}
+.sx-tier-dot{width:7px;height:7px;background:var(--tier);flex:0 0 auto;}
+.sx-prov{font:800 11px var(--display);color:var(--muted);margin-left:1px;}
+
+/* country tag (Windows has no flag emoji, so an ISO code pill) */
+.sx-country{display:inline-flex;align-items:center;padding:1px 5px;border:1px solid var(--edge2);font:700 10px var(--mono);letter-spacing:.5px;color:var(--muted);vertical-align:middle;}
+
+/* win rate with sample size */
+.sx-wr{display:inline-flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.sx-wr b{font:800 14px var(--display);color:var(--txt);}
+.sx-wr small{font:600 11px var(--mono);color:var(--muted);}
+.sx-wr.good b{color:var(--sx-good);}
+.sx-wr.bad b{color:var(--sx-bad);}
+.sx-wr.small{opacity:.55;}
+
+/* win-rate bar: 0–100 track, 95% band, value dot, 50% tick */
+.sx-wrbar{position:relative;display:block;height:14px;min-width:80px;}
+.sx-wrbar::before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;background:rgba(255,255,255,0.08);}
+.sx-wrbar-ci{position:absolute;top:3px;height:8px;background:rgba(255,255,255,0.16);}
+.sx-wrbar-dot{position:absolute;top:2px;width:10px;height:10px;margin-left:-5px;box-shadow:0 0 0 2px var(--glass);}
+.sx-wrbar-dot.good{background:var(--sx-good);}
+.sx-wrbar-dot.bad{background:var(--sx-bad);}
+.sx-wrbar-mid{position:absolute;left:50%;top:0;width:1px;height:14px;background:rgba(255,255,255,0.28);}
+
+/* Bounty chart */
+.sx-chart{position:relative;width:100%;min-width:0;overflow:hidden;}
+.sx-chart svg{display:block;touch-action:pan-y;}
+.sx-chart-empty{padding:36px 18px;text-align:center;color:var(--muted);font-size:13px;}
+.sx-grid{stroke:rgba(255,255,255,0.07);stroke-width:1;}
+.sx-axis{fill:var(--muted);font:600 11px var(--mono);}
+.sx-line{fill:none;stroke:var(--sx-bounty);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+.sx-area{fill:var(--sx-bounty);opacity:.10;}
+.sx-end{fill:var(--sx-bounty);stroke:var(--glass);stroke-width:2;}
+.sx-peak{fill:var(--glass);stroke:var(--sx-bounty);stroke-width:2;}
+.sx-label{fill:var(--txt);font:700 12px var(--display);}
+.sx-label.muted{fill:var(--muted);font-weight:600;font-size:11px;}
+.sx-cross{stroke:rgba(255,255,255,0.3);stroke-width:1;}
+.sx-tip{position:absolute;pointer-events:none;min-width:140px;padding:8px 10px;background:var(--elev2);border:1px solid var(--edge2);display:flex;flex-direction:column;gap:2px;font:600 11.5px var(--font);color:var(--muted);z-index:2;}
+.sx-tip b{font:800 15px var(--display);color:var(--txt);}
+.sx-tip .up{color:var(--sx-good);}
+.sx-tip .down{color:var(--sx-bad);}
+
+/* matchup matrix (diverging: red < 50% gray > green) */
+.sx-mx-wrap{overflow-x:auto;}
+.sx-mx{border-collapse:separate;border-spacing:2px;font-variant-numeric:tabular-nums;}
+.sx-mx th{font:700 10.5px var(--display);color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:4px;}
+.sx-mx th.row{text-align:right;white-space:nowrap;padding-right:8px;}
+.sx-mx th.col{vertical-align:bottom;height:96px;}
+.sx-mx th.col span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;}
+.sx-mx td{width:52px;height:38px;text-align:center;font:800 12px var(--display);color:#fff;cursor:default;position:relative;}
+.sx-mx td small{display:block;font:600 9.5px var(--mono);opacity:.75;}
+.sx-mx td.empty{background:rgba(255,255,255,0.03);color:var(--muted);}
+.sx-mx td.mirror{background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0 4px,transparent 4px 8px);color:var(--muted);}
+.sx-mx td.small{opacity:.5;}
+.sx-mx-key{display:flex;align-items:center;gap:10px;margin-top:10px;font:600 11px var(--font);color:var(--muted);flex-wrap:wrap;}
+.sx-mx-ramp{display:inline-block;width:140px;height:8px;background:linear-gradient(90deg,#b8443f,#3a3d44 50%,#2f9a5e);}
+
+/* segmented control (time window, view) */
+.sx-seg{display:inline-flex;border:1px solid var(--edge2);background:var(--elev);}
+.sx-seg button{background:transparent;border:0;padding:8px 12px;font:700 12px var(--display);letter-spacing:.4px;color:var(--muted);cursor:pointer;}
+.sx-seg button + button{border-left:1px solid var(--edge2);}
+.sx-seg button.on{background:var(--elev2);color:var(--txt);box-shadow:inset 0 -2px 0 var(--acc2,#e8eaed);}
+.sx-seg button:hover{color:var(--txt);}
+
+.sx-note{font:600 11.5px var(--font);color:var(--muted);}
+.sx-delta{font:700 11.5px var(--mono);}
+.sx-delta.up{color:var(--sx-good);}
+.sx-delta.down{color:var(--sx-bad);}
