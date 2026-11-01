@@ -6,15 +6,12 @@ import "../home/home.css";
 import "../profiles/profiles.css";
 import "./admin.css";
 import { PixelScene } from "../pixel/PixelScene";
+import { PixelIcon } from "../pixel/PixelIcon";
 
 const fmtDate = (ms: number) =>
   new Date(ms).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 
-const BackIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 12H5M12 19l-7-7 7-7" />
-  </svg>
-);
+const BackIcon = () => <PixelIcon name="back" size={24} />;
 
 export function AdminPage() {
   const setView = useUiStore((s) => s.setView);

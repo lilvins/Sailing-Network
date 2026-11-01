@@ -18,64 +18,30 @@ import { PixelBackdrop } from "./PixelBackdrop";
 import { formatBounty } from "../stats/format";
 import { useAutoStore } from "../board-auto/autoStore";
 import "./home.css";
+import { PixelIcon, type PixelIconName } from "../pixel/PixelIcon";
+import { PixelLogoMark } from "../pixel/PixelLogo";
 
 /* Home hub — "one place for everything" (plancia di notte identity):
    Play band · live gauges · leaderboard + meta · index tiles,
    with the social dock promoted to a persistent rail. */
 
-const IconPaths = {
-  duel: "M3 21l6-6M14 4l6 6M7 17l10-10M13 3h8v8M9 15l-2 2-4-4 2-2",
-  board: "M3 5h18v14H3zM3 12h18M12 5v14",
-  lab: "M9 3v6l-5 9a2 2 0 002 3h12a2 2 0 002-3l-5-9V3M8 3h8",
-  gear: "M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v0a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z",
-  deck: "M4 8l8-4 8 4-8 4-8-4zM4 12l8 4 8-4M4 16l8 4 8-4",
-  profile: "M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0",
-  edit: "M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z",
-  rank: "M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4zM5 6H3v2a3 3 0 003 3M19 6h2v2a3 3 0 01-3 3",
-  records: "M3 5h18v14H3zM3 9h18M8 5v14M8 12l4 2-4 2v-4z",
-  stats: "M3 3v18h18M8 17v-5M13 17V8M18 17v-9",
-  exit: "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
-  chat: "M21 11.5a8.38 8.38 0 01-9 8.32 8.38 8.38 0 01-3.8-.9L3 20l1.08-4.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.5 8.5 0 019 8.5z",
-  bell: "M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0",
-  friends:
-    "M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
-  trophy:
-    "M8 21h8M12 17v4M6 4h12v4a6 6 0 01-12 0V4zM6 6H3v2a3 3 0 003 3M18 6h3v2a3 3 0 01-3 3",
-  admin: "M12 3l8 4v5c0 4.5-3 7.6-8 9-5-1.4-8-4.5-8-9V7l8-4zM9.5 12l1.8 1.8L15 10",
-  arrow: "M5 12h14M13 6l6 6-6 6",
-  globe: "M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3a14 14 0 014 9 14 14 0 01-4 9 14 14 0 01-4-9 14 14 0 014-9z",
-} as const;
+/* icons: the site's pixel set (features/pixel/icons.ts); names here → pixel names */
+const ICON = {
+  duel: "swords", board: "board", lab: "lab", gear: "gear", deck: "cards", profile: "profile",
+  edit: "edit", rank: "trophy", records: "records", stats: "stats", exit: "exit", chat: "chat",
+  bell: "bell", friends: "friends", trophy: "trophy", admin: "shield", arrow: "arrow", globe: "globe",
+} as const satisfies Record<string, PixelIconName>;
 
-type IconName = keyof typeof IconPaths;
+type IconName = keyof typeof ICON;
 
-function Icon({ name, size = 20, sw = 1.8 }: { name: IconName; size?: number; sw?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={sw}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d={IconPaths[name]} />
-    </svg>
-  );
+function Icon({ name, size = 20 }: { name: IconName; size?: number; sw?: number }) {
+  return <PixelIcon name={ICON[name]} size={size} />;
 }
 
 function Logo() {
   return (
     <div className="sn-logo">
-      <svg className="sn-logo-icon" style={{ width: 42, height: 42 }} viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="22" stroke="rgba(191,227,232,0.55)" strokeWidth="1.5" />
-        <path d="M24 5 L27 21 L24 19 L21 21 Z" fill="#e23b32" />
-        <path d="M24 43 L21 27 L24 29 L27 27 Z" fill="#f0f3f7" opacity=".7" />
-        <path d="M5 24 L21 21 L19 24 L21 27 Z" fill="#f0f3f7" opacity=".7" />
-        <path d="M43 24 L27 27 L29 24 L27 21 Z" fill="#f0f3f7" opacity=".7" />
-        <circle cx="24" cy="24" r="3.5" fill="#bfe3e8" />
-      </svg>
+      <PixelLogoMark size={42} />
       <div className="sn-logo-text">
         <span className="sn-logo-name" style={{ fontSize: 19 }}>
           Sailing Network
@@ -170,7 +136,6 @@ const TILES: Tile[] = [
   { id: "friends", label: "Friends", sub: "Manage your crew", icon: "friends", view: "friends", art: "/assets/bg/sec-friends.png" },
   { id: "messages", label: "Messages", sub: "Chat with captains", icon: "chat", view: "messages", art: "/assets/bg/sec-messages.png" },
   { id: "global-chat", label: "Global Chat", sub: "The crew's tavern", icon: "chat", view: "global-chat" },
-  { id: "notifications", label: "Notifications", sub: "Requests & replies", icon: "bell", view: "notifications" },
   { id: "records", label: "Duel Records", sub: "Your match history", icon: "records", view: "records", art: "/assets/bg/sec-records.png" },
   { id: "stats", label: "Statistics", sub: "Decks & matchups", icon: "stats", view: "statistics", art: "/assets/bg/sec-statistics.png" },
   { id: "profile", label: "Profile", sub: "Your public page", icon: "profile", view: "profile-viewer", art: "/assets/bg/sec-profile.png" },
@@ -198,7 +163,6 @@ export function HomePage() {
   const [news, setNews] = useState<Announcement[]>([]);
   const [unread, setUnread] = useState(0);
   const [incoming, setIncoming] = useState(0);
-  const [notifs, setNotifs] = useState(0);
   const [myAvatar, setMyAvatar] = useState<{ image: string | null; color: string }>({
     image: null,
     color: "#7a3030",
@@ -233,7 +197,6 @@ export function HomePage() {
         .then((s) => {
           setUnread(s.unreadMessages);
           setIncoming(s.incomingRequests);
-          setNotifs(s.unreadNotifications);
         })
         .catch(() => {});
       void fetchPresence();
@@ -299,10 +262,6 @@ export function HomePage() {
           <button className="hu-hicon" title="Messages" onClick={() => setView("messages")}>
             <Icon name="chat" size={17} />
             {unread > 0 && <span className="hu-hbadge">{unread}</span>}
-          </button>
-          <button className="hu-hicon" title="Notifications" onClick={() => setView("notifications")}>
-            <Icon name="bell" size={17} />
-            {notifs > 0 && <span className="hu-hbadge">{notifs}</span>}
           </button>
           <button className="hu-me" title="Your profile" onClick={() => openProfile(null)}>
             <LeaderAvatar
@@ -570,13 +529,6 @@ export function HomePage() {
               </span>
               <b>Messages</b>
               {unread > 0 ? <span className="hu-count hot">{unread}</span> : <span className="hu-count">0</span>}
-            </button>
-            <button className="hu-link-row" onClick={() => setView("notifications")}>
-              <span className="hu-link-ico">
-                <Icon name="bell" size={16} />
-              </span>
-              <b>Notifications</b>
-              {notifs > 0 ? <span className="hu-count hot">{notifs}</span> : <span className="hu-count">0</span>}
             </button>
           </div>
 

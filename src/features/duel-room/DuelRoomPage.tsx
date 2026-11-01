@@ -7,46 +7,28 @@ import "@fontsource/silkscreen/400.css"; // pixel HUD labels (--hud in duelroom.
 import "@fontsource/silkscreen/700.css";
 import "@fontsource/vt323/400.css"; // pixel duelist names (--pixel)
 import "./duelroom.css";
+import { PixelIcon, type PixelIconName } from "../pixel/PixelIcon";
+import { PixelLogoMark } from "../pixel/PixelLogo";
 
 /* Ported from Claude design (duelroom.jsx). Fluid + responsive; links wired to
    the uiStore router. */
 
+/* icons: the site's pixel set (features/pixel/icons.ts); names here → pixel names */
 const DR_ICONS = {
-  duel: "M3 21l6-6M14 4l6 6M7 17l10-10M13 3h8v8M9 15l-2 2-4-4 2-2",
-  watch: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z M12 9a3 3 0 100 6 3 3 0 000-6",
-  search: "M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3",
-  lock: "M5 11h14v10H5zM8 11V7a4 4 0 018 0v4",
-  host: "M12 5v14M5 12h14",
-  back: "M19 12H5M12 19l-7-7 7-7",
-  chat: "M21 11.5a8.38 8.38 0 01-9 8.32 8.38 8.38 0 01-3.8-.9L3 20l1.08-4.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.5 8.5 0 019 8.5z",
-  friends:
-    "M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
-  sound: "M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13",
-  caret: "M6 9l6 6 6-6",
-  exit: "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
-} as const;
+  duel: "swords", watch: "watch", search: "search", lock: "lock", host: "plus", back: "back",
+  chat: "chat", friends: "friends", sound: "sound", caret: "caret", exit: "exit",
+} as const satisfies Record<string, PixelIconName>;
 
 type IconName = keyof typeof DR_ICONS;
 
-function Icon({ name, size = 22, stroke = "currentColor", sw = 1.8 }: { name: IconName; size?: number; stroke?: string; sw?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
-      <path d={DR_ICONS[name]} />
-    </svg>
-  );
+function Icon({ name, size = 22, stroke }: { name: IconName; size?: number; stroke?: string; sw?: number }) {
+  return <PixelIcon name={DR_ICONS[name]} size={size} color={stroke === "currentColor" ? undefined : stroke} />;
 }
 
 function Logo() {
   return (
     <div className="sn-logo">
-      <svg className="sn-logo-icon" style={{ width: 38, height: 38 }} viewBox="0 0 48 48" fill="none">
-        <circle cx="24" cy="24" r="22" stroke="rgba(227,178,76,0.6)" strokeWidth="1.5" />
-        <path d="M24 5 L27 21 L24 19 L21 21 Z" fill="#e23b32" />
-        <path d="M24 43 L21 27 L24 29 L27 27 Z" fill="#e8edf4" opacity=".7" />
-        <path d="M5 24 L21 21 L19 24 L21 27 Z" fill="#e8edf4" opacity=".7" />
-        <path d="M43 24 L27 27 L29 24 L27 21 Z" fill="#e8edf4" opacity=".7" />
-        <circle cx="24" cy="24" r="3.5" fill="#e3b24c" />
-      </svg>
+      <PixelLogoMark size={38} />
       <div className="sn-logo-text">
         <span className="sn-logo-name" style={{ fontSize: 16 }}>
           SAILING NETWORK
@@ -68,9 +50,7 @@ function Avatar({ color, size = 34 }: { color: string; size?: number }) {
         boxShadow: "0 0 0 2px rgba(227,178,76,0.45), 0 4px 10px rgba(0,0,0,0.5)",
       }}
     >
-      <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" fill="rgba(255,255,255,0.55)">
-        <path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 20a8 8 0 0116 0z" />
-      </svg>
+      <PixelIcon name="profile" size={size * 0.5} color="rgba(255,255,255,0.55)" />
     </div>
   );
 }
@@ -121,7 +101,7 @@ function LogResultModal({ decks, onClose }: LogResultProps) {
   if (done) return (
     <div className="dr-modal-overlay">
       <div className="dr-modal" style={{ textAlign: "center", gap: 12 }}>
-        <span style={{ fontSize: 32 }}>{result === "win" ? "🏆" : "💀"}</span>
+        <PixelIcon name={result === "win" ? "trophy" : "skull"} size={36} color={result === "win" ? "var(--px-gold)" : "var(--px-text-muted)"} />
         <div style={{ color: "var(--text)", fontWeight: 700 }}>Result logged!</div>
       </div>
     </div>
