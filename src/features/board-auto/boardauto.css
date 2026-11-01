@@ -183,7 +183,7 @@
 .ba-setuphead { display: flex; align-items: baseline; gap: 14px; flex: 0 0 auto; }
 .ba-setuphead h1 { font: 800 clamp(18px, 2.4vw, 26px) var(--serif); letter-spacing: 0.06em; color: var(--ivory); margin: 0; }
 .ba-setuphead .ba-sub { font: 600 11.5px var(--serif); color: var(--brass-hi); }
-.ba-pickgrid { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ba-pickgrid { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; } /* minmax: long deck names ellipsize instead of pushing a column off screen */
 .ba-seatcol { display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--brass-dim); background: var(--night-1); }
 .ba-seathead { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--brass-dim); }
 .ba-seattag { font: 800 10.5px var(--serif); letter-spacing: 0.14em; color: var(--brass-hi); white-space: nowrap; }
@@ -937,7 +937,7 @@
 /* the pre-game screens (deck pick, roll) are ordinary pages and may collapse;
    the stage itself never changes layout */
 @media (max-width: 900px) {
-  .ba-pickgrid { grid-template-columns: 1fr; overflow-y: auto; }
+  .ba-pickgrid { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
 }
 
 /* in-place PLAY button on the selected hand card (top band of the card: the

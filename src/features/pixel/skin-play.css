@@ -1,0 +1,107 @@
+/* ===========================================================================
+   Pixel UI — play skin: the Play Auto table (board-auto) and Play vs Bot
+   (board-bot) chrome around the playmat — side panels, log, chat, controls,
+   deck pick. The playmat, cards and life bars are game art and stay as they
+   are. Values: tokens.css.
+   =========================================================================== */
+
+/* ---- Play Auto: buttons are pixel buttons (gold; red = primary/danger) ---- */
+.ba-btn, .ba-concede, .ba-chat-input button {
+  border-style: solid !important;
+  border-width: var(--px-btn-frame) !important;
+  border-radius: 0 !important;
+  border-image: var(--px-img-btn-gold) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--px-text-ink) !important;
+  image-rendering: pixelated;
+  transition: transform 60ms, filter 100ms !important;
+}
+.ba-btn i { color: rgba(51, 50, 61, 0.75) !important; }
+.ba-btn.primary, .ba-btn.danger, .ba-concede.armed {
+  border-image-source: var(--px-img-btn-red) !important;
+  color: #fff !important;
+  text-shadow: 1px 1px 0 #6c1a20;
+}
+.ba-btn.primary i, .ba-btn.danger i { color: rgba(255, 255, 255, 0.8) !important; }
+/* small buttons get the art at 1x so the frame doesn't eat the label */
+.ba-btn.tiny, .ba-concede, .ba-chat-input button, .ba-aictl-row .ba-btn {
+  border-width: var(--px-btn-frame-sm) !important;
+  border-image-width: var(--px-btn-frame-sm) !important;
+}
+:is(.ba-btn, .ba-concede, .ba-chat-input button):hover:not(:disabled) { filter: brightness(1.08); }
+:is(.ba-btn, .ba-concede, .ba-chat-input button):active:not(:disabled) { transform: translateY(var(--px-press)) !important; }
+:is(.ba-btn, .ba-chat-input button):disabled { opacity: 1 !important; filter: grayscale(0.85) brightness(0.75); }
+
+/* ---- Play Auto: panels ---- */
+.ba-panel {
+  border: var(--px-frame) solid transparent !important;
+  border-image: var(--px-img-board) 8 / var(--px-frame) / 0 repeat !important;
+  background: var(--px-inside) !important;
+  background-clip: padding-box !important;
+  box-shadow: var(--px-shadow);
+}
+.ba-seatcol, .ba-log, .ba-aictl, .ba-toast, .ba-banner.info, .ba-actionbar {
+  border: var(--px-border) solid var(--px-ink) !important;
+  background: var(--px-walnut-2) !important;
+  box-shadow: inset 0 0 0 2px var(--px-wood-dk), var(--px-shadow-sm) !important;
+}
+.ba-log { background: var(--px-inside) !important; }
+.ba-seathead, .ba-chat-input { border-color: var(--px-line-strong) !important; background: var(--px-walnut-1) !important; }
+.ba-deckopt { border-bottom-color: var(--px-line) !important; }
+.ba-deckopt:hover { background: rgba(218, 171, 118, 0.08) !important; }
+.ba-deckopt.on { background: rgba(218, 171, 118, 0.16) !important; box-shadow: inset 4px 0 0 var(--px-wood) !important; }
+.ba-deckthumb { border: 2px solid var(--px-ink) !important; }
+.ba-aiplan { border: 2px solid var(--px-ink) !important; background: var(--px-walnut-0) !important; }
+/* fields: the walnut well */
+.ba-nameinput, .ba-chat-input input {
+  border: 2px solid var(--px-ink) !important;
+  background: var(--px-walnut-0) !important;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.55), 0 0 0 1px var(--px-wood-dk);
+}
+.ba-nameinput:focus, .ba-chat-input input:focus { border-color: var(--px-gold) !important; }
+/* the Human / AI switch: a tab group, the chosen side in lit wood */
+.ba-ctrl { border: 2px solid var(--px-ink) !important; background: var(--px-walnut-1); box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5); }
+.ba-ctrlopt { color: var(--px-text-muted) !important; }
+.ba-ctrlopt + .ba-ctrlopt { border-left: 2px solid var(--px-ink) !important; }
+.ba-ctrlopt.on { background: var(--px-wood) !important; color: var(--px-text-ink) !important; box-shadow: inset 0 -3px 0 var(--px-wood-dk); }
+/* the avatar box: a plank in the seat's colour */
+.ba-pfpbox { background: var(--px-walnut-0) !important; }
+
+/* ---- Play vs Bot: its own palette, re-pointed at walnut ---- */
+.bb-root {
+  --bb-night0: var(--px-walnut-0);
+  --bb-night1: var(--px-walnut-2);
+  --bb-night2: var(--px-walnut-3);
+  --bb-line: var(--px-ink);
+  --bb-brass: var(--px-wood);
+  --bb-brass-dim: var(--px-wood-dk);
+  --bb-signal: var(--px-red);
+  --bb-ivory: var(--px-text);
+  --bb-muted: var(--px-text-muted);
+}
+.bb-pick-panel {
+  border: var(--px-frame) solid transparent !important;
+  border-image: var(--px-img-board) 8 / var(--px-frame) / 0 repeat !important;
+  background: var(--px-inside) !important;
+  background-clip: padding-box !important;
+  box-shadow: var(--px-shadow);
+}
+.bb-form select {
+  border: 2px solid var(--px-ink) !important;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.55), 0 0 0 1px var(--px-wood-dk);
+}
+.bb-form select:focus { border-color: var(--px-gold) !important; outline: none; }
+.bb-btn {
+  border-style: solid !important;
+  border-width: var(--px-btn-frame) !important;
+  border-image: var(--px-img-btn-gold) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important;
+  background: none !important;
+  color: var(--px-text-ink) !important;
+  image-rendering: pixelated;
+}
+.bb-btn.bb-primary { border-image-source: var(--px-img-btn-red) !important; color: #fff !important; text-shadow: 1px 1px 0 #6c1a20; }
+.bb-btn.bb-small { border-width: var(--px-btn-frame-sm) !important; border-image-width: var(--px-btn-frame-sm) !important; }
+.bb-btn:hover { filter: brightness(1.08); }
+.bb-btn:active { transform: translateY(var(--px-press)); }
+.bb-sideblock { box-shadow: inset 0 0 0 1px var(--px-wood-dk); }

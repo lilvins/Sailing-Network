@@ -43,6 +43,7 @@
   --px-frame: 16px;          /* timber window frame */
   --px-paper-frame: 12px;    /* parchment notice frame */
   --px-btn-frame: 8px 8px 12px; /* pixel button: 3px top/sides, 6px bottom in the art → 2x */
+  --px-btn-frame-sm: 4px 4px 6px; /* the same art at 1x, for small buttons */
   --px-border: 3px;          /* plank outline */
   --px-press: 3px;           /* how far a button sinks when pressed */
   --px-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
