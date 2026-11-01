@@ -1,6 +1,6 @@
 /* ===========================================================
    Stats atoms: tier badge, country tag, win-rate cell & bar,
-   Bounty chart, matchup matrix. Used inside `.sn snp` pages, so
+   Bounty chart. Used inside `.sn snp` pages, so
    the palette vars (--txt, --muted, --edge, --glass…) resolve.
    =========================================================== */
 
@@ -48,21 +48,6 @@
 .sx-tip b{font:800 15px var(--display);color:var(--txt);}
 .sx-tip .up{color:var(--sx-good);}
 .sx-tip .down{color:var(--sx-bad);}
-
-/* matchup matrix (diverging: red < 50% gray > green) */
-.sx-mx-wrap{overflow-x:auto;}
-.sx-mx{border-collapse:separate;border-spacing:2px;font-variant-numeric:tabular-nums;}
-.sx-mx th{font:700 10.5px var(--display);color:var(--muted);text-transform:uppercase;letter-spacing:.4px;padding:4px;}
-.sx-mx th.row{text-align:right;white-space:nowrap;padding-right:8px;}
-.sx-mx th.col{vertical-align:bottom;height:96px;}
-.sx-mx th.col span{display:inline-block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;}
-.sx-mx td{width:52px;height:38px;text-align:center;font:800 12px var(--display);color:#fff;cursor:default;position:relative;}
-.sx-mx td small{display:block;font:600 9.5px var(--mono);opacity:.75;}
-.sx-mx td.empty{background:rgba(255,255,255,0.03);color:var(--muted);}
-.sx-mx td.mirror{background:repeating-linear-gradient(45deg,rgba(255,255,255,0.04) 0 4px,transparent 4px 8px);color:var(--muted);}
-.sx-mx td.small{opacity:.5;}
-.sx-mx-key{display:flex;align-items:center;gap:10px;margin-top:10px;font:600 11px var(--font);color:var(--muted);flex-wrap:wrap;}
-.sx-mx-ramp{display:inline-block;width:140px;height:8px;background:linear-gradient(90deg,#b8443f,#3a3d44 50%,#2f9a5e);}
 
 /* segmented control (time window, view) */
 .sx-seg{display:inline-flex;border:1px solid var(--edge2);background:var(--elev);}

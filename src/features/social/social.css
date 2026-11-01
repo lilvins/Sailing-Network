@@ -982,13 +982,6 @@
 .gc-text{font-size:14px;color:var(--txt);line-height:1.4;word-break:break-word;}
 .gc-line.me .gc-name{color:var(--acc2,#e8eaed);}
 
-/* ===== Meta table ===== */
-.meta-head,.meta-row{grid-template-columns:54px 1.7fr 1.5fr 1.4fr 0.7fr !important;}
-.meta-share{display:flex;align-items:center;gap:8px;}
-.meta-bar{flex:1;height:8px;border-radius:0;background:rgba(20,30,45,0.18);overflow:hidden;min-width:60px;}
-.meta-bar-fill{display:block;height:100%;border-radius:0;}
-.meta-share-num{font:700 12.5px var(--display);color:var(--muted);min-width:42px;text-align:right;}
-
 /* ===== Notifications ===== */
 .notif-row{width:100%;text-align:left;background:transparent;border:none;border-bottom:1px solid var(--edge);cursor:pointer;}
 .notif-row.unread{background:rgba(242,243,245,0.06);}
@@ -997,16 +990,6 @@
 .notif-ico.t-friend_accept{color:#5fdd8f;}
 .notif-ico.t-message{color:#ffd98a;}
 .notif-dot{width:9px;height:9px;border-radius:0;background:var(--acc,#e23b32);flex:0 0 auto;align-self:center;}
-
-/* ===== Meta v2 ===== */
-.meta2-row{grid-template-columns:44px 1.6fr 1.3fr 1.5fr 0.7fr 0.8fr 0.8fr 0.6fr !important;}
-.meta2-row.meta2-thin{opacity:.6;}
-.meta2-sharenum{display:flex;flex-direction:column;align-items:flex-end;font:700 12.5px var(--display);color:var(--txt);min-width:46px;}
-.meta2-sharenum small{font-size:10.5px;}
-.meta2-wr{display:flex;flex-direction:column;gap:2px;}
-.meta2-small{display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
-.meta2-foot{margin-top:10px;}
-@media (max-width:900px){ .meta2-row{min-width:900px;} }
 
 /* ===== My Statistics v3 ===== */
 .st3-profile{padding:9px 14px;font-size:12.5px;}

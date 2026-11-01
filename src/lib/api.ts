@@ -289,6 +289,18 @@ export const api = {
   // ---- meta analytics ----
   meta: (days = 0) => request<MetaReport>(`/meta${days ? `?days=${days}` : ""}`),
 
+  /** Meta Analytics page: matchup grid + best lists under the format / date / Bounty filters. */
+  metaReport: (f: MetaReportFilters = {}) => {
+    const q = new URLSearchParams();
+    if (f.format) q.set("format", f.format);
+    if (f.from != null) q.set("from", String(f.from));
+    if (f.to != null) q.set("to", String(f.to));
+    if (f.minBounty != null) q.set("minBounty", String(f.minBounty));
+    if (f.maxBounty != null) q.set("maxBounty", String(f.maxBounty));
+    const qs = q.toString();
+    return request<MetaGridReport>(`/meta/report${qs ? `?${qs}` : ""}`);
+  },
+
   // ---- season ladder (Bounty) ----
   leaderboard: (limit = 100, filters: { leader?: string; country?: string } = {}) => {
     const q = new URLSearchParams({ limit: String(limit) });
@@ -463,6 +475,47 @@ export interface MetaReport {
     leaders: string[];
     /** cells[row][col] = row leader vs col leader, null = no games */
     cells: ({ games: number; wins: number; winRate: number | null; ci: [number, number] | null } | null)[][];
+  };
+}
+
+export interface MetaReportFilters {
+  format?: string;
+  /** ms, inclusive */
+  from?: number | null;
+  to?: number | null;
+  /** Berries: the player's Bounty going into the game */
+  minBounty?: number | null;
+  maxBounty?: number | null;
+}
+
+export interface BestList {
+  /** the card list itself, stable across builders */
+  key: string;
+  name: string;
+  games: number;
+  wins: number;
+  losses: number;
+  winRate: number | null;
+  ci: [number, number] | null;
+  players: number;
+  cards: { id: string; count: number }[];
+}
+
+export interface MetaGridReport {
+  totalGames: number;
+  grid: {
+    leaders: { leaderId: string; games: number; wins: number; winRate: number | null }[];
+    /** cells[row][col] = row leader's record vs col leader, null = no games */
+    cells: ({ games: number; wins: number; winRate: number | null; ci: [number, number] | null } | null)[][];
+  };
+  bestLists: { leaderId: string; games: number; winRate: number | null; lists: BestList[] }[];
+  options: {
+    formats: { format: string; games: number; lastAt: number }[];
+    bountyRange: [number, number];
+    tiers: { id: string; name: string; minBounty: number }[];
+    firstAt: number | null;
+    bestListMoreThanGames: number;
+    gridMinGames: number;
   };
 }
 
