@@ -19,15 +19,15 @@
 }
 
 /* ---- fields: a sunken walnut well (.px-input) ---- */
-.sn :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]), select, textarea):not(.rec-search *, .snlogin *, .sn-search *),
-.rec-search, .snp-select select, .dr-select select, .mp-bio-box {
+.sn :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]), select, textarea):not(.rec-search *, .db-search *, .snlogin *, .sn-search *),
+.rec-search, .db-search, .snp-select select, .dr-select select, .mp-bio-box {
   border: 2px solid var(--px-ink) !important;
   border-radius: 0 !important;
   background-color: var(--px-walnut-0) !important;
   box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.55), 0 0 0 1px var(--px-wood-dk) !important;
   color: var(--px-text);
 }
-.sn :is(input, select, textarea):focus, .rec-search:focus-within { border-color: var(--px-gold) !important; outline: none; }
+.sn :is(input, select, textarea):not(.db-search *):focus, .rec-search:focus-within, .db-search:focus-within { border-color: var(--px-gold) !important; outline: none; }
 .sn :is(input, textarea)::placeholder { color: var(--px-text-muted); opacity: 0.85; }
 .sn select option { background: var(--px-walnut-2); color: var(--px-text); }
 /* the drop-down arrow: a pixel caret, not a rotated hairline */
