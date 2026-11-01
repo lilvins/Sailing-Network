@@ -61,8 +61,6 @@
   border-image: url("/assets/ui/button-red.png") 4 4 6 fill / 8px 8px 12px / 0 stretch !important;
   color: #fff !important;
   text-shadow: 1px 1px 0 #6c1a20;
-  font-family: var(--px-hud) !important;
-  letter-spacing: 0.05em !important;
 }
 .sn-btn-ghost, .snp-back, .dr-back, .hu-sec-link, .snp-iconbtn, .hu-feed-open, .md-act, .mp-redeem, .fr-btn {
   border-image: url("/assets/ui/button-gold.png") 4 4 6 fill / 8px 8px 12px / 0 stretch !important;

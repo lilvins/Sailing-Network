@@ -62,6 +62,10 @@
   /* ---- type: pixel faces only where they read (titles, labels, big numbers) ---- */
   --px-hud: "Silkscreen", "Sora", system-ui, sans-serif;
   --px-flavor: "VT323", ui-monospace, monospace;
+  /* every button's label: VT323, scaled by x-height (font-size-adjust) to read
+     a touch larger than the sans at the same font-size (VT323 x-height 0.40, Sora 0.54): pixel type needs the extra size to stay legible */
+  --px-btn-font: var(--px-flavor);
+  --px-btn-ex: 0.6;
 }
 
 /* ---------------------------------------------------------------------------

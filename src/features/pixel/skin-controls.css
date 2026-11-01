@@ -1,0 +1,135 @@
+/* ===========================================================================
+   Pixel UI — controls skin. Maps the pages' older buttons, fields, tabs,
+   pills and badges onto the pieces in components.css (same looks, same
+   tokens). Loaded after every page's CSS; !important only where a page rule
+   is more specific. The login keeps its own pixel form (login.css).
+   =========================================================================== */
+
+/* ---- every button speaks pixel: VT323, scaled by x-height so a label set
+   at 13px in Sora reads the same size in VT323 (≈1.25x) ---- */
+/* (buttons that are really list or table rows keep the reading face) */
+:root :is(button, .sn-btn-primary, .sn-btn-ghost, .px-btn, a.hu-sec-link):not(
+  .pv2-tr, .st2-deck, .st2-mu, .msg-conv, .fr-row, .hu-row, .hu-crew-row, .hu-log-row, .hu-link-row, .hu-me,
+  .pd-region, .mp-av, .md-banner, .ba-deckopt
+) {
+  font-family: var(--px-btn-font) !important;
+  font-weight: 400 !important;
+  font-size-adjust: ex-height var(--px-btn-ex) !important; /* a page `font:` shorthand would reset it */
+  letter-spacing: 0.02em !important;
+}
+
+/* ---- fields: a sunken walnut well (.px-input) ---- */
+.sn :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]), select, textarea):not(.rec-search *, .snlogin *, .sn-search *),
+.rec-search, .snp-select select, .dr-select select, .mp-bio-box {
+  border: 2px solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  background-color: var(--px-walnut-0) !important;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.55), 0 0 0 1px var(--px-wood-dk) !important;
+  color: var(--px-text);
+}
+.sn :is(input, select, textarea):focus, .rec-search:focus-within { border-color: var(--px-gold) !important; outline: none; }
+.sn :is(input, textarea)::placeholder { color: var(--px-text-muted); opacity: 0.85; }
+.sn select option { background: var(--px-walnut-2); color: var(--px-text); }
+/* the drop-down arrow: a pixel caret, not a rotated hairline */
+.snp-select::after, .st2-mode::after {
+  border: 0 !important;
+  width: 10px !important; height: 6px !important;
+  transform: translateY(-50%) !important;
+  background: var(--px-text-muted);
+  clip-path: polygon(0 0, 100% 0, 100% 33%, 80% 33%, 80% 67%, 60% 67%, 60% 100%, 40% 100%, 40% 67%, 20% 67%, 20% 33%, 0 33%);
+}
+
+/* ---- tabs and segmented controls (.px-tabs / .px-tab) ---- */
+.sx-seg, .fr-tabs {
+  gap: 3px !important;
+  padding: 3px !important;
+  border: var(--px-border) solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  background: var(--px-walnut-1) !important;
+  box-shadow: inset 0 0 0 1px var(--px-wood-dk), var(--px-shadow-sm) !important;
+}
+.sx-seg button, .fr-tab {
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--px-text-muted) !important;
+  box-shadow: none !important;
+  min-height: 32px;
+}
+.sx-seg button:hover, .fr-tab:hover { color: var(--px-text) !important; background: var(--px-walnut-3) !important; }
+.sx-seg button.on, .fr-tab.on {
+  background: var(--px-wood) !important;
+  color: var(--px-text-ink) !important;
+  box-shadow: inset 0 -3px 0 var(--px-wood-dk), inset 0 2px 0 var(--px-wood-lt) !important;
+}
+
+/* ---- picked row in a list (stats decks, regionals): a lit wood edge ---- */
+.st2-deck.on, .pd-region.on {
+  background: rgba(218, 171, 118, 0.14) !important;
+  box-shadow: inset 4px 0 0 var(--px-wood) !important;
+}
+.st2-deck:hover, .pd-region:hover, .msg-conv:hover, .fr-row:hover { background: rgba(218, 171, 118, 0.08) !important; }
+
+/* ---- small round-ups: pills and badges (.px-badge) ---- */
+.sn-pill {
+  border: 2px solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  background: var(--px-walnut-2) !important;
+  box-shadow: inset 0 0 0 1px var(--px-wood-dk), 2px 2px 0 rgba(0, 0, 0, 0.5) !important;
+  color: var(--px-text-muted) !important;
+}
+.pv-badge, .adm-role, .adm-you {
+  border: 2px solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  background: var(--px-paper) !important;
+  color: var(--px-text-ink) !important;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45) !important;
+}
+.pv-badge.gold, .adm-role.admin { background: var(--px-gold) !important; }
+.pv-badge .px-icon, .pv-deck-fav .px-icon { color: var(--px-text-ink); }
+.pv-deck-fav { color: var(--px-gold); }
+
+/* online / in a duel / offline: a pixel dot or crossed swords in the art's colours */
+.presence-badge { display: inline-flex; vertical-align: -1px; }
+.presence-online { color: var(--px-good); }
+.presence-in_duel { color: var(--px-gold); }
+.presence-offline { color: var(--px-text-muted); opacity: 0.6; }
+
+/* ---- buttons that were flat blocks become pixel buttons (.px-btn) ---- */
+.hu-hicon, .dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow.following {
+  border-style: solid !important;
+  border-width: var(--px-btn-frame) !important;
+  border-radius: 0 !important;
+  border-image: var(--px-img-btn-gold) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--px-text-ink) !important;
+  image-rendering: pixelated;
+}
+.pv-follow, .msg-send, .dr-exit {
+  border-style: solid !important;
+  border-width: var(--px-btn-frame) !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  image-rendering: pixelated;
+}
+.pv-follow:not(.following) { border-image: var(--px-img-btn-green) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important; text-shadow: 1px 1px 0 #315b5d; }
+.msg-send, .dr-exit { border-image: var(--px-img-btn-red) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important; text-shadow: 1px 1px 0 #6c1a20; }
+:is(.hu-hicon, .dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow, .msg-send, .dr-exit):hover:not(:disabled) { filter: brightness(1.08); }
+:is(.hu-hicon, .dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow, .msg-send, .dr-exit):active:not(:disabled) { transform: translateY(var(--px-press)) !important; }
+:is(.adm-refresh, .adm-btn, .msg-send):disabled { filter: grayscale(0.85) brightness(0.8); }
+
+/* Duel Room choice buttons (rated/casual, win/loss, checks): planks; the chosen one is lit wood */
+.dr-radio, .dr-check {
+  border: 2px solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  background: var(--px-walnut-2) !important;
+  box-shadow: inset 0 0 0 1px var(--px-wood-dk), 2px 2px 0 rgba(0, 0, 0, 0.5) !important;
+  color: var(--px-text-muted) !important;
+}
+.dr-radio.on, .dr-check.on {
+  background: var(--px-wood) !important;
+  color: var(--px-text-ink) !important;
+  box-shadow: inset 0 -3px 0 var(--px-wood-dk), 2px 2px 0 rgba(0, 0, 0, 0.5) !important;
+}

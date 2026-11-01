@@ -55,8 +55,9 @@
   border-image: var(--px-img-btn-gold) 4 4 6 fill / var(--px-btn-frame) / 0 stretch;
   background: none;
   color: var(--px-text-ink);
-  font: 700 12px var(--px-hud);
-  letter-spacing: 0.05em;
+  font: 400 14px var(--px-btn-font);
+  font-size-adjust: ex-height var(--px-btn-ex);
+  letter-spacing: 0.02em;
   cursor: pointer;
   image-rendering: pixelated;
   transition: transform 60ms, filter 100ms;
