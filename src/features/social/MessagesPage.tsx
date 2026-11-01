@@ -102,7 +102,7 @@ export function MessagesPage() {
     }
     if (activeUsername && !map.has(activeUsername)) {
       const u = dir.find((d) => d.username === activeUsername);
-      if (u) map.set(activeUsername, { username: u.username, displayName: u.displayName, color: u.avatarColor, image: imageOf(u), preview: "Say hi 👋", time: 0, unread: 0 });
+      if (u) map.set(activeUsername, { username: u.username, displayName: u.displayName, color: u.avatarColor, image: imageOf(u), preview: "Say hi!", time: 0, unread: 0 });
     }
     return [...map.values()].sort((a, b) => b.time - a.time);
   }, [threads, dir, activeUsername, cards]);

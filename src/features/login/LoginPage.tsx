@@ -9,6 +9,8 @@ import "./login.css";
    (public/assets/bg/night-sea, CraftPix via OpenGameArt, OGA-BY 3.0): the
    shared living NightSea scene. Wired to the real backend. */
 import { NightSea } from "../home/NightSea";
+import { PixelIcon } from "../pixel/PixelIcon";
+import { PixelLogoMark } from "../pixel/PixelLogo";
 
 export function LoginPage() {
   const setView = useUiStore((s) => s.setView);
@@ -72,15 +74,7 @@ export function LoginPage() {
       <aside className="snlogin-login">
         <div className="snlogin-inner">
           <div className="snlogin-logo">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="22" stroke="rgba(227,178,76,0.6)" strokeWidth="1.5" />
-              <circle cx="24" cy="24" r="4" fill="#e3b24c" />
-              <path d="M24 5 L27 21 L24 19 L21 21 Z" fill="#e23b32" />
-              <path d="M24 43 L21 27 L24 29 L27 27 Z" fill="#e8edf4" opacity=".7" />
-              <path d="M5 24 L21 21 L19 24 L21 27 Z" fill="#e8edf4" opacity=".7" />
-              <path d="M43 24 L27 27 L29 24 L27 21 Z" fill="#e8edf4" opacity=".7" />
-              <circle cx="24" cy="24" r="1.5" fill="#fff" />
-            </svg>
+            <PixelLogoMark size={48} />
             <div className="snlogin-logo-text">
               <span className="snlogin-logo-name">Sailing Network</span>
               <span className="snlogin-logo-tag">One Piece TCG Platform</span>
@@ -153,10 +147,7 @@ export function LoginPage() {
             {err && <div className="snlogin-error">{err}</div>}
 
             <button className="snlogin-btn" type="submit" disabled={busy}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="rgba(255,255,255,0.2)" />
-                <path d="M8 12h8M13 9l3 3-3 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <PixelIcon name="arrow" size={12} />
               {busy ? "…" : mode === "login" ? "Set Sail" : "Join the Crew"}
             </button>
           </form>
@@ -170,9 +161,7 @@ export function LoginPage() {
                   Create an account
                 </button>
                 <button className="snlogin-glass highlight" onClick={quickLogin} disabled={busy}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 8a3 3 0 100-6 3 3 0 000 6zM12 8v13M5 12H2a10 10 0 0020 0h-3" />
-                  </svg>
+                  <PixelIcon name="anchor" size={12} />
                   Enter as Test Captain
                 </button>
               </>

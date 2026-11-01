@@ -13,6 +13,7 @@ import "../home/home.css";
 import "./profiles.css";
 import "../social/social.css";
 import "../stats/stats.css";
+import { PixelIcon } from "../pixel/PixelIcon";
 
 /* Profile Viewer — a captain's full dossier: season Bounty + rank + tier, the
    Bounty chart (this season or an archived one), record with first/second
@@ -131,9 +132,9 @@ export function ProfileViewer() {
                 </div>
                 <div className="pv-badges">
                   {ladder && <TierBadge tier={ladder.tier} provisional={ladder.provisional} />}
-                  {data.profile.supporter && <span className="pv-badge gold">★ Supporter</span>}
-                  {data.user.role === "admin" && <span className="pv-badge gold">⚓ Admin</span>}
-                  {ladder?.pastSeasons.some((s) => s.rank === 1) && <span className="pv-badge gold">♛ Season champion</span>}
+                  {data.profile.supporter && <span className="pv-badge gold"><PixelIcon name="star" size={12} /> Supporter</span>}
+                  {data.user.role === "admin" && <span className="pv-badge gold"><PixelIcon name="anchor" size={12} /> Admin</span>}
+                  {ladder?.pastSeasons.some((s) => s.rank === 1) && <span className="pv-badge gold"><PixelIcon name="crown" size={12} /> Season champion</span>}
                 </div>
                 <div className="pv2-follow">
                   <span><b>{data.social.followers}</b> followers</span>
@@ -348,7 +349,7 @@ export function ProfileViewer() {
                           ? <img className="pv-deck-art" src={lc.image} alt="" loading="lazy" draggable={false} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                           : <span className="pv-deck-art ph" />}
                         <span className="pv-deck-info">
-                          <b>{d.name}{d.fav && <span className="pv-deck-fav">★</span>}</b>
+                          <b>{d.name}{d.fav && <span className="pv-deck-fav"><PixelIcon name="star" size={12} /></span>}</b>
                           <small>{d.leaderName || lc?.name || "—"} · {d.count}/50 · {d.format || "—"}</small>
                         </span>
                         <span className="pv-deck-wl"><b className="w">{d.wins}W</b> · <b className="l">{d.losses}L</b></span>

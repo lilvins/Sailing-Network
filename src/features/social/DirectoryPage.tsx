@@ -10,6 +10,7 @@ import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
 import { PixelScene } from "../pixel/PixelScene";
+import { PixelIcon } from "../pixel/PixelIcon";
 
 const winRate = (w: number, l: number) => Math.round((w / Math.max(1, w + l)) * 100);
 
@@ -77,8 +78,8 @@ export function DirectoryPage() {
                   <div className="fr-main">
                     <div className="fr-name">
                       <PresenceBadge userId={u.id} /> {u.displayName}
-                      {u.supporter && <span style={{ marginLeft: 6, color: "#ffd98a" }}>★</span>}
-                      {u.role === "admin" && <span style={{ marginLeft: 6, color: "#e3b24c" }}>⚓</span>}
+                      {u.supporter && <span style={{ marginLeft: 6 }}><PixelIcon name="star" size={12} color="var(--px-gold)" title="Supporter" /></span>}
+                      {u.role === "admin" && <span style={{ marginLeft: 6 }}><PixelIcon name="anchor" size={12} color="var(--px-wood)" title="Admin" /></span>}
                     </div>
                     <div className="fr-status">
                       @{u.username} · {u.deckCount} deck{u.deckCount === 1 ? "" : "s"} · {winRate(u.wins, u.losses)}% WR

@@ -11,6 +11,7 @@ import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
 import { PixelScene } from "../pixel/PixelScene";
+import { PixelIcon } from "../pixel/PixelIcon";
 
 /* Friends — real data: accepted friends, incoming requests, outgoing requests,
    plus a "Find captains" tab to send requests to any captain on the network. */
@@ -124,7 +125,7 @@ export function FriendsPage() {
                   <div className="fr-row" key={f.id}>
                     <LeaderAvatar name={f.user.displayName} {...avatarOf(f.user.username)} size={48} />
                     <div className="fr-main">
-                      <div className="fr-name"><PresenceBadge userId={f.user.id} /> {f.user.displayName}{u?.supporter && <span style={{ marginLeft: 6, color: "#ffd98a" }}>★</span>}</div>
+                      <div className="fr-name"><PresenceBadge userId={f.user.id} /> {f.user.displayName}{u?.supporter && <span style={{ marginLeft: 6 }}><PixelIcon name="star" size={12} color="var(--px-gold)" title="Supporter" /></span>}</div>
                       <div className="fr-status">@{f.user.username}{u ? ` · ${u.deckCount} decks · ${winRate(u.wins, u.losses)}% WR` : ""}</div>
                     </div>
                     <div className="fr-actions">
@@ -187,7 +188,7 @@ export function FriendsPage() {
                 <div className="fr-row" key={(u as DirectoryUser).id}>
                   <LeaderAvatar name={u.displayName} {...avatarOf(u.username)} size={48} />
                   <div className="fr-main">
-                    <div className="fr-name"><PresenceBadge userId={(u as DirectoryUser).id} /> {u.displayName}{(u as DirectoryUser).supporter && <span style={{ marginLeft: 6, color: "#ffd98a" }}>★</span>}</div>
+                    <div className="fr-name"><PresenceBadge userId={(u as DirectoryUser).id} /> {u.displayName}{(u as DirectoryUser).supporter && <span style={{ marginLeft: 6 }}><PixelIcon name="star" size={12} color="var(--px-gold)" title="Supporter" /></span>}</div>
                     <div className="fr-status">@{u.username} · {(u as DirectoryUser).deckCount} decks · {winRate((u as DirectoryUser).wins, (u as DirectoryUser).losses)}% WR</div>
                   </div>
                   <div className="fr-actions">
@@ -198,7 +199,7 @@ export function FriendsPage() {
                   </div>
                 </div>
               ))}
-              {findable.length === 0 && <div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>You already know everyone on the network 👋</div>}
+              {findable.length === 0 && <div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>You already know everyone on the network.</div>}
             </div>
           )}
         </div>
