@@ -110,9 +110,10 @@ function CardTile({ card, count, onClick, onRemove, onHover, onDoubleClick, fade
         <span className="db-card-glow" style={{ background:`radial-gradient(120% 80% at 50% 12%, ${c}dd, ${c}55 46%, #0a0f17 88%)` }}></span>
         {card.image && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
           onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+        {/* the cost is printed on the card; write it only when there is no image */}
         {card.t === "L"
           ? <span className="db-card-badge"><I n="leader" size={mini?12:15} /></span>
-          : <span className="db-card-cost">{card.cost}</span>}
+          : !card.image && <span className="db-card-cost">{card.cost}</span>}
         {locked && <span className="db-card-lock"><I n="lock" size={mini?12:15} /></span>}
         <span className="db-card-foot"><span className="db-card-name">{card.name}</span></span>
       </span>
