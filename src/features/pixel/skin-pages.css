@@ -1,0 +1,83 @@
+/* ===========================================================================
+   Pixel UI — page pieces skin: the profile, social, stats, popular and admin
+   pages' cards, tiles, table heads and modals mapped onto the shared pieces
+   (components.css). The deck builder and Meta page are styled by their own
+   files. Values: tokens.css.
+   =========================================================================== */
+
+/* ---- big panels are timber windows (.px-window) ---- */
+.snp .so-card, .adm-table, .pd-modal, .snp .snp-screen {
+  border: var(--px-frame) solid transparent !important;
+  border-image: var(--px-img-board) 8 / var(--px-frame) / 0 repeat !important;
+  background: var(--px-inside) !important;
+  background-color: var(--px-night) !important;
+  background-clip: padding-box !important;
+  box-shadow: var(--px-shadow) !important;
+  image-rendering: pixelated;
+}
+/* the portrait screen only needs a thin frame: the card art is the point */
+.snp .snp-screen { border-width: 8px !important; border-image-width: 8px !important; }
+/* panel heads sit on the timber, under a dashed wood rule */
+.snp .so-card-h, .pd-detail-head, .pd-modal-head { border-bottom: 2px dashed var(--px-line-strong) !important; background: transparent !important; }
+
+/* ---- small tiles and cards are planks (.px-plank) ---- */
+.snp .st-kpi, .snp .pv-deck, .rk-pod, .pd-region-flag {
+  border: var(--px-border) solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  background: var(--px-walnut-2) !important;
+  box-shadow: inset 0 0 0 2px var(--px-wood-dk), var(--px-shadow-sm) !important;
+}
+.snp .st-kpi-lbl { font-family: var(--px-hud) !important; font-weight: 400 !important; letter-spacing: 0.06em; color: var(--px-wood) !important; }
+.pd-region-flag { color: var(--px-text); }
+/* avatar picker cells: a plank edge; the chosen one is lit gold */
+.mp-av { border: 2px solid var(--px-ink) !important; box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5); }
+.mp-av.on { border-color: var(--px-gold) !important; box-shadow: 0 0 0 2px var(--px-ink), 3px 3px 0 rgba(0, 0, 0, 0.5) !important; }
+.mp-av .ph-check { background: var(--px-gold) !important; color: var(--px-ink) !important; }
+
+/* ---- table heads in pixel caps (.px-table) ---- */
+.rec-head span, .rk-head span, .pv2-tr.head, .pv2-tr.head span, .adm-head-row, .adm-head-row span {
+  font-family: var(--px-hud) !important;
+  font-weight: 400 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+  color: var(--px-wood) !important;
+}
+.adm-head-row { background: transparent !important; border-bottom: 2px dashed var(--px-line-strong) !important; }
+.rec-head, .rk-head { border-bottom: 2px dashed var(--px-line-strong) !important; }
+.pv2-tr:not(.head) { border-bottom-color: var(--px-line) !important; }
+.pv2-tr.row:hover, .pv2-tr.row.open { background: rgba(218, 171, 118, 0.08) !important; }
+.pv2-tr.sub { background: rgba(0, 0, 0, 0.22) !important; }
+
+/* ---- Popular Decklists: its buttons are pixel buttons ---- */
+.pd-btn, .pd-modal-close {
+  border-style: solid !important;
+  border-width: var(--px-btn-frame) !important;
+  border-radius: 0 !important;
+  border-image: var(--px-img-btn-gold) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important;
+  background: none !important;
+  color: var(--px-text-ink) !important;
+  image-rendering: pixelated;
+}
+.pd-btn.primary { border-image-source: var(--px-img-btn-red) !important; color: #fff !important; text-shadow: 1px 1px 0 #6c1a20; }
+.pd-btn.done { border-image-source: var(--px-img-btn-green) !important; color: #fff !important; text-shadow: 1px 1px 0 #315b5d; }
+.pd-btn:active, .pd-modal-close:active { transform: translateY(var(--px-press)) !important; }
+.pd-mcard { background: var(--px-walnut-1) !important; }
+
+/* ---- modals: the overlay is a dark wash over the scene, not navy ---- */
+.pd-modal-overlay, .dr-modal-overlay { background: rgba(19, 13, 11, 0.72) !important; }
+.dr-modal {
+  border: var(--px-frame) solid transparent !important;
+  border-image: var(--px-img-board) 8 / var(--px-frame) / 0 repeat !important;
+  background: var(--px-inside) !important;
+  background-clip: padding-box !important;
+  box-shadow: var(--px-shadow) !important;
+}
+
+/* ---- notices: errors on parchment-red, admin loading line ---- */
+.adm-error {
+  border: 2px solid var(--px-ink) !important;
+  background: #f0c6b4 !important;
+  color: #5e1a14 !important;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
