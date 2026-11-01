@@ -48,6 +48,8 @@
   background: var(--px-walnut-1) !important;
   box-shadow: inset 0 0 0 1px var(--px-wood-dk), var(--px-shadow-sm) !important;
 }
+/* a tab group never runs past the screen: it wraps */
+.sx-seg, .fr-tabs { max-width: 100%; flex-wrap: wrap; }
 .sx-seg button, .fr-tab {
   border: 0 !important;
   background: transparent !important;
