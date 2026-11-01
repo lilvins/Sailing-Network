@@ -76,6 +76,7 @@ If the email/username already exists, that user is **promoted** to admin.
 | GET | `/api/profiles/:username/stats` | cookie | — | Bounty, rank, tier, history, past seasons, per-leader + matchup stats, recent games |
 | POST/DELETE | `/api/follows/:username` | cookie | — | follow / unfollow a captain (one-way) |
 | GET | `/api/meta` | cookie | `?days&min` | per-leader play rate, WR ± 95% range, 1st/2nd, adjusted WR, movers, matchup matrix |
+| GET | `/api/meta/report` | cookie | `?format&from&to&minBounty&maxBounty` | Meta Analytics page: matchup grid + best lists (more than 30 games) |
 | GET | `/api/admin/users` | admin | — | list all users |
 | PATCH | `/api/admin/users/:id/role` | admin | `{role:"user"\|"admin"}` | can't demote the last admin |
 | GET | `/api/health` | — | — | `{ok:true}` |

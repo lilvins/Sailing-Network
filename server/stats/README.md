@@ -9,7 +9,8 @@ No UI code here, no HTTP: `server/index.mjs` calls these functions.
 | `glicko2.mjs` | One Glicko-2 update for one player after one game (pure). |
 | `wilson.mjs` | 95% Wilson interval for a win rate (pure). |
 | `ladder.mjs` | Replays all match rows in time order → rating, RD, peak, history, streaks, seasons, ranks, tiers (pure). |
-| `index.mjs` | Reads the DB, caches the ladder, and shapes `leaderboard()`, `profileStats()`, `meta()`. |
+| `metaReport.mjs` | Matchup grid + best lists for the Meta Analytics page, under format / date / Bounty filters (pure). |
+| `index.mjs` | Reads the DB, caches the ladder, and shapes `leaderboard()`, `profileStats()`, `meta()`, `metaReport()`. |
 
 ## How the Bounty works
 
@@ -36,6 +37,15 @@ record with Wilson CI, first/second split, distinct players, play share,
 **opponent-adjusted WR** (WR vs each opponent weighted by that opponent's
 share), share and WR change vs the previous 7 days, and a leader × leader
 matrix of the top leaders that meet `minGames`.
+
+## Meta Analytics page (`metaReport`)
+
+Filters: format, a date range, and the Bounty the player had going into the
+game (the ladder records it for every row). Output: a leader × leader grid
+(row leader's record vs the column leader; leaders with `gridMinGames`+
+games, at most `gridMaxLeaders`) and, per leader, the lists with more than
+`bestListMoreThanGames` games, best win rate first. Two decks with the same
+cards in the same counts are one list, whoever built them.
 
 ## Demo data
 
