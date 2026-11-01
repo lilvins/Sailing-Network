@@ -33,7 +33,14 @@ export function LeaderAvatar({
           alt=""
           loading="lazy"
           draggable={false}
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          // a card image that fails falls back to the pixel moon, never to a plain colour block
+          onError={(e) => {
+            const img = e.currentTarget as HTMLImageElement;
+            if (img.dataset.fallback) { img.style.display = "none"; return; }
+            img.dataset.fallback = "1";
+            img.src = "/assets/bg/avatar-moon.png";
+            img.style.imageRendering = "pixelated";
+          }}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "50% 14%" }}
         />
       ) : (
