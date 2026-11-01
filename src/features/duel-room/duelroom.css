@@ -142,10 +142,14 @@
   .dr-pool{flex:0 0 auto;}
 }
 @media (max-width:720px){
-  .dr-title{display:none;}
+  .dr-title{display:none !important;} /* the pixel skin makes it inline-flex: keep it hidden on phones */
+  .dr-head{grid-template-columns:auto 1fr;gap:8px;}
+  .dr-head .sn-logo-text{display:none;}
+  .dr-head-r{min-width:0;gap:8px;}
+  .dr-head-r .sn-pill{min-width:0;overflow:hidden;text-overflow:ellipsis;padding:5px 8px;font-size:11px;}
   .dr-bottom{flex-direction:column;align-items:stretch;}
   .dr-host,.dr-tools,.dr-filter{flex:1 1 auto;max-width:none;margin-left:0;}
-  .dr-fmt{min-width:82vw;}
+  .dr-fmt{min-width:100%;max-width:100%;} /* one column per swipe: no half-cut column at the edge */
 }
 
 /* ================= POLISH / DYNAMISM (taste + emil-design-eng) ================= */

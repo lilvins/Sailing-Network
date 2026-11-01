@@ -479,9 +479,14 @@
   }
   .fr-actions {
     width: 100%;
+    flex-wrap: wrap;
   }
+  /* the pixel button frame is 16px wide: let the three share the row, never spill */
   .fr-actions .fr-btn {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: 4px;
+    padding-right: 4px;
     justify-content: center;
   }
 }

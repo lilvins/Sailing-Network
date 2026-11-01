@@ -54,6 +54,10 @@
   @keyframes pxs-oc-waves{to{background-position-x:calc(-144 / 240 * 100cqh);}}
 }
 
+/* the art's credit lives in a strip of scene under the page: the page's
+   content ends above it, so the credit never covers a button or a card */
+.snp.px{--pxs-credit-gutter:30px;padding-bottom:var(--pxs-credit-gutter);}
+@media (max-width:640px){ .snp.px{--pxs-credit-gutter:44px;} }
 /* the art's credit, bottom-right (the social dock owns bottom-left) */
 .pxs-credit{position:absolute;right:12px;bottom:8px;z-index:6;padding:3px 8px;font-size:11px;color:rgba(242,243,245,0.7);background:rgba(6,9,18,0.62);text-shadow:1px 1px 0 rgba(0,0,0,0.7);white-space:nowrap;}
 .pxs-credit a,.pxs-credit button{color:inherit;font:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;text-underline-offset:2px;}
