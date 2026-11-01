@@ -13,7 +13,8 @@ export default defineConfig({
       // forward API calls to the local backend → same-origin requests, so the
       // httpOnly session cookie works without any CORS/SameSite gymnastics.
       "/api": {
-        target: "http://localhost:8787",
+        // SN_API_PORT lets a second dev copy run beside the first (scripts/dev-alt.mjs)
+        target: `http://localhost:${process.env.SN_API_PORT || 8787}`,
         changeOrigin: true,
       },
     },

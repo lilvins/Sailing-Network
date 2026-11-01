@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "dev:alt": "node scripts/dev-alt.mjs",
     "dev": "concurrently --names server,vite --prefix-colors cyan,yellow \"node server/index.mjs\" \"vite\"",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
