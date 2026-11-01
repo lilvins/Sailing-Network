@@ -128,25 +128,12 @@ function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, 
   const c = hueColor(card.col);
   return (
     <aside className="db-detail">
-      <div className="db-detail-top">
-        <div className="db-detail-name">{card.name}</div>
-        <span className="db-color-chip" style={{ "--cc": c }}>{card.cols.map((x) => HUE_NAME[x]).join(" / ")}</span>
-      </div>
+      {/* the card image already shows cost, power, counter and text: show it alone */}
       <div className="db-detail-art" style={{ "--cc": c }}>
-        <span className="db-card-glow" style={{ background:`radial-gradient(120% 80% at 50% 10%, ${c}ee, ${c}66 48%, #0a0f17 90%)` }}></span>
-        {card.image && <img className="db-detail-img" src={card.image} loading="lazy" alt={card.name} draggable={false}
-          onError={(e) => { e.currentTarget.style.display = "none"; }} />}
-        {card.t === "L" ? <span className="db-detail-badge"><I n="leader" size={26} /></span> : <span className="db-detail-cost">{card.cost}</span>}
+        {card.image
+          ? <img className="db-detail-img" src={card.image} loading="lazy" alt={card.name} draggable={false} />
+          : <div className="db-detail-noimg">{card.name}</div>}
       </div>
-      <div className="db-detail-stats">
-        {card.t === "L" && <div className="db-stat"><span>Life</span><b>{card.cost}</b></div>}
-        {card.t !== "L" && <div className="db-stat"><span>Cost</span><b>{card.cost}</b></div>}
-        {(card.t === "C" || card.t === "L") && <div className="db-stat"><span>Power</span><b>{card.pow}</b></div>}
-        {(card.t === "C") && <div className="db-stat"><span>Counter</span><b>{card.cnt ? "+" + card.cnt : "—"}</b></div>}
-        <div className="db-stat"><span>Set</span><b>{card.set}</b></div>
-      </div>
-      <div className="db-detail-type">[{TYPE_LABEL[card.t]}{card.tags.length ? " · " + card.tags.join(" / ") : ""}]</div>
-      <p className="db-detail-fx">{card.fx}</p>
       <div className="db-detail-actions">
         {card.t === "L"
           ? (isCurrentLeader
@@ -356,14 +343,6 @@ function DeckBuilder() {
     return arr;
   }, [deck, cardById]);
 
-  // curve (cost 0..7+)
-  const curve = useMemo(() => {
-    const buckets = [0,0,0,0,0,0,0,0]; // 0..7+
-    for (const { card, n } of deckCards) { const k = Math.min(7, card.cost); buckets[k] += n; }
-    return buckets;
-  }, [deckCards]);
-  const curveMax = Math.max(1, ...curve);
-
   // color breakdown
   const colorMix = useMemo(() => {
     const m = {};
@@ -489,21 +468,8 @@ function DeckBuilder() {
                 </div>}
           </div>
 
-          {/* footer: curve + colors */}
+          {/* footer: colors */}
           <div className="db-deck-foot">
-            <div className="db-curve">
-              <span className="db-foot-label">Cost curve</span>
-              <div className="db-curve-bars">
-                {curve.map((v, k) => (
-                  <div className="db-curve-col" key={k}>
-                    <div className="db-curve-bar" style={{ height: (8 + (v / curveMax) * 46) + "px", opacity: v ? 1 : .3 }}>
-                      {v > 0 && <span>{v}</span>}
-                    </div>
-                    <span className="db-curve-k">{k === 7 ? "7+" : k}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
             <div className="db-colors">
               <span className="db-foot-label">Colors</span>
               <div className="db-color-bars">
