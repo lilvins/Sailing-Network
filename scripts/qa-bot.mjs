@@ -754,8 +754,8 @@ async function playGame(browser, vp, cfg, seed) {
 
 // ─── the crawler ─────────────────────────────────────────────────────────────
 
-const VIEWS = ["home", "deck-constructor", "my-decks", "popular-decklists", "directory", "profile-viewer", "edit-profile", "rankings", "meta", "records", "statistics", "messages", "friends", "global-chat", "notifications", "duel-room", "board", "board2"];
-const CRAWL_VIEWPORTS = [{ name: "desktop", w: 1440, h: 900, mobile: false }, { name: "tablet", w: 768, h: 1024, mobile: true }, { name: "phone", w: 390, h: 844, mobile: true }];
+const VIEWS = ["home", "deck-constructor", "my-decks", "popular-decklists", "directory", "profile-viewer", "edit-profile", "rankings", "meta", "records", "statistics", "messages", "friends", "global-chat", "duel-room", "board", "board2"];
+const CRAWL_VIEWPORTS = [{ name: "wide", w: 1920, h: 1080, mobile: false }, { name: "desktop", w: 1440, h: 900, mobile: false }, { name: "laptop", w: 1100, h: 700, mobile: false },{ name: "tablet", w: 768, h: 1024, mobile: true }, { name: "phone", w: 390, h: 844, mobile: true }];
 
 async function crawl(browser) {
   const rows = [];
