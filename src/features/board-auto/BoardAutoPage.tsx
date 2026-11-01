@@ -32,7 +32,7 @@ const SEAT_A: PID = "seatA";
 const SEAT_B: PID = "seatB";
 
 type Controller = "human" | "ai";
-const AI_NAMES: [string, string] = ["Greedy AI", "Greedy AI 2"];
+const AI_NAMES: [string, string] = ["Bot Pro", "Bot Pro 2"];
 /** Pause between two AI moves. */
 const AI_SPEEDS = [{ label: "Slow", ms: 1400 }, { label: "Normal", ms: 700 }, { label: "Fast", ms: 150 }];
 
@@ -557,6 +557,7 @@ function GameScreen() {
   // AI seats: one move per tick while it is their move
   const aiStep = useAutoStore((s) => s.aiStep);
   const aiPaused = useAutoStore((s) => s.aiPaused);
+  const aiPlan = useAutoStore((s) => s.aiPlan);
   const aiDelay = useAutoStore((s) => s.aiDelay);
   const setAiPaused = useAutoStore((s) => s.setAiPaused);
   const setAiDelay = useAutoStore((s) => s.setAiDelay);
@@ -2571,11 +2572,27 @@ function GameScreen() {
         <div className="ba-preview">{previewPanel}</div>
         {hasAi && (
           <div className="ba-aictl" data-ai-controls>
-            <span className="ba-aictl-tag">AI · Greedy</span>
+            <span className="ba-aictl-tag">AI · Pro</span>
             <div className="ba-aictl-row">
               <button className="ba-btn" data-act="ai-pause" onClick={() => setAiPaused(!aiPaused)}>{aiPaused ? "▶ Play" : "❚❚ Pause"}</button>
-              <button className="ba-btn" data-act="ai-step" disabled={!aiPaused || !aiActing} onClick={aiStep}>Step</button>
+              <button className="ba-btn" data-act="ai-step" disabled={!aiPaused || !aiActing} onClick={aiStep}>{aiPlan ? "Play it" : "Think"}</button>
             </div>
+            {/* coach mode: what the AI is about to do, and what else it weighed */}
+            {aiPlan && (
+              <div className="ba-aiplan" data-ai-plan>
+                <div className="ba-aiplan-next">{seats.find((x) => x.pid === aiPlan.pid)?.name}: <b>{aiPlan.text}</b></div>
+                {aiPlan.candidates.length > 1 && (
+                  <ol className="ba-aiplan-list">
+                    {aiPlan.candidates.map((c, i) => (
+                      <li key={i} className={i === 0 ? "chosen" : ""}>
+                        <span>{c.text}</span>
+                        <span className="ba-aiplan-score">{c.mean} · {c.rollouts}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            )}
             <div className="ba-aictl-row">
               {AI_SPEEDS.map((sp) => (
                 <button key={sp.ms} className={`ba-btn${aiDelay === sp.ms ? " primary" : ""}`} data-act={`ai-speed-${sp.label.toLowerCase()}`} onClick={() => setAiDelay(sp.ms)}>{sp.label}</button>
@@ -2728,9 +2745,11 @@ function GameScreen() {
         <span className="ba-dondrag-count">×{donDrag.count}</span>
       </div>
     )}
+    {/* drag-to-play ghost: viewport coordinates, card size at the stage scale;
+        it lives outside the stage, so in portrait it needs the stage's 90° turn */}
     {drag && cards.get(drag.cardId)?.image && (
       <img
-        className="ba-dragghost"
+        className={`ba-dragghost${stage.rotate ? " rot" : ""}`}
         src={cards.get(drag.cardId)!.image}
         alt=""
         style={{ left: drag.x, top: drag.y, width: CARD_W * stage.scale * 1.08 }}

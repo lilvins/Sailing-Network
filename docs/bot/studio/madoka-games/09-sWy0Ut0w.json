@@ -1,0 +1,2829 @@
+{
+ "video_id": "09-sWy0Ut0w",
+ "url": "https://www.youtube.com/watch?v=09-sWy0Ut0w",
+ "title": "G Mihawk vs UY Nami (Go second)",
+ "mulligan": {
+  "Opponent": true
+ },
+ "source": "OCR del combat log di OPTCGSim visibile nel video (non sottotitoli)",
+ "you": "madoka_hk",
+ "leaders": {
+  "You": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  },
+  "Opponent": {
+   "id": "OP11-041",
+   "name": "Nami"
+  }
+ },
+ "first_player": "Opponent",
+ "winner": "You",
+ "end": "concede",
+ "turns": [
+  {
+   "turn": 1,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 6.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 1,
+     "don_total": 1
+    },
+    {
+     "t": 8.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 0,
+     "Opponent": 1
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 2,
+   "player": "You",
+   "events": [
+    {
+     "t": 8.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 11.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 2
+    },
+    {
+     "t": 16.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 16.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawLaw&Bepo<ST24-004>"
+    },
+    {
+     "t": 27.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 27.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawShanks<OP14-027>"
+    },
+    {
+     "t": 32.5,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 2,
+     "Opponent": 1
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 2,
+     "when": "inizio",
+     "t": 8.8,
+     "n": 6,
+     "cards": [
+      "OP12-034 Perona",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP12-034 Perona",
+      "OP12-034 Perona"
+     ],
+     "scores": [
+      0.851,
+      0.889,
+      0.877,
+      0.893,
+      0.829,
+      0.835
+     ]
+    },
+    {
+     "turn": 2,
+     "when": "fine",
+     "t": 32.0,
+     "n": 6,
+     "cards": [
+      "OP12-034 Perona",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "OP14-027 Shanks"
+     ],
+     "scores": [
+      0.851,
+      0.888,
+      0.873,
+      0.901,
+      0.903,
+      0.902
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 3,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 34.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 34.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 3
+    },
+    {
+     "t": 44.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 2
+    },
+    {
+     "t": 44.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      },
+      {
+       "player": "You",
+       "card": "OP12-118",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 57.0,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 58.0,
+     "type": "counter",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "value": 1000
+    },
+    {
+     "t": 60.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "don_total": {
+     "You": 2,
+     "Opponent": 3
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 4,
+   "player": "You",
+   "events": [
+    {
+     "t": 60.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 62.5,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 4
+    },
+    {
+     "t": 62.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 73.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "RevealandDrawRoronoaZoro<PRB02-006>"
+    },
+    {
+     "t": 76.25,
+     "type": "play",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "category": "Character"
+    },
+    {
+     "t": 76.75,
+     "type": "effect",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "text": "RestYoungGir[P-096]"
+    },
+    {
+     "t": 81.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "text": "attackingYoungGirl[P-096]"
+    },
+    {
+     "t": 86.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 86.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 88.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP11-041",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 90.5,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 5,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 4,
+     "when": "inizio",
+     "t": 61.1,
+     "n": 5,
+     "cards": [
+      "OP12-034 Perona",
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "OP14-027 Shanks",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.833,
+      0.897,
+      0.884,
+      0.915,
+      0.896
+     ]
+    },
+    {
+     "turn": 4,
+     "when": "fine",
+     "t": 90.0,
+     "n": 4,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "OP14-027 Shanks",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.892,
+      0.899,
+      0.913,
+      0.894
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 5,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 91.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 92.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 5
+    },
+    {
+     "t": 93.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami",
+     "category": "Character"
+    },
+    {
+     "t": 95.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami",
+     "text": "Attach1RestedDontoNami<OP11-041>"
+    },
+    {
+     "t": 95.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami",
+     "text": "Send1LifetoHand"
+    },
+    {
+     "t": 95.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 97.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 98.75,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 101.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 4,
+     "Opponent": 5
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "Opponent": [
+      "EB03-053 Nami"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 6,
+   "player": "You",
+   "events": [
+    {
+     "t": 101.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 107.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 6
+    },
+    {
+     "t": 107.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "EB01-015",
+     "attacker_name": "Scratchmen Apoo",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 1000,
+     "defense_power": 5000
+    },
+    {
+     "t": 111.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 5000
+    },
+    {
+     "t": 113.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 5000
+    },
+    {
+     "t": 116.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 116.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 131.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashTashigi<OP14-029>"
+    },
+    {
+     "t": 134.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 134.75,
+     "type": "trash",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "from": "field"
+    },
+    {
+     "t": 134.75,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 142.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 147.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestPerona<OP12-034>"
+    },
+    {
+     "t": 150.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 150.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 155.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "（2Total)"
+    },
+    {
+     "t": 155.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 3
+    },
+    {
+     "t": 156.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP07-107",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 8000,
+     "defense_power": 9000
+    },
+    {
+     "t": 159.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "TrashYoungGirl[P-096]"
+    },
+    {
+     "t": 159.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "BuffNami<OP11-041>2000"
+    },
+    {
+     "t": 164.5,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP07-107",
+     "name": "Franky",
+     "value": 2000
+    },
+    {
+     "t": 165.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 6,
+     "Opponent": 5
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-118 Jewelry Bonney",
+      "ST24-002 Kid & Killer"
+     ],
+     "Opponent": [
+      "EB03-053 Nami"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 6,
+     "when": "inizio",
+     "t": 102.1,
+     "n": 7,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "OP14-027 Shanks",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP12-037 Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "scores": [
+      0.909,
+      0.912,
+      0.934,
+      0.909,
+      0.869,
+      0.913,
+      0.873
+     ]
+    },
+    {
+     "turn": 6,
+     "when": "fine",
+     "t": 165.2,
+     "n": 7,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "ST24-004 Law & Bepo",
+      "OP14-027 Shanks",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-037 Demon Aura Nine Sword Style Asura Blades Drawn Dead Man's Game",
+      "OP14-119 Dracule Mihawk",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "scores": [
+      0.91,
+      0.913,
+      0.933,
+      0.91,
+      0.917,
+      0.854,
+      0.904
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 7,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 166.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 167.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 7
+    },
+    {
+     "t": 174.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP06-047",
+     "name": "Charlotte Pudding",
+     "category": "Character"
+    },
+    {
+     "t": 174.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-047",
+     "name": "Charlotte Pudding",
+     "text": "Draw5Card"
+    },
+    {
+     "t": 179.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "EB03-053",
+     "to_name": "Nami",
+     "total_on_card": 1
+    },
+    {
+     "t": 179.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "EB03-053",
+     "attacker_name": "Nami",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [
+      {
+       "player": "You",
+       "card": "EB01-015",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "blocker": "OP12-118",
+     "blocker_name": "Jewelry Bonney",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 186.25,
+     "type": "counter",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "value": 2000
+    },
+    {
+     "t": 189.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 2,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 2
+    },
+    {
+     "t": 195.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 10000
+    },
+    {
+     "t": 198.25,
+     "type": "self_trash",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "TrashKid&Killer<ST24-002>"
+    },
+    {
+     "t": 199.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 200.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "ActivateCounte"
+    },
+    {
+     "t": 200.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffJewelry3onney<OP12-118>2000fortheCombat"
+    },
+    {
+     "t": 200.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP06-038",
+     "name": "The Billion-fold World Trichiliocosm",
+     "text": "BuffJewelryBonney<OP12-118>2000"
+    },
+    {
+     "t": 203.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 6,
+     "Opponent": 7
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-118 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "EB03-053 Nami",
+      "OP06-047 Charlotte Pudding"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 8,
+   "player": "You",
+   "events": [
+    {
+     "t": 203.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 208.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 8
+    },
+    {
+     "t": 208.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "category": "Character"
+    },
+    {
+     "t": 210.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestShanks<OP14-027>"
+    },
+    {
+     "t": 212.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 212.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersortheTurn!"
+    },
+    {
+     "t": 212.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "text": "RestCharlottePudding<OP06-047>"
+    },
+    {
+     "t": 218.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP12-034",
+     "to_name": "Perona",
+     "total_on_card": 2
+    },
+    {
+     "t": 219.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP06-047",
+     "target_name": "Charlotte Pudding",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 4000,
+     "defense_power": 4000
+    },
+    {
+     "t": 221.75,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP06-047",
+     "name": "Charlotte Pudding"
+    },
+    {
+     "t": 235.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 7000
+    },
+    {
+     "t": 243.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "TrashOtama<OP13-043>"
+    },
+    {
+     "t": 243.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "BuffNami<OP11-041>2000"
+    },
+    {
+     "t": 246.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-118",
+     "attacker_name": "Jewelry Bonney",
+     "target": "EB03-053",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 8000,
+     "defense_power": 6000
+    },
+    {
+     "t": 252.5,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami"
+    },
+    {
+     "t": 255.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 8,
+     "Opponent": 7
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 8,
+     "when": "inizio",
+     "t": 203.6,
+     "n": 4,
+     "cards": [
+      "ST24-002 Kid & Killer",
+      "OP14-119 Dracule Mihawk",
+      "OP14-027 Shanks",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.879,
+      0.877,
+      0.913,
+      0.893
+     ]
+    },
+    {
+     "turn": 8,
+     "when": "fine",
+     "t": 255.2,
+     "n": 3,
+     "cards": [
+      "ST24-002 Kid & Killer",
+      "OP14-119 Dracule Mihawk",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.879,
+      0.875,
+      0.883
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 9,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 257.5,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 257.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 9
+    },
+    {
+     "t": 264.25,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP04-056",
+     "name": "Gum-Gum Red Roc",
+     "text": "SendShanks<OP14-027>toDeckBottom"
+    },
+    {
+     "t": 264.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 3,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 3
+    },
+    {
+     "t": 267.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 8000,
+     "defense_power": 6000
+    },
+    {
+     "t": 267.0,
+     "type": "ko",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 269.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 3
+    },
+    "don_total": {
+     "You": 8,
+     "Opponent": 9
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "OP12-034 Perona"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 10,
+   "player": "You",
+   "events": [
+    {
+     "t": 269.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 275.5,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 10
+    },
+    {
+     "t": 275.5,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 278.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 280.25,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 282.5,
+     "type": "trash",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "from": "field"
+    },
+    {
+     "t": 282.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-027",
+     "name": "Shanks",
+     "category": "Character"
+    },
+    {
+     "t": 284.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersortheTurn!"
+    },
+    {
+     "t": 291.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 291.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 291.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 291.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 300.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP11-041",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 300.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 2
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 9
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "ST02-007 Jewelry Bonney",
+      "OP14-027 Shanks"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 10,
+     "when": "inizio",
+     "t": 269.9,
+     "n": 4,
+     "cards": [
+      "ST24-002 Kid & Killer",
+      "OP14-119 Dracule Mihawk",
+      "PRB02-006 Roronoa Zoro",
+      "OP14-027 Shanks"
+     ],
+     "scores": [
+      0.879,
+      0.877,
+      0.884,
+      0.915
+     ]
+    },
+    {
+     "turn": 10,
+     "when": "fine",
+     "t": 299.8,
+     "n": 3,
+     "cards": [
+      "OP14-119 Dracule Mihawk",
+      "PRB02-006 Roronoa Zoro",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "scores": [
+      0.861,
+      0.891,
+      0.902
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 11,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 301.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 301.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 11
+    },
+    {
+     "t": 305.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 5000,
+     "defense_power": 1000
+    },
+    {
+     "t": 309.75,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 311.0,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP04-056",
+     "name": "Gum-Gum Red Roc",
+     "text": "SendShanks<OP14-027>toDeckBottom"
+    },
+    {
+     "t": 311.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "ST29-004",
+     "name": "Sanji",
+     "category": "Character"
+    },
+    {
+     "t": 313.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST29-004",
+     "name": "Sanji",
+     "text": "ReveaandDrawNami<EB03-053>"
+    },
+    {
+     "t": 315.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 2
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 12,
+   "player": "You",
+   "events": [
+    {
+     "t": 315.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 321.75,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 321.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "category": "Character"
+    },
+    {
+     "t": 323.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestDraculeMihawk<OP14-119>"
+    },
+    {
+     "t": 324.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 324.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersortheTurn!"
+    },
+    {
+     "t": 324.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "Sanji<ST29-004>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 326.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 329.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawKid&Killer<ST24-002>"
+    },
+    {
+     "t": 332.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 333.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 336.25,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP11-041",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 336.25,
+     "type": "trigger",
+     "player": "Opponent",
+     "card": "EB03-060",
+     "name": "Will You Be My Servant?",
+     "text": "ActivateTrigger"
+    },
+    {
+     "t": 341.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB03-060",
+     "name": "Will You Be My Servant?",
+     "text": "RevealandDrawNojiko<OP03-048>"
+    },
+    {
+     "t": 344.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "ST02-007 Jewelry Bonney",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 12,
+     "when": "inizio",
+     "t": 315.9,
+     "n": 4,
+     "cards": [
+      "OP14-119 Dracule Mihawk",
+      "PRB02-006 Roronoa Zoro",
+      "ST02-007 Jewelry Bonney",
+      "PRB02-006 Roronoa Zoro"
+     ],
+     "scores": [
+      0.862,
+      0.893,
+      0.903,
+      0.891
+     ]
+    },
+    {
+     "turn": 12,
+     "when": "fine",
+     "t": 343.5,
+     "n": 3,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "ST24-002 Kid & Killer"
+     ],
+     "scores": [
+      0.878,
+      0.891,
+      0.885
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 13,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 344.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 352.0,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP04-056",
+     "name": "Gum-Gum Red Roc",
+     "text": "SendDraculeMihawk<OP14-119>toDeckBottom"
+    },
+    {
+     "t": 360.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 1
+    },
+    {
+     "t": 363.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 6000,
+     "defense_power": 1000
+    },
+    {
+     "t": 364.75,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 367.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 14,
+   "player": "You",
+   "events": [
+    {
+     "t": 367.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 373.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 5000
+    },
+    {
+     "t": 377.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-034",
+     "attacker_name": "Perona",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 5000
+    },
+    {
+     "t": 380.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-002",
+     "attacker_name": "Kid & Killer",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 5000
+    },
+    {
+     "t": 386.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 386.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 387.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashKid&Killer<ST24-002>"
+    },
+    {
+     "t": 387.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 396.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "category": "Stage"
+    },
+    {
+     "t": 396.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 399.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 399.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 399.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashShanks<OP14-027>"
+    },
+    {
+     "t": 400.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 402.5,
+     "type": "trash",
+     "player": "You",
+     "card": "OP12-034",
+     "name": "Perona",
+     "from": "field"
+    },
+    {
+     "t": 402.5,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 415.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawJewelryBonney<OP07-026>"
+    },
+    {
+     "t": 416.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 416.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersortheTurn!"
+    },
+    {
+     "t": 416.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 416.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawJewelryBonney<OP07-026>"
+    },
+    {
+     "t": 417.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 418.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "ST29-009",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 429.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "Trashustass\"Captain\"Kid<OP10-112>"
+    },
+    {
+     "t": 429.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "BuffNami<OP11-041>2000"
+    },
+    {
+     "t": 429.75,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "ST29-009",
+     "name": "Nico Robin",
+     "value": 2000
+    },
+    {
+     "t": 431.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 431.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 4,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "OP12-118 Jewelry Bonney",
+      "OP12-118 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 14,
+     "when": "inizio",
+     "t": 367.6,
+     "n": 4,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro (?)",
+      "OP13-032 Nico Robin (?)",
+      "P-057 Fleeting Lullaby (?)"
+     ],
+     "scores": [
+      0.894,
+      0.552,
+      0.431,
+      0.267
+     ]
+    },
+    {
+     "turn": 14,
+     "when": "fine",
+     "t": 431.2,
+     "n": 4,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "OP07-026 Jewelry Bonney"
+     ],
+     "scores": [
+      0.878,
+      0.895,
+      0.884,
+      0.898
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 15,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 432.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 447.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "ST29-004",
+     "to_name": "Sanji",
+     "total_on_card": 1
+    },
+    {
+     "t": 449.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "ST29-004",
+     "attacker_name": "Sanji",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [
+      {
+       "player": "You",
+       "card": "OP07-026",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "blocker": "OP12-118",
+     "blocker_name": "Jewelry Bonney",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 450.0,
+     "type": "counter",
+     "player": "You",
+     "card": "OP07-026",
+     "name": "Jewelry Bonney",
+     "value": 1000
+    },
+    {
+     "t": 454.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP03-048",
+     "name": "Nojiko",
+     "category": "Character"
+    },
+    {
+     "t": 458.0,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP03-048",
+     "name": "Nojiko",
+     "text": "SendJewelryBonney<OP12-118>toHand"
+    },
+    {
+     "t": 458.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami",
+     "category": "Character"
+    },
+    {
+     "t": 459.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami",
+     "text": "Attach1RestedDontoNami<OP11-041>"
+    },
+    {
+     "t": 459.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "EB03-053",
+     "name": "Nami",
+     "text": "Send1LifetoHand"
+    },
+    {
+     "t": 460.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 461.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 2
+    },
+    {
+     "t": 465.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 3
+    },
+    {
+     "t": 466.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 471.0,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 471.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "OP12-118 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji",
+      "OP03-048 Nojiko",
+      "EB03-053 Nami"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 16,
+   "player": "You",
+   "events": [
+    {
+     "t": 471.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 481.75,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "category": "Character"
+    },
+    {
+     "t": 482.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "RestNami<EB03-053>"
+    },
+    {
+     "t": 482.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "Nami<EB03-053>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 482.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-004",
+     "name": "Law & Bepo",
+     "text": "GrantDraculeMihawk<OP14-020>2000untilopponent'snextturnend"
+    },
+    {
+     "t": 484.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestCoffinBoat<OP14-039>"
+    },
+    {
+     "t": 485.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 485.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 486.25,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 490.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawIKnowYou'reStrong...SoI'llGoAllOut<OP13-040>"
+    },
+    {
+     "t": 508.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 510.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "TrashEustassCaptain”Kid<OP10-112>"
+    },
+    {
+     "t": 510.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP11-041",
+     "name": "Nami",
+     "text": "BuffNami<OP11-041>2000"
+    },
+    {
+     "t": 511.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "ST29-004",
+     "name": "Sanji",
+     "text": "orCounter1000"
+    },
+    {
+     "t": 527.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP12-118",
+     "to_name": "Jewelry Bonney",
+     "total_on_card": 1
+    },
+    {
+     "t": 528.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP12-118",
+     "attacker_name": "Jewelry Bonney",
+     "target": "OP11-041",
+     "target_name": "Nami",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP07-107",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 531.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP07-107",
+     "name": "Franky",
+     "value": 2000
+    },
+    {
+     "t": 533.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-039",
+     "name": "Coffin Boat",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 533.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "OP12-118 Jewelry Bonney",
+      "ST02-007 Jewelry Bonney",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji",
+      "OP03-048 Nojiko",
+      "EB03-053 Nami"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 16,
+     "when": "inizio",
+     "t": 471.6,
+     "n": 7,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "ST24-004 Law & Bepo",
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP14-029 Tashigi"
+     ],
+     "scores": [
+      0.909,
+      0.912,
+      0.909,
+      0.875,
+      0.926,
+      0.934,
+      0.911
+     ]
+    },
+    {
+     "turn": 16,
+     "when": "fine",
+     "t": 532.5,
+     "n": 7,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP14-029 Tashigi",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.911,
+      0.912,
+      0.875,
+      0.934,
+      0.935,
+      0.936,
+      0.872
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 17,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 535.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 552.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 3,
+     "to": "OP11-041",
+     "to_name": "Nami",
+     "total_on_card": 3
+    },
+    {
+     "t": 552.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP11-041",
+     "attacker_name": "Nami",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      },
+      {
+       "player": "You",
+       "card": "OP14-029",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 8000,
+     "defense_power": 9000
+    },
+    {
+     "t": 560.0,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 560.0,
+     "type": "counter",
+     "player": "You",
+     "card": "OP14-029",
+     "name": "Tashigi",
+     "value": 1000
+    },
+    {
+     "t": 568.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 5,
+     "to": "ST29-004",
+     "to_name": "Sanji",
+     "total_on_card": 5
+    },
+    {
+     "t": 574.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "ST29-004",
+     "attacker_name": "Sanji",
+     "target": "OP12-118",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 10000,
+     "defense_power": 6000
+    },
+    {
+     "t": 574.0,
+     "type": "ko",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 578.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP03-048",
+     "to_name": "Nojiko",
+     "total_on_card": 1
+    },
+    {
+     "t": 580.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP03-048",
+     "attacker_name": "Nojiko",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 1000,
+     "defense_power": 1000
+    },
+    {
+     "t": 582.5,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 584.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji",
+      "OP03-048 Nojiko",
+      "EB03-053 Nami"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 18,
+   "player": "You",
+   "events": [
+    {
+     "t": 584.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 595.25,
+     "type": "concede",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "You": 3,
+     "Opponent": 1
+    },
+    "don_total": {
+     "You": 10,
+     "Opponent": 11
+    },
+    "field": {
+     "You": [
+      "OP12-034 Perona",
+      "ST24-002 Kid & Killer",
+      "ST24-004 Law & Bepo"
+     ],
+     "Opponent": [
+      "ST29-004 Sanji",
+      "OP03-048 Nojiko",
+      "EB03-053 Nami"
+     ]
+    },
+    "stage": {
+     "You": "OP14-039 Coffin Boat",
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 18,
+     "when": "inizio",
+     "t": 585.4,
+     "n": 6,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.899,
+      0.86,
+      0.922,
+      0.925,
+      0.908,
+      0.873
+     ]
+    },
+    {
+     "turn": 18,
+     "when": "fine",
+     "t": 594.8,
+     "n": 6,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP12-118 Jewelry Bonney",
+      "OP14-027 Shanks",
+      "OP14-029 Tashigi",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.9,
+      0.856,
+      0.923,
+      0.927,
+      0.909,
+      0.872
+     ]
+    }
+   ]
+  }
+ ],
+ "quality": {
+  "log_chars": 11841,
+  "parsed_fraction": 0.895,
+  "unparsed_fragments": [
+   "0s SettingupaRelayRoom...ConnectedtoServer:asianortheast1WaitingforaConnectionwithRoomD:EDWJKRDmadokahk#9226HasConnectedVersionis1.35a",
+   "0s MrClausse#6375HasConnectedVersionis1.35a",
+   "16s [You]PlacingCardsonBottomofDeck",
+   "27s [You]PlacingCardsonBottomofDeck",
+   "40s [Opponent]DeployYoungGirl[P096][Opponent]YoungGirl[P-096]:Draw1Card[Opponent]YoungGirl[P-096]:rashIfIGiveIntoThe\"Force\"There'llBeNoPointToMyLife<OP13-057>[Opponent]YoungGirl[P-096]:Attach1RestedDontoNami<OP11-041>",
+   "74s [You]PlacingCardsonBottomofDeck",
+   "82s Perona<OP12-034>[2000]vsYoungGirl<P09-610>[Opponent]YoungGirl[P-096]Destroyed",
+   "88s DraculeMihawk",
+   "99s DraculeMihawk",
+   "110s ScratchmenApoo",
+   "142s [You]PlacingCardsonBottomofDeck",
+   "166s DraculeMihawk",
+   "175s [Opponent]ForcingopponenttoresolveCardAction!",
+   "200s fortheCombatNami",
+   "244s DraculeMihawk",
+   "246s [You]Attach2DontoJewelryBonney[OP12-11.8](2Total)",
+   "278s [You]PlacingCardsonBottomofDeck",
+   "291s [You]PlacingCardsonBottomofDeck",
+   "300s DraculeMihawk",
+   "314s [Opponent]PlacingCardsonBottomofDeck",
+   "330s [You]PlacingCardsonBottomofDeck",
+   "336s OraculeMihawk",
+   "342s [Opponent]PlacingCardsonBottomofDeck",
+   "415s [You]PlacingCardsonBottomofDeck020j:Activate1Don",
+   "417s [You]PlacingCardsonBottomofDeck",
+   "430s DraculeMihawk",
+   "471s DraculeMihawk",
+   "490s [You]PlacingCardsonBottomofDeck",
+   "511s DraculeMihawk",
+   "533s JewelryBonney"
+  ],
+  "unknown_ids": [
+   "P09-610"
+  ],
+  "log_gaps": 0
+ }
+}

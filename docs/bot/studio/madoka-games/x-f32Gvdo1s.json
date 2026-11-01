@@ -1,0 +1,2921 @@
+{
+ "video_id": "x-f32Gvdo1s",
+ "url": "https://www.youtube.com/watch?v=x-f32Gvdo1s",
+ "title": "Mihawk vs Lucy (me being smart when going for lethal)",
+ "mulligan": {
+  "You": true
+ },
+ "source": "OCR del combat log di OPTCGSim visibile nel video (non sottotitoli)",
+ "you": "madoka_hk",
+ "leaders": {
+  "Opponent": {
+   "id": "OP15-002",
+   "name": "Lucy"
+  },
+  "You": {
+   "id": "OP14-020",
+   "name": "Dracule Mihawk"
+  }
+ },
+ "first_player": "You",
+ "winner": "You",
+ "end": "colpo al leader a 0 vite",
+ "turns": [
+  {
+   "turn": 1,
+   "player": "You",
+   "events": [
+    {
+     "t": 11.25,
+     "type": "don",
+     "player": "You",
+     "n": 1,
+     "don_total": 1
+    },
+    {
+     "t": 11.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 0
+    },
+    "field": {
+     "You": [],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": null
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 1,
+     "when": "inizio",
+     "t": 11.8,
+     "n": 5,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.907,
+      0.902,
+      0.911,
+      0.902,
+      0.912
+     ]
+    },
+    {
+     "turn": 1,
+     "when": "fine",
+     "t": 10.8,
+     "n": 5,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.906,
+      0.902,
+      0.91,
+      0.901,
+      0.911
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 2,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 11.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 11.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 2
+    },
+    {
+     "t": 14.0,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-057",
+     "name": "Dressrosa Kingdom",
+     "category": "Stage"
+    },
+    {
+     "t": 14.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-057",
+     "name": "Dressrosa Kingdom",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 15.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca",
+     "category": "Character"
+    },
+    {
+     "t": 20.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca",
+     "text": "RevealandDrawLeo<OP15-052>"
+    },
+    {
+     "t": 22.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 1,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [],
+     "Opponent": [
+      "OP15-053 Rebecca"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 3,
+   "player": "You",
+   "events": [
+    {
+     "t": 34.0,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 34.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 3
+    },
+    {
+     "t": 39.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "category": "Character"
+    },
+    {
+     "t": 43.75,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "RevealandDrawJewelryBonney<OP12-118>"
+    },
+    {
+     "t": 44.25,
+     "type": "play",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "category": "Character"
+    },
+    {
+     "t": 44.25,
+     "type": "effect",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "text": "RestRebecca<OP15-053>"
+    },
+    {
+     "t": 45.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-053",
+     "target_name": "Rebecca",
+     "counters": [],
+     "result": "ko"
+    },
+    {
+     "t": 47.5,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca"
+    },
+    {
+     "t": 49.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 5
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 2
+    },
+    "field": {
+     "You": [
+      "ST24-002 Kid & Killer",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "Opponent": []
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 3,
+     "when": "inizio",
+     "t": 34.6,
+     "n": 5,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.908,
+      0.905,
+      0.912,
+      0.902,
+      0.911
+     ]
+    },
+    {
+     "turn": 3,
+     "when": "fine",
+     "t": 48.5,
+     "n": 5,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "EB01-016 Bingoh (?)",
+      "ST12-007 Rika (?)",
+      "P-057 Fleeting Lullaby (?)"
+     ],
+     "scores": [
+      0.925,
+      0.791,
+      0.357,
+      0.436,
+      0.278
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 4,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 49.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 49.0,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 4
+    },
+    {
+     "t": 50.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 52.5,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 4
+    },
+    {
+     "t": 53.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "category": "Character"
+    },
+    {
+     "t": 54.0,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 4,
+     "You": 4
+    },
+    "don_total": {
+     "You": 3,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "ST24-002 Kid & Killer",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 5,
+   "player": "You",
+   "events": [
+    {
+     "t": 54.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 62.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 5
+    },
+    {
+     "t": 62.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 5000,
+     "defense_power": 5000
+    },
+    {
+     "t": 66.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP15-002",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 69.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "ST24-002",
+     "attacker_name": "Kid & Killer",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 2000,
+     "defense_power": 5000
+    },
+    {
+     "t": 72.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "EB01-015",
+     "attacker_name": "Scratchmen Apoo",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 1000,
+     "defense_power": 5000
+    },
+    {
+     "t": 96.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 96.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 97.25,
+     "type": "self_trash",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashJewelryBonney<OP12-118>"
+    },
+    {
+     "t": 98.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 100.0,
+     "type": "play",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 101.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestJewelryBonney<OP12-118>"
+    },
+    {
+     "t": 101.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 101.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 116.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RestJewelryBonney<ST02-007>"
+    },
+    {
+     "t": 121.0,
+     "type": "effect",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney",
+     "text": "RevealandDrawTrafalgarLaw<OP13-031>"
+    },
+    {
+     "t": 121.0,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 4
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 4
+    },
+    "field": {
+     "You": [
+      "ST24-002 Kid & Killer",
+      "EB01-015 Scratchmen Apoo",
+      "ST02-007 Jewelry Bonney"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 5,
+     "when": "inizio",
+     "t": 54.9,
+     "n": 5,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP12-027 Koushirou (?)",
+      "OP17-032 Limejuice (?)",
+      "OP16-023 Arlong (?)",
+      "OP17-034 Rockstar (?)"
+     ],
+     "scores": [
+      0.719,
+      0.404,
+      0.401,
+      0.342,
+      0.341
+     ]
+    },
+    {
+     "turn": 5,
+     "when": "fine",
+     "t": 120.5,
+     "n": 7,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "PRB02-006 Roronoa Zoro",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law"
+     ],
+     "scores": [
+      0.929,
+      0.923,
+      0.909,
+      0.935,
+      0.936,
+      0.921,
+      0.916
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 6,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 121.0,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 123.5,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 6
+    },
+    {
+     "t": 125.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "ST02-007",
+     "target_name": "Jewelry Bonney",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 5000,
+     "defense_power": 1000
+    },
+    {
+     "t": 125.75,
+     "type": "ko",
+     "player": "You",
+     "card": "ST02-007",
+     "name": "Jewelry Bonney"
+    },
+    {
+     "t": 130.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP10-045",
+     "attacker_name": "Cavendish",
+     "target": "ST24-002",
+     "target_name": "Kid & Killer",
+     "counters": [],
+     "result": null
+    },
+    {
+     "t": 130.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 138.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "text": "TrashWouldYouLetMeEat..TheFlame-FlameFruit?<OP15-056>"
+    },
+    {
+     "t": 138.75,
+     "type": "self_trash",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "TrashKid&Killer<ST24-002>"
+    },
+    {
+     "t": 139.5,
+     "type": "effect",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 152.25,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP10-060",
+     "name": "Barrier-Barrier Pistol",
+     "text": "SendJewelryBonney<OP12-118>toDeckBottom"
+    },
+    {
+     "t": 153.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 155.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca",
+     "category": "Character"
+    },
+    {
+     "t": 157.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca",
+     "text": "RevealandDrawSabo<OP15-046>"
+    },
+    {
+     "t": 159.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 4
+    },
+    "don_total": {
+     "You": 5,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-053 Rebecca"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 7,
+   "player": "You",
+   "events": [
+    {
+     "t": 159.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 171.0,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 7
+    },
+    {
+     "t": 171.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 172.0,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnScratchmenApoo<EB01-015>toHand"
+    },
+    {
+     "t": 173.75,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 180.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntinextturnends"
+    },
+    {
+     "t": 180.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Rebecca<OP15-053>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 180.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 182.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 182.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 182.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 3,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 3
+    },
+    {
+     "t": 183.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP10-045",
+     "target_name": "Cavendish",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP15-052",
+       "value": 2000
+      },
+      {
+       "player": "Opponent",
+       "card": "OP15-052",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 8000,
+     "defense_power": 10000
+    },
+    {
+     "t": 194.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP15-052",
+     "name": "Leo",
+     "value": 2000
+    },
+    {
+     "t": 194.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP15-052",
+     "name": "Leo",
+     "value": 2000
+    },
+    {
+     "t": 196.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 4
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 6
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-053 Rebecca"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 7,
+     "when": "inizio",
+     "t": 160.1,
+     "n": 8,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "PRB02-006 Roronoa Zoro",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "scores": [
+      0.925,
+      0.904,
+      0.901,
+      0.923,
+      0.924,
+      0.912,
+      0.937,
+      0.881
+     ]
+    },
+    {
+     "turn": 7,
+     "when": "fine",
+     "t": 195.8,
+     "n": 7,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "PRB02-006 Roronoa Zoro",
+      "OP14-033 Perona",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.93,
+      0.923,
+      0.907,
+      0.935,
+      0.937,
+      0.921,
+      0.909
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 8,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 196.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 196.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 8
+    },
+    {
+     "t": 199.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo",
+     "category": "Character"
+    },
+    {
+     "t": 201.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo",
+     "text": "ActivatesIt'saMementoofHim,andNoOneElseCanHaveIt<OP15-054>"
+    },
+    {
+     "t": 202.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-054",
+     "name": "And No One Else Can Have It! It's Our Memento of Him",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 204.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-054",
+     "name": "And No One Else Can Have It! It's Our Memento of Him",
+     "text": "TrashCavendish<OP10-045>"
+    },
+    {
+     "t": 204.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "category": "Character",
+     "via": "OP15-054 And No One Else Can Have It! It's Our Memento of Him"
+    },
+    {
+     "t": 206.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 218.5,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP15-002",
+     "to_name": "Lucy",
+     "total_on_card": 1
+    },
+    {
+     "t": 223.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "OP14-020",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 225.0,
+     "type": "damage",
+     "player": "You",
+     "leader": "OP14-020",
+     "n": 1,
+     "life_after": 3
+    },
+    {
+     "t": 225.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 3,
+     "You": 3
+    },
+    "don_total": {
+     "You": 7,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-053 Rebecca",
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 9,
+   "player": "You",
+   "events": [
+    {
+     "t": 225.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 242.25,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 9
+    },
+    {
+     "t": 242.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 6000
+    },
+    {
+     "t": 246.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "TrashBari-BariPistol<OP10-060>"
+    },
+    {
+     "t": 246.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "BuffLucy<OP15-002>1000"
+    },
+    {
+     "t": 250.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 6000,
+     "defense_power": 5000
+    },
+    {
+     "t": 253.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP15-002",
+     "n": 1,
+     "life_after": 2
+    },
+    {
+     "t": 257.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "blocker": "OP15-046",
+     "blocker_name": "Sabo",
+     "attack_power": 6000,
+     "defense_power": 9000
+    },
+    {
+     "t": 276.25,
+     "type": "play",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "category": "Character"
+    },
+    {
+     "t": 276.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 277.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "TrashDraculeMihawk<OP14-119>"
+    },
+    {
+     "t": 278.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP12-118",
+     "name": "Jewelry Bonney",
+     "text": "Activate1Don"
+    },
+    {
+     "t": 281.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character"
+    },
+    {
+     "t": 281.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntinextturnends"
+    },
+    {
+     "t": 281.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 283.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestPerona<OP14-033>"
+    },
+    {
+     "t": 284.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 284.75,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 286.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 3
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 8
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP12-118 Jewelry Bonney",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-053 Rebecca",
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 9,
+     "when": "inizio",
+     "t": 225.8,
+     "n": 5,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "ST32-005 Roronoa Zoro (?)",
+      "OP02-031 Kouzuki Toki (?)",
+      "OP06-023 Arlong (?)",
+      "P-061 Monkey.D.Luffy (?)"
+     ],
+     "scores": [
+      0.608,
+      0.434,
+      0.417,
+      0.349,
+      0.267
+     ]
+    },
+    {
+     "turn": 9,
+     "when": "fine",
+     "t": 285.8,
+     "n": 8,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "PRB02-006 Roronoa Zoro",
+      "EB01-015 Scratchmen Apoo",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.925,
+      0.903,
+      0.902,
+      0.922,
+      0.926,
+      0.951,
+      0.937,
+      0.909
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 10,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 286.25,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 286.25,
+     "type": "don",
+     "player": "Opponent",
+     "n": 2,
+     "don_total": 10
+    },
+    {
+     "t": 289.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo",
+     "category": "Character"
+    },
+    {
+     "t": 291.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo",
+     "text": "ActivatesBari-BariPistol<OP10-060>"
+    },
+    {
+     "t": 292.25,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP10-060",
+     "name": "Barrier-Barrier Pistol",
+     "text": "SendJewelryBonney<OP12-118>toDeckBottom"
+    },
+    {
+     "t": 292.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 302.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP15-002",
+     "to_name": "Lucy",
+     "total_on_card": 1
+    },
+    {
+     "t": 304.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 8000
+    },
+    {
+     "t": 308.5,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 325.25,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP15-053",
+     "to_name": "Rebecca",
+     "total_on_card": 1
+    },
+    {
+     "t": 325.25,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 2,
+     "You": 3
+    },
+    "don_total": {
+     "You": 9,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-053 Rebecca",
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 11,
+   "player": "You",
+   "events": [
+    {
+     "t": 325.5,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 325.5,
+     "type": "don",
+     "player": "You",
+     "n": 2,
+     "don_total": 11
+    },
+    {
+     "t": 352.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP10-049",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 367.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP10-049",
+     "name": "Sabo",
+     "value": 2000
+    },
+    {
+     "t": 369.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 370.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "blocker": "OP15-046",
+     "blocker_name": "Sabo",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 379.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP13-031",
+     "to_name": "Trafalgar Law",
+     "total_on_card": 1
+    },
+    {
+     "t": 381.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "ko",
+     "blocker": "OP15-053",
+     "blocker_name": "Rebecca"
+    },
+    {
+     "t": 386.0,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca"
+    },
+    {
+     "t": 391.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 2
+    },
+    {
+     "t": 399.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 7000,
+     "defense_power": 5000
+    },
+    {
+     "t": 406.0,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP15-002",
+     "n": 1,
+     "life_after": 1
+    },
+    {
+     "t": 407.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 407.75,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnPerona<OP14-033>toHand"
+    },
+    {
+     "t": 409.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 409.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 409.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntinextturnends"
+    },
+    {
+     "t": 424.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 424.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 424.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP13-040",
+     "name": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+     "text": "Sabo<OP15-046>willnotActivateduringnextRefresh"
+    },
+    {
+     "t": 424.75,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 1,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 11,
+     "when": "inizio",
+     "t": 326.1,
+     "n": 8,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP13-031 Trafalgar Law",
+      "OP14-119 Dracule Mihawk",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+      "EB01-015 Scratchmen Apoo",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo",
+      "ST24-002 Kid & Killer"
+     ],
+     "scores": [
+      0.927,
+      0.904,
+      0.902,
+      0.924,
+      0.948,
+      0.936,
+      0.953,
+      0.906
+     ]
+    },
+    {
+     "turn": 11,
+     "when": "fine",
+     "t": 424.2,
+     "n": 6,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP14-119 Dracule Mihawk",
+      "EB01-015 Scratchmen Apoo",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo",
+      "ST24-002 Kid & Killer"
+     ],
+     "scores": [
+      0.928,
+      0.894,
+      0.938,
+      0.923,
+      0.92,
+      0.907
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 12,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 424.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 430.75,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-040",
+     "name": "Viola",
+     "category": "Character"
+    },
+    {
+     "t": 433.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-040",
+     "name": "Viola",
+     "text": "RevealandDrawFollow...me...and...I...wil...guide...you...all...!!<OP10-059>"
+    },
+    {
+     "t": 447.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP15-002",
+     "to_name": "Lucy",
+     "total_on_card": 1
+    },
+    {
+     "t": 448.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "You",
+       "card": "ST24-002",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 451.25,
+     "type": "counter",
+     "player": "You",
+     "card": "ST24-002",
+     "name": "Kid & Killer",
+     "value": 1000
+    },
+    {
+     "t": 454.25,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP15-040",
+     "name": "Viola",
+     "from": "field"
+    },
+    {
+     "t": 454.25,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo",
+     "category": "Character"
+    },
+    {
+     "t": 455.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo",
+     "text": "ActivatesBari-BariPistol<OP10-060>"
+    },
+    {
+     "t": 456.5,
+     "type": "bounce",
+     "player": "Opponent",
+     "card": "OP10-060",
+     "name": "Barrier-Barrier Pistol",
+     "text": "SendTrafalgarLaw<OP13-031>toDeckBottom"
+    },
+    {
+     "t": 465.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 465.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 1,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP15-046 Sabo"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 13,
+   "player": "You",
+   "events": [
+    {
+     "t": 475.25,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 475.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP10-049",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 479.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP10-049",
+     "name": "Sabo",
+     "value": 2000
+    },
+    {
+     "t": 481.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 1
+    },
+    {
+     "t": 482.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "blocker": "OP15-046",
+     "blocker_name": "Sabo",
+     "attack_power": 7000,
+     "defense_power": 9000
+    },
+    {
+     "t": 495.25,
+     "type": "attach_don",
+     "player": "You",
+     "n": 1,
+     "to": "OP13-031",
+     "to_name": "Trafalgar Law",
+     "total_on_card": 1
+    },
+    {
+     "t": 496.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP15-040",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 7000,
+     "defense_power": 8000
+    },
+    {
+     "t": 501.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "TrashIt'saMementoofHim,andNoOneElseCanHaveIt<OP15-054>"
+    },
+    {
+     "t": 501.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "BuffLucy<OP15-002>1000fortheCombat"
+    },
+    {
+     "t": 503.0,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP15-040",
+     "name": "Viola",
+     "value": 2000
+    },
+    {
+     "t": 505.75,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 6000
+    },
+    {
+     "t": 513.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "TrashFireFist<OP05-019>"
+    },
+    {
+     "t": 513.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "BuffLucy<OP15-002>1000"
+    },
+    {
+     "t": 518.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "category": "Character"
+    },
+    {
+     "t": 519.5,
+     "type": "bounce",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law",
+     "text": "ReturnPerona<OP14-033>toHand"
+    },
+    {
+     "t": 519.5,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "category": "Character",
+     "via": "OP13-031 Trafalgar Law"
+    },
+    {
+     "t": 521.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 521.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona",
+     "text": "Cavendish<OP10-045>can'tberesteduntinextturnends"
+    },
+    {
+     "t": 523.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestDon[Don]"
+    },
+    {
+     "t": 524.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 524.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 528.25,
+     "type": "effect",
+     "player": "You",
+     "card": "OP13-040",
+     "name": "I Know You're Strong... So I'll Go All Out from the Very Start!!!",
+     "text": "Sabo<OP15-046>willnotActivateduringnextRefresh",
+     "times": 2
+    },
+    {
+     "t": 528.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 1,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP15-046 Sabo"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 13,
+     "when": "inizio",
+     "t": 475.9,
+     "n": 6,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP14-119 Dracule Mihawk",
+      "EB01-015 Scratchmen Apoo",
+      "OP13-031 Trafalgar Law",
+      "EB01-015 Scratchmen Apoo",
+      "OP13-040 I Know You're Strong... So I'll Go All Out from the Very Start!!!"
+     ],
+     "scores": [
+      0.929,
+      0.895,
+      0.939,
+      0.921,
+      0.922,
+      0.913
+     ]
+    },
+    {
+     "turn": 13,
+     "when": "fine",
+     "t": 527.8,
+     "n": 4,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP14-119 Dracule Mihawk",
+      "EB01-015 Scratchmen Apoo",
+      "EB01-015 Scratchmen Apoo"
+     ],
+     "scores": [
+      0.909,
+      0.904,
+      0.911,
+      0.91
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 14,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 549.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 552.5,
+     "type": "trash",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "from": "field"
+    },
+    {
+     "t": 552.5,
+     "type": "play",
+     "player": "Opponent",
+     "card": "OP05-015",
+     "name": "Belo Betty",
+     "category": "Character"
+    },
+    {
+     "t": 558.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP05-015",
+     "name": "Belo Betty",
+     "text": "RevealandDrawFireFist<OP15-020>"
+    },
+    {
+     "t": 560.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-020",
+     "name": "Fire Fist",
+     "text": "BuffLucy<OP15-002>3000"
+    },
+    {
+     "t": 560.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-020",
+     "name": "Fire Fist",
+     "text": "GrantTrafalgarLaw<OP13-031>-8000untilnextturnend"
+    },
+    {
+     "t": 563.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 564.75,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [
+      {
+       "player": "You",
+       "card": "EB01-015",
+       "value": 2000
+      },
+      {
+       "player": "You",
+       "card": "EB01-015",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 8000,
+     "defense_power": 10000
+    },
+    {
+     "t": 573.0,
+     "type": "counter",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "value": 2000
+    },
+    {
+     "t": 573.75,
+     "type": "counter",
+     "player": "You",
+     "card": "EB01-015",
+     "name": "Scratchmen Apoo",
+     "value": 2000
+    },
+    {
+     "t": 579.5,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 1,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona"
+     ],
+     "Opponent": [
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP15-046 Sabo",
+      "OP05-015 Belo Betty"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 15,
+   "player": "You",
+   "events": [
+    {
+     "t": 583.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 586.0,
+     "type": "play",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "category": "Character"
+    },
+    {
+     "t": 586.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "RestDraculeMihawk<OP14-119>"
+    },
+    {
+     "t": 587.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Activate1Don",
+     "times": 3
+    },
+    {
+     "t": 587.5,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-020",
+     "name": "Dracule Mihawk",
+     "text": "Can'tplayCost1OrMoreCharactersfortheTurn!"
+    },
+    {
+     "t": 588.0,
+     "type": "effect",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk",
+     "text": "Sabo<OP15-046>can'tberesteduntilnextturnends"
+    },
+    {
+     "t": 609.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 6000
+    },
+    {
+     "t": 612.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "TrashFireFist<OP15-020>"
+    },
+    {
+     "t": 612.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "BuffLucy<OP15-002>1000"
+    },
+    {
+     "t": 614.5,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 2
+    },
+    {
+     "t": 616.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 8000,
+     "defense_power": 5000
+    },
+    {
+     "t": 620.75,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP15-002",
+     "n": 1,
+     "life_after": 0
+    },
+    {
+     "t": 623.0,
+     "type": "attach_don",
+     "player": "You",
+     "n": 2,
+     "to": "OP14-033",
+     "to_name": "Perona",
+     "total_on_card": 2
+    },
+    {
+     "t": 624.5,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-033",
+     "attacker_name": "Perona",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP15-053",
+       "value": 1000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 5000,
+     "defense_power": 6000
+    },
+    {
+     "t": 635.5,
+     "type": "event_counter",
+     "player": "Opponent",
+     "card": "OP15-021",
+     "name": "Just Watch Me, Ace!!!",
+     "text": "ActivateCounter"
+    },
+    {
+     "t": 636.0,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-021",
+     "name": "Just Watch Me, Ace!!!",
+     "text": "BuffPerona<OP14-033>-3000"
+    },
+    {
+     "t": 638.25,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP15-053",
+     "name": "Rebecca",
+     "value": 1000
+    },
+    {
+     "t": 651.25,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [
+      {
+       "player": "Opponent",
+       "card": "OP15-040",
+       "value": 2000
+      }
+     ],
+     "result": "fail",
+     "attack_power": 6000,
+     "defense_power": 7000
+    },
+    {
+     "t": 654.5,
+     "type": "counter",
+     "player": "Opponent",
+     "card": "OP15-040",
+     "name": "Viola",
+     "value": 2000
+    },
+    {
+     "t": 660.25,
+     "type": "end_turn",
+     "player": "You"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 0,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP13-031 Trafalgar Law",
+      "OP14-033 Perona",
+      "OP14-119 Dracule Mihawk"
+     ],
+     "Opponent": [
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP15-046 Sabo",
+      "OP05-015 Belo Betty"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": [
+    {
+     "turn": 15,
+     "when": "inizio",
+     "t": 584.4,
+     "n": 2,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.908,
+      0.922
+     ]
+    },
+    {
+     "turn": 15,
+     "when": "fine",
+     "t": 659.8,
+     "n": 2,
+     "cards": [
+      "PRB02-006 Roronoa Zoro",
+      "OP06-038 The Billion-fold World Trichiliocosm"
+     ],
+     "scores": [
+      0.908,
+      0.921
+     ]
+    }
+   ]
+  },
+  {
+   "turn": 16,
+   "player": "Opponent",
+   "events": [
+    {
+     "t": 666.75,
+     "type": "draw",
+     "player": "Opponent",
+     "n": 1
+    },
+    {
+     "t": 667.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-020",
+     "name": "Fire Fist",
+     "text": "BuffLucy<OP15-002>3000"
+    },
+    {
+     "t": 667.25,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-020",
+     "name": "Fire Fist",
+     "text": "GrantDraculeMihawk<OP14-119>-8000untilnextturnend"
+    },
+    {
+     "t": 672.75,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP15-002",
+     "name": "Lucy",
+     "text": "Draw1Card"
+    },
+    {
+     "t": 674.0,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP05-015",
+     "to_name": "Belo Betty",
+     "total_on_card": 1
+    },
+    {
+     "t": 674.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP05-015",
+     "attacker_name": "Belo Betty",
+     "target": "OP14-119",
+     "target_name": "Dracule Mihawk",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 3000,
+     "defense_power": 2000
+    },
+    {
+     "t": 676.5,
+     "type": "ko",
+     "player": "You",
+     "card": "OP14-119",
+     "name": "Dracule Mihawk"
+    },
+    {
+     "t": 692.25,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-002",
+     "attacker_name": "Lucy",
+     "target": "OP13-031",
+     "target_name": "Trafalgar Law",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 8000,
+     "defense_power": 6000
+    },
+    {
+     "t": 692.25,
+     "type": "ko",
+     "player": "You",
+     "card": "OP13-031",
+     "name": "Trafalgar Law"
+    },
+    {
+     "t": 694.75,
+     "type": "attach_don",
+     "player": "Opponent",
+     "n": 1,
+     "to": "OP10-045",
+     "to_name": "Cavendish",
+     "total_on_card": 1
+    },
+    {
+     "t": 698.5,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP10-045",
+     "attacker_name": "Cavendish",
+     "target": "OP14-033",
+     "target_name": "Perona",
+     "counters": [
+      {
+       "player": "You",
+       "card": "PRB02-006",
+       "value": 2000
+      }
+     ],
+     "result": "fail"
+    },
+    {
+     "t": 698.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "text": "Draw2Card"
+    },
+    {
+     "t": 698.5,
+     "type": "effect",
+     "player": "Opponent",
+     "card": "OP10-045",
+     "name": "Cavendish",
+     "text": "TrashGolD.Roger<OP09-118>"
+    },
+    {
+     "t": 708.5,
+     "type": "counter",
+     "player": "You",
+     "card": "PRB02-006",
+     "name": "Roronoa Zoro",
+     "value": 2000
+    },
+    {
+     "t": 722.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-046",
+     "attacker_name": "Sabo",
+     "target": "OP14-033",
+     "target_name": "Perona",
+     "counters": [],
+     "result": "ko"
+    },
+    {
+     "t": 724.5,
+     "type": "ko",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona"
+    },
+    {
+     "t": 732.0,
+     "type": "attack",
+     "player": "Opponent",
+     "attacker": "OP15-046",
+     "attacker_name": "Sabo",
+     "target": "OP14-033",
+     "target_name": "Perona",
+     "counters": [],
+     "result": "ko",
+     "attack_power": 9000,
+     "defense_power": 6000
+    },
+    {
+     "t": 734.0,
+     "type": "ko",
+     "player": "You",
+     "card": "OP14-033",
+     "name": "Perona"
+    },
+    {
+     "t": 738.75,
+     "type": "end_turn",
+     "player": "Opponent"
+    }
+   ],
+   "board_end": {
+    "life": {
+     "Opponent": 0,
+     "You": 3
+    },
+    "don_total": {
+     "You": 11,
+     "Opponent": 10
+    },
+    "field": {
+     "You": [
+      "OP13-031 Trafalgar Law"
+     ],
+     "Opponent": [
+      "OP15-046 Sabo",
+      "OP10-045 Cavendish",
+      "OP15-046 Sabo",
+      "OP15-046 Sabo",
+      "OP05-015 Belo Betty"
+     ]
+    },
+    "stage": {
+     "You": null,
+     "Opponent": "OP15-057 Dressrosa Kingdom"
+    }
+   },
+   "hand_you": []
+  },
+  {
+   "turn": 17,
+   "player": "You",
+   "events": [
+    {
+     "t": 781.75,
+     "type": "draw",
+     "player": "You",
+     "n": 1
+    },
+    {
+     "t": 781.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 6,
+     "to": "OP13-031",
+     "to_name": "Trafalgar Law",
+     "total_on_card": 6
+    },
+    {
+     "t": 783.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP13-031",
+     "attacker_name": "Trafalgar Law",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "ko",
+     "blocker": "OP15-046",
+     "blocker_name": "Sabo",
+     "attack_power": 12000,
+     "defense_power": 9000
+    },
+    {
+     "t": 799.75,
+     "type": "ko",
+     "player": "Opponent",
+     "card": "OP15-046",
+     "name": "Sabo"
+    },
+    {
+     "t": 799.75,
+     "type": "attach_don",
+     "player": "You",
+     "n": 4,
+     "to": "OP14-020",
+     "to_name": "Dracule Mihawk",
+     "total_on_card": 4
+    },
+    {
+     "t": 801.0,
+     "type": "attack",
+     "player": "You",
+     "attacker": "OP14-020",
+     "attacker_name": "Dracule Mihawk",
+     "target": "OP15-002",
+     "target_name": "Lucy",
+     "counters": [],
+     "result": "hit",
+     "attack_power": 9000,
+     "defense_power": 5000
+    },
+    {
+     "t": 820.5,
+     "type": "damage",
+     "player": "Opponent",
+     "leader": "OP15-002",
+     "n": 1,
+     "life_after": -1
+    }
+   ],
+   "hand_you": [
+    {
+     "turn": 17,
+     "when": "inizio",
+     "t": 782.4,
+     "n": 2,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP03-037 Tooth Attack (?)"
+     ],
+     "scores": [
+      0.94,
+      0.255
+     ]
+    },
+    {
+     "turn": 17,
+     "when": "fine",
+     "t": 820.0,
+     "n": 2,
+     "cards": [
+      "OP06-038 The Billion-fold World Trichiliocosm",
+      "OP03-037 Tooth Attack (?)"
+     ],
+     "scores": [
+      0.939,
+      0.258
+     ]
+    }
+   ]
+  }
+ ],
+ "quality": {
+  "log_chars": 12926,
+  "parsed_fraction": 0.918,
+  "unparsed_fragments": [
+   "2s WaitingforaConnectionwithRoomID:W9Q8DNWmadokahk#9226HasConnected[You]Quits![Opponent]HasDisconnected!AttemptingtoconnecttoW7RR8RGVersionis1.38a",
+   "2s madokahk#9226HasConnectedVersionis1.38a",
+   "21s [Opponent]PlacingCardsonBottomofDeck",
+   "44s [You]PlacingCardsonBottomofDeck",
+   "48s DraculeMihawk<OP14-020>[5000]vsRebecca<OP15-053>0]",
+   "52s DraculeMihawk",
+   "66s DraculeMihawk",
+   "75s ScratchmenApoo",
+   "121s [You]PlacingCardsonBottomofDeck",
+   "158s [Opponent]PlacingCardsonBottomofDeck",
+   "196s DraculeMihawk",
+   "225s DraculeMihawk",
+   "246s fortheCombatDraculeMihawk",
+   "264s Trafalgar.Law",
+   "386s TrafalgarLaw<OP13-031>[7000]vsRebecca<OP15-053>0]",
+   "406s DraculeMihawk",
+   "424s ###020]:RestTrafalgarLaw<OP13-031>",
+   "433s [Opponent]PlacingCardsonBottomofDeck[jairooj5976]Follow...me...and...I..wil..guide...you...al.!<OP10-059>:RevealandDrawSabo<OP15-046>[Opponent]PlacingCardsonBottomofDeck",
+   "514s fortheCombatDraculeMihawk",
+   "612s fortheCombatDraculeMihawk",
+   "722s Cavendish<OP10-045>7000]vsPerona<OP14-033>[8000]",
+   "724s Sabo<OP15-046>[9000]vsPerona<OP14-033>6000]",
+   "820s DraculeMihawk"
+  ],
+  "unknown_ids": [],
+  "log_gaps": 1
+ }
+}

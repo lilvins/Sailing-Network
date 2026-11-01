@@ -3,7 +3,8 @@ import { applyIntentInPlace } from "../engine/engine";
 import { fitChoice } from "../engine/effects";
 import { legalMoves } from "../engine/legality";
 import type { AutoGameState, CardDb, ChoiceRequest, Iid, PID } from "../engine/state";
-import { effectivePower, opponentOf } from "../engine/state";
+import { effectivePower, keywordsOf, opponentOf } from "../engine/state";
+import { hasLastingEffect, isCardFlow } from "./cardTraits";
 import { seededRng } from "../../lib/rng";
 import type { Agent } from "./agent";
 import { determinize } from "./determinize";
@@ -39,7 +40,7 @@ function decide(db: CardDb, state: AutoGameState, pid: PID, rng: () => number): 
 }
 
 /** Quick rules only (no lookahead): how both seats answer inside a lookahead. */
-function quickIntent(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent {
+export function quickIntent(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent {
   return choiceOptions(db, state, pc)[0];
 }
 
@@ -47,7 +48,7 @@ function quickIntent(db: CardDb, state: AutoGameState, pc: ChoiceRequest): Playe
 // Choices: the first option is the quick rule's answer; the others are the
 // alternatives the lookahead compares it with.
 
-function choiceOptions(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent[] {
+export function choiceOptions(db: CardDb, state: AutoGameState, pc: ChoiceRequest): PlayerIntent[] {
   const player = pc.player;
   switch (pc.kind) {
     case "mulligan": return [{ type: "respondMulligan", player, take: !keepHand(db, state, player) }];
@@ -75,14 +76,23 @@ function choiceOptions(db: CardDb, state: AutoGameState, pc: ChoiceRequest): Pla
 
 const yesNo = (make: (yes: boolean) => PlayerIntent) => [make(true), make(false)];
 
+/**
+ * The mulligan as a curve plan (Vins: "Kin'emon a 1 per ciclare, Oden per i
+ * 5, Yasopp per i 7"; TCGMM: Mihawk players redraw 94% of hands with neither
+ * a searcher nor Coffin Boat). Keep with an opener that brings cards (a
+ * cheap drawer/searcher, or a Stage) plus a piece for the middle of the
+ * curve — or with two openers. Otherwise take the new five.
+ */
 function keepHand(db: CardDb, state: AutoGameState, pid: PID): boolean {
   const p = state.players[pid];
-  const cheap = p.zones.hand.filter((iid) => (db(p.instances[iid].cardId).cost ?? 99) <= GREEDY.cheapCost);
-  return cheap.length >= GREEDY.keepCheap;
+  const cards = p.zones.hand.map((iid) => db(p.instances[iid].cardId));
+  const openers = cards.filter((c) => (c.cost ?? 99) <= GREEDY.openerMaxCost && (c.category === "Stage" || (c.category === "Character" && isCardFlow(db, c.id)))).length;
+  const middle = cards.some((c) => c.category === "Character" && (c.cost ?? 0) >= GREEDY.middleCurve[0] && (c.cost ?? 0) <= GREEDY.middleCurve[1]);
+  return openers >= 2 || (openers >= 1 && middle);
 }
 
 /** Value of a card in play: cost first, power as tie-break. */
-function cardValue(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
+export function cardValue(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
   const card = db(state.players[owner].instances[iid].cardId);
   const onField = state.players[owner].zones.characterArea.includes(iid) || state.players[owner].leaderIid === iid;
   return (card.cost ?? 0) * 1000 + (onField ? effectivePower(db, state, owner, iid) : card.power ?? 0);
@@ -111,7 +121,7 @@ function bestBlocker(db: CardDb, state: AutoGameState, pid: PID, blockers: Iid[]
  * and when the cards in hand can actually stop the attack: the smallest card
  * that covers the gap, else the biggest one (the window reopens for the next).
  */
-function counterIntent(db: CardDb, state: AutoGameState, pid: PID): PlayerIntent {
+export function counterIntent(db: CardDb, state: AutoGameState, pid: PID): PlayerIntent {
   const pass: PlayerIntent = { type: "passCounter", player: pid };
   const b = state.battle;
   if (!b) return pass;
@@ -119,15 +129,40 @@ function counterIntent(db: CardDb, state: AutoGameState, pid: PID): PlayerIntent
   const need = effectivePower(db, state, b.attackerOwner, b.attackerIid) - effectivePower(db, state, pid, b.targetIid);
   if (need < 0) return pass;
   const onLeader = b.targetIid === p.leaderIid;
-  const targetCost = db(p.instances[b.targetIid].cardId).cost ?? 0;
-  const worthIt = onLeader ? p.zones.life.length <= GREEDY.counterLeaderAtLife : targetCost >= GREEDY.counterCharFromCost;
-  if (!worthIt) return pass;
-
   const lm = legalMoves(db, state);
   const cards = lm.counterCards.map((c) => ({ amount: c.amount, intent: { type: "useCounter", player: pid, cardIid: c.iid, targetIid: b.targetIid } as PlayerIntent }));
   if (cards.reduce((s, c) => s + c.amount, 0) <= need) return pass;
+  const worthIt = onLeader
+    ? p.zones.life.length <= GREEDY.counterLeaderAtLife
+    : characterWorthSaving(db, state, pid, b.targetIid, cardsNeeded(cards.map((c) => c.amount), need));
+  if (!worthIt) return pass;
   cards.sort((x, y) => x.amount - y.amount);
   return (cards.find((c) => c.amount > need) ?? cards[cards.length - 1]).intent;
+}
+
+/**
+ * A Character is saved, as a real player would, when it does something (it
+ * reaches the opposing Leader, blocks, or has a lasting effect) and the save
+ * is cheap: one card, two for a big piece. Without this the opponent in a
+ * rollout never defended small Characters, so to the Pro a small attack
+ * "always killed" and loading DON!! on one tall attack looked useless
+ * (Vins, 2026-10-30: "un attacco tall su Don Marlon").
+ */
+function characterWorthSaving(db: CardDb, state: AutoGameState, pid: PID, iid: Iid, cards: number): boolean {
+  const card = db(state.players[pid].instances[iid].cardId);
+  const oppLeader = state.players[opponentOf(state, pid)].leaderIid;
+  const useful = effectivePower(db, state, pid, iid) + 1000 >= effectivePower(db, state, opponentOf(state, pid), oppLeader)
+    || keywordsOf(db, state, pid, iid).has("Blocker")
+    || hasLastingEffect(db, card.id);
+  return useful && cards <= ((card.cost ?? 0) >= GREEDY.bigPieceCost ? 2 : 1);
+}
+
+/** How many counter cards (biggest first) it takes to beat `need`. */
+function cardsNeeded(amounts: number[], need: number): number {
+  let sum = 0;
+  const sorted = [...amounts].sort((x, y) => y - x);
+  for (let i = 0; i < sorted.length; i++) if ((sum += sorted[i]) > need) return i + 1;
+  return Infinity;
 }
 
 const HARMFUL = new Set(["koTarget", "restTarget", "returnToHand", "returnToDeck", "trashTarget", "setBasePower", "restriction", "negateEffect", "ungiveDon", "freezeDon", "lifeToHand", "trashLife"]);
@@ -202,7 +237,7 @@ function mainPhase(ctx: Ctx, state: AutoGameState): PlayerIntent {
  * opposing Leader by 1000 (so a single counter card does not stop it);
  * whatever is left goes on the Leader.
  */
-function donIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
+export function donIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
   const p = state.players[player];
   const oppLeader = state.players[opponentOf(state, player)].leaderIid;
   const ready = attackers.filter((a) => a.targets.includes(oppLeader)).map((a) => a.iid);
@@ -220,7 +255,7 @@ function donIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targ
 }
 
 /** The Leader if the attack can connect, else the most valuable rested Character we can beat. */
-function attackIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
+export function attackIntent(db: CardDb, state: AutoGameState, attackers: { iid: Iid; targets: Iid[] }[], player: PID): PlayerIntent | null {
   const opp = opponentOf(state, player);
   const oppLeader = state.players[opp].leaderIid;
   let best: PlayerIntent | null = null;

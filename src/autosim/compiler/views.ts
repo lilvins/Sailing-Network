@@ -36,13 +36,33 @@ function isTopOrBottomChoice(steps: OptcgStep[], j: number): boolean {
   return closes.length === 2 && closes.every((c) => c !== null) && new Set(closes).size === 2;
 }
 
+/** Where the ability goes on after a top/bottom choice. Each branch is its
+ *  closing step plus the same tail ("Then, draw 1 card." is written once per
+ *  branch, ending with EndAfterStep): the tail of the first branch is kept,
+ *  the second branch is skipped. No tail = the ability ends there. */
+function afterTopOrBottom(steps: OptcgStep[], j: number, end: number): number {
+  const [t0, t1] = list<Json>(steps[j].effect?.Choices).map((o) => num(o.JumpToStep)).sort((x, y) => x - y);
+  const tail0 = steps.slice(t0 + 1, t1);
+  const tail1 = steps.slice(t1 + 1, end);
+  if (tail0.length === 0 && tail1.length === 0) return end;
+  // EndAfterStep is redundant on the last branch (it ends anyway); labels are comments
+  const same = (st: OptcgStep) => {
+    const { EndAfterStep: _e, ...details } = (st.details ?? {}) as Json;
+    const { InternalDescription: _d, ...rest } = st as Json;
+    return JSON.stringify({ ...rest, details });
+  };
+  if (tail0.map(same).join() !== tail1.map(same).join()) fail("top/bottom branches with different tails");
+  if (!on(tail0[tail0.length - 1].details?.EndAfterStep)) fail("top/bottom tail that runs into the other branch");
+  return t0 + 1;
+}
+
 /** Walk the steps after the opening one: picks until the view is closed. */
 function collectView(steps: OptcgStep[], i: number, end: number, kind: string): CollectedView {
   const picks: OptcgStep[] = [];
   for (let j = i + 1; j < end; j++) {
     const s = steps[j];
     if (Array.isArray(s.effect?.Choices)) {
-      if (isTopOrBottomChoice(steps, j)) return { picks, close: "topOrBottom", next: end };
+      if (isTopOrBottomChoice(steps, j)) return { picks, close: "topOrBottom", next: afterTopOrBottom(steps, j, end) };
       const one = list<Json>(s.effect?.Choices);
       // a single "confirm the revealed card" button changes nothing
       if (one.length === 1 && (typeof one[0].JumpToStep !== "number" || one[0].JumpToStep === j + 1)) continue;
