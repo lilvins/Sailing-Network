@@ -6,6 +6,7 @@
    No crafting / dismantle / obtain / ownership — free simulator.
    Exports window.DeckBuilder
    =========================================================== */
+import { PixelIcon } from "../pixel/PixelIcon";
 import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { loadCards } from "../cards/cardsDb";
@@ -17,24 +18,10 @@ import "./deckbuilder.css";
 import { PixelScene } from "../pixel/PixelScene";
 const { useState, useMemo, useRef, useEffect } = React;
 
-/* ---------- icons (self-contained) ---------- */
-const DB_ICON = {
-  back:"M19 12H5M12 19l-7-7 7-7", search:"M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35",
-  edit:"M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z",
-  exit:"M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
-  chat:"M21 11.5a8.38 8.38 0 01-9 8.32 8.38 8.38 0 01-3.8-.9L3 20l1.08-4.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.5 8.5 0 019 8.5z",
-  friends:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
-  plus:"M12 5v14M5 12h14", minus:"M5 12h14", trash:"M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2",
-  save:"M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2zM17 21v-8H7v8M7 3v5h8",
-  shuffle:"M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5", link:"M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1",
-  sort:"M3 6h18M6 12h12M10 18h4", sliders:"M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6",
-  copy:"M9 9h11v11H9zM5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1", check:"M20 6L9 17l-5-5",
-  cards:"M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4M3 17l9 4 9-4", star:"M12 2l3 7 7 .5-5.5 4.5L18 21l-6-4-6 4 1.5-7L2 9.5 9 9z",
-  leader:"M5 16l-2-9 6 4 3-7 3 7 6-4-2 9zM5 20h14",
-  lock:"M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2zM7 11V7a5 5 0 0110 0v4",
-};
-function I({ n, size=20, sw=1.9 }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><path d={DB_ICON[n]}></path></svg>;
+/* ---------- icons: the site's pixel set (features/pixel/icons.ts) ---------- */
+const ICON_ALIAS = { leader: "crown" };
+function I({ n, size=20 }) {
+  return <PixelIcon name={ICON_ALIAS[n] ?? n} size={size} />;
 }
 
 /* ---------- dropdown (self-contained, styled by .snp-select) ---------- */

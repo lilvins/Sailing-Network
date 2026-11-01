@@ -4,6 +4,7 @@
    Now backed by the real API: lists the logged-in captain's decks,
    with leader art/colour resolved from the card database.
    =========================================================== */
+import { PixelIcon } from "../pixel/PixelIcon";
 import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { api } from "../../lib/api";
@@ -15,17 +16,9 @@ import "./mydecks.css";
 import { PixelScene } from "../pixel/PixelScene";
 const { useState, useEffect, useRef } = React;
 
-const MD_ICON = {
-  back:"M19 12H5M12 19l-7-7 7-7", edit:"M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4 12.5-12.5z",
-  trash:"M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6",
-  exit:"M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
-  plus:"M12 5v14M5 12h14", play:"M5 3l14 9-14 9V3z", copy:"M9 9h11v11H9zM5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1",
-  check:"M20 6L9 17l-5-5", chat:"M21 11.5a8.38 8.38 0 01-9 8.32 8.38 8.38 0 01-3.8-.9L3 20l1.08-4.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.5 8.5 0 019 8.5z",
-  friends:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
-  cards:"M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4M3 17l9 4 9-4", crown:"M5 16l-2-9 6 4 3-7 3 7 6-4-2 9zM5 20h14",
-};
-function I({ n, size=20, sw=1.9 }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round"><path d={MD_ICON[n]}></path></svg>;
+/* icons: the site's pixel set (features/pixel/icons.ts) */
+function I({ n, size=20 }) {
+  return <PixelIcon name={n} size={size} />;
 }
 const HUE = { R:"#c0392b", G:"#1f8a5b", B:"#2a6fdb", P:"#7a3fa0", K:"#2c3138", Y:"#caa023" };
 const COLOR_LETTER = { Red:"R", Green:"G", Blue:"B", Purple:"P", Black:"K", Yellow:"Y" };
