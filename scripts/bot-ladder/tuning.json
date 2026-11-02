@@ -1,0 +1,17 @@
+{
+  "workers": 4,
+  "maxOnline": 16,
+  "gamesPerSitting": [3, 10],
+  "restBetweenGamesSec": [30, 180],
+  "offlineMin": [5, 40],
+  "queueGiveUpSec": 300,
+  "gameTimeoutSec": 600,
+  "maxStepsPerGame": 3000,
+  "decksPerBot": [1, 3],
+  "favoriteDeckShare": 0.75,
+  "skills": [
+    { "name": "casual", "share": 0.35, "candidates": 3, "rollouts": 2 },
+    { "name": "regular", "share": 0.4, "candidates": 4, "rollouts": 4 },
+    { "name": "strong", "share": 0.25, "candidates": 6, "rollouts": 8 }
+  ]
+}

@@ -40,6 +40,7 @@ public/cards/*
 # Local screenshots / scratch from dev tooling
 scripts/.shots/
 scripts/.qa/
+scripts/.bot-ladder/
 
 # Personal session reports for Vins (never committed)
 _Reports/
