@@ -17,6 +17,7 @@ import { WelcomeDialog } from "./features/welcome/WelcomeDialog";
 import "@fontsource/silkscreen/700.css";
 import "@fontsource/vt323/400.css";
 import "./features/pixel/index.css";
+import "./features/pixel/percent-glyph.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
