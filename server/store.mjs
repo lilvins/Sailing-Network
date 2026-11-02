@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import db, { get, all, run } from "./db.mjs";
+import { ladderRating } from "./stats/index.mjs";
 
 // ---------- profiles ----------
 export async function ensureProfile(userId) {
@@ -115,14 +116,14 @@ export async function createMatchesBatch(rows) {
   }
 }
 
-export async function createMatch({ userId, oppUserId, myDeckId, myLeaderId, oppLeaderId, result, onPlay, format }) {
+export async function createMatch({ userId, oppUserId, myDeckId, myLeaderId, oppLeaderId, result, onPlay, format, source = "manual" }) {
   const id = randomUUID();
   const now = Date.now();
   const win = result === "win";
   await run(
-    `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,created_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
-    [id, userId, oppUserId ?? null, myDeckId ?? null, myLeaderId ?? null, oppLeaderId ?? null, result, onPlay ? 1 : 0, win ? 10 : -5, format ?? "", now],
+    `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,source,created_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [id, userId, oppUserId ?? null, myDeckId ?? null, myLeaderId ?? null, oppLeaderId ?? null, result, onPlay ? 1 : 0, win ? 10 : -5, format ?? "", source, now],
   );
   // keep deck + profile win/loss totals in sync
   if (myDeckId) await run(`UPDATE decks SET ${win ? "wins=wins+1" : "losses=losses+1"} WHERE id=?`, [myDeckId]);
@@ -403,11 +404,51 @@ export async function joinMatchSession(sessionId, opponentUserId, deckId) {
   return getMatchSession(sessionId);
 }
 
+// A session from the ranked queue (matched_at set) becomes two `matches` rows,
+// which is what the ladder reads. Session and rows are written in one batch: all
+// or nothing, so a failed write can be retried. The row ids come from the session
+// id, so two players reporting the same game can't count it twice.
 export async function completeMatchSession(sessionId, winnerId) {
   const now = Date.now();
+  const s = await getMatchSession(sessionId);
+  const stmts = [{
+    sql: `UPDATE match_sessions SET status='completed', winner_id=?, completed_at=? WHERE id=? AND status='active'`,
+    args: [winnerId, now, sessionId],
+  }];
+  if (s.matched_at) stmts.push(...(await rankedResultStatements(s, winnerId, now)));
+  await db.batch(stmts, "write");
+  return getMatchSession(sessionId);
+}
+
+async function rankedResultStatements(s, winnerId, now) {
+  const hostDeck = s.host_deck_id ? await get(`SELECT * FROM decks WHERE id=?`, [s.host_deck_id]) : null;
+  const oppDeck = s.opponent_deck_id ? await get(`SELECT * FROM decks WHERE id=?`, [s.opponent_deck_id]) : null;
+  const row = (seat, userId, oppUserId, deck, theirDeck, onPlay) => {
+    const win = winnerId === userId;
+    const counter = win ? "wins=wins+1" : "losses=losses+1";
+    return [
+      {
+        sql: `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,source,created_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,'ranked',?)`,
+        args: [`${s.id}:${seat}`, userId, oppUserId, deck?.id ?? null, deck?.leader_id ?? null, theirDeck?.leader_id ?? null,
+          win ? "win" : "loss", onPlay ? 1 : 0, win ? 10 : -5, deck?.format ?? "", now],
+      },
+      ...(deck ? [{ sql: `UPDATE decks SET ${counter} WHERE id=?`, args: [deck.id] }] : []),
+      { sql: `UPDATE profiles SET ${counter}, updated_at=? WHERE user_id=?`, args: [now, userId] },
+    ];
+  };
+  return [
+    ...row("host", s.host_user_id, s.opponent_id, hostDeck, oppDeck, !!s.host_on_play),
+    ...row("opp", s.opponent_id, s.host_user_id, oppDeck, hostDeck, !s.host_on_play),
+  ];
+}
+
+// A game with no result (abandoned, or it could not finish): closes the session,
+// writes no match row.
+export async function cancelMatchSession(sessionId) {
   await run(
-    `UPDATE match_sessions SET status='completed', winner_id=?, completed_at=? WHERE id=?`,
-    [winnerId, now, sessionId]
+    `UPDATE match_sessions SET status='cancelled', completed_at=? WHERE id=? AND status IN ('pending','active')`,
+    [Date.now(), sessionId]
   );
   return getMatchSession(sessionId);
 }
@@ -524,7 +565,7 @@ export async function createMatchedSession(a, b) {
 export async function findAndPairMatches() {
   const now = Date.now();
   const queue = await all(
-    `SELECT * FROM match_queue ORDER BY joined_at ASC`
+    `SELECT q.*, u.is_bot FROM match_queue q JOIN users u ON u.id = q.user_id ORDER BY q.joined_at ASC`
   );
   const created = [];
   const taken = new Set();
@@ -540,6 +581,8 @@ export async function findAndPairMatches() {
     for (let j = i + 1; j < queue.length; j++) {
       const b = queue[j];
       if (taken.has(b.user_id)) continue;
+      // a person is never handed an AI opponent without knowing it
+      if (a.is_bot !== b.is_bot) continue;
       const diff = Math.abs(a.rating - b.rating);
       // candidate is eligible if within window, OR either side has timed out
       const bTimedOut = now - b.joined_at >= WAIT_TIMEOUT_MS;
@@ -645,14 +688,14 @@ export async function expireStaleMatches() {
       await run(
         `INSERT INTO match_queue (user_id, deck_id, rating, joined_at)
          VALUES (?, ?, ?, ?) ON CONFLICT(user_id) DO NOTHING`,
-        [s.host_user_id, s.host_deck_id, 1000, now]
+        [s.host_user_id, s.host_deck_id, await ladderRating(s.host_user_id), now]
       );
     }
     if (s.opponent_ready && s.opponent_id) {
       await run(
         `INSERT INTO match_queue (user_id, deck_id, rating, joined_at)
          VALUES (?, ?, ?, ?) ON CONFLICT(user_id) DO NOTHING`,
-        [s.opponent_id, s.opponent_deck_id, 1000, now]
+        [s.opponent_id, s.opponent_deck_id, await ladderRating(s.opponent_id), now]
       );
     }
   }

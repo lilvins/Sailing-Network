@@ -32,6 +32,12 @@ async function getLadder() {
   return cache.ladder;
 }
 
+/** The rating the queue pairs on: the player's ladder rating, the start value if they have no games. */
+export async function ladderRating(userId) {
+  const ladder = await getLadder();
+  return Math.round(ladder.players.get(userId)?.rating ?? TUNING.glicko.startRating);
+}
+
 async function userRows() {
   const rows = await all(
     `SELECT u.id, u.username, u.display_name, p.country, p.favorite_leader, p.avatar_color

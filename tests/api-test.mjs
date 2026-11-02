@@ -78,7 +78,7 @@ async function waitForHealth(timeoutMs = 10000) {
 cleanupDb();
 
 // seed the first admin into the temp DB, then boot the server on the test port
-const env = { ...process.env, PORT: String(PORT), SN_DB_PATH: DB };
+const env = { ...process.env, SN_API_PORT: String(PORT), SN_DB_PATH: DB };
 await new Promise((resolve, reject) => {
   const p = spawn(process.execPath, [join(ROOT, "server", "seed-admin.mjs")], { env, stdio: "ignore" });
   p.on("exit", (c) => (c === 0 ? resolve() : reject(new Error("seed-admin failed"))));
@@ -227,6 +227,49 @@ try {
   section("presence & guards");
   r = await u1.get("/api/me/presence");
   check("presence online after login", r.status === 200 && r.json?.status === "online");
+
+  // ============================ RANKED QUEUE ============================
+  section("ranked queue");
+  const rankedA = client(), rankedB = client();
+  const signup = async (c, name) => (await c.post("/api/auth/signup", { email: `${name}@test.local`, username: name, password: "password123" })).json.user;
+  const ua = await signup(rankedA, "ranked_a"), ub = await signup(rankedB, "ranked_b");
+  const deckOf = async (c, leaderId) => (await c.post("/api/me/decks", { name: leaderId, leaderId, cards: [], format: "OP17" })).json.deck.id;
+  const da = await deckOf(rankedA, "OP14-020"), db = await deckOf(rankedB, "OP15-058");
+  await rankedA.post("/api/me/queue/join", { deckId: da });
+  await rankedB.post("/api/me/queue/join", { deckId: db });
+  await rankedA.post("/api/queue/tick");
+  r = await rankedA.get("/api/me/queue/status");
+  check("queue pairs the two players", r.json?.status === "matched" && r.json?.opponentUsername === "ranked_b", JSON.stringify(r.json));
+  const sid = r.json?.sessionId;
+  await rankedA.post("/api/me/queue/ready", { sessionId: sid });
+  r = await rankedB.post("/api/me/queue/ready", { sessionId: sid });
+  check("both ready → active", r.json?.session?.status === "active");
+  r = await rankedA.post(`/api/match-sessions/${sid}/complete`, { winnerId: "someone-else" });
+  check("winner outside the match → 400", r.status === 400);
+  r = await rankedA.post(`/api/match-sessions/${sid}/complete`, { winnerId: ub.id });
+  check("complete → completed", r.json?.session?.status === "completed");
+  r = await rankedB.post(`/api/match-sessions/${sid}/complete`, { winnerId: ub.id });
+  check("second report refused", r.status === 400);
+  const ma = (await rankedA.get("/api/me/matches")).json.matches, mb = (await rankedB.get("/api/me/matches")).json.matches;
+  check("one match row each, with the right result", ma.length === 1 && mb.length === 1 && ma[0].result === "loss" && mb[0].result === "win", JSON.stringify([ma, mb]));
+
+  await rankedA.post("/api/me/queue/join", { deckId: da });
+  await rankedB.post("/api/me/queue/join", { deckId: db });
+  const queued = (await rankedA.get("/api/queue")).json.players;
+  const ratingIn = (id) => queued.find((p) => p.user_id === id)?.rating;
+  check("the queue pairs on the ladder rating", ratingIn(ub.id) > 1500 && ratingIn(ua.id) < 1500, JSON.stringify(queued));
+  await rankedA.post("/api/queue/tick");
+  check("too far apart in rating: no pair yet", (await rankedA.get("/api/me/queue/status")).json?.status === "waiting");
+  await rankedB.post("/api/me/queue/leave");
+  const rankedC = client();
+  await signup(rankedC, "ranked_c");
+  await rankedC.post("/api/me/queue/join", { deckId: await deckOf(rankedC, "OP13-004") });
+  await rankedA.post("/api/queue/tick");
+  const sid2 = (await rankedA.get("/api/me/queue/status")).json?.sessionId;
+  r = await rankedA.post(`/api/match-sessions/${sid2}/cancel`);
+  check("cancel closes the match", r.json?.session?.status === "cancelled");
+  check("a cancelled game writes no row", (await rankedA.get("/api/me/matches")).json.matches.length === 1);
+  check("cancel frees the player", (await rankedA.get("/api/me/queue/status")).json?.status === "idle");
 
   r = await client().get("/api/me/decks");
   check("anonymous → 401", r.status === 401);

@@ -24,7 +24,7 @@ import {
   sendMessage, listThreads, listMessagesWith, markThreadRead, threadToClient, messageToClient,
   setUserPresence, getUserPresence, getPresenceOfFriends, presenceToClient, effectivePresence,
   createMatch,
-  createMatchSession, getMatchSession, joinMatchSession, completeMatchSession, listActiveMatches, getUserMatches, matchSessionToClient,
+  createMatchSession, getMatchSession, joinMatchSession, completeMatchSession, cancelMatchSession, listActiveMatches, getUserMatches, matchSessionToClient,
   joinQueue, leaveQueue, getQueuedPlayers, findOpponentForQueue,
   findAndPairMatches, getQueueStatus, markMatchReady, expireStaleMatches, estimateWaitLabel,
   ensureRating, getRating, updateRating,
@@ -32,7 +32,7 @@ import {
   createNotification, listNotifications, countUnreadNotifications, markNotificationsRead, notificationToClient,
   banUser, unbanUser, getActiveBan, listBans, banToClient,
 } from "./store.mjs";
-import { leaderboard as ladderBoard, profileStats, meta as metaStats, metaReport } from "./stats/index.mjs";
+import { leaderboard as ladderBoard, profileStats, meta as metaStats, metaReport, ladderRating } from "./stats/index.mjs";
 
 const COOKIE = "sn_session";
 const isProd = process.env.NODE_ENV === "production";
@@ -723,8 +723,27 @@ app.post("/api/match-sessions/:sessionId/complete", async (req, reply) => {
   if (user.id !== session.host_user_id && user.id !== session.opponent_id) {
     return reply.code(403).send({ error: "Not in this match" });
   }
+  if (winnerId !== session.host_user_id && winnerId !== session.opponent_id) {
+    return reply.code(400).send({ error: "Winner is not in this match" });
+  }
 
   const updated = await completeMatchSession(req.params.sessionId, winnerId);
+  await setUserPresence(session.host_user_id, "online");
+  if (session.opponent_id) await setUserPresence(session.opponent_id, "online");
+
+  return reply.send({ session: matchSessionToClient(updated) });
+});
+
+app.post("/api/match-sessions/:sessionId/cancel", async (req, reply) => {
+  const user = await requireUser(req, reply);
+  if (!user) return;
+  const session = await getMatchSession(req.params.sessionId);
+  if (!session) return reply.code(404).send({ error: "Match not found" });
+  if (user.id !== session.host_user_id && user.id !== session.opponent_id) {
+    return reply.code(403).send({ error: "Not in this match" });
+  }
+
+  const updated = await cancelMatchSession(req.params.sessionId);
   await setUserPresence(session.host_user_id, "online");
   if (session.opponent_id) await setUserPresence(session.opponent_id, "online");
 
@@ -738,8 +757,7 @@ app.post("/api/me/queue/join", async (req, reply) => {
   const { deckId } = req.body;
   if (!deckId) return reply.code(400).send({ error: "deckId required" });
 
-  const rating = await getRating(user.id);
-  await joinQueue(user.id, deckId, rating.rating);
+  await joinQueue(user.id, deckId, await ladderRating(user.id));
   await setUserPresence(user.id, "online");
 
   return reply.send({ ok: true });

@@ -18,6 +18,7 @@ export async function initDb() {
   if (initialized) return;
   await db.executeMultiple(`
     PRAGMA foreign_keys = ON;
+    PRAGMA busy_timeout = 5000;
 
     CREATE TABLE IF NOT EXISTS users (
       id            TEXT PRIMARY KEY,
@@ -216,6 +217,10 @@ export async function initDb() {
     CREATE INDEX IF NOT EXISTS idx_cards_cat ON cards(category);
   `);
 
+  // WAL: readers don't block the writer. The switch needs the file to itself, so
+  // with a second dev server open it fails: not worth refusing to start for that.
+  await db.execute(`PRAGMA journal_mode = WAL`).catch((err) => console.warn(`[db] still not in WAL mode: ${err.message}`));
+
   await runMigrations();
   initialized = true;
 }
@@ -303,6 +308,18 @@ async function runMigrations() {
     );
     CREATE INDEX IF NOT EXISTS idx_follows_followee ON follows(followee_id);
   `);
+
+  // M5: bot accounts + where a match row came from.
+  //   users.is_bot    1 = AI account (scripts/bot-ladder), paired only with other bots.
+  //   matches.source  'ranked' (queue game), 'manual' (logged by hand), '' (older rows and seeds).
+  const userCols = await db.execute(`PRAGMA table_info(users)`);
+  if (!userCols.rows.some((c) => c.name === "is_bot")) {
+    await db.execute(`ALTER TABLE users ADD COLUMN is_bot INTEGER NOT NULL DEFAULT 0`);
+  }
+  const matchCols = await db.execute(`PRAGMA table_info(matches)`);
+  if (!matchCols.rows.some((c) => c.name === "source")) {
+    await db.execute(`ALTER TABLE matches ADD COLUMN source TEXT NOT NULL DEFAULT ''`);
+  }
 }
 
 // thin query helpers

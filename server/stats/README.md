@@ -27,8 +27,8 @@ No UI code here, no HTTP: `server/index.mjs` calls these functions.
   Supernova (1600), Warlord (1700), Emperor (1800). #1 is **Pirate King**.
 
 The ladder is derived, not stored: it is rebuilt when the match count, the
-latest match time or the season changes. `user_ratings` (used by the queue)
-is not touched by this module.
+latest match time or the season changes. The queue pairs on this rating too
+(`ladderRating`); the old `user_ratings` table is no longer used for that.
 
 ## Meta
 
