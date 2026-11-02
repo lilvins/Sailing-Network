@@ -20,15 +20,12 @@ Load limits were not measured and legal exposure needs a lawyer.
 - [ ] **Two people cannot play ranked.** `DuelRoomPage.tsx:289-291` opens a local board
       with no session; nothing in `src/` calls `/ready`, `/complete` or `/cancel`, and
       there is no realtime game sync. Build it, or hide the pool and launch without ranked.
-- [ ] **Anyone can fake a rating.** `POST /api/me/matches` accepts a win against any
-      `oppUsername`, and the ladder reads every row. Ladder: `source='ranked'` only.
-- [ ] **The winner is self-declared.** The first report of either player counts. Needs
-      a server-run game, or both reports plus a dispute state.
-- [ ] **Emails leak.** `server/index.mjs:296` sends `publicUser` (with email) to any
-      logged-in user who opens a profile.
-- [ ] **Public credentials.** `LoginPage.tsx:43` ships `captain/captain123`; demo seeds
-      share that password; `seed-admin` defaults to `admin12345`. Gate the button on
-      `import.meta.env.DEV`, make seeds refuse production, require `ADMIN_PASSWORD`.
+- [ ] **Colluding accounts can still farm rating.** A game counts when both players report
+      the same winner, so two accounts of one person can agree. Only a game run by the
+      server closes this; do it together with the ranked game sync above.
+- [ ] **Start production from a clean DB.** The dev DB holds demo accounts with the public
+      password `captain123`: the build and the seeds no longer ship them, but copying this
+      DB online would.
 - [ ] **No deploy path.** `server/index.mjs:934` listens only on 127.0.0.1; nothing serves
       `dist`; no Dockerfile, CI, backups or `trustProxy`; `public/cards` is not in git.
 - [ ] **Legal pages and account basics.** No privacy policy, terms, account deletion,
@@ -36,8 +33,6 @@ Load limits were not measured and legal exposure needs a lawyer.
 
 ## Important
 
-- [ ] `active` sessions never expire: a player can stay "matched" forever, with no UI to leave.
-- [ ] `/api/me/queue/join` doesn't check that the deck belongs to the user.
 - [ ] `/api/queue`, `/api/match-sessions/*` and `/api/queue/tick` work without login.
 - [ ] `registerBotGames` is never called: Play vs Bot records get a 404 and the learning
       loop has no data. Add auth before wiring it (it allows anonymous writes).
@@ -51,8 +46,14 @@ Load limits were not measured and legal exposure needs a lawyer.
 - [ ] The app has one URL: no deep links, and refresh returns to Home.
 - [ ] Home cards have no accessible name.
 
-## Done on this branch
+## Done
 
+- [x] Profiles no longer show an email to other users.
+- [x] The production build has no test login; demo seeds refuse `NODE_ENV=production`; `seed:admin` needs `ADMIN_PASSWORD` there.
+- [x] Results logged by hand stay in the player's records, out of the ladder and the meta.
+- [x] A game counts only when both players report the same winner; if they disagree it is cancelled.
+- [x] `active` games expire after 2 hours, so nobody stays "matched" forever.
+- [x] Queue and match sessions accept only the player's own deck.
 - [x] Ranked results reach `matches`, once only, all or nothing, and only with a winner from the match.
 - [x] SQLite in WAL mode with a busy timeout (without them, three processes locked each other out).
 - [x] The queue pairs on the ladder rating (it was stuck at 1000 for everyone).
