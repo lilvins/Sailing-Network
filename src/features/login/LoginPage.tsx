@@ -35,19 +35,22 @@ export function LoginPage() {
     setErr("");
   };
 
-  const quickLogin = async () => {
-    if (busy) return;
-    setErr("");
-    setBusy(true);
-    try {
-      await login("captain", "captain123");
-      setView("home");
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Test login failed");
-    } finally {
-      setBusy(false);
-    }
-  };
+  // dev only: the production build must not contain this password
+  const quickLogin = import.meta.env.DEV
+    ? async () => {
+        if (busy) return;
+        setErr("");
+        setBusy(true);
+        try {
+          await login("captain", "captain123");
+          setView("home");
+        } catch (e) {
+          setErr(e instanceof Error ? e.message : "Test login failed");
+        } finally {
+          setBusy(false);
+        }
+      }
+    : null;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -160,10 +163,12 @@ export function LoginPage() {
                 <button className="snlogin-glass" onClick={() => switchMode("signup")}>
                   Create an account
                 </button>
-                <button className="snlogin-glass highlight" onClick={quickLogin} disabled={busy}>
-                  <PixelIcon name="anchor" size={12} />
-                  Enter as Test Captain
-                </button>
+                {quickLogin && (
+                  <button className="snlogin-glass highlight" onClick={quickLogin} disabled={busy}>
+                    <PixelIcon name="anchor" size={12} />
+                    Enter as Test Captain
+                  </button>
+                )}
               </>
             ) : (
               <button className="snlogin-glass" onClick={() => switchMode("login")}>

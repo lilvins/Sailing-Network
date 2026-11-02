@@ -15,7 +15,9 @@ import { dirname, join } from "node:path";
 import { initDb, all, run } from "./db.mjs";
 import { hashPassword, createUser, getUserByUsername } from "./auth.mjs";
 import { updateProfile, createDeck, listDecks, createMatchesBatch } from "./store.mjs";
+import { refuseInProduction } from "./dev-only.mjs";
 
+refuseInProduction("seed:ladder");
 await initDb();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

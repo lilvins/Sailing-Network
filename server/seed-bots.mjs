@@ -13,7 +13,9 @@ import { readFileSync } from "node:fs";
 import { initDb, run } from "./db.mjs";
 import { createUser, getUserByUsername, hashPassword } from "./auth.mjs";
 import { createDeck, listDecks, updateProfile } from "./store.mjs";
+import { refuseInProduction } from "./dev-only.mjs";
 
+refuseInProduction("bots:seed");
 await initDb();
 
 const read = (rel) => JSON.parse(readFileSync(new URL(rel, import.meta.url), "utf8"));

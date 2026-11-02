@@ -15,7 +15,9 @@ import { initDb } from "./db.mjs";
 import { hashPassword, createUser, getUserByUsername } from "./auth.mjs";
 import { updateProfile, createDeck, listDecks, countDecks, countMatches, createMatchesBatch,
   sendFriendRequest, acceptFriend, sendMessage, friendshipBetween } from "./store.mjs";
+import { refuseInProduction } from "./dev-only.mjs";
 
+refuseInProduction("seed:demo");
 await initDb();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

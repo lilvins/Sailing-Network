@@ -13,7 +13,12 @@ await initDb();
 
 const email = process.env.ADMIN_EMAIL || process.argv[2] || "admin@sailing.local";
 const username = process.env.ADMIN_USERNAME || process.argv[3] || "admin";
-const password = process.env.ADMIN_PASSWORD || process.argv[4] || "admin12345";
+const chosenPassword = process.env.ADMIN_PASSWORD || process.argv[4];
+if (!chosenPassword && process.env.NODE_ENV === "production") {
+  console.error("Set ADMIN_PASSWORD: the default password is for development only.");
+  process.exit(1);
+}
+const password = chosenPassword || "admin12345";
 
 const existing = (await getUserByEmail(email)) || (await getUserByUsername(username));
 
@@ -30,8 +35,10 @@ if (existing) {
   console.log("Created admin account:");
   console.log(`  email:    ${u.email}`);
   console.log(`  username: ${u.username}`);
-  console.log(`  password: ${password}`);
-  console.log("  ⚠ change this password (set ADMIN_PASSWORD) before any real use.");
+  if (!chosenPassword) {
+    console.log(`  password: ${password}`);
+    console.log("  ⚠ change this password (set ADMIN_PASSWORD) before any real use.");
+  }
 }
 
 process.exit(0);
