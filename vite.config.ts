@@ -9,6 +9,9 @@ export default defineConfig({
     host: true, // expose on LAN so a phone can connect for touch testing
     // let a temporary `cloudflared tunnel` reach the dev server from outside
     allowedHosts: [".trycloudflare.com"],
+    // the frontend imports nothing from these, and every DB write touches
+    // server/sailing.db-journal: watching them reloads every open page
+    watch: { ignored: ["**/server/**", "**/scripts/.*/**", "**/_Reports/**"] },
     proxy: {
       // forward API calls to the local backend → same-origin requests, so the
       // httpOnly session cookie works without any CORS/SameSite gymnastics.
