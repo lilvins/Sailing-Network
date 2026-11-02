@@ -137,6 +137,7 @@ async function setPresence(bot, status) {
 }
 
 // ---------- one ranked game ----------
+const reported = new Map(); // session id -> winner the host reported
 const deckCache = new Map();
 async function loadDeck(bot, deckId) {
   if (!deckCache.has(deckId)) {
@@ -167,6 +168,7 @@ async function hostGame(bot, s) {
   }) + "\n");
   if (winnerId) {
     await api(bot, "POST", `/api/match-sessions/${s.id}/complete`, { winnerId });
+    reported.set(s.id, winnerId); // the opponent bot confirms it in playOne
     totals.games++;
     log(`#${totals.games} ${bot.username} (${mine.leaderName}) vs ${opp.username} (${theirs.leaderName}): ${res.winner === "p1" ? bot.username : opp.username} wins, turn ${res.turn}, ${Math.round(res.ms / 1000)}s`);
   } else {
@@ -200,6 +202,11 @@ async function playOne(bot) {
     const s = json?.session;
     if (!s || s.status === "completed" || s.status === "cancelled") break;
     if (s.status === "active" && s.hostUserId === bot.id) { await hostGame(bot, s); break; }
+    if (reported.has(sessionId)) {
+      await api(bot, "POST", `/api/match-sessions/${sessionId}/complete`, { winnerId: reported.get(sessionId) });
+      reported.delete(sessionId);
+      break;
+    }
     await sleep(2000 + Math.random() * 1000);
   }
   await setPresence(bot, "online");

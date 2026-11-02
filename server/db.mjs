@@ -320,6 +320,13 @@ async function runMigrations() {
   if (!matchCols.rows.some((c) => c.name === "source")) {
     await db.execute(`ALTER TABLE matches ADD COLUMN source TEXT NOT NULL DEFAULT ''`);
   }
+
+  // M6: each player's report of who won (a game counts only when the two agree).
+  const sessionCols = await db.execute(`PRAGMA table_info(match_sessions)`);
+  if (!sessionCols.rows.some((c) => c.name === "host_report")) {
+    await db.execute(`ALTER TABLE match_sessions ADD COLUMN host_report TEXT`);
+    await db.execute(`ALTER TABLE match_sessions ADD COLUMN opponent_report TEXT`);
+  }
 }
 
 // thin query helpers

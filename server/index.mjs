@@ -24,7 +24,7 @@ import {
   sendMessage, listThreads, listMessagesWith, markThreadRead, threadToClient, messageToClient,
   setUserPresence, getUserPresence, getPresenceOfFriends, presenceToClient, effectivePresence,
   createMatch,
-  createMatchSession, getMatchSession, joinMatchSession, completeMatchSession, cancelMatchSession, listActiveMatches, getUserMatches, matchSessionToClient,
+  createMatchSession, getMatchSession, joinMatchSession, reportMatchResult, cancelMatchSession, listActiveMatches, getUserMatches, matchSessionToClient,
   joinQueue, leaveQueue, getQueuedPlayers, findOpponentForQueue,
   findAndPairMatches, getQueueStatus, markMatchReady, expireStaleMatches, estimateWaitLabel,
   ensureRating, getRating, updateRating,
@@ -292,8 +292,9 @@ app.get("/api/profiles/:username", async (req, reply) => {
   if (!target) return reply.code(404).send({ error: "User not found" });
   const profile = await ensureProfile(target.id);
   const decks = await listDecks(target.id);
+  const { email: _private, ...shownUser } = publicUser(target); // an email is for its owner and admins
   return reply.send({
-    user: publicUser(target),
+    user: shownUser,
     profile: profileToClient(profile),
     decks: decks.map(deckSummary),
     social: await followCounts(target.id, viewer.id),
@@ -665,11 +666,21 @@ app.get("/api/cards/:id", async (req, reply) => {
 });
 
 // ---- match system (v3) ----
+// The deckId of a request, if that deck is the user's: a result counts on the deck
+// that played, so nobody may queue with someone else's. Otherwise replies and returns null.
+async function ownDeckId(req, reply, user) {
+  const deckId = req.body?.deckId;
+  if (!deckId) { reply.code(400).send({ error: "deckId required" }); return null; }
+  const deck = await getDeck(deckId);
+  if (!deck || deck.user_id !== user.id) { reply.code(404).send({ error: "Deck not found" }); return null; }
+  return deckId;
+}
+
 app.post("/api/me/match-sessions/create", async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
-  const { deckId } = req.body;
-  if (!deckId) return reply.code(400).send({ error: "deckId required" });
+  const deckId = await ownDeckId(req, reply, user);
+  if (!deckId) return;
 
   const session = await createMatchSession(user.id, deckId);
   await setUserPresence(user.id, "in_duel");
@@ -680,8 +691,8 @@ app.post("/api/match-sessions/:sessionId/join", async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const { sessionId } = req.params;
-  const { deckId } = req.body;
-  if (!deckId) return reply.code(400).send({ error: "deckId required" });
+  const deckId = await ownDeckId(req, reply, user);
+  if (!deckId) return;
 
   const session = await joinMatchSession(sessionId, user.id, deckId);
   if (!session) return reply.code(404).send({ error: "Match not available" });
@@ -712,7 +723,7 @@ app.get("/api/match-sessions/:sessionId", async (req, reply) => {
 app.post("/api/match-sessions/:sessionId/complete", async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
-  const { winnerId } = req.body;
+  const winnerId = req.body?.winnerId;
   if (!winnerId) return reply.code(400).send({ error: "winnerId required" });
 
   const session = await getMatchSession(req.params.sessionId);
@@ -727,9 +738,11 @@ app.post("/api/match-sessions/:sessionId/complete", async (req, reply) => {
     return reply.code(400).send({ error: "Winner is not in this match" });
   }
 
-  const updated = await completeMatchSession(req.params.sessionId, winnerId);
-  await setUserPresence(session.host_user_id, "online");
-  if (session.opponent_id) await setUserPresence(session.opponent_id, "online");
+  const updated = await reportMatchResult(session, user.id, winnerId);
+  if (updated.status !== "active") {
+    await setUserPresence(session.host_user_id, "online");
+    if (session.opponent_id) await setUserPresence(session.opponent_id, "online");
+  }
 
   return reply.send({ session: matchSessionToClient(updated) });
 });
@@ -754,8 +767,8 @@ app.post("/api/match-sessions/:sessionId/cancel", async (req, reply) => {
 app.post("/api/me/queue/join", async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
-  const { deckId } = req.body;
-  if (!deckId) return reply.code(400).send({ error: "deckId required" });
+  const deckId = await ownDeckId(req, reply, user);
+  if (!deckId) return;
 
   await joinQueue(user.id, deckId, await ladderRating(user.id));
   await setUserPresence(user.id, "online");

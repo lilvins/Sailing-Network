@@ -19,14 +19,18 @@ const ciPct = (w, g) => { const c = wilson(w, g); return g ? [round1(c.lo * 100)
 
 export const bountyOf = (rating) => Math.round(rating) * TUNING.bounty.berriesPerPoint;
 
+// A result logged by hand is the player's own word: it stays in their records,
+// never in the ladder or the meta.
+const COUNTS = `source <> 'manual'`;
+
 // ---------- cached ladder ----------
 let cache = { key: "", ladder: null };
 async function getLadder() {
   const now = Date.now();
-  const sig = (await all(`SELECT COUNT(*) AS c, MAX(created_at) AS t FROM matches`))[0];
+  const sig = (await all(`SELECT COUNT(*) AS c, MAX(created_at) AS t FROM matches WHERE ${COUNTS}`))[0];
   const key = `${sig.c}|${sig.t}|${seasonOf(now)}`;
   if (cache.key !== key) {
-    const rows = await all(`SELECT id, user_id, opp_user_id, my_leader_id, result, on_play, created_at FROM matches`);
+    const rows = await all(`SELECT id, user_id, opp_user_id, my_leader_id, result, on_play, created_at FROM matches WHERE ${COUNTS}`);
     cache = { key, ladder: buildLadder(rows, TUNING, now) };
   }
   return cache.ladder;
@@ -204,7 +208,7 @@ export async function meta({ days = 0, minGames = TUNING.meta.minGames } = {}) {
   const since = days > 0 ? now - days * DAY : 0;
   const rows = await all(
     `SELECT my_leader_id AS l, opp_leader_id AS o, result, on_play, user_id, created_at FROM matches
-     WHERE my_leader_id IS NOT NULL AND created_at >= ?`,
+     WHERE ${COUNTS} AND my_leader_id IS NOT NULL AND created_at >= ?`,
     [since],
   );
   const blank = () => ({ games: 0, wins: 0, games1: 0, wins1: 0, games2: 0, wins2: 0, players: new Set() });
@@ -230,7 +234,7 @@ export async function meta({ days = 0, minGames = TUNING.meta.minGames } = {}) {
   // movers: share and WR now (last N days) vs the N days before
   const N = TUNING.meta.moversDays * DAY;
   const window = await all(
-    `SELECT my_leader_id AS l, result, created_at FROM matches WHERE my_leader_id IS NOT NULL AND created_at >= ?`,
+    `SELECT my_leader_id AS l, result, created_at FROM matches WHERE ${COUNTS} AND my_leader_id IS NOT NULL AND created_at >= ?`,
     [now - 2 * N],
   );
   const half = (from, to) => {
@@ -286,7 +290,7 @@ export async function meta({ days = 0, minGames = TUNING.meta.minGames } = {}) {
 export async function metaReport({ format = "", from = null, to = null, minBounty = null, maxBounty = null } = {}) {
   const ladder = await getLadder();
   const rows = await all(
-    `SELECT id, user_id, my_deck_id, my_leader_id, opp_leader_id, result, format, created_at FROM matches WHERE my_leader_id IS NOT NULL`,
+    `SELECT id, user_id, my_deck_id, my_leader_id, opp_leader_id, result, format, created_at FROM matches WHERE ${COUNTS} AND my_leader_id IS NOT NULL`,
   );
   const deckRows = await all(`SELECT id, name, cards FROM decks WHERE id IN (SELECT DISTINCT my_deck_id FROM matches)`);
   const decks = new Map(

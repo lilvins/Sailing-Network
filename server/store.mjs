@@ -404,6 +404,17 @@ export async function joinMatchSession(sessionId, opponentUserId, deckId) {
   return getMatchSession(sessionId);
 }
 
+// One player's word about who won. Nothing counts until both have reported: if
+// they agree the game is completed, if not it is cancelled and writes no result.
+// A player can correct their own report until then.
+export async function reportMatchResult(session, userId, winnerId) {
+  const col = userId === session.host_user_id ? "host_report" : "opponent_report";
+  await run(`UPDATE match_sessions SET ${col}=? WHERE id=? AND status='active'`, [winnerId, session.id]);
+  const s = await getMatchSession(session.id);
+  if (!s.host_report || !s.opponent_report) return s;
+  return s.host_report === s.opponent_report ? completeMatchSession(s.id, s.host_report) : cancelMatchSession(s.id);
+}
+
 // A session from the ranked queue (matched_at set) becomes two `matches` rows,
 // which is what the ladder reads. Session and rows are written in one batch: all
 // or nothing, so a failed write can be retried. The row ids come from the session
@@ -537,6 +548,7 @@ export async function findOpponentForQueue(userId, userRating) {
 export const RATING_WINDOW = 200;
 export const WAIT_TIMEOUT_MS = 30 * 1000;
 export const NO_SHOW_TIMEOUT_MS = 60 * 1000;
+export const ACTIVE_TIMEOUT_MS = 2 * 60 * 60 * 1000;
 
 // Create a match_session for an already-decided pair. The lower-rated player is
 // the "host" arbitrarily; both ids are recorded up front. Starts as 'pending':
@@ -669,8 +681,14 @@ export async function markMatchReady(sessionId, userId) {
 
 // Cancel any 'pending' match where ≥1 player never showed within the no-show
 // window. The player(s) who DID confirm are put back into the queue so they
-// don't get punished for the opponent's no-show. Returns count cancelled.
+// don't get punished for the opponent's no-show. An 'active' game nobody finished
+// is cancelled too, or its players would stay "matched" forever.
+// Returns count cancelled.
 export async function expireStaleMatches() {
+  await run(
+    `UPDATE match_sessions SET status='cancelled', completed_at=? WHERE status='active' AND started_at < ?`,
+    [Date.now(), Date.now() - ACTIVE_TIMEOUT_MS]
+  );
   const cutoff = Date.now() - NO_SHOW_TIMEOUT_MS;
   const stale = await all(
     `SELECT * FROM match_sessions

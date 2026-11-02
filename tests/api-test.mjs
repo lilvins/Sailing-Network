@@ -8,7 +8,8 @@
 
 import { spawn } from "node:child_process";
 import { rmSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createClient } from "@libsql/client";
 import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -246,10 +247,12 @@ try {
   check("both ready → active", r.json?.session?.status === "active");
   r = await rankedA.post(`/api/match-sessions/${sid}/complete`, { winnerId: "someone-else" });
   check("winner outside the match → 400", r.status === 400);
-  r = await rankedA.post(`/api/match-sessions/${sid}/complete`, { winnerId: ub.id });
-  check("complete → completed", r.json?.session?.status === "completed");
   r = await rankedB.post(`/api/match-sessions/${sid}/complete`, { winnerId: ub.id });
-  check("second report refused", r.status === 400);
+  check("one report alone counts for nothing", r.json?.session?.status === "active" && (await rankedB.get("/api/me/matches")).json.matches.length === 0);
+  r = await rankedA.post(`/api/match-sessions/${sid}/complete`, { winnerId: ub.id });
+  check("both reports agree → completed", r.json?.session?.status === "completed");
+  r = await rankedB.post(`/api/match-sessions/${sid}/complete`, { winnerId: ub.id });
+  check("report on a finished game refused", r.status === 400);
   const ma = (await rankedA.get("/api/me/matches")).json.matches, mb = (await rankedB.get("/api/me/matches")).json.matches;
   check("one match row each, with the right result", ma.length === 1 && mb.length === 1 && ma[0].result === "loss" && mb[0].result === "win", JSON.stringify([ma, mb]));
 
@@ -270,6 +273,46 @@ try {
   check("cancel closes the match", r.json?.session?.status === "cancelled");
   check("a cancelled game writes no row", (await rankedA.get("/api/me/matches")).json.matches.length === 1);
   check("cancel frees the player", (await rankedA.get("/api/me/queue/status")).json?.status === "idle");
+
+  // both claim the win: no result
+  const dc = (await rankedC.get("/api/me/decks")).json.decks[0].id;
+  const uc = (await rankedC.get("/api/auth/me")).json.user;
+  await rankedA.post("/api/me/queue/join", { deckId: da });
+  await rankedC.post("/api/me/queue/join", { deckId: dc });
+  await rankedA.post("/api/queue/tick");
+  const sid3 = (await rankedA.get("/api/me/queue/status")).json?.sessionId;
+  await rankedA.post("/api/me/queue/ready", { sessionId: sid3 });
+  await rankedC.post("/api/me/queue/ready", { sessionId: sid3 });
+  await rankedA.post(`/api/match-sessions/${sid3}/complete`, { winnerId: ua.id });
+  r = await rankedC.post(`/api/match-sessions/${sid3}/complete`, { winnerId: uc.id });
+  check("reports disagree → cancelled, no result", r.json?.session?.status === "cancelled" && (await rankedC.get("/api/me/matches")).json.matches.length === 0);
+
+  // an abandoned game frees its players
+  await rankedA.post("/api/me/queue/join", { deckId: da });
+  await rankedC.post("/api/me/queue/join", { deckId: dc });
+  await rankedA.post("/api/queue/tick");
+  const sid4 = (await rankedA.get("/api/me/queue/status")).json?.sessionId;
+  await rankedA.post("/api/me/queue/ready", { sessionId: sid4 });
+  await rankedC.post("/api/me/queue/ready", { sessionId: sid4 });
+  const testDb = createClient({ url: pathToFileURL(DB).href });
+  await testDb.execute({ sql: `UPDATE match_sessions SET started_at=? WHERE id=?`, args: [Date.now() - 3 * 60 * 60 * 1000, sid4] });
+  testDb.close();
+  await rankedA.post("/api/queue/tick");
+  check("a game abandoned for hours expires", (await rankedA.get("/api/me/queue/status")).json?.status === "idle");
+
+  // a win logged by hand doesn't move the rating
+  await rankedC.post("/api/me/matches", { deckId: dc, result: "win", onPlay: true, oppUsername: "ranked_b" });
+  check("a logged win stays in the player's records", (await rankedC.get("/api/me/matches")).json.matches.length === 1);
+  await rankedC.post("/api/me/queue/join", { deckId: dc });
+  check("a logged win doesn't move the rating", (await rankedC.get("/api/queue")).json.players.find((p) => p.user_id === uc.id)?.rating === 1500);
+  await rankedC.post("/api/me/queue/leave");
+
+  r = await rankedA.post("/api/me/queue/join", { deckId: db });
+  check("queueing with someone else's deck → 404", r.status === 404);
+
+  r = await rankedA.get("/api/profiles/ranked_b");
+  check("a profile doesn't show its owner's email", r.status === 200 && r.json?.user?.username === "ranked_b" && !("email" in r.json.user));
+  check("your own account still has your email", (await rankedA.get("/api/me/profile")).json?.user?.email === "ranked_a@test.local");
 
   r = await client().get("/api/me/decks");
   check("anonymous → 401", r.status === 401);
