@@ -166,6 +166,61 @@ cui non ci si arriva e cosa costerebbe. Impronta delle partite invariata,
    Primo allenamento lungo: 20.000 partite, in `docs/bot/allenamento.md`.
    Playbook per Leader: ancora da fare.
 
+### Fase 3b — Imparare dai giocatori forti (deciso il 2026-10-30)
+
+**Perché.** Tutte le correzioni a mano del 29-30 ottobre hanno tolto errori
+visibili (Decken a vuoto, Luna a vuoto, counter a 5 vite), ma la forza contro
+il bot di prima è rimasta circa al 50%. Tre misure lo spiegano:
+- più simulazioni rendono poco (+3% con 4 volte il tempo);
+- guardare più lontano peggiora: orizzonte 2 = 48%, fino a fine partita = 38,5%;
+- l'esame dei fondamentali mostra che il bot sbaglia ordine e tempi.
+
+Il collo di bottiglia è la **qualità delle partite simulate**: le gioca una
+policy rozza. MetaHub decide sulla probabilità di vittoria giocando fino in
+fondo, e per farlo servono simulazioni giocate bene. La soluzione è imparare
+la policy da chi gioca bene.
+
+**I dati.** 7.613 partite TCGMM tra umani (W34) in
+`Documents/RYAN/lab/data/logs/tcgmm/`. Ogni log ha:
+- le mosse una per una;
+- a **ogni cambio di turno la fotografia completa** delle zone di entrambi
+  (mano, campo, cestino, vite);
+- il rating dei due giocatori (bounty, nel `.meta.json`).
+
+Le settimane del meta OP17 vanno scaricate da Vins con il suo token
+(`RYAN/lab/tcgmm-download.mjs`). Parser esistente: `RYAN/lab/logparse.mjs`
+(LOGS.md).
+
+**Tappe** (circa una sessione ciascuna):
+1. **Dataset.** Per ogni turno dei giocatori con bounty ≥ 171: lo stato a
+   inizio turno (dalla fotografia) e la sequenza di mosse (giocate, DON!!,
+   attivazioni, attacchi con bersaglio), più chi ha vinto. Formato JSONL in
+   `src/autosim/train/data/`, da script riproducibile.
+   Uscita: conteggi e un controllo a campione.
+2. **Stato del motore dalla fotografia.** Costruire un `AutoGameState` dalla
+   fotografia, rigiocare le mosse del turno in AUTOSIM e confrontare con la
+   fotografia successiva.
+   Uscita: percentuale di turni ricostruiti esatti; le carte che divergono
+   vanno nella lista della tappa 8 (correttezza).
+3. **Policy imitativa.** Per ogni posizione: le mosse legali, ognuna con le sue
+   caratteristiche, e quale ha scelto l'umano. Primo modello semplice
+   (regressione logistica), pesi in un file JSON letto dal bot. Le
+   caratteristiche usano solo ciò che vede chi muove, non la mano avversaria.
+   Uscita: accordo con l'umano sulla prima mossa e tra le prime 3, su partite
+   tenute da parte.
+4. **Usarla.** (a) come ordinamento delle candidate del Pro, al posto di `PRIOR`;
+   (b) come policy dei rollout. Poi si rimisurano orizzonte 2, 3 e fino in fondo.
+   Uscita: Pro nuovo contro Pro attuale > 55% su 400 partite; esame dei
+   fondamentali più vicino agli umani.
+5. **Valutazione imparata.** Regressione del risultato finale sulle voci della
+   valutazione, su fotografie umane e self-play.
+   Uscita: i nuovi pesi battono `EVAL_BASE`.
+
+**Rischi.** La W34 è un meta più vecchio dei 17 mazzi dell'account, quindi
+servono le settimane recenti. Divergenze tra il motore di OPTCGSim e AUTOSIM.
+Accordo alto con l'umano non vuol dire per forza più forza: si misura sempre
+anche con le partite.
+
 ### Fase 4 — Il bot al tavolo (board-auto)
 1. Web worker come `board-bot/bot.worker.ts`, ma con lo stato AUTOSIM.
 2. board-auto: un posto si può dare al bot ("Seat B: Bot Pro"). Il bot

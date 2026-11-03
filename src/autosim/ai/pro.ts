@@ -10,6 +10,7 @@ import { evaluate, roleOf, type Role } from "./evaluate";
 import { cardValue, choiceOptions, createGreedyAgent } from "./greedy";
 import { rollout } from "./rollout";
 import { isWastedPlay } from "./waste";
+import { orderTurn } from "./turnOrder";
 import { EVAL, PRIOR, PRO, WIN, type EvalWeights } from "./tuning";
 
 export type ProConfig = {
@@ -18,6 +19,10 @@ export type ProConfig = {
   horizon: number;
   /** Evaluation weights (default: tuning's EVAL, i.e. base + learned). */
   weights: EvalWeights;
+  /** Safety cap on the moves of one rollout (raise it with a long horizon, e.g. to the end of the game). */
+  rolloutSteps: number;
+  /** Turn-order rules on the Main Phase candidates (turnOrder.ts). */
+  turnOrder: boolean;
 };
 
 /**
@@ -43,7 +48,7 @@ export interface ProAgent extends Agent {
 }
 
 export function createProAgent(seed = "pro", config: Partial<ProConfig> = {}): ProAgent {
-  const cfg: ProConfig = { candidates: PRO.candidates, rollouts: PRO.rollouts, horizon: PRO.horizon, weights: EVAL, ...config };
+  const cfg: ProConfig = { candidates: PRO.candidates, rollouts: PRO.rollouts, horizon: PRO.horizon, weights: EVAL, rolloutSteps: PRO.maxRolloutSteps, turnOrder: false, ...config };
   const rng = seededRng(seed);
   const greedy = createGreedyAgent(`${seed}:greedy`);
   let thoughts: Thought[] = [];
@@ -55,7 +60,8 @@ export function createProAgent(seed = "pro", config: Partial<ProConfig> = {}): P
       const greedyPick = greedy.decide(db, state, pid);
       thoughts = [];
       if (!options) return greedyPick;
-      const cands = withIntent(options, greedyPick).filter((o) => !isWastedPlay(db, state, o));
+      let cands = withIntent(options, greedyPick).filter((o) => !isWastedPlay(db, state, o));
+      if (cfg.turnOrder && !pc) cands = orderTurn(db, state, cands);
       thoughts = search({ db, pid, rng, cfg, role: roleOf(db, state, pid) }, state, cands.length ? cands : options);
       return thoughts[0].intent;
     },
@@ -195,6 +201,6 @@ function sample(ctx: Ctx, state: AutoGameState, intent: PlayerIntent, worldSeed:
   } catch {
     return -WIN;
   }
-  rollout(ctx.db, world, ctx.cfg.horizon, state.turnPlayer);
+  rollout(ctx.db, world, ctx.cfg.horizon, state.turnPlayer, ctx.cfg.rolloutSteps);
   return evaluate(ctx.db, world, ctx.pid, ctx.cfg.weights, ctx.role);
 }

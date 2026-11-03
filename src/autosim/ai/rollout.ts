@@ -37,10 +37,10 @@ export function fastIntent(db: CardDb, state: AutoGameState): PlayerIntent {
  * Turn candidate has already made one change and must not get an extra turn
  * compared with the other candidates. A move the engine refuses ends the rollout.
  */
-export function rollout(db: CardDb, world: AutoGameState, horizon: number, turnAtDecision: PID): void {
+export function rollout(db: CardDb, world: AutoGameState, horizon: number, turnAtDecision: PID, maxSteps: number = PRO.maxRolloutSteps): void {
   let changes = 0;
   let last = turnAtDecision;
-  for (let step = 0; step < PRO.maxRolloutSteps && world.phase !== "over"; step++) {
+  for (let step = 0; step < maxSteps && world.phase !== "over"; step++) {
     if (world.turnPlayer !== last) {
       last = world.turnPlayer;
       if (++changes >= horizon) return;
