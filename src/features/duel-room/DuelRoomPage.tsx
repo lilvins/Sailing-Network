@@ -3,6 +3,8 @@ import { useUiStore } from "../../app/uiStore";
 import { api, type Deck, type QueueStatus } from "../../lib/api";
 import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css"; // shared .sn atoms (logo, pill, avatar, livedot, vars)
+import "../profiles/profiles.css";
+import { Dock } from "../profiles/ProfilePages";
 import "@fontsource/silkscreen/400.css"; // pixel HUD labels (--hud in duelroom.css)
 import "@fontsource/silkscreen/700.css";
 import "@fontsource/vt323/400.css"; // pixel duelist names (--pixel)
@@ -538,18 +540,6 @@ export function DuelRoomPage() {
       </section>
 
       <footer className="dr-foot">
-        <div className="dr-foot-icons">
-          <button className="dr-foot-ico" title="Messages" onClick={() => setView("messages")}>
-            <Icon name="chat" size={18} />
-            <span className="dr-foot-badge">3</span>
-          </button>
-          <button className="dr-foot-ico" title="Friends online" onClick={() => setView("friends")}>
-            <Icon name="friends" size={18} />
-          </button>
-        </div>
-        <button className="dr-exit" onClick={() => setView("home")}>
-          <Icon name="exit" size={15} /> Exit
-        </button>
         <span className="dr-credit">
           Background: <a href="https://opengameart.org/node/158492" target="_blank" rel="noopener noreferrer">“Sunset Clouds Over The Sea”</a> by{" "}
           <a href="https://craftpix.net" target="_blank" rel="noopener noreferrer">CraftPix.net</a>,{" "}
@@ -561,6 +551,7 @@ export function DuelRoomPage() {
           <Icon name="sound" size={18} />
         </button>
       </footer>
+      <Dock />
 
       {showLogResult && myDecks.length > 0 && (
         <LogResultModal decks={myDecks} cards={cards} onClose={() => setShowLogResult(false)} />

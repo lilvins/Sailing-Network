@@ -11,7 +11,7 @@ import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { loadCards } from "../cards/cardsDb";
 import { api } from "../../lib/api";
-import { Dock, HeaderDock } from "../profiles/ProfilePages";
+import { Dock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./deckbuilder.css";
@@ -396,7 +396,6 @@ function DeckBuilder() {
           <button className="db-save" disabled={!leader || mainCount === 0 || saving} onClick={saveDeck}>
             <I n="save" size={16} /> {saving ? "Saving…" : currentDeckId ? "Save" : "Save Deck"}
           </button>
-          <HeaderDock />
         </div>
       </header>
 

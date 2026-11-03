@@ -9,7 +9,7 @@ import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { api } from "../../lib/api";
 import { loadCardsById } from "../cards/cardsDb";
-import { Dock, HeaderDock } from "../profiles/ProfilePages";
+import { Dock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./mydecks.css";
@@ -109,7 +109,6 @@ function MyDecks() {
         </div>
         <div className="snp-head-r">
           <button className="md-new" onClick={() => openDeckBuilder(null)}><I n="plus" size={17} /> New Deck</button>
-          <HeaderDock />
         </div>
       </header>
 

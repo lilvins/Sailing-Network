@@ -141,13 +141,6 @@
 }
 
 /* ============ MESSAGES ============ */
-.msg-layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 14px;
-  height: calc(100dvh - 200px);
-  min-height: 420px;
-}
 .msg-list {
   display: flex;
   flex-direction: column;
@@ -459,20 +452,6 @@
 @media (max-width: 820px) {
   .st-cols {
     grid-template-columns: 1fr;
-  }
-  .msg-layout {
-    grid-template-columns: 1fr;
-    height: calc(100dvh - 170px);
-  }
-  /* one pane at a time on mobile */
-  .msg-layout[data-active="true"] .msg-list {
-    display: none;
-  }
-  .msg-layout[data-active="false"] .msg-thread {
-    display: none;
-  }
-  .msg-thread-back {
-    display: flex;
   }
   .fr-row {
     flex-wrap: wrap;

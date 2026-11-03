@@ -119,13 +119,13 @@
 
 /* footer */
 .dr-foot{flex:0 0 auto;display:flex;align-items:center;gap:14px;}
-.dr-foot-icons{display:flex;gap:10px;}
+/* the dock (Exit, Messages, Friends) stays bottom-left while the page scrolls; the footer keeps clear of it */
+.dr .dr-foot ~ .snp-dock, .dr-foot ~ .snp-dock{position:fixed !important;left:22px;right:auto;width:auto;margin:0;bottom:max(18px,env(safe-area-inset-bottom));z-index:6;}
+.dr-foot{padding-left:230px;}
+@media (max-width:700px){.dr-foot{padding-left:0;margin-bottom:64px;}}
 .dr-foot-ico{position:relative;width:40px;height:40px;border-radius:0;background:var(--glass);border:1px solid var(--edge2);color:#d6d0c2;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .1s,color .1s,background .1s;}
 .dr-foot-ico:hover{border-color:var(--brass-dim);color:var(--txt);background:rgba(255,255,255,0.05);}
 .dr-foot-ico.mute{margin-left:auto;}
-.dr-foot-badge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:#fff;font:700 10px var(--display);min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:0;padding:0 4px;border:1px solid rgba(255,255,255,0.5);}
-.dr-exit{display:flex;align-items:center;gap:8px;padding:9px 22px;border-radius:0;background:rgba(226,59,50,0.12);border:1px solid rgba(226,59,50,0.45);color:#ff9a94;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.5px;text-decoration:none;transition:background .1s,border-color .1s,color .1s;}
-.dr-exit:hover{background:rgba(226,59,50,0.25);border-color:var(--acc);color:#fff;}
 
 /* ================= FLUID + RESPONSIVE (Sailing Network port) ================= */
 .sn.dr{width:100%;min-width:0;height:auto;min-height:100dvh;}
@@ -219,7 +219,6 @@
 .dr-back,.dr-foot-ico,.dr-open-arrows button{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);}
 .dr-radio,.dr-check,.dr-input,.dr-select select{border-width:2px;}
 .dr-radio .dr-dot,.dr-check .dr-box{border-width:2px;}
-.dr-exit{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);font-family:var(--hud);letter-spacing:1px;}
 .dr-spinner{border-width:3px;animation-timing-function:steps(8);}
 .dr .sn-pill{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,0.5);}
 .dr-modal{border:2px solid rgba(242,243,245,0.2);box-shadow:6px 6px 0 rgba(0,0,0,0.6);}

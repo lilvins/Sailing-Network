@@ -9,7 +9,7 @@ import { MyProfile, DuelRecords } from "../features/profiles/ProfilePages";
 import { ProfileViewer } from "../features/profiles/ProfileViewer";
 import { Rankings } from "../features/profiles/Rankings";
 import { StatisticsPage } from "../features/social/StatisticsPage";
-import { MessagesPage } from "../features/social/MessagesPage";
+import { MessagesLayer } from "../features/social/MessagesPopup";
 import { FriendsPage } from "../features/social/FriendsPage";
 import { DirectoryPage } from "../features/social/DirectoryPage";
 import { GlobalChatPage } from "../features/social/GlobalChatPage";
@@ -102,8 +102,6 @@ function CurrentView({ view }: { view: View }) {
       return <DuelRecords />;
     case "statistics":
       return <StatisticsPage />;
-    case "messages":
-      return <MessagesPage />;
     case "friends":
       return <FriendsPage />;
     case "global-chat":
@@ -172,5 +170,10 @@ export function App() {
   let effectiveView = view;
   if (view === "login") effectiveView = "home";
   if (view === "admin" && user.role !== "admin") effectiveView = "home";
-  return <CurrentView view={effectiveView} />;
+  return (
+    <>
+      <CurrentView view={effectiveView} />
+      <MessagesLayer />
+    </>
+  );
 }

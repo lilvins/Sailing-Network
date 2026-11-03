@@ -18,6 +18,8 @@ import { PixelBackdrop } from "./PixelBackdrop";
 import { formatBounty } from "../stats/format";
 import { useAutoStore } from "../board-auto/autoStore";
 import "./home.css";
+import "../profiles/profiles.css";
+import { Dock } from "../profiles/ProfilePages";
 import { PixelIcon, type PixelIconName } from "../pixel/PixelIcon";
 import { PixelLogoMark } from "../pixel/PixelLogo";
 
@@ -259,10 +261,6 @@ export function HomePage() {
               <span className="sn-livedot" /> {fmt(stats.captains)} captains aboard
             </div>
           )}
-          <button className="hu-hicon" title="Messages" onClick={() => setView("messages")}>
-            <Icon name="chat" size={17} />
-            {unread > 0 && <span className="hu-hbadge">{unread}</span>}
-          </button>
           <button className="hu-me" title="Your profile" onClick={() => openProfile(null)}>
             <LeaderAvatar
               name={user?.displayName || "?"}
@@ -277,6 +275,8 @@ export function HomePage() {
           </button>
         </div>
       </header>
+
+      <Dock exit={false} />
 
       {/* hero: the animated night sea with the Ship's Log in the sky */}
       <div className="hu-hero-wrap">

@@ -9,6 +9,7 @@ import "../home/home.css"; // shared .sn vars + atoms (kicker, buttons, livedot)
 import "./profiles.css";
 import { PixelScene } from "../pixel/PixelScene";
 import { PixelIcon, type PixelIconName } from "../pixel/PixelIcon";
+import { selectUnread, useInboxStore } from "../social/inboxStore";
 
 /* Ported from Claude design (profiles.jsx → MyProfile, DuelRecords; the
    Profile Viewer and Rankings live in ProfileViewer.tsx / Rankings.tsx). Root is `.sn snp` so the design palette vars and
@@ -85,34 +86,22 @@ export function Header({
       </div>
       <div className="snp-head-r">
         {right}
-        <HeaderDock />
       </div>
     </header>
   );
 }
 
-/** true below 1000px (phones + tablets) — the social dock then lives in the header instead of
- *  floating over the content (nothing tappable is ever covered). */
-export function useNarrow(): boolean {
-  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1000px)").matches);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1000px)");
-    const on = () => setNarrow(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
-  return narrow;
-}
 
 /** Messages + Friends shortcuts with live unread/incoming counts. */
 export function DockButtons() {
   const setView = useUiStore((s) => s.setView);
-  const [unread, setUnread] = useState(0);
+  const messagesOpen = useUiStore((s) => s.messagesOpen);
+  const setMessagesOpen = useUiStore((s) => s.setMessagesOpen);
+  const unread = useInboxStore(selectUnread);
   const [incoming, setIncoming] = useState(0);
 
   useEffect(() => {
     const refresh = () => {
-      api.myThreads().then(({ threads }) => setUnread(threads.reduce((a, t) => a + t.unread, 0))).catch(() => {});
       api.myFriends().then(({ friends }) => setIncoming(friends.filter((f) => f.status === "pending" && f.role === "incoming").length)).catch(() => {});
     };
     refresh();
@@ -122,7 +111,7 @@ export function DockButtons() {
 
   return (
     <>
-      <button className="snp-iconbtn" title="Messages" onClick={() => setView("messages")}>
+      <button className={`snp-iconbtn${unread > 0 ? " msg-alert" : ""}`} title="Messages" data-messages-btn onClick={() => setMessagesOpen(!messagesOpen)}>
         <Ico n="chat" />
         {unread > 0 && <span className="snp-dock-badge">{unread}</span>}
       </button>
@@ -134,27 +123,22 @@ export function DockButtons() {
   );
 }
 
-/** Floating bottom-left dock (desktop/tablet only). */
-export function Dock() {
-  const narrow = useNarrow();
-  if (narrow) return null;
+/** Floating bottom-left dock, on every screen size: Exit (not on Home itself,
+ *  where there is nowhere to exit to), Messages, Friends. */
+export function Dock({ exit = true }: { exit?: boolean }) {
+  const setView = useUiStore((s) => s.setView);
   return (
     <div className="snp-dock">
+      {exit && (
+        <button className="snp-iconbtn snp-dock-exit" title="Exit to Main Menu" onClick={() => setView("home")}>
+          <Ico n="exit" size={16} /> Exit
+        </button>
+      )}
       <DockButtons />
     </div>
   );
 }
 
-/** The same shortcuts, inside the page header (narrow screens only). */
-export function HeaderDock() {
-  const narrow = useNarrow();
-  if (!narrow) return null;
-  return (
-    <div className="snp-head-dock">
-      <DockButtons />
-    </div>
-  );
-}
 
 export function Select({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
   return (

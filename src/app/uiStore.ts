@@ -16,7 +16,7 @@ export type View =
   | "rankings"
   | "records"
   | "statistics"
-  | "messages"
+  | "messages" // not a page: going there opens the Messages window over the current one
   | "friends"
   | "global-chat"
   | "meta"
@@ -44,12 +44,17 @@ interface UiState {
   /** Username Messages should auto-open the thread with (null = none). */
   openThreadWith: string | null;
   openMessagesWith: (username: string | null) => void;
+  /** The Messages window, floating over whatever page is open. */
+  messagesOpen: boolean;
+  setMessagesOpen: (open: boolean) => void;
+  /** The game table is turned 90° (phone held sideways): the window turns with it. */
+  tableRotated: boolean;
 }
 
 export const useUiStore = create<UiState>((set) => ({
   view: "login", // the landing/login is the entry screen
 
-  setView: (view) => set({ view }),
+  setView: (view) => set(view === "messages" ? { messagesOpen: true } : { view }),
   pendingImport: null,
   setPendingImport: (pendingImport) => set({ pendingImport }),
   editingDeckId: null,
@@ -57,5 +62,8 @@ export const useUiStore = create<UiState>((set) => ({
   viewingUsername: null,
   openProfile: (viewingUsername) => set({ viewingUsername, view: "profile-viewer" }),
   openThreadWith: null,
-  openMessagesWith: (openThreadWith) => set({ openThreadWith, view: "messages" }),
+  openMessagesWith: (openThreadWith) => set({ openThreadWith, messagesOpen: true }),
+  messagesOpen: false,
+  setMessagesOpen: (messagesOpen) => set(messagesOpen ? { messagesOpen } : { messagesOpen, openThreadWith: null }),
+  tableRotated: false,
 }));

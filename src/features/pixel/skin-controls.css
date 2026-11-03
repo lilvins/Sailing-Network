@@ -97,7 +97,7 @@
 .presence-offline { color: var(--px-text-muted); opacity: 0.6; }
 
 /* ---- buttons that were flat blocks become pixel buttons (.px-btn) ---- */
-.hu-hicon, .dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow.following {
+.dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow.following {
   border-style: solid !important;
   border-width: var(--px-btn-frame) !important;
   border-radius: 0 !important;
@@ -118,8 +118,8 @@
 }
 .pv-follow:not(.following) { border-image: var(--px-img-btn-green) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important; text-shadow: 1px 1px 0 #315b5d; }
 .msg-send, .dr-exit { border-image: var(--px-img-btn-red) 4 4 6 fill / var(--px-btn-frame) / 0 stretch !important; text-shadow: 1px 1px 0 #6c1a20; }
-:is(.hu-hicon, .dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow, .msg-send, .dr-exit):hover:not(:disabled) { filter: brightness(1.08); }
-:is(.hu-hicon, .dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow, .msg-send, .dr-exit):active:not(:disabled) { transform: translateY(var(--px-press)) !important; }
+:is(.dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow, .msg-send, .dr-exit):hover:not(:disabled) { filter: brightness(1.08); }
+:is(.dr-foot-ico, .dr-ghost-sm, .snp-carousel-btn, .st2-arrow, .adm-refresh, .adm-btn, .pv-follow, .msg-send, .dr-exit):active:not(:disabled) { transform: translateY(var(--px-press)) !important; }
 :is(.adm-refresh, .adm-btn, .msg-send):disabled { filter: grayscale(0.85) brightness(0.8); }
 
 /* Duel Room choice buttons (rated/casual, win/loss, checks): planks; the chosen one is lit wood */

@@ -179,7 +179,7 @@
    two gulls (scripts/build-home-pattern.mjs, fx/gull.png). Fixed to the
    viewport; the hub isolates so it (z-index -1) paints above the hub's own
    background, under everything else. Still under prefers-reduced-motion. ---- */
-.sn.sn-hub{isolation:isolate;}
+.sn.sn-hub{isolation:isolate;padding-bottom:calc(72px + env(safe-area-inset-bottom));} /* the page's end (credits) clears the Messages icon */
 .hbg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#101b36 url("/assets/bg/home-pattern/tile.png") 0 0/72px 72px repeat;image-rendering:pixelated;}
 .hbg img,.hbg i{position:absolute;image-rendering:pixelated;}
 .hbg-star{width:10px;opacity:.75;}
@@ -225,11 +225,8 @@
 .hu-head-r{display:flex;align-items:center;gap:12px;}
 .hu-me{display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;padding:3px 8px 3px 3px;cursor:pointer;color:var(--txt);transition:border-color .1s,background .1s;}
 .hu-me:hover{border-color:var(--edge2);background:var(--elev);}
-/* persistent social icons (Messages / Notifications), always in the header */
-.hu-hicon{position:relative;width:38px;height:38px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:var(--elev);border:1px solid var(--edge2);color:var(--txt);cursor:pointer;transition:background .1s,border-color .1s;}
-.hu-hicon:hover{background:var(--elev2);border-color:var(--brass-dim);}
-.hu-hicon:active{background:var(--bg2);}
-.hu-hbadge{position:absolute;top:-6px;right:-6px;background:var(--acc);color:#fff;font:700 10px var(--display);min-width:17px;height:17px;line-height:17px;text-align:center;padding:0 4px;border:1px solid rgba(255,255,255,0.5);}
+/* the dock stays bottom-left while the page scrolls */
+.sn-hub .snp-dock{position:fixed;bottom:max(18px,env(safe-area-inset-bottom));}
 .hu-me-name{font-family:var(--display);font-weight:800;font-size:13.5px;}
 .hu-me-sub{font-size:11px;color:var(--muted);display:block;text-align:left;}
 
