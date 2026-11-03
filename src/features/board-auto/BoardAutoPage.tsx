@@ -12,6 +12,8 @@ import type { PlayerIntent } from "../../autosim/engine/intents";
 import { getCardDb, getCardsById, isAiSeat, useAutoStore, type SeatSetup } from "./autoStore";
 import { automationInfo } from "./compile";
 import { restSplitOf } from "./restSplit";
+import { LAYOUT, layoutTuning, layoutVars, useLayoutVersion } from "./layout";
+import { LayoutTuner } from "./LayoutTuner";
 import { selectUnread, useInboxStore } from "../social/inboxStore";
 import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type MetaDeckFile } from "./decks";
 import { fmtEvent } from "./log";
@@ -93,28 +95,18 @@ const STAGE_W_MIN = 1728;
 const STAGE_W_MAX = 2400;
 /** Stage padding + grid gaps, the field column's max width, the rails' floor. */
 const STAGE_CHROME = 32;
-const FIELD_MAX = 1400;
 const RAIL_MIN = 280;
 /** Table card size (stage px) — mirrors --bacw / --bach in boardauto.css.
  *  The height budget: 4 table rows + band + both hands = 1080
  *  (user 2026-10-27: "tutte le carte sono ancora troppo piccole"). */
-const CARD_W = 116;
-const CARD_H = CARD_W * 1.4;
 /** The hands: mirrors the .ba-hand sizes in boardauto.css. The top one (the
  *  other seat's, a back row online) stays more compact. */
-const OWN_HAND_W = 130;
-const TOP_HAND_W = 94;
 /** DON!! cards (cost area + DON!! deck pile) — all identical, so smaller. */
-const DON_W = 80;
-const DON_H = DON_W * 1.4;
 /** Life pile: vertical cascade step (stage px) — a strip per card, closer only
  *  when a very long Life would leave its column (two table rows + their gap). */
-const LIFE_STEP = 24;
-const LIFE_ROOM = CARD_H + 6;
-function lifeStep(count: number): number { return count > 1 ? Math.min(LIFE_STEP, Math.floor(LIFE_ROOM / (count - 1))) : 0; }
+function lifeStep(count: number): number { return count > 1 ? Math.min(LAYOUT.lifeStep, Math.floor((LAYOUT.card * 1.4 + 2) / (count - 1))) : 0; }
 /** Cost-area cascade step: each DON!! is uncovered for 28px (35% of a card,
  *  25% of a rotated card's footprint — the bot requires ≥25%). */
-const DON_STEP = 28;
 /** What a DON!!-moving effect asks for, answered by clicks on the table. */
 interface DonChoice {
   from: "active" | "rested" | "deck";
@@ -147,7 +139,7 @@ function fitStage(vw: number, vh: number): StageFit {
   const long = rotate ? vh : vw;
   const short = rotate ? vw : vh;
   const sw = Math.round(Math.min(STAGE_W_MAX, Math.max(STAGE_W_MIN, (STAGE_H * long) / short)));
-  const rail = Math.max(RAIL_MIN, Math.floor((sw - STAGE_CHROME - FIELD_MAX) / 2));
+  const rail = Math.max(RAIL_MIN, Math.floor((sw - STAGE_CHROME - LAYOUT.fieldMax) / 2));
   const field = sw - STAGE_CHROME - 2 * rail;
   const w = rotate ? STAGE_H : sw; // device-space footprint
   const h = rotate ? sw : STAGE_H;
@@ -624,6 +616,7 @@ function GameScreen() {
   const [picked, setPicked] = useState<Iid[]>([]);
   const [armConcede, setArmConcede] = useState<PID | null>(null);
   // fixed-resolution stage, scaled (and rotated in portrait) to the viewport
+  useLayoutVersion();
   const stage = useStageFit();
   const unreadLetters = useInboxStore(selectUnread);
   const messagesOpen = useUiStore((s) => s.messagesOpen);
@@ -790,6 +783,11 @@ function GameScreen() {
   /** Drag a DON!! group: pointer down on any DON!! of it, drop on your Leader or a Character. */
   const donDragStart = (pid: PID, index: number, e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 || pc || pid !== game.turnPlayer || game.phase !== "main" || game.battle) return;
+    // a selected DON!! carries the whole selection with it
+    if (mode.t === "don" && mode.picked.includes(index + 1)) {
+      donDragRef.current = { pid, count: mode.picked.length, groups: [game.players[pid].don.active], group: 0, x0: e.clientX, y0: e.clientY, active: false };
+      return;
+    }
     const groups = donGroups(pid);
     // only a split stack drags: an unsplit one would hand over every DON!! at once
     if (groups.length < 2) return;
@@ -805,7 +803,8 @@ function GameScreen() {
       d.active = true;
       donPressEnd();
       try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
-      setMode({ t: "idle" });
+      // a selection stays up during its drag: a drop on nothing leaves it selected
+      if (mode.t !== "don") setMode({ t: "idle" });
     }
     setDonDrag({ count: d.count, x: e.clientX, y: e.clientY });
   };
@@ -823,6 +822,7 @@ function GameScreen() {
       if (!useAutoStore.getState().dispatch({ type: "giveDon", player: d.pid, targetIid: iid })) break;
     }
     if (given === 0) return;
+    setMode({ t: "idle" });
     // the other groups keep their shape
     const left = [...d.groups];
     left[d.group] -= given;
@@ -931,6 +931,8 @@ function GameScreen() {
   const fxSeq = useRef(0);
   /** where a card dragged from the hand was let go: its flight starts there */
   const playDrop = useRef<{ x: number; y: number } | null>(null);
+  /** who held which DON!! as of the last events: the Refresh only reports a total */
+  const lastGiven = useRef<Record<string, Record<Iid, number>>>({});
   useLayoutEffect(() => {
     const fresh = events.slice(seenEvents.current);
     seenEvents.current = events.length;
@@ -950,6 +952,13 @@ function GameScreen() {
       const c = centerOf(el);
       return { cx: c.x, cy: c.y, w: el.offsetWidth, h: el.offsetHeight }; // untransformed size
     };
+    /** Given DON!! going back: they fly from their card to the cost area. */
+    const donHome = (pid: PID, from: { cx: number; cy: number } | null, count: number) => {
+      const home = document.querySelector(`[data-seat-don="${pid}"] [data-stack="don-rested"]`) ?? document.querySelector(`[data-seat-don="${pid}"]`);
+      if (!from || !home) return;
+      const n = Math.min(count, MAX_DON_PEEKS);
+      for (let k = 0; k < n; k++) fly("don", { cx: from.cx + k * 10, cy: from.cy, w: LAYOUT.don, h: LAYOUT.don * 1.4 }, home);
+    };
     for (const e of fresh) {
       if (e.type === "lifeCardToHand" || e.type === "lifeCardTrashed") {
         hit = e.player;
@@ -960,6 +969,11 @@ function GameScreen() {
       } else if ((e.type === "characterKOd" || e.type === "characterTrashedByRule") && !reduce) {
         fly("ko", lastRects.current.get(e.iid) ?? null, document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
           game.players[e.player]?.instances[e.iid]?.cardId);
+        if (e.type === "characterKOd" && !reduce) donHome(e.player, lastRects.current.get(e.iid) ?? null, e.donReturned);
+      } else if (e.type === "donUngiven" && !reduce) {
+        for (const [iid, n] of Object.entries(e.from)) donHome(e.player, lastRects.current.get(iid) ?? null, n);
+      } else if (e.type === "givenDonReturned" && !reduce) {
+        for (const [iid, n] of Object.entries(lastGiven.current[e.player] ?? {})) donHome(e.player, lastRects.current.get(iid) ?? null, n);
       } else if (e.type === "cardsDiscarded" && !reduce) {
         for (const iid of e.iids) {
           fly("ko", lastRects.current.get(iid) ?? pileFrom(`[data-hand="${e.player}"]`), document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
@@ -977,7 +991,7 @@ function GameScreen() {
         if (costArea && targetEl && !reduce) {
           const c = centerOf(costArea);
           const n = e.type === "donGivenFromRested" ? Math.min(e.count, MAX_DON_PEEKS) : 1;
-          for (let k = 0; k < n; k++) fly("don", { cx: c.x + k * 8, cy: c.y, w: DON_W, h: DON_H }, targetEl);
+          for (let k = 0; k < n; k++) fly("don", { cx: c.x + k * 8, cy: c.y, w: LAYOUT.don, h: (LAYOUT.don * 1.4) }, targetEl);
         }
       } else if (e.type === "cardsDrawn" && !reduce) {
         const deckEl = document.querySelector(`[data-pile="deck-${e.player}"] .ba-pcard`);
@@ -987,7 +1001,7 @@ function GameScreen() {
           for (const iid of e.iids) {
             const el = nodeMap.current.get(iid);
             const t = centerOf(el ?? handEl);
-            const w = el?.offsetWidth ?? CARD_W, h = el?.offsetHeight ?? CARD_H;
+            const w = el?.offsetWidth ?? LAYOUT.card, h = el?.offsetHeight ?? (LAYOUT.card * 1.4);
             const delay = drawn++ * DRAW_STAGGER_MS;
             added.push({ id: ++fxSeq.current, kind: "draw", x: d.x - w / 2, y: d.y - h / 2, w, h, dx: t.x - d.x, dy: t.y - d.y, delay });
             el?.animate({ opacity: [0, 0] }, { duration: delay + DRAW_MS }); // in hand only once it lands
@@ -1016,7 +1030,7 @@ function GameScreen() {
         const from = lastRects.current.get(e.cardIid) ?? null; // the hand card, as it was
         if (targetEl && !reduce) {
           const t = centerOf(targetEl);
-          const w = CARD_W * 1.5, h = CARD_H * 1.5;
+          const w = LAYOUT.card * 1.5, h = (LAYOUT.card * 1.4) * 1.5;
           added.push({
             id: ++fxSeq.current, kind: "counter", x: t.x - w / 2, y: t.y - h / 2, w, h,
             dx: from ? from.cx - t.x : 0, dy: from ? from.cy - t.y : 200,
@@ -1030,7 +1044,7 @@ function GameScreen() {
         const deckEl = document.querySelector(`[data-pile="deck-${e.player}"] .ba-pcard`);
         const handEl = document.querySelector(`[data-hand="${e.player}"]`);
         if (field && deckEl && handEl) {
-          const w = CARD_W * 1.5, h = CARD_H * 1.5;
+          const w = LAYOUT.card * 1.5, h = (LAYOUT.card * 1.4) * 1.5;
           const d = centerOf(deckEl), t = centerOf(handEl);
           e.toHand.forEach((iid, k) => {
             const cx = field.offsetWidth / 2 + (k - (e.toHand.length - 1) / 2) * (w + 16), cy = field.offsetHeight / 2;
@@ -1045,7 +1059,7 @@ function GameScreen() {
         const field = fieldRef.current;
         const cardId = game.players[e.player]?.instances[e.iid]?.cardId;
         if (field && cardId) {
-          const w = CARD_W * 2, h = CARD_H * 2; // 2× a table card, same 100:140 proportion
+          const w = LAYOUT.card * 2, h = (LAYOUT.card * 1.4) * 2; // 2× a table card, same 100:140 proportion
           const cx = field.offsetWidth / 2, cy = field.offsetHeight / 2;
           const from = lastRects.current.get(e.iid) ?? null; // the hand card, as it was
           const trashEl = document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`);
@@ -1081,6 +1095,7 @@ function GameScreen() {
         return n;
       }), 460);
     }
+    lastGiven.current = Object.fromEntries(Object.entries(game.players).map(([pid, pl]) => [pid, { ...pl.don.given }]));
     // remember where every registered card is, for the NEXT diff (a K.O.'d
     // card is gone from the DOM by the time its event is processed)
     for (const [iid, el] of nodeMap.current) {
@@ -1594,19 +1609,6 @@ function GameScreen() {
         </div>
       );
     }
-    if (!pc && game.phase === "main" && !game.battle && !isAiSeat(seats, game.turnPlayer)) {
-      const ready = lm.attackers.length;
-      const playable = lm.playableFromHand.length;
-      const don = game.players[game.turnPlayer].don.active;
-      return (
-        <div className="ba-actionbar ba-hintbar" data-hintbar>
-          {ready > 0 && <span className="ba-hint atk">⚔ <b>{ready}</b> ready to attack</span>}
-          {playable > 0 && <span className="ba-hint play">▶ <b>{playable}</b> playable</span>}
-          {don > 0 && <span className="ba-hint don">DON!! <b>{don}</b></span>}
-          {ready === 0 && playable === 0 && don === 0 && <span className="ba-hint">Nothing left to do — <b>End turn</b> <i>(E)</i></span>}
-        </div>
-      );
-    }
     return null;
   })();
 
@@ -1739,6 +1741,8 @@ function GameScreen() {
       const t = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-iid]")?.dataset.iid;
       return t && targets.includes(t) ? t : null;
     };
+    const releasedOn = (e: React.PointerEvent, id: Iid) =>
+      document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[data-iid]")?.dataset.iid === id;
     const attackDragHandlers = attackOpt
       ? {
           onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
@@ -1761,7 +1765,7 @@ function GameScreen() {
             const d = atkDragRef.current;
             atkDragRef.current = null;
             if (!d || !d.active) return;
-            suppressClick.current = true;
+            suppressClick.current = !releasedOn(e, iid);
             setAtkPoint(null);
             setHoverTarget(null);
             setMode({ t: "idle" });
@@ -1792,7 +1796,7 @@ function GameScreen() {
             const d = dragRef.current;
             dragRef.current = null;
             if (!d || !d.active) return;
-            suppressClick.current = true;
+            suppressClick.current = !releasedOn(e, iid);
             setDrag(null);
             const half = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>("[data-half]");
             if (counterDrag) {
@@ -1852,7 +1856,7 @@ function GameScreen() {
         {stunned && <span className="ba-stunned" data-stunned>STUNNED</span>}
         {given > 0 && (
           <span className={`ba-given${pc?.kind === "payDon" && payPick.given[iid] ? " ba-paying" : ""}`}>
-            DON!! ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
+            ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
           </span>
         )}
         {highlightSets.ready.has(iid) && !isAiSeat(seats, owner) && <span className="ba-readybadge" title="Ready to attack — tap or drag"><PixelIcon name="swords" size={12} /></span>}
@@ -1920,8 +1924,8 @@ function GameScreen() {
         {picking !== undefined && picking > 0 && <span className="ba-pickcount">+{picking}</span>}
         {label === "LIFE" && count > 0 ? (
           // Life: every card visible as a strip, a declared vertical stack
-          // (constant LIFE_STEP, last on top) — countable at a glance
-          <div className="ba-pcard ba-lifestack" data-stack="life" style={{ height: CARD_H + (count - 1) * lifeStep(count) }}>
+          // (constant LAYOUT.lifeStep, last on top) — countable at a glance
+          <div className="ba-pcard ba-lifestack" data-stack="life" style={{ height: (LAYOUT.card * 1.4) + (count - 1) * lifeStep(count) }}>
             {Array.from({ length: count }).map((_, i) => {
               // a face-up Life card (M5) shows its art; the rest are backs
               const face = faces?.[i];
@@ -1981,7 +1985,7 @@ function GameScreen() {
             </div>
             {/* COST AREA (OPTCGSim-style): two DECLARED ORDERED STACKS — active
                 DON!! upright, rested DON!! rotated — each a compact cascade with
-                a constant step (DON_STEP), the last card on top; the two groups
+                a constant step (LAYOUT.donStep), the last card on top; the two groups
                 are apart and the whole stack stays inside the row. */}
             <div className="ba-donrow" data-seat-don={pid}>
               {(p.don.deck > 0 || donChoice?.from === "deck") && PileBox({
@@ -1990,7 +1994,7 @@ function GameScreen() {
                 onPick: () => pickDon(pid, "deck", 0),
               })}
               {donActive > 0 && (
-                <div className="ba-donstack active" data-stack="don-active" style={{ width: DON_W + (donActive - 1) * DON_STEP }}>
+                <div className="ba-donstack active" data-stack="don-active" style={{ width: LAYOUT.don + (donActive - 1) * LAYOUT.donStep }}>
                   {Array.from({ length: donActive }).map((_, i) => {
                     const dialOn = (isTurn && mode.t === "don" && mode.picked.includes(i + 1))
                       || (pc?.kind === "payDon" && pc.player === pid && payPick.active.includes(i + 1))
@@ -2002,7 +2006,7 @@ function GameScreen() {
                       <div
                         key={`a${i}`}
                         className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${groupStart ? " ba-dongroup" : ""}${restSplit && restSplit.donMax > 0 && pc?.player === pid ? " ba-pickable" : ""}`}
-                        style={{ left: i * DON_STEP, zIndex: i + 1, ...(level ? { transform: `translateY(${-level * DON_RAISE}px)` } : {}) }}
+                        style={{ left: i * LAYOUT.donStep, zIndex: i + 1, ...(level ? { transform: `translateY(${-level * DON_RAISE}px)` } : {}) }}
                         data-don-index={i + 1}
                         data-don-seat={pid}
                         data-don-level={level}
@@ -2029,14 +2033,14 @@ function GameScreen() {
                 </div>
               )}
               {donRested > 0 && (
-                <div className="ba-donstack rested" data-stack="don-rested" style={{ width: DON_H + (donRested - 1) * DON_STEP }}>
+                <div className="ba-donstack rested" data-stack="don-rested" style={{ width: (LAYOUT.don * 1.4) + (donRested - 1) * LAYOUT.donStep }}>
                   {Array.from({ length: donRested }).map((_, i) => (
-                    // the rotated card's box is DON_H wide: offset the element so
+                    // the rotated card's box is (LAYOUT.don * 1.4) wide: offset the element so
                     // its rotated footprint starts exactly at i × step
                     <div
                       key={`r${i}`}
                       className={`gb-card ba-doncell gb-rested${(pc?.kind === "payDon" && pc.player === pid && payPick.rested.includes(i + 1)) || (donChoice?.from === "rested" && pc?.player === pid && donPick.includes(i + 1)) ? " ba-picked" : ""}${donChoice?.from === "rested" && pc?.player === pid ? " ba-pickable" : ""}`}
-                      style={{ left: i * DON_STEP + (DON_H - DON_W) / 2, zIndex: i + 1 }}
+                      style={{ left: i * LAYOUT.donStep + ((LAYOUT.don * 1.4) - LAYOUT.don) / 2, zIndex: i + 1 }}
                       data-don-rested={i + 1}
                       onClick={(e) => { e.stopPropagation(); if (!pickDon(pid, "rested", i + 1)) pickPayDon(pid, "rested", i + 1); }}
                     >
@@ -2078,7 +2082,7 @@ function GameScreen() {
     // side by side while they fit; beyond HAND_CAPACITY the hand becomes a
     // declared ordered stack (constant step, ≥25% of each card uncovered)
     const n = p.zones.hand.length;
-    const cw = small ? TOP_HAND_W : OWN_HAND_W;
+    const cw = small ? LAYOUT.topHand : LAYOUT.ownHand;
     const stacked = n > handCapacity(stage.field, cw);
     const step = stacked ? Math.max(Math.floor((handInner(stage.field) - cw) / (n - 1)), Math.ceil(cw * 0.25)) : 0;
     return (
@@ -2665,12 +2669,14 @@ function GameScreen() {
 
   return (
     <div className="ba-stagewrap" data-stage-scale={stage.scale.toFixed(4)} data-stage-rotate={stage.rotate ? "1" : "0"}>
+    {layoutTuning && <LayoutTuner rotated={stage.rotate} />}
     {/* the living night-sea pixel scene behind the table (same real layers as
         the Home hero), at viewport size OUTSIDE the scaled stage */}
     <div className={`ba-scene${stage.rotate ? " rot" : ""}`}><NightSea /></div>
     <div
       className="ba-root ba-game ba-stage"
-      style={{ transform: stageTransform(stage), width: stage.w, gridTemplateColumns: `${stage.rail}px ${stage.field}px ${stage.rail}px`, ["--rail" as string]: `${stage.rail}px` }}
+      onPointerDownCapture={() => { suppressClick.current = false; longPressed.current = false; }}
+      style={{ transform: stageTransform(stage), width: stage.w, gridTemplateColumns: `${stage.rail}px ${stage.field}px ${stage.rail}px`, ["--rail" as string]: `${stage.rail}px`, ...layoutVars() }}
       onClick={() => { if (mode.t !== "idle") setMode({ t: "idle" }); }}
     >
       <Banner />
@@ -2841,10 +2847,10 @@ function GameScreen() {
     {donDrag && (
       <div
         className={`ba-dondrag${stage.rotate ? " rot" : ""}`}
-        style={{ left: donDrag.x, top: donDrag.y, width: (DON_W + (donDrag.count - 1) * DON_STEP) * stage.scale, height: DON_H * stage.scale }}
+        style={{ left: donDrag.x, top: donDrag.y, width: (LAYOUT.don + (donDrag.count - 1) * LAYOUT.donStep) * stage.scale, height: (LAYOUT.don * 1.4) * stage.scale }}
       >
         {Array.from({ length: donDrag.count }).map((_, i) => (
-          <div key={i} className="gb-card" style={{ left: i * DON_STEP * stage.scale, width: DON_W * stage.scale, height: DON_H * stage.scale, zIndex: i + 1 }}>
+          <div key={i} className="gb-card" style={{ left: i * LAYOUT.donStep * stage.scale, width: LAYOUT.don * stage.scale, height: (LAYOUT.don * 1.4) * stage.scale, zIndex: i + 1 }}>
             <DonArt />
           </div>
         ))}
@@ -2858,7 +2864,7 @@ function GameScreen() {
         className={`ba-dragghost${stage.rotate ? " rot" : ""}`}
         src={cards.get(drag.cardId)!.image}
         alt=""
-        style={{ left: drag.x, top: drag.y, width: CARD_W * stage.scale * 1.08 }}
+        style={{ left: drag.x, top: drag.y, width: LAYOUT.card * stage.scale * 1.08 }}
       />
     )}
     </div>

@@ -17,21 +17,21 @@
   /* Card sizes (stage px, 1080 tall). The HEIGHT is the budget: 4 table rows
      + the band + both hands = 1080 (user 2026-10-27: "troppo piccole, c'è
      ancora moooolto spazio vuoto"):
-       --bacw   116×162  table: leader, characters, stage, Life/Trash/Deck piles
+       --bacw   118×165  table: leader, characters, stage, Life/Trash/Deck piles
        own hand 130×182  a step bigger than the table (.ba-hand:not(.small))
-       --bahw    94×132  the top hand (the other seat; a row of backs online)
-       --badw    80×112  DON!!: cost-area cascades + the DON!! deck pile
-     --baslot = the card HEIGHT: every table slot is that wide, so a rested
-     (rotated 90°) card stays inside its own slot — zero overlap by
-     construction. Mirrored by CARD_W/TOP_HAND_W/DON_W in BoardAutoPage. */
-  --bacw: 116px;
+       --bahw   106×148  the top hand (the other seat; a row of backs online)
+       --badw   100×140  DON!!: cost-area cascades + the DON!! deck pile
+     A table slot is as wide as its card: wider only while the card is rested
+     or has DON!! beside it, so the pieces sit close and still never overlap.
+     The numbers come from layout.ts (set inline on the stage). */
+  --bacw: 118px;
   --bach: calc(var(--bacw) * 1.4);
-  --bahw: 94px;
+  --bahw: 106px;
   --bahh: calc(var(--bahw) * 1.4);
-  --badw: 80px;
+  --badw: 100px;
   --badh: calc(var(--badw) * 1.4);
   --baslot: var(--bach);
-  --bagap: 8px;
+  --bagap: 16px;
   --ease: cubic-bezier(0.23, 1, 0.32, 1);
   /* pixel type (user 2026-10-28: "testi in game in pixel art, tipo i log e
      la chat"): VT323 for the log + chat (--pixel), Silkscreen for the big HUD
@@ -342,21 +342,21 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   padding: 0;
 }
 .ba-midline { display: none; }
 /* the band between the halves: turn/phase pills left, the step prompt in the
    middle (reserved slot, overlay → no reflow), End turn right */
 .ba-band {
-  flex: 0 0 52px;
+  flex: 0 0 44px;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 0 4px;
 }
 .ba-band .ba-turnbox { flex: 0 0 290px; }
-.ba-band .ba-endturn { flex: 0 0 190px; max-height: 52px; font-size: 17px; }
+.ba-band .ba-endturn { flex: 0 0 190px; max-height: 44px; font-size: 17px; }
 /* drag-to-play: the owner's half is the drop zone */
 .ba-half.ba-dropok { border-color: var(--brass-hi); background: rgba(201, 151, 59, 0.12); }
 .ba-root .gb-card.ba-dragging { opacity: 0.35; }
@@ -380,7 +380,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 8px;
   align-items: stretch;
-  padding: 2px 8px;
+  padding: 0 8px;
   /* ONE quiet surface: a dark glass over the scene, no tint, no inner frames */
   background: rgba(4, 6, 10, 0.42);
   /* always 2px: the turn change must not move a single pixel of the table */
@@ -453,7 +453,7 @@
 }
 /* End turn carries the turn player's color as a flat left stripe */
 .ba-endturn { box-shadow: inset 5px 0 0 var(--lc, var(--brass)); }
-.ba-halfmain { display: flex; flex-direction: column; justify-content: space-evenly; gap: 6px; min-width: 0; }
+.ba-halfmain { display: flex; flex-direction: column; justify-content: space-evenly; gap: 2px; min-width: 0; }
 .ba-half.flip .ba-halfmain { flex-direction: column-reverse; }
 .ba-sidecol { display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 6px; width: var(--bacw); }
 .ba-half.flip .ba-sidecol { flex-direction: column-reverse; }
@@ -465,14 +465,21 @@
    ever touch, whatever their state. Chips live INSIDE the card rectangle. */
 .ba-tslot {
   flex: 0 0 auto;
-  width: var(--baslot);
+  width: var(--bacw);
   height: var(--baslot);
   display: grid;
   place-items: center;
 }
+.ba-tslot:has(> .gb-rested) { width: var(--baslot); }
+/* room for the given DON!! fanned out to the card's right */
+.ba-tslot:has(> .ba-donpeek) { margin-right: calc(var(--bacw) * var(--bafan)); }
+.ba-tslot:has(> .ba-donpeek:nth-child(2)) { margin-right: calc(var(--bacw) * var(--bafan) * 2); }
+.ba-tslot:has(> .ba-donpeek:nth-child(3)) { margin-right: calc(var(--bacw) * var(--bafan) * 3); }
+.ba-tslot:has(> .ba-donpeek:nth-child(4)) { margin-right: calc(var(--bacw) * var(--bafan) * 4); }
 .ba-charrow {
   display: flex;
-  justify-content: space-between; /* the 5 slots use the whole width of the half */
+  gap: var(--bagap);
+  justify-content: center;
   align-items: center;
   height: var(--baslot);
 }
@@ -511,12 +518,9 @@
    2nd character slot, the cost area fills the right side (room for 10 DON!!
    in two cascades). The opponent's half is a 180°-rotated table: the row is
    reversed and the pile columns swap sides. */
-/* same five columns as the Character row, so leader and stage sit under its
-   first two slots and the cost area takes the other three */
-.ba-lsrow { display: grid; grid-template-columns: repeat(5, var(--baslot)); justify-content: space-between; align-items: center; height: var(--baslot); }
-.ba-lscenter { display: contents; }
-.ba-lsrow > .ba-donrow { grid-column: 3 / -1; grid-row: 1; }
-.ba-half.flip .ba-lsrow > .ba-donrow { grid-column: 1 / 4; }
+.ba-lsrow { display: flex; gap: var(--bagap); align-items: center; height: var(--baslot); }
+.ba-lscenter { display: flex; gap: var(--bagap); flex: 0 0 auto; }
+.ba-half.flip .ba-lsrow { flex-direction: row-reverse; }
 .ba-half.flip .ba-sidecol:first-child { order: 3; }
 .ba-half.flip .ba-halfmain { order: 2; }
 .ba-half.flip .ba-sidecol:last-child { order: 1; }
@@ -638,7 +642,7 @@
    that the row scrolls horizontally (still no overlap). Both hands: the same
    card size as the table and a FIXED height, so an emptying hand never moves
    the field. */
-.ba-hand:not(.small) { --bacw: 130px; --bach: calc(var(--bacw) * 1.4); }
+.ba-hand:not(.small) { --bacw: var(--baownw, 130px); --bach: calc(var(--bacw) * 1.4); }
 .ba-hand, .ba-hand.small {
   flex: 0 0 calc(var(--bach) + 2px); /* fixed: the field gets the rest of the height */
   display: flex;
@@ -755,7 +759,7 @@
   background: #ffd23f;
   border: 1px solid #3a2200;
   color: #241400;
-  font: 800 13px var(--mono); /* readable at phone scale (user: "DON x1 should be bigger") */
+  font: 800 19px var(--mono); /* readable at phone scale (user: "DON x1 should be bigger") */
   white-space: nowrap;
   pointer-events: none;
 }
@@ -785,7 +789,7 @@
    In flow (not fixed) so it never covers DON cells or counter cards. ── */
 /* a permanently reserved slot between field and hand: prompts appear INSIDE
    it as an overlay, so the table never reflows when one opens or closes */
-.ba-promptslot { flex: 1 1 0; min-width: 0; height: 52px; position: relative; }
+.ba-promptslot { flex: 1 1 0; min-width: 0; height: 44px; position: relative; }
 .ba-actionbar {
   position: absolute;
   left: 50%;
@@ -1146,13 +1150,6 @@
 .ba-cardbar .ba-bigact.play { background: var(--signal); color: #fff; }
 .ba-atkhint { color: #ffd23f; font-weight: 700; }
 .ba-actionbar .ba-btn i { font-style: normal; opacity: 0.6; font-size: 11px; }
-/* the idle hint is a whisper, not a prompt: no box over the middle of the table */
-.ba-actionbar.ba-hintbar { gap: 14px; justify-content: center; background: none !important; border: 0 !important; box-shadow: none !important; opacity: 0.72; } /* !important: the pixel skin boxes every .ba-actionbar */
-.ba-hint { font: 500 12.5px var(--serif); color: var(--ivory); white-space: nowrap; text-shadow: 0 1px 2px #000, 0 0 6px #000; }
-.ba-hint b { font: 700 13.5px var(--hud); color: #ffd23f; }
-.ba-hint i { font-style: normal; color: var(--ivory-muted); font-size: 12.5px; }
-.ba-hint.play b { color: #ff9a8a; }
-.ba-hint.don b { color: #e9e7e1; }
 
 /* ─── the battle, readable ──────────────────────────────────────────────────
    A panel over the band while a battle runs (both powers live, what the
@@ -1217,15 +1214,15 @@
 
 /* DON!! given to a card: tucked under it and fanned out to its right, so they
    read at a glance (rotated with the card when it is rested, still to its right). */
-.ba-tslot { position: relative; }
+.ba-tslot { position: relative; isolation: isolate; }
 .ba-tslot > .gb-card { z-index: 1; }
 .ba-donpeek {
-  position: absolute; left: 50%; top: 50%; z-index: 0;
+  position: absolute; left: 50%; top: 50%; z-index: calc(-1 * var(--k)); /* the nearest on top: else the last one hides the others */
   width: var(--bacw); aspect-ratio: 100 / 140; overflow: hidden;
   border-radius: calc(var(--bacw) * 0.04); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-  --don-x: calc(var(--bacw) * (0.2 + var(--k) * 0.1));
+  --don-x: calc(var(--bacw) * var(--bafan) * (var(--k) + 1));
   transform: translate(-50%, -50%) translate(var(--don-x), 0);
-  outline: 1px solid rgba(0, 0, 0, 0.7);
+  outline: 2px solid rgba(0, 0, 0, 0.85); /* white on white: each one must read as its own card */
   pointer-events: none;
 }
 .ba-donpeek.rested { transform: translate(-50%, -50%) translate(var(--don-x), 0) rotate(90deg); }
@@ -1268,3 +1265,21 @@
 .ba-credit { font: 400 11px var(--serif); color: var(--ivory-muted); line-height: 1.35; margin: 4px 2px 6px; }
 .ba-credit a { color: inherit; text-decoration: underline dotted; text-underline-offset: 2px; }
 .ba-credit.pick { position: absolute; right: 16px; bottom: 10px; margin: 0; }
+
+/* dev only (?layout=1): the sliders over the table */
+.ba-tuner {
+  position: fixed; right: 8px; top: 8px; z-index: 1002;
+  width: 230px; max-height: calc(100dvh - 16px); overflow-y: auto;
+  display: flex; flex-direction: column; gap: 6px; padding: 8px;
+  background: rgba(10, 8, 6, 0.93); border: 2px solid #ffd23f; color: #fff;
+  font: 500 12px system-ui, sans-serif;
+}
+.ba-tuner.rot { right: auto; left: calc(100dvw - 8px); transform: rotate(90deg); transform-origin: 0 0; max-height: calc(100dvw - 16px); }
+.ba-tuner button { padding: 5px 8px; background: #2c2620; border: 1px solid #6b5a3a; color: #fff; font: inherit; cursor: pointer; }
+.ba-tuner-toggle { align-self: flex-start; }
+.ba-tuner-row { display: flex; flex-direction: column; gap: 1px; }
+.ba-tuner-row b { color: #ffd23f; }
+.ba-tuner-row input { width: 100%; height: 22px; touch-action: none; }
+.ba-tuner-actions { display: flex; gap: 6px; }
+.ba-tuner-out { width: 100%; resize: none; background: #000; color: #ffd23f; border: 1px solid #6b5a3a; font: 11px ui-monospace, monospace; padding: 4px; }
+.ba-tuner-warn { color: #ff8a80; font-weight: 700; }
