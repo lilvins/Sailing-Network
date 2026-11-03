@@ -88,6 +88,9 @@
 .ba-root .ba-fx {
   border-radius: calc(var(--bacw) * 0.04);
 }
+/* Phone: a finger on the table is a drag, never the browser's: without this it
+   takes the gesture (pointercancel). pinch-zoom stays: the table is small there. */
+.ba-charrow .gb-card, .ba-lsrow .gb-card, .ba-doncell { touch-action: pinch-zoom; }
 .ba-root .gb-card { overflow: hidden; }
 .ba-root .gb-card {
   width: var(--bacw);
@@ -582,6 +585,7 @@
   transform: translate(-50%, -50%) rotate(-3deg);
   filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.7));
 }
+.ba-dondrag.rot { transform: translate(-50%, -50%) rotate(87deg); } /* portrait: the stage's 90° turn */
 .ba-dondrag .gb-card { position: absolute; top: 0; }
 .ba-dondrag-count {
   position: absolute;

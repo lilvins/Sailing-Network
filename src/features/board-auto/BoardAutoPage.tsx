@@ -612,13 +612,15 @@ function GameScreen() {
   const [armConcede, setArmConcede] = useState<PID | null>(null);
   // fixed-resolution stage, scaled (and rotated in portrait) to the viewport
   const stage = useStageFit();
-  // while at the table: no page rubber-banding; leaving it (home, change
-  // decks, rematch) releases the orientation lock
+  // while at the table: no page rubber-banding or pull-to-refresh (the viewport
+  // reads this from <html>, not <body>); leaving it (home, change decks,
+  // rematch) releases the orientation lock
   useEffect(() => {
-    const prev = document.body.style.overscrollBehavior;
-    document.body.style.overscrollBehavior = "none";
+    const root = document.documentElement;
+    const prev = root.style.overscrollBehavior;
+    root.style.overscrollBehavior = "none";
     return () => {
-      document.body.style.overscrollBehavior = prev;
+      root.style.overscrollBehavior = prev;
       leaveLandscape();
     };
   }, []);
@@ -2735,7 +2737,7 @@ function GameScreen() {
     {/* DON!! group drag ghost: the group as a small cascade + its count */}
     {donDrag && (
       <div
-        className="ba-dondrag"
+        className={`ba-dondrag${stage.rotate ? " rot" : ""}`}
         style={{ left: donDrag.x, top: donDrag.y, width: (DON_W + (donDrag.count - 1) * DON_STEP) * stage.scale, height: DON_H * stage.scale }}
       >
         {Array.from({ length: donDrag.count }).map((_, i) => (
