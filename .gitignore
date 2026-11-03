@@ -42,6 +42,9 @@ scripts/.shots/
 scripts/.qa/
 scripts/.bot-ladder/
 
+# Pinned third-party snapshots (scripts/snapshot.mjs)
+vendor/
+
 # Personal session reports for Vins (never committed)
 _Reports/
 # One-off helper to run seed:cards + art from a double click

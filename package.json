@@ -50,6 +50,7 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "sharp": "^0.35.1",
+    "socket.io-client": "^4.8.4",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
   },
