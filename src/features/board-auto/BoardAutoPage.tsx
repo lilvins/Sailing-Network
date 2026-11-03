@@ -11,6 +11,7 @@ import type { Keyword } from "../../autosim/ir/types";
 import type { PlayerIntent } from "../../autosim/engine/intents";
 import { getCardDb, getCardsById, isAiSeat, useAutoStore, type SeatSetup } from "./autoStore";
 import { automationInfo } from "./compile";
+import { restSplitOf } from "./restSplit";
 import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type MetaDeckFile } from "./decks";
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
@@ -552,6 +553,9 @@ function GameScreen() {
     }
     return null;
   })();
+
+  /** "Rest 1 of your cards:" and its kin: what gets clicked is what gets rested. */
+  const restSplit = pc && !isAiSeat(seats, pc.player) ? restSplitOf(getCardDb()!, game) : null;
 
   /** How the last battle ended, shown for a beat after it (HIT / REPELLED / K.O.). */
   const [recap, setRecap] = useState<{ text: string; sub: string; tone: "hit" | "miss" } | null>(null);
@@ -1147,6 +1151,10 @@ function GameScreen() {
   const onBoardTap = (owner: PID, iid: Iid) => {
     const cardId = findCardId(game, iid);
     hover(cardId);
+    if (restSplit?.candidates.has(iid)) {
+      pickRest(donPick, picked.includes(iid) ? picked.filter((x) => x !== iid) : [...picked, iid]);
+      return;
+    }
     if (pc?.kind === "selectTargets") {
       toggleTarget(iid);
       return;
@@ -1279,7 +1287,34 @@ function GameScreen() {
     return true;
   };
 
+  /** Pay a split rest cost with what was clicked: the split it makes, then the
+   *  cards it names (the engine asks them next, unless they are the only ones). */
+  const payRest = (don: number, iids: Iid[]) => {
+    if (!restSplit || !pc) return;
+    const index = restSplit.optionFor(don);
+    if (index < 0) {
+      explain("This cost can't be paid that way.");
+      setDonPick([]);
+      setPicked([]);
+      return;
+    }
+    if (!dispatch({ type: "respondOption", player: pc.player, index })) return;
+    const next = useAutoStore.getState().game?.pendingChoice;
+    if (next?.kind === "selectTargets" && iids.length > 0) dispatch({ type: "respondTargets", player: next.player, iids });
+  };
+  /** One click toward a split rest cost; the last one needed pays it. */
+  const pickRest = (don: number[], iids: Iid[]) => {
+    if (!restSplit || don.length > restSplit.donMax || iids.length > restSplit.cardMax || don.length + iids.length > restSplit.total) return;
+    setDonPick(don);
+    setPicked(iids);
+    if (!confirmPicks && don.length + iids.length === restSplit.total) payRest(don.length, iids);
+  };
+
   const onDonTap = (owner: PID, index: number) => {
+    if (restSplit && owner === pc?.player) {
+      pickRest(donPick.includes(index) ? donPick.filter((i) => i !== index) : [...donPick, index], picked);
+      return;
+    }
     if (pickDon(owner, "active", index)) return;
     if (pc?.kind === "payDon") { pickPayDon(owner, "active", index); return; }
     if (pc) return;
@@ -1321,6 +1356,19 @@ function GameScreen() {
           <button className="ba-btn" data-act="mulligan" onClick={() => dispatch({ type: "respondMulligan", player: pc.player, take: true })}>
             Mulligan
           </button>
+        </div>
+      );
+    }
+    if (restSplit && pc) {
+      const n = donPick.length + picked.length;
+      const src = cards.get(findCardId(game, pc.sourceIid) ?? "")?.name;
+      return (
+        <div className="ba-actionbar" data-restsplit>
+          <span className="ba-actlabel">
+            {src && <b>{src}</b>} — click what to rest{restSplit.donMax > 0 ? ": a DON!!" : ""}{restSplit.cardMax > 0 ? " or a card" : ""} <i>{n}/{restSplit.total}</i>
+          </span>
+          {n > 0 && <button className="ba-btn" data-act="restsplit-clear" onClick={() => { setDonPick([]); setPicked([]); }}>Clear</button>}
+          {confirmPicks && <button className="ba-btn primary" data-act="restsplit-confirm" disabled={n < restSplit.total} onClick={() => payRest(donPick.length, picked)}>Confirm ({n})</button>}
         </div>
       );
     }
@@ -1565,6 +1613,7 @@ function GameScreen() {
       for (const c of lm.counterEvents) legal.add(c.iid);
     }
     if (pc?.kind === "selectTargets") for (const c of pc.candidates) target.add(c.iid);
+    if (restSplit) for (const iid of restSplit.candidates) target.add(iid);
     if (!pc && game.phase === "main" && !game.battle) {
       if (mode.t === "attack") for (const t of mode.targets) target.add(t);
       else if (mode.t === "don") {
@@ -1888,14 +1937,14 @@ function GameScreen() {
                   {Array.from({ length: donActive }).map((_, i) => {
                     const dialOn = (isTurn && mode.t === "don" && mode.picked.includes(i + 1))
                       || (pc?.kind === "payDon" && pc.player === pid && payPick.active.includes(i + 1))
-                      || (donChoice?.from === "active" && pc?.player === pid && donPick.includes(i + 1));
+                      || ((donChoice?.from === "active" || restSplit) && pc?.player === pid && donPick.includes(i + 1));
                     // raised one level per split at or before this DON!! (visual only)
                     const level = (donSplits[pid] ?? []).filter((s) => s > 0 && s <= i && s < donActive).length;
                     const groupStart = level > 0 && (donSplits[pid] ?? []).includes(i);
                     return (
                       <div
                         key={`a${i}`}
-                        className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${groupStart ? " ba-dongroup" : ""}`}
+                        className={`gb-card ba-doncell${dialOn ? " ba-picked" : ""}${groupStart ? " ba-dongroup" : ""}${restSplit && restSplit.donMax > 0 && pc?.player === pid ? " ba-pickable" : ""}`}
                         style={{ left: i * DON_STEP, zIndex: i + 1, ...(level ? { transform: `translateY(${-level * DON_RAISE}px)` } : {}) }}
                         data-don-index={i + 1}
                         data-don-seat={pid}
@@ -2499,7 +2548,7 @@ function GameScreen() {
   // the AI answers its own prompts: no panels for a seat nobody here plays
   if (aiActing) overlay = null;
   // DON!!-moving effects are answered on the table (the band explains)
-  if (donChoice) overlay = null;
+  if (donChoice || restSplit) overlay = null;
   // a take-back request waits for the opponent before anything else
   if (undoRequest) {
     const entry = [...history].reverse().find((h) => h.actor === undoRequest.by);
