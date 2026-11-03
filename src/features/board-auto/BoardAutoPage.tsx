@@ -12,6 +12,7 @@ import type { PlayerIntent } from "../../autosim/engine/intents";
 import { getCardDb, getCardsById, isAiSeat, useAutoStore, type SeatSetup } from "./autoStore";
 import { automationInfo } from "./compile";
 import { restSplitOf } from "./restSplit";
+import { selectUnread, useInboxStore } from "../social/inboxStore";
 import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type MetaDeckFile } from "./decks";
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
@@ -99,13 +100,18 @@ const RAIL_MIN = 280;
  *  (user 2026-10-27: "tutte le carte sono ancora troppo piccole"). */
 const CARD_W = 116;
 const CARD_H = CARD_W * 1.4;
-/** The top hand (the other seat's, a back row online) stays compact. */
-const TOP_HAND_W = 88;
+/** The hands: mirrors the .ba-hand sizes in boardauto.css. The top one (the
+ *  other seat's, a back row online) stays more compact. */
+const OWN_HAND_W = 130;
+const TOP_HAND_W = 94;
 /** DON!! cards (cost area + DON!! deck pile) — all identical, so smaller. */
 const DON_W = 80;
 const DON_H = DON_W * 1.4;
-/** Life pile: vertical cascade step (stage px) — a strip per card. */
-const LIFE_STEP = 10;
+/** Life pile: vertical cascade step (stage px) — a strip per card, closer only
+ *  when a very long Life would leave its column (two table rows + their gap). */
+const LIFE_STEP = 24;
+const LIFE_ROOM = CARD_H + 6;
+function lifeStep(count: number): number { return count > 1 ? Math.min(LIFE_STEP, Math.floor(LIFE_ROOM / (count - 1))) : 0; }
 /** Cost-area cascade step: each DON!! is uncovered for 28px (35% of a card,
  *  25% of a rotated card's footprint — the bot requires ≥25%). */
 const DON_STEP = 28;
@@ -129,6 +135,10 @@ const RECAP_MS = 1600;
 const DON_RAISE = 26;
 /** DON!! drawn under a card they are given to (the badge still says the exact number). */
 const MAX_DON_PEEKS = 4;
+/** draw and play flights: keep in step with .ba-fx.draw / .ba-fx.play */
+const DRAW_MS = 260;
+const DRAW_STAGGER_MS = 150;
+const PLAY_MS = 240;
 
 interface StageFit { scale: number; rotate: boolean; ox: number; oy: number; w: number; rail: number; field: number }
 
@@ -506,7 +516,6 @@ interface Arrow {
   y1: number;
   x2: number;
   y2: number;
-  color: string;
 }
 
 function findCardId(game: AutoGameState, iid: Iid): string | null {
@@ -616,6 +625,13 @@ function GameScreen() {
   const [armConcede, setArmConcede] = useState<PID | null>(null);
   // fixed-resolution stage, scaled (and rotated in portrait) to the viewport
   const stage = useStageFit();
+  const unreadLetters = useInboxStore(selectUnread);
+  const messagesOpen = useUiStore((s) => s.messagesOpen);
+  const setMessagesOpen = useUiStore((s) => s.setMessagesOpen);
+  useEffect(() => {
+    useUiStore.setState({ tableRotated: stage.rotate });
+    return () => useUiStore.setState({ tableRotated: false });
+  }, [stage.rotate]);
   // while at the table: no page rubber-banding or pull-to-refresh (the viewport
   // reads this from <html>, not <body>); leaving it (home, change decks,
   // rematch) releases the orientation lock
@@ -876,7 +892,7 @@ function GameScreen() {
       if (a) {
         const p = centerOf(a);
         const q = toLocal(atkPoint.x, atkPoint.y);
-        setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y, color: leaderHex(game.turnPlayer) });
+        setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y });
         return;
       }
     }
@@ -888,7 +904,7 @@ function GameScreen() {
     }
     const p = centerOf(a);
     const q = centerOf(b);
-    setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y, color: leaderHex(owner) });
+    setArrow({ x1: p.x, y1: p.y, x2: q.x, y2: q.y });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.battle?.attackerIid, game.battle?.targetIid, mode, hoverTarget, atkPoint, events.length]);
 
@@ -896,7 +912,7 @@ function GameScreen() {
   // transform+opacity only, ≤250ms, skipped under prefers-reduced-motion
   // "cast": an Event card used — rises from the hand to the table centre,
   // holds for a beat (readable), then fades toward the trash (tx/ty)
-  interface Fx { id: number; label?: string; kind: "life" | "ko" | "cast" | "reveal" | "counter" | "don"; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
+  interface Fx { id: number; label?: string; kind: "life" | "ko" | "cast" | "reveal" | "counter" | "don" | "draw" | "play"; delay?: number; x: number; y: number; w: number; h: number; dx: number; dy: number; tx?: number; ty?: number; cardId?: string; color?: string; flip?: boolean }
   const [fxList, setFxList] = useState<Fx[]>([]);
   const battleOutcome = (fresh: typeof events): { text: string; sub: string; tone: "hit" | "miss" } | null => {
     const won = fresh.find((e) => e.type === "battleWon");
@@ -913,11 +929,14 @@ function GameScreen() {
   const lastRects = useRef(new Map<Iid, { cx: number; cy: number; w: number; h: number }>());
   const seenEvents = useRef(events.length);
   const fxSeq = useRef(0);
+  /** where a card dragged from the hand was let go: its flight starts there */
+  const playDrop = useRef<{ x: number; y: number } | null>(null);
   useLayoutEffect(() => {
     const fresh = events.slice(seenEvents.current);
     seenEvents.current = events.length;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const added: Fx[] = [];
+    let drawn = 0; // this batch's draws so far: each leaves the deck after the last
     let hit: PID | null = null;
     const flashes: Record<Iid, string> = {};
     const fly = (kind: Fx["kind"], from: { cx: number; cy: number; w: number; h: number } | null, toEl: Element | null, cardId?: string) => {
@@ -938,9 +957,19 @@ function GameScreen() {
           fly("life", pileFrom(`[data-pile="life-${e.player}"] .ba-lifecard:last-child`) ?? pileFrom(`[data-pile="life-${e.player}"] .ba-pcard`),
             document.querySelector(e.type === "lifeCardToHand" ? `[data-hand="${e.player}"]` : `[data-pile="trash-${e.player}"] .ba-pcard`));
         }
-      } else if (e.type === "characterKOd" && !reduce) {
+      } else if ((e.type === "characterKOd" || e.type === "characterTrashedByRule") && !reduce) {
         fly("ko", lastRects.current.get(e.iid) ?? null, document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
           game.players[e.player]?.instances[e.iid]?.cardId);
+      } else if (e.type === "cardsDiscarded" && !reduce) {
+        for (const iid of e.iids) {
+          fly("ko", lastRects.current.get(iid) ?? pileFrom(`[data-hand="${e.player}"]`), document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
+            game.players[e.player]?.instances[iid]?.cardId);
+        }
+      } else if (e.type === "milled" && !reduce) {
+        for (const iid of e.iids) {
+          fly("ko", pileFrom(`[data-pile="deck-${e.player}"] .ba-pcard`), document.querySelector(`[data-pile="trash-${e.player}"] .ba-pcard`),
+            game.players[e.player]?.instances[iid]?.cardId);
+        }
       } else if (e.type === "donGiven" || e.type === "donGivenFromRested") {
         flashes[e.targetIid] = "pulse";
         const costArea = document.querySelector(`[data-seat-don="${e.player}"] .ba-donstack`) ?? document.querySelector(`[data-seat-don="${e.player}"]`);
@@ -949,6 +978,35 @@ function GameScreen() {
           const c = centerOf(costArea);
           const n = e.type === "donGivenFromRested" ? Math.min(e.count, MAX_DON_PEEKS) : 1;
           for (let k = 0; k < n; k++) fly("don", { cx: c.x + k * 8, cy: c.y, w: DON_W, h: DON_H }, targetEl);
+        }
+      } else if (e.type === "cardsDrawn" && !reduce) {
+        const deckEl = document.querySelector(`[data-pile="deck-${e.player}"] .ba-pcard`);
+        const handEl = document.querySelector(`[data-hand="${e.player}"]`);
+        if (deckEl && handEl) {
+          const d = centerOf(deckEl);
+          for (const iid of e.iids) {
+            const el = nodeMap.current.get(iid);
+            const t = centerOf(el ?? handEl);
+            const w = el?.offsetWidth ?? CARD_W, h = el?.offsetHeight ?? CARD_H;
+            const delay = drawn++ * DRAW_STAGGER_MS;
+            added.push({ id: ++fxSeq.current, kind: "draw", x: d.x - w / 2, y: d.y - h / 2, w, h, dx: t.x - d.x, dy: t.y - d.y, delay });
+            el?.animate({ opacity: [0, 0] }, { duration: delay + DRAW_MS }); // in hand only once it lands
+          }
+        }
+      } else if ((e.type === "cardPlayed" || (e.type === "playedFromZone" && e.from === "hand")) && !reduce) {
+        const el = nodeMap.current.get(e.iid);
+        const rect = lastRects.current.get(e.iid);
+        const handEl = document.querySelector(`[data-hand="${e.player}"]`);
+        const from = playDrop.current ?? (rect ? { x: rect.cx, y: rect.cy } : handEl ? centerOf(handEl) : null);
+        playDrop.current = null;
+        if (el && from) {
+          const t = centerOf(el);
+          const w = el.offsetWidth, h = el.offsetHeight;
+          added.push({
+            id: ++fxSeq.current, kind: "play", x: t.x - w / 2, y: t.y - h / 2, w, h, dx: from.x - t.x, dy: from.y - t.y,
+            cardId: game.players[e.player]?.instances[e.iid]?.cardId,
+          });
+          el.animate({ opacity: [0, 0] }, { duration: PLAY_MS }); // the flying copy stands in until it lands
         }
       } else if (e.type === "attackDeclared") {
         flashes[e.targetIid] = "hit";
@@ -1542,9 +1600,9 @@ function GameScreen() {
       const don = game.players[game.turnPlayer].don.active;
       return (
         <div className="ba-actionbar ba-hintbar" data-hintbar>
-          {ready > 0 && <span className="ba-hint atk">⚔ <b>{ready}</b> ready to attack <i>— tap or drag a glowing card</i></span>}
-          {playable > 0 && <span className="ba-hint play">▶ <b>{playable}</b> playable <i>— drag from your hand</i></span>}
-          {don > 0 && <span className="ba-hint don">DON!! <b>{don}</b> <i>— tap them, then a card</i></span>}
+          {ready > 0 && <span className="ba-hint atk">⚔ <b>{ready}</b> ready to attack</span>}
+          {playable > 0 && <span className="ba-hint play">▶ <b>{playable}</b> playable</span>}
+          {don > 0 && <span className="ba-hint don">DON!! <b>{don}</b></span>}
           {ready === 0 && playable === 0 && don === 0 && <span className="ba-hint">Nothing left to do — <b>End turn</b> <i>(E)</i></span>}
         </div>
       );
@@ -1740,8 +1798,10 @@ function GameScreen() {
             if (counterDrag) {
               if (half) counterWith(owner, iid);
             } else if (half?.dataset.half === owner) {
-              if (lm.playableFromHand.some((x) => x.iid === iid)) playFromHand(owner, iid);
-              else whyNotPlayable(owner, iid);
+              if (lm.playableFromHand.some((x) => x.iid === iid)) {
+                playDrop.current = toLocal(e.clientX, e.clientY);
+                playFromHand(owner, iid);
+              } else whyNotPlayable(owner, iid);
             }
           },
           onPointerCancel: () => { dragRef.current = null; setDrag(null); },
@@ -1858,16 +1918,15 @@ function GameScreen() {
         onClick={picking !== undefined ? (e) => { e.stopPropagation(); onPick?.(); } : undefined}
       >
         {picking !== undefined && picking > 0 && <span className="ba-pickcount">+{picking}</span>}
-        <span className="ba-plabel">{label}</span>
         {label === "LIFE" && count > 0 ? (
           // Life: every card visible as a strip, a declared vertical stack
           // (constant LIFE_STEP, last on top) — countable at a glance
-          <div className="ba-pcard ba-lifestack" data-stack="life" style={{ height: CARD_H + (count - 1) * LIFE_STEP }}>
+          <div className="ba-pcard ba-lifestack" data-stack="life" style={{ height: CARD_H + (count - 1) * lifeStep(count) }}>
             {Array.from({ length: count }).map((_, i) => {
               // a face-up Life card (M5) shows its art; the rest are backs
               const face = faces?.[i];
               return (
-                <div key={i} className={`gb-card ba-card ba-lifecard${face ? " ba-lifeup" : " ba-backcard"}`} style={{ top: i * LIFE_STEP, zIndex: i + 1 }} title={face ? `${face.name} (face-up)` : undefined}>
+                <div key={i} className={`gb-card ba-card ba-lifecard${face ? " ba-lifeup" : " ba-backcard"}`} style={{ top: i * lifeStep(count), zIndex: i + 1 }} title={face ? `${face.name} (face-up)` : undefined}>
                   {face
                     ? (face.image ? <img src={face.image} alt={face.name} /> : <span className="ba-lifeupname">{face.name}</span>)
                     : <span className="gb-back"><span className="gb-back-emblem" /></span>}
@@ -1901,11 +1960,6 @@ function GameScreen() {
             label: "LIFE", count: p.zones.life.length, pid, tick: hitSeat === pid,
             faces: p.zones.life.map((iid) => (p.instances[iid].faceUp ? cards.get(p.instances[iid].cardId) ?? null : null)),
           })}
-          {PileBox({
-            label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid,
-            picking: donChoice?.from === "deck" && pc?.player === pid ? donPick.length : undefined,
-            onPick: () => pickDon(pid, "deck", 0),
-          })}
         </div>
         <div className="ba-halfmain">
           {/* every table slot is as WIDE as a card is TALL: a rested (rotated)
@@ -1919,11 +1973,10 @@ function GameScreen() {
             ))}
           </div>
           <div className="ba-lsrow">
-            <div className="ba-lsspacer" />
             <div className="ba-lscenter">
               <div className="ba-tslot">{BCard({ owner: pid, iid: p.leaderIid })}</div>
               <div className="ba-tslot">
-                {p.zones.stage.length > 0 ? BCard({ owner: pid, iid: p.zones.stage[0] }) : <div className="ba-slot ba-stage">STAGE</div>}
+                {p.zones.stage.length > 0 ? BCard({ owner: pid, iid: p.zones.stage[0] }) : <div className="ba-slot ba-stage" />}
               </div>
             </div>
             {/* COST AREA (OPTCGSim-style): two DECLARED ORDERED STACKS — active
@@ -1931,7 +1984,11 @@ function GameScreen() {
                 a constant step (DON_STEP), the last card on top; the two groups
                 are apart and the whole stack stays inside the row. */}
             <div className="ba-donrow" data-seat-don={pid}>
-              <span className="ba-donlabel">COST AREA</span>
+              {(p.don.deck > 0 || donChoice?.from === "deck") && PileBox({
+                label: "DON!! DECK", count: p.don.deck, faceClass: "ba-donback", pid,
+                picking: donChoice?.from === "deck" && pc?.player === pid ? donPick.length : undefined,
+                onPick: () => pickDon(pid, "deck", 0),
+              })}
               {donActive > 0 && (
                 <div className="ba-donstack active" data-stack="don-active" style={{ width: DON_W + (donActive - 1) * DON_STEP }}>
                   {Array.from({ length: donActive }).map((_, i) => {
@@ -2021,7 +2078,7 @@ function GameScreen() {
     // side by side while they fit; beyond HAND_CAPACITY the hand becomes a
     // declared ordered stack (constant step, ≥25% of each card uncovered)
     const n = p.zones.hand.length;
-    const cw = small ? TOP_HAND_W : CARD_W;
+    const cw = small ? TOP_HAND_W : OWN_HAND_W;
     const stacked = n > handCapacity(stage.field, cw);
     const step = stacked ? Math.max(Math.floor((handInner(stage.field) - cw) / (n - 1)), Math.ceil(cw * 0.25)) : 0;
     return (
@@ -2672,6 +2729,9 @@ function GameScreen() {
         >
           ↶ Take back last move
         </button>
+        <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
+          Messages{unreadLetters > 0 ? ` (${unreadLetters})` : ""}
+        </button>
         <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
       </div>
 
@@ -2695,25 +2755,18 @@ function GameScreen() {
           {Half({ pid: SEAT_A, flip: false })}
           {/* always mounted: its screen CTM is the field's coordinate oracle */}
           <svg className="ba-arrow" aria-hidden ref={svgRef}>
-            {arrow && (
-              <>
-                <defs>
-                  <marker id="ba-arrowhead" markerWidth="8" markerHeight="8" refX="6.2" refY="4" orient="auto" markerUnits="userSpaceOnUse">
-                    <path d="M0,0 L8,4 L0,8 Z" fill={arrow.color} />
-                  </marker>
-                </defs>
-                {/* solid, uniform stroke in the attacker leader's color (block
-                    redirects just move the end point — same style) */}
-                <path
-                  d={`M${arrow.x1},${arrow.y1} Q${(arrow.x1 + arrow.x2) / 2 + 40},${(arrow.y1 + arrow.y2) / 2} ${arrow.x2},${arrow.y2}`}
-                  fill="none"
-                  stroke={arrow.color}
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  markerEnd="url(#ba-arrowhead)"
-                />
-              </>
-            )}
+            {arrow && (() => {
+              // one bold straight red arrow, attacker to target (block redirects
+              // just move the end point); drawn along +x, then turned into place
+              const len = Math.hypot(arrow.x2 - arrow.x1, arrow.y2 - arrow.y1);
+              const neck = Math.max(0, len - 30);
+              const deg = (Math.atan2(arrow.y2 - arrow.y1, arrow.x2 - arrow.x1) * 180) / Math.PI;
+              return (
+                <g transform={`translate(${arrow.x1} ${arrow.y1}) rotate(${deg})`}>
+                  <polygon className="ba-arrowshape" points={`0,-7 ${neck},-7 ${neck},-20 ${len},0 ${neck},20 ${neck},7 0,7`} />
+                </g>
+              );
+            })()}
           </svg>
           {BattleHud()}
           {fxList.map((f) => (
@@ -2724,6 +2777,7 @@ function GameScreen() {
                 left: f.x, top: f.y, width: f.w, height: f.h,
                 ["--dx" as string]: `${f.dx}px`, ["--dy" as string]: `${f.dy}px`,
                 ["--tx" as string]: `${f.tx ?? 0}px`, ["--ty" as string]: `${f.ty ?? 0}px`,
+                ...(f.delay ? { animationDelay: `${f.delay}ms` } : {}),
                 ...(f.color ? { ["--lc" as string]: f.color } : {}),
               }}
               onAnimationEnd={(ev) => { if (ev.target === ev.currentTarget) setFxList((l) => l.filter((x) => x.id !== f.id)); }}
@@ -2740,7 +2794,7 @@ function GameScreen() {
                 </div>
               ) : f.kind === "don" ? (
                 <DonArt />
-              ) : (f.kind === "ko" || f.kind === "cast") && f.cardId && cards.get(f.cardId)?.image
+              ) : (f.kind === "ko" || f.kind === "cast" || f.kind === "play") && f.cardId && cards.get(f.cardId)?.image
                 ? <img src={cards.get(f.cardId)!.image} alt="" />
                 : <span className="gb-back"><span className="gb-back-emblem" /></span>}
             </div>

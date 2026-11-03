@@ -17,16 +17,16 @@
   /* Card sizes (stage px, 1080 tall). The HEIGHT is the budget: 4 table rows
      + the band + both hands = 1080 (user 2026-10-27: "troppo piccole, c'è
      ancora moooolto spazio vuoto"):
-       --bacw   116×162  table: leader, characters, stage, Life/Trash/Deck piles,
-                         and the bottom (own) hand
-       --bahw    88×123  the top hand (the other seat; a row of backs online)
+       --bacw   116×162  table: leader, characters, stage, Life/Trash/Deck piles
+       own hand 130×182  a step bigger than the table (.ba-hand:not(.small))
+       --bahw    94×132  the top hand (the other seat; a row of backs online)
        --badw    80×112  DON!!: cost-area cascades + the DON!! deck pile
      --baslot = the card HEIGHT: every table slot is that wide, so a rested
      (rotated 90°) card stays inside its own slot — zero overlap by
      construction. Mirrored by CARD_W/TOP_HAND_W/DON_W in BoardAutoPage. */
   --bacw: 116px;
   --bach: calc(var(--bacw) * 1.4);
-  --bahw: 88px;
+  --bahw: 94px;
   --bahh: calc(var(--bahw) * 1.4);
   --badw: 80px;
   --badh: calc(var(--badw) * 1.4);
@@ -356,7 +356,7 @@
   padding: 0 4px;
 }
 .ba-band .ba-turnbox { flex: 0 0 290px; }
-.ba-band .ba-endturn { flex: 0 0 190px; font-size: 17px; }
+.ba-band .ba-endturn { flex: 0 0 190px; max-height: 52px; font-size: 17px; }
 /* drag-to-play: the owner's half is the drop zone */
 .ba-half.ba-dropok { border-color: var(--brass-hi); background: rgba(201, 151, 59, 0.12); }
 .ba-root .gb-card.ba-dragging { opacity: 0.35; }
@@ -380,7 +380,7 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 8px;
   align-items: stretch;
-  padding: 4px 8px;
+  padding: 2px 8px;
   /* ONE quiet surface: a dark glass over the scene, no tint, no inner frames */
   background: rgba(4, 6, 10, 0.42);
   /* always 2px: the turn change must not move a single pixel of the table */
@@ -408,12 +408,21 @@
   background: var(--night-1);
   animation: ba-fly 250ms var(--ease) forwards;
 }
-.ba-fx.ko { animation-duration: 200ms; }
+.ba-fx.ko { animation-duration: 300ms; }
+/* a drawn card leaves the deck face down and lands on its place in the hand */
+.ba-fx.draw { z-index: 24; animation: ba-drawfly 260ms var(--ease) both; }
+@keyframes ba-drawfly { to { transform: translate(var(--dx), var(--dy)); } }
+/* a played card flies from the hand (or the drop point) and lands in its slot */
+.ba-fx.play { z-index: 24; animation: ba-playfly 240ms var(--ease) both; }
+@keyframes ba-playfly {
+  0% { transform: translate(var(--dx), var(--dy)) scale(1.2); }
+  100% { transform: none; }
+}
 .ba-fx img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ba-fx .gb-back { position: absolute; inset: 0; }
 @keyframes ba-fly {
   0% { transform: translate(0, 0); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)); opacity: 0.15; }
+  100% { transform: translate(var(--dx), var(--dy)); opacity: 1; } /* it arrives: the card is seen landing on its pile */
 }
 /* Event used ("spell cast"): the card rises from the hand to the middle of
    the table, holds a beat big enough to read, then fades into the trash.
@@ -463,8 +472,7 @@
 }
 .ba-charrow {
   display: flex;
-  gap: var(--bagap);
-  justify-content: center; /* 5 slots centred in the half, as on the playmat */
+  justify-content: space-between; /* the 5 slots use the whole width of the half */
   align-items: center;
   height: var(--baslot);
 }
@@ -503,12 +511,12 @@
    2nd character slot, the cost area fills the right side (room for 10 DON!!
    in two cascades). The opponent's half is a 180°-rotated table: the row is
    reversed and the pile columns swap sides. */
-.ba-lsrow { display: flex; gap: var(--bagap); align-items: center; height: var(--baslot); }
-/* the spacer never eats into the cost area's worst case (10 DON!! in two
-   cascades = 480px; leader + stage + gaps = 350px) */
-.ba-lsspacer { flex: 0.25 1 0; min-width: 0; max-width: max(0px, calc(100% - 836px)); }
-.ba-lscenter { display: flex; gap: var(--bagap); flex: 0 0 auto; }
-.ba-half.flip .ba-lsrow { flex-direction: row-reverse; }
+/* same five columns as the Character row, so leader and stage sit under its
+   first two slots and the cost area takes the other three */
+.ba-lsrow { display: grid; grid-template-columns: repeat(5, var(--baslot)); justify-content: space-between; align-items: center; height: var(--baslot); }
+.ba-lscenter { display: contents; }
+.ba-lsrow > .ba-donrow { grid-column: 3 / -1; grid-row: 1; }
+.ba-half.flip .ba-lsrow > .ba-donrow { grid-column: 1 / 4; }
 .ba-half.flip .ba-sidecol:first-child { order: 3; }
 .ba-half.flip .ba-halfmain { order: 2; }
 .ba-half.flip .ba-sidecol:last-child { order: 1; }
@@ -523,20 +531,10 @@
   flex: 1 1 0;
   min-width: 0;
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
   justify-content: flex-start;
   height: var(--baslot);
-  padding: 0 10px;
-}
-.ba-donlabel {
-  flex: 0 0 auto;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font: 800 9px var(--serif);
-  letter-spacing: 0.16em;
-  color: rgba(201, 151, 59, 0.5);
-  pointer-events: none;
 }
 .ba-donstack { position: relative; flex: 0 0 auto; height: var(--badh); }
 .ba-doncell {
@@ -603,18 +601,6 @@
 /* piles — full card size (--bacw); label and count live INSIDE the card box
    so a pile is exactly one card tall */
 .ba-pile { position: relative; display: flex; flex-direction: column; align-items: center; }
-.ba-plabel {
-  position: absolute;
-  top: 3px;
-  left: 5px;
-  z-index: 6;
-  padding: 1px 4px;
-  background: rgba(6, 10, 18, 0.85);
-  font: 800 11px var(--serif);
-  letter-spacing: 0.08em;
-  color: var(--brass-hi);
-  pointer-events: none;
-}
 .ba-pcard { position: relative; width: var(--bacw); }
 .ba-pcard .gb-card { width: 100% !important; cursor: pointer; }
 .ba-pcard .ba-empty {
@@ -652,13 +638,14 @@
    that the row scrolls horizontally (still no overlap). Both hands: the same
    card size as the table and a FIXED height, so an emptying hand never moves
    the field. */
+.ba-hand:not(.small) { --bacw: 130px; --bach: calc(var(--bacw) * 1.4); }
 .ba-hand, .ba-hand.small {
-  flex: 0 0 calc(var(--bach) + 8px); /* fixed: the field gets the rest of the height */
+  flex: 0 0 calc(var(--bach) + 2px); /* fixed: the field gets the rest of the height */
   display: flex;
   gap: 6px;
   justify-content: safe center;
   align-items: center;
-  padding: 6px 6px 2px;
+  padding: 1px 6px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
@@ -666,7 +653,7 @@
 .ba-hand::-webkit-scrollbar { display: none; }
 .ba-hand .gb-card { flex: 0 0 auto; animation: ba-draw 180ms var(--ease) backwards; touch-action: none; /* drag-to-play on touch */ }
 @keyframes ba-toastin { from { transform: translateX(-16px); opacity: 0; } to { transform: none; opacity: 1; } }
-.ba-hand .gb-card:hover { transform: translateY(-4px); }
+.ba-hand .gb-card:hover { filter: brightness(1.12); }
 /* functional micro-motion: a drawn card slides up into the hand, a played
    card settles into its slot (mount-only, transform/opacity, ≤200ms) */
 @keyframes ba-draw { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -675,7 +662,7 @@
 @media (prefers-reduced-motion: reduce) {
   .ba-hand .gb-card, .ba-tslot:has(> .ba-card) { animation: none; }
 }
-.ba-hand.small { flex-basis: calc(var(--bahh) + 8px); }
+.ba-hand.small { flex-basis: calc(var(--bahh) + 2px); }
 .ba-hand.small .gb-card { width: var(--bahw); }
 /* beyond capacity: a declared ordered stack (constant --hstep, DOM order =
    paint order → the last card on top, no z-index games) */
@@ -765,10 +752,10 @@
   transform: translateX(-50%);
   z-index: 7;
   padding: 1px 6px;
-  background: #3b1210;
-  border: 1px solid var(--signal);
-  color: #ffd9c9;
-  font: 800 11.5px var(--mono); /* readable at phone scale (user: "DON x1 should be bigger") */
+  background: #ffd23f;
+  border: 1px solid #3a2200;
+  color: #241400;
+  font: 800 13px var(--mono); /* readable at phone scale (user: "DON x1 should be bigger") */
   white-space: nowrap;
   pointer-events: none;
 }
@@ -784,6 +771,15 @@
   z-index: 20;
   overflow: visible;
 }
+.ba-arrowshape {
+  fill: #e3261c;
+  stroke: #3a0705;
+  stroke-width: 2.5;
+  stroke-linejoin: miter;
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.55));
+  animation: ba-arrowin 150ms var(--ease) backwards; /* shoots out of the attacker */
+}
+@keyframes ba-arrowin { from { transform: scaleX(0); } }
 
 /* ── action bar: the ONE contextual button, between field and hand.
    In flow (not fixed) so it never covers DON cells or counter cards. ── */
@@ -1150,9 +1146,10 @@
 .ba-cardbar .ba-bigact.play { background: var(--signal); color: #fff; }
 .ba-atkhint { color: #ffd23f; font-weight: 700; }
 .ba-actionbar .ba-btn i { font-style: normal; opacity: 0.6; font-size: 11px; }
-.ba-hintbar { gap: 18px; justify-content: center; }
-.ba-hint { font: 500 14px var(--serif); color: var(--ivory); white-space: nowrap; }
-.ba-hint b { font: 700 16px var(--hud); color: #ffd23f; }
+/* the idle hint is a whisper, not a prompt: no box over the middle of the table */
+.ba-actionbar.ba-hintbar { gap: 14px; justify-content: center; background: none !important; border: 0 !important; box-shadow: none !important; opacity: 0.72; } /* !important: the pixel skin boxes every .ba-actionbar */
+.ba-hint { font: 500 12.5px var(--serif); color: var(--ivory); white-space: nowrap; text-shadow: 0 1px 2px #000, 0 0 6px #000; }
+.ba-hint b { font: 700 13.5px var(--hud); color: #ffd23f; }
 .ba-hint i { font-style: normal; color: var(--ivory-muted); font-size: 12.5px; }
 .ba-hint.play b { color: #ff9a8a; }
 .ba-hint.don b { color: #e9e7e1; }
@@ -1218,18 +1215,20 @@
   .ba-battlehud, .ba-battlehud.recap { animation: none; }
 }
 
-/* DON!! given to a card: tucked under it, each a few px further right and
-   down (rotated with the card when it is rested), inside its slot. */
+/* DON!! given to a card: tucked under it and fanned out to its right, so they
+   read at a glance (rotated with the card when it is rested, still to its right). */
 .ba-tslot { position: relative; }
 .ba-tslot > .gb-card { z-index: 1; }
 .ba-donpeek {
   position: absolute; left: 50%; top: 50%; z-index: 0;
   width: var(--bacw); aspect-ratio: 100 / 140; overflow: hidden;
   border-radius: calc(var(--bacw) * 0.04); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-  transform: translate(-50%, -50%) translate(calc(5px + var(--k) * 4px), calc(3px + var(--k) * 3px));
+  --don-x: calc(var(--bacw) * (0.2 + var(--k) * 0.1));
+  transform: translate(-50%, -50%) translate(var(--don-x), 0);
+  outline: 1px solid rgba(0, 0, 0, 0.7);
   pointer-events: none;
 }
-.ba-donpeek.rested { transform: translate(-50%, -50%) rotate(90deg) translate(calc(5px + var(--k) * 4px), calc(3px + var(--k) * 3px)); }
+.ba-donpeek.rested { transform: translate(-50%, -50%) translate(var(--don-x), 0) rotate(90deg); }
 .ba-donpeek > * { width: 100%; height: 100%; }
 .ba-fx.don { z-index: 22; animation-duration: 320ms; }
 
