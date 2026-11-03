@@ -1359,7 +1359,7 @@ function GameScreen() {
         </div>
       );
     }
-    if (restSplit && pc) {
+    if (restSplit && pc?.kind === "chooseOption") {
       const n = donPick.length + picked.length;
       const src = cards.get(findCardId(game, pc.sourceIid) ?? "")?.name;
       return (
