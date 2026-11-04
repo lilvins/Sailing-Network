@@ -18,7 +18,7 @@ export interface DeckChoice {
   leaderId: string;
   /** 50 cardIds (demo decks always; user decks: whatever they saved). */
   main: string[];
-  source: "demo" | "mine" | "meta";
+  source: "demo" | "mine" | "meta" | "preset";
   /** Disclosure when the deck uses sets with no compiled effects yet. */
   warn?: string;
 }
