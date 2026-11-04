@@ -206,3 +206,41 @@ describe("EB05 cards follow the printed text", () => {
     expect(whenAttacking.actions[0]).toMatchObject({ kind: "addToLife", sel: { zone: "hand", upTo: true } });
   });
 });
+
+describe("3-7-6-1: a Character played by an effect into a full area", () => {
+  it("EB05-001 Bonney: trash 1 by rule for each Character she plays", () => {
+    addReal("EB05-001", { cost: 5, power: 7000 });
+    addCard("SMALL", { power: 2000 });
+    addCard("L-NOVA", { category: "Leader", cost: 5, power: 5000, types: ["Supernovas"] });
+    const small = (s: AutoGameState, n: number) => {
+      const p = s.players.alice;
+      return Array.from({ length: n }, (_, i) => {
+        const iid = `alice-small-${i}`;
+        p.instances[iid] = { ...p.instances[p.zones.deck[0]], cardId: "SMALL" };
+        return iid;
+      });
+    };
+    let s = newGame("L-NOVA");
+    const p = s.players.alice;
+    const field = small(s, 5);
+    p.zones.characterArea = field;
+    const bonneyIid = "alice-bonney";
+    p.instances[bonneyIid] = { ...p.instances[p.zones.deck[0]], cardId: "EB05-001" };
+    const inHand = ["alice-hand-a", "alice-hand-b"];
+    for (const iid of inHand) p.instances[iid] = { ...p.instances[p.zones.deck[0]], cardId: "SMALL" };
+    p.zones.hand = [bonneyIid, ...inHand];
+    setDon(s, "alice", 5);
+    s = go(s, { type: "playCard", player: "alice", iid: bonneyIid, replaceIid: field[0] });
+    expect(s.players.alice.zones.characterArea).toHaveLength(5);
+
+    for (const [i, play] of inHand.entries()) {
+      s = pickAll(s, "alice", [play]); // up to 1 from the hand
+      expect(s.pendingChoice).toMatchObject({ kind: "selectTargets", player: "alice", actionKind: "trashTarget", count: 1, upTo: false });
+      s = pickAll(s, "alice", [field[i + 1]]); // which one leaves by rule
+      expect(s.players.alice.zones.characterArea).toContain(play);
+      expect(s.players.alice.zones.trash).toContain(field[i + 1]);
+      expect(s.players.alice.zones.characterArea).toHaveLength(5);
+    }
+    expect(s.pendingChoice).toBeNull();
+  });
+});

@@ -221,6 +221,9 @@ export interface RunningEffect {
   /** Targets chosen by the last selector action — "that card" binding for
    *  `sel.prev` (M3). */
   lastTargets: { owner: PID; iid: Iid }[];
+  /** Characters this effect plays into a full area: each waits for its owner
+   *  to trash 1 Character by rule (3-7-6-1). */
+  awaitingRoom?: { action: Extract<Action, { kind: "playFromZone" }>; target: { owner: PID; iid: Iid } }[];
   /** "Choose a cost" (M5): the number named by declareCost */
   declared?: number;
   /** "If the trashed card has a cost of 6 or more" (M5): the cards the last mill trashed */

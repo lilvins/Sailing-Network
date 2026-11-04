@@ -17,7 +17,7 @@ import type { Action, CostItem, Effect } from "../ir/types";
 import { emit, type GameEvent } from "./events";
 import { EngineError } from "./intents";
 import {
-  actionCandidates, addDeckTopToLife, applyAction, becameRested, canPerformFully, donReturned, emitLife, playLocked, watchers, canBlock, canPayCost, conditionsMet, drawCards, effectDraw, isOnField,
+  actionCandidates, addDeckTopToLife, applyAction, playCharacterFromZone, becameRested, canPerformFully, donReturned, emitLife, playLocked, watchers, canBlock, canPayCost, conditionsMet, drawCards, effectDraw, isOnField,
   matchesFilter, planAction, resolveSelector, type TargetRef,
 } from "./effects";
 import {
@@ -152,6 +152,21 @@ export function pump(db: CardDb, state: AutoGameState, log: GameEvent[]): void {
         if (applyGuarded(db, state, log, r, r.guard.action, r.guard.targets)) return;
         r.actionIndex += 1;
         continue;
+      }
+      // 1b″ — a Character waiting for room in a full area (3-7-6-1)
+      if (r.awaitingRoom?.length) {
+        const next = r.awaitingRoom[0];
+        const area = state.players[next.target.owner].zones.characterArea;
+        if (area.length < 5) {
+          r.awaitingRoom.shift();
+          playCharacterFromZone(db, state, log, r.controller, r, next.action, next.target);
+          continue;
+        }
+        state.pendingChoice = {
+          kind: "selectTargets", player: next.target.owner, sourceIid: r.sourceIid, actionKind: "trashTarget",
+          candidates: area.map((iid) => ({ owner: next.target.owner, iid })), count: 1, upTo: false,
+        };
+        return;
       }
       // 1b — actions (1-3-7 written order)
       if (r.actionIndex >= r.actions.length) {
@@ -1133,6 +1148,14 @@ export function resolveTargets(db: CardDb, state: AutoGameState, log: GameEvent[
     return { owner: c.owner, iid };
   });
   state.pendingChoice = null;
+  if (r.costIndex >= r.costs.length && r.awaitingRoom?.length) {
+    // the pause was the Character to trash by rule for the one being played (3-7-6-1)
+    const next = r.awaitingRoom.shift()!;
+    for (const t of targets) emit(state, log, { type: "characterTrashedByRule", player: t.owner, iid: t.iid });
+    playCharacterFromZone(db, state, log, r.controller, r, next.action, next.target);
+    pump(db, state, log);
+    return;
+  }
   if (r.costIndex < r.costs.length) {
     // the pause was a payment choice (8-3-1)
     const item = r.costs[r.costIndex];

@@ -777,16 +777,7 @@ export function planAction(
     const colors = prev ? db(state.players[prev.owner].instances[prev.iid].cardId).colors : [];
     candidates = candidates.filter((t) => !db(state.players[t.owner].instances[t.iid].cardId).colors.some((c) => colors.includes(c)));
   }
-  // playing by effect needs room in the character area (3-7-6; no replace-by-
-  // rule for effect plays — M1 decision, "to the extent possible" 8-1-2)
-  let count = sel.count;
-  if (action.kind === "playFromZone") {
-    const owner = sel.owner === "opponent" ? opponentOf(state, controller) : controller;
-    const room = 5 - state.players[owner].zones.characterArea.length;
-    // a Stage needs no Character room (M5)
-    if (room <= 0 && !candidates.some((t) => db(state.players[t.owner].instances[t.iid].cardId).category === "Stage")) return { kind: "apply", targets: [] };
-    count = Math.min(count, Math.max(room, candidates.some((t) => db(state.players[t.owner].instances[t.iid].cardId).category === "Stage") ? 1 : 0));
-  }
+  const count = sel.count;
   if (candidates.length === 0) return { kind: "apply", targets: [] };
   const set = setConstraintsOf(sel);
   if (set) {
@@ -798,6 +789,24 @@ export function planAction(
   if (!sel.upTo && candidates.length <= count) return { kind: "apply", targets: candidates }; // 8-4-4-1
   const chooser = sel.chooser === "opponent" ? opponentOf(state, controller) : controller;
   return { kind: "choose", chooser, candidates, count, upTo: sel.upTo ?? false };
+}
+
+/** A Character played by an effect (free: the effect pays no DON!!). */
+export function playCharacterFromZone(
+  db: CardDb, state: AutoGameState, log: GameEvent[], controller: PID, running: RunningEffect,
+  action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef,
+): void {
+  const p = state.players[t.owner];
+  watchers(db, state, "onYouPlayCharacter", t.owner, t.iid, controller, { fromTrash: action.zone === "trash", source: running.sourceIid });
+  const played = {
+    type: "playedFromZone" as const, player: t.owner, iid: t.iid,
+    from: action.zone === "trash" ? "trash" as const : action.zone === "life" ? "life" as const : "hand" as const,
+    rested: (action.rested ?? false) || hasRestriction(db, state, t.owner, p.leaderIid, "charactersPlayedRested"),
+  };
+  if (played.from === "life") emitLife(db, state, log, played); // M5: a revealed Life card is played
+  else emit(state, log, played);
+  // 10-2-6 [On Play] fires for effect plays too
+  enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
 }
 
 /** Apply one action with its resolved targets, emitting events. */
@@ -1171,19 +1180,14 @@ export function applyAction(
           enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
           continue;
         }
-        if (p.zones.characterArea.length >= 5) continue; // 3-7-6, no replace for effect plays
         if (card.category !== "Character" || playLocked(db, state, t.owner, t.iid, action.zone === "hand")) continue;
         if (hasRestriction(db, state, t.owner, t.iid, "cannotBePlayedByEffects")) continue; // M5
-        watchers(db, state, "onYouPlayCharacter", t.owner, t.iid, controller, { fromTrash: action.zone === "trash", source: running.sourceIid });
-        const played = {
-          type: "playedFromZone" as const, player: t.owner, iid: t.iid,
-          from: action.zone === "trash" ? "trash" as const : action.zone === "life" ? "life" as const : "hand" as const,
-          rested: (action.rested ?? false) || hasRestriction(db, state, t.owner, p.leaderIid, "charactersPlayedRested"),
-        };
-        if (played.from === "life") emitLife(db, state, log, played); // M5: a revealed Life card is played
-        else emit(state, log, played);
-        // 10-2-6 [On Play] fires for effect plays too
-        enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
+        // 3-7-6-1: a full area first trashes 1 Character by rule (the pump asks which)
+        if (p.zones.characterArea.length >= 5 || running.awaitingRoom?.length) {
+          (running.awaitingRoom ??= []).push({ action, target: t });
+          continue;
+        }
+        playCharacterFromZone(db, state, log, controller, running, action, t);
       }
       break;
     }
