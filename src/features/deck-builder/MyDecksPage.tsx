@@ -102,7 +102,7 @@ function MyDecks() {
     <div className="sn snp px md">
       <PixelScene kind="ocean" />
       <header className="snp-head has-hero" style={{ "--hero-img": 'url("/assets/bg/sec-decks.png")' }}>
-        <button className="snp-back" title="Back" onClick={() => useUiStore.getState().goBack()}><I n="back" /></button>
+        <button className="snp-back" title="Home" onClick={() => setView("home")}><I n="back" /></button>
         <div className="snp-head-title">
           <h1>My Decks</h1>
           <span className="sn-kicker">{loading ? "loading…" : `${decks.length} saved ${decks.length === 1 ? "deck" : "decks"}`}</span>

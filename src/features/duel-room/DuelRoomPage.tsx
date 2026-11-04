@@ -508,11 +508,7 @@ export function DuelRoomPage() {
                 <span className="dr-spinner" /> Waiting for a duelist. The duel starts when someone joins.
               </div>
             )}
-            {inGame ? (
-              <button className="dr-host-btn" data-act="duel-resume" onClick={() => setView("board-auto")}>
-                <Icon name="duel" size={16} stroke="#fff" /> Back to your duel
-              </button>
-            ) : waiting ? (
+            {waiting ? (
               <button className="dr-host-btn" data-act="duel-cancel" onClick={leaveRoom}>
                 Cancel
               </button>

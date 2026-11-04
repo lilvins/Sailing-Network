@@ -580,6 +580,14 @@ function GameScreen() {
   }, [game, aiActing, aiPaused, aiDelay, aiStep, recap]);
 
   const online = useAutoStore((s) => s.online);
+  // a friend game in progress has no way out but the game itself (a concede or
+  // its end): no Back, no Home, no other page. A crash or reload comes back to
+  // it (room.ts resumeRoom), nothing else leaves it.
+  const inOnlineGame = !!online && game.phase !== "over";
+  useEffect(() => {
+    useUiStore.getState().lockView(inOnlineGame ? "board-auto" : null);
+    return () => useUiStore.getState().lockView(null);
+  }, [inOnlineGame]);
   // a friend game: each player sits at the bottom of their own screen
   const BOTTOM: PID = online?.mySeat ?? SEAT_A;
   const TOP: PID = BOTTOM === SEAT_A ? SEAT_B : SEAT_A;
@@ -2751,7 +2759,7 @@ function GameScreen() {
         <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
           Messages{unreadLetters > 0 ? ` (${unreadLetters})` : ""}
         </button>
-        <button className="ba-btn ghost" data-act="exit" onClick={goBack}>← Back</button>
+        {!inOnlineGame && <button className="ba-btn ghost" data-act="exit" onClick={goBack}>← Back</button>}
       </div>
 
       <div className="ba-centercol">

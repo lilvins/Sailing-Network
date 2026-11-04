@@ -34,6 +34,10 @@ interface UiState {
   /** The pages visited before this one (what the Back button returns to). */
   navStack: View[];
   goBack: () => void;
+  /** The one page the player may be on (a friend game in progress keeps them at
+   *  the table): every other navigation is ignored until it is released. */
+  lockedView: View | null;
+  lockView: (view: View | null) => void;
   /** A decklist (cardId -> count) handed off to the Deck Builder via "Import". */
   pendingImport: Record<string, number> | null;
   setPendingImport: (deck: Record<string, number> | null) => void;
@@ -57,18 +61,31 @@ interface UiState {
 const pushed = (s: { view: View; navStack: View[] }, next: View): View[] =>
   s.view === next || s.view === "login" ? s.navStack : [...s.navStack, s.view].slice(-30);
 
+/** Leaving a locked page is refused; the login screen (a lost session) is not a leave. */
+const locked = (s: { lockedView: View | null }, next: View): boolean =>
+  s.lockedView !== null && next !== s.lockedView && next !== "login";
+
 export const useUiStore = create<UiState>((set) => ({
   view: "login", // the landing/login is the entry screen
 
-  setView: (view) => set((s) => (view === "messages" ? { messagesOpen: true } : { view, navStack: pushed(s, view) })),
+  setView: (view) =>
+    set((s) => (view === "messages" ? { messagesOpen: true } : locked(s, view) ? s : { view, navStack: pushed(s, view) })),
   navStack: [],
-  goBack: () => set((s) => ({ view: s.navStack[s.navStack.length - 1] ?? "home", navStack: s.navStack.slice(0, -1) })),
+  goBack: () =>
+    set((s) => {
+      const back = s.navStack[s.navStack.length - 1] ?? "home";
+      return locked(s, back) ? s : { view: back, navStack: s.navStack.slice(0, -1) };
+    }),
+  lockedView: null,
+  lockView: (lockedView) => set({ lockedView }),
   pendingImport: null,
   setPendingImport: (pendingImport) => set({ pendingImport }),
   editingDeckId: null,
-  openDeckBuilder: (editingDeckId) => set((s) => ({ editingDeckId, view: "deck-constructor", navStack: pushed(s, "deck-constructor") })),
+  openDeckBuilder: (editingDeckId) =>
+    set((s) => (locked(s, "deck-constructor") ? s : { editingDeckId, view: "deck-constructor", navStack: pushed(s, "deck-constructor") })),
   viewingUsername: null,
-  openProfile: (viewingUsername) => set((s) => ({ viewingUsername, view: "profile-viewer", navStack: pushed(s, "profile-viewer") })),
+  openProfile: (viewingUsername) =>
+    set((s) => (locked(s, "profile-viewer") ? s : { viewingUsername, view: "profile-viewer", navStack: pushed(s, "profile-viewer") })),
   openThreadWith: null,
   openMessagesWith: (openThreadWith) => set({ openThreadWith, messagesOpen: true }),
   messagesOpen: false,
