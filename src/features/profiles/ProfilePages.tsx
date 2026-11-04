@@ -71,13 +71,12 @@ export function Header({
   /** smaller photographic accent (Messages/Friends) */
   heroSlim?: boolean;
 }) {
-  const setView = useUiStore((s) => s.setView);
   return (
     <header
       className={"snp-head" + (hero ? " has-hero" : "") + (heroSlim ? " slim" : "")}
       style={hero ? ({ ["--hero-img" as string]: `url("${hero}")` } as CSSProperties) : undefined}
     >
-      <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}>
+      <button className="snp-back" title="Back" onClick={() => useUiStore.getState().goBack()}>
         <Ico n="back" />
       </button>
       <div className="snp-head-title">

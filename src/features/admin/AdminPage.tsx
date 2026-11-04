@@ -14,7 +14,6 @@ const fmtDate = (ms: number) =>
 const BackIcon = () => <PixelIcon name="back" size={24} />;
 
 export function AdminPage() {
-  const setView = useUiStore((s) => s.setView);
   const me = useAuthStore((s) => s.user);
 
   const [users, setUsers] = useState<AuthUser[]>([]);
@@ -58,7 +57,7 @@ export function AdminPage() {
     <div className="sn snp px adm">
       <PixelScene kind="night" />
       <header className="snp-head">
-        <button className="snp-back" title="Back to Main Menu" onClick={() => setView("home")}>
+        <button className="snp-back" title="Back" onClick={() => useUiStore.getState().goBack()}>
           <BackIcon />
         </button>
         <div className="snp-head-title">

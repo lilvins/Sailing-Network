@@ -31,6 +31,9 @@ export type View =
 interface UiState {
   view: View;
   setView: (view: View) => void;
+  /** The pages visited before this one (what the Back button returns to). */
+  navStack: View[];
+  goBack: () => void;
   /** A decklist (cardId -> count) handed off to the Deck Builder via "Import". */
   pendingImport: Record<string, number> | null;
   setPendingImport: (deck: Record<string, number> | null) => void;
@@ -51,16 +54,21 @@ interface UiState {
   tableRotated: boolean;
 }
 
+const pushed = (s: { view: View; navStack: View[] }, next: View): View[] =>
+  s.view === next || s.view === "login" ? s.navStack : [...s.navStack, s.view].slice(-30);
+
 export const useUiStore = create<UiState>((set) => ({
   view: "login", // the landing/login is the entry screen
 
-  setView: (view) => set(view === "messages" ? { messagesOpen: true } : { view }),
+  setView: (view) => set((s) => (view === "messages" ? { messagesOpen: true } : { view, navStack: pushed(s, view) })),
+  navStack: [],
+  goBack: () => set((s) => ({ view: s.navStack[s.navStack.length - 1] ?? "home", navStack: s.navStack.slice(0, -1) })),
   pendingImport: null,
   setPendingImport: (pendingImport) => set({ pendingImport }),
   editingDeckId: null,
-  openDeckBuilder: (editingDeckId) => set({ editingDeckId, view: "deck-constructor" }),
+  openDeckBuilder: (editingDeckId) => set((s) => ({ editingDeckId, view: "deck-constructor", navStack: pushed(s, "deck-constructor") })),
   viewingUsername: null,
-  openProfile: (viewingUsername) => set({ viewingUsername, view: "profile-viewer" }),
+  openProfile: (viewingUsername) => set((s) => ({ viewingUsername, view: "profile-viewer", navStack: pushed(s, "profile-viewer") })),
   openThreadWith: null,
   openMessagesWith: (openThreadWith) => set({ openThreadWith, messagesOpen: true }),
   messagesOpen: false,
