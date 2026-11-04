@@ -28,7 +28,7 @@ const hostSchema = z.object({
   note: z.string().trim().max(80).default(""),
   password: z.string().max(60).default(""),
 });
-const undoSchema = z.object({ action: z.enum(["request", "accept", "decline"]) });
+const undoSchema = z.object({ action: z.enum(["request", "accept", "decline"]), toLength: z.number().int().min(0).optional() });
 const chatSchema = z.object({ text: z.string().trim().min(1).max(200), at: z.number().int().min(0) });
 
 const rooms = new Map();
@@ -157,8 +157,9 @@ export function registerRooms(app, requireUser) {
     return reply.send({ total: room.moves.length });
   });
 
-  // a take-back: one player asks, the other accepts; that player's last move and
-  // everything after it go
+  // a take-back: one player asks, the other accepts and says how far back the
+  // moves go (src/autosim/engine/takeBack.ts decides, so the whole action goes);
+  // without that, the requester's last move and everything after it
   app.post("/api/rooms/:code/undo", async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
@@ -176,7 +177,9 @@ export function registerRooms(app, requireUser) {
       room.undoBy = null;
     } else {
       if (room.undoBy === null || room.undoBy === seat) return reply.code(409).send({ error: "Only your opponent can accept" });
-      room.moves.length = room.moves.findLastIndex((m) => m.player === SEATS[room.undoBy]);
+      const last = room.moves.findLastIndex((m) => m.player === SEATS[room.undoBy]);
+      const { toLength } = parsed.data;
+      room.moves.length = toLength !== undefined && toLength <= last ? toLength : last;
       room.undoBy = null;
       room.epoch += 1;
     }

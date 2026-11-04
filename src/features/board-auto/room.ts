@@ -7,6 +7,7 @@
 import { useUiStore } from "../../app/uiStore";
 import { applyIntent, createGame } from "../../autosim/engine/engine";
 import type { PlayerIntent } from "../../autosim/engine/intents";
+import { takeBackStart } from "../../autosim/engine/takeBack";
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, PID } from "../../autosim/engine/state";
 import { getCardDb, setOnlineHooks, useAutoStore, type RoomChatLine, type SeatSetup } from "./autoStore";
@@ -86,7 +87,8 @@ function startPlaying(room: RoomInfo): void {
   useAutoStore.getState().loadOnlineGame({ seats, game, events, online: {
     code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch,
   } });
-  useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
+  const auto = takeBack && takeBack.code === room.code && room.undoBy === takeBack.by; // a step of a take-back in progress
+  useAutoStore.setState({ undoRequest: !auto && room.undoBy ? { by: room.undoBy } : null });
   remember(game.phase === "over" ? null : room.code);
 }
 
@@ -103,7 +105,9 @@ function applyRemote(room: RoomInfo): void {
   const store = useAutoStore.getState();
   const { online, game, events, undoRequest } = store;
   if (!online || !game) return;
-  if ((undoRequest?.by ?? null) !== room.undoBy) useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
+  // a take-back being completed step by step: no panel for each step
+  const auto = takeBack && takeBack.code === online.code && room.undoBy === takeBack.by;
+  if (!auto && (undoRequest?.by ?? null) !== room.undoBy) useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
   const db = getCardDb()!;
   let g = game;
   let ev = events;
@@ -258,12 +262,63 @@ setOnlineHooks({
     });
   },
   leave: leaveRoom,
-  undo: (code, action) => {
-    void call(`/api/rooms/${code}/undo`, { method: "POST", body: { action } }).then((r) => {
-      if (r.status >= 400) {
-        useAutoStore.setState({ undoRequest: null });
-        useAutoStore.getState().explain(r.error ?? "Could not take the move back.");
-      }
-    });
-  },
+  undo: (code, action) => void runTakeBack(code, action),
 });
+
+/** A take-back in progress, to before the whole action (takeBack.ts). A server
+ *  that removes one move per accept is driven step by step from here: the
+ *  requester asks again and the opponent's browser accepts again, with no new
+ *  panel, until the moves are down to `toLength`. */
+let takeBack: { code: string; by: PID; toLength: number; role: "requester" | "accepter"; epoch: number } | null = null;
+const TAKE_BACK_POLL_MS = 600;
+const TAKE_BACK_MAX_STEPS = 40;
+
+async function postUndo(code: string, body: Record<string, unknown>): Promise<boolean> {
+  const r = await call(`/api/rooms/${code}/undo`, { method: "POST", body }).catch(() => null);
+  // an accept the other browser (or a click on a panel) already made: not a failure
+  if (r && r.status === 409 && body.action === "accept") return true;
+  if (!r || r.status >= 400) {
+    takeBack = null;
+    useAutoStore.setState({ undoRequest: null });
+    useAutoStore.getState().explain(r?.error ?? "Could not take the move back.");
+    return false;
+  }
+  return true;
+}
+
+async function runTakeBack(code: string, action: "request" | "accept" | "decline"): Promise<void> {
+  if (action === "decline") {
+    takeBack = null;
+    await postUndo(code, { action });
+    return;
+  }
+  const { room } = await call(`/api/rooms/${code}?after=0`);
+  if (!room) return;
+  const by = action === "request" ? room.mySeat : room.undoBy;
+  const toLength = by ? takeBackStart(room.moves, by) : -1;
+  if (!by || toLength < 0) {
+    useAutoStore.setState({ undoRequest: null });
+    useAutoStore.getState().explain("No move to take back.");
+    return;
+  }
+  takeBack = { code, by, toLength, role: action === "request" ? "requester" : "accepter", epoch: room.epoch };
+  if (!(await postUndo(code, action === "accept" ? { action, toLength } : { action }))) return;
+  for (let step = 0; step < TAKE_BACK_MAX_STEPS && takeBack?.code === code; step++) {
+    await new Promise((r) => setTimeout(r, TAKE_BACK_POLL_MS));
+    const now = (await call(`/api/rooms/${code}`)).room;
+    if (!now || takeBack?.code !== code) return;
+    if (now.total <= takeBack.toLength) break; // done
+    if (takeBack.role === "requester") {
+      if (now.undoBy === by) continue; // waiting for the opponent
+      if (now.epoch === takeBack.epoch) break; // declined
+      takeBack.epoch = now.epoch;
+      if (!(await postUndo(code, { action: "request" }))) return; // the next step
+      useAutoStore.setState({ undoRequest: { by } });
+    } else if (now.undoBy === by && now.epoch !== takeBack.epoch) {
+      takeBack.epoch = now.epoch;
+      if (!(await postUndo(code, { action: "accept", toLength: takeBack.toLength }))) return;
+    }
+  }
+  takeBack = null;
+  useAutoStore.setState({ undoRequest: null });
+}
