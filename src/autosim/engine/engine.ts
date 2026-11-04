@@ -16,7 +16,7 @@ import {
   startDamageStep, startEndPhase, startOnPlayEffects, startTurn,
   useCounterEventCard,
 } from "./battle";
-import { canPayCost, conditionsMet, playLocked, satisfiesSet, watchers } from "./effects";
+import { canPayCost, canPayEventMainCost, conditionsMet, playLocked, satisfiesSet, watchers } from "./effects";
 import { emit, type GameEvent } from "./events";
 import { EngineError, type PlayerIntent } from "./intents";
 import {
@@ -271,7 +271,7 @@ export function applyIntentInPlace(db: CardDb, state: AutoGameState, intent: Pla
           if (!conditionsMet(db, state, intent.player, intent.iid, fx.conditions)) {
             throw new EngineError("[Main] effect conditions not met (8-4-1-1)");
           }
-          if (!canPayCost(db, state, intent.player, intent.iid, fx.cost)) {
+          if (!canPayEventMainCost(db, state, intent.player, intent.iid, cost, fx.cost)) {
             throw new EngineError("cannot pay the [Main] effect's activation cost (8-3-1-3)");
           }
         }

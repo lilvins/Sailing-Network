@@ -5,7 +5,7 @@
  */
 import type { AutoGameState, CardDb, Iid, PID } from "./state";
 import { attackTargetAllowed, attackTax, baseCostLocked, effectiveCost, effectiveCounter, hasRestriction, isNegated, isPlayersFirstTurn, keywordsOf, opponentOf } from "./state";
-import { canPayCost, conditionsMet, playLocked } from "./effects";
+import { canPayCost, canPayEventMainCost, conditionsMet, playLocked } from "./effects";
 
 export interface LegalMoves {
   /** Who must act right now (pending choice player, else turn player). */
@@ -79,7 +79,7 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
         const main = effects.find((fx) => fx.timing === "main");
         return !!main
           && conditionsMet(db, state, player, iid, main.conditions)
-          && canPayCost(db, state, player, iid, main.cost);
+          && canPayEventMainCost(db, state, player, iid, effectiveCost(db, state, player, iid), main.cost);
       }
       return true;
     })

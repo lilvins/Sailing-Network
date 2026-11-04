@@ -480,6 +480,21 @@ export function quantity(state: AutoGameState, controller: PID, q: Quantity, db:
 
 // ─── activation costs (8-3-1) — payable check ────────────────────────────────
 
+/** Whether an Event's [Main] cost can be paid once the Event itself is played:
+ *  its own DON!! are rested and it has left the hand (2-7-3 / 8-4-2), so
+ *  neither can pay the [Main] cost too. */
+export function canPayEventMainCost(
+  db: CardDb, state: AutoGameState, player: PID, eventIid: Iid, cardCost: number, cost: CostItem[] | undefined,
+): boolean {
+  const p = state.players[player];
+  const played: AutoGameState = { ...state, players: { ...state.players, [player]: {
+    ...p,
+    don: { ...p.don, active: p.don.active - cardCost, rested: p.don.rested + cardCost },
+    zones: { ...p.zones, hand: p.zones.hand.filter((iid) => iid !== eventIid) },
+  } } };
+  return canPayCost(db, played, player, eventIid, cost);
+}
+
 /** Whether the FULL activation cost can be paid right now (8-3-1-3). Payment
  *  itself happens item by item in the pump (choices may pause it). */
 export function canPayCost(
