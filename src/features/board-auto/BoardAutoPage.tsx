@@ -2412,11 +2412,16 @@ function GameScreen() {
     ) : (
       <div className="ba-overlay">
         <div className="ba-panel ba-ov ba-peek">
-          <span className="ba-ovtag">{seatName(pc.player)} — look at the top {pc.cards.length}</span>
-          <p className="ba-ovtext">
-            Tap up to <b>{pc.takeCount}</b> highlighted card{pc.takeCount === 1 ? "" : "s"} to {modeLabel}
-            {pc.eligible.length === 0 ? " (nothing matches)" : ""}. Then: {restLabel[pc.rest]}.
-          </p>
+          <span className="ba-ovtag">{seatName(pc.player)} — {pc.cards.length === 1 ? "top card of the deck" : `look at the top ${pc.cards.length}`}</span>
+          {pc.takeCount === 0 ? (
+            // "reveal the top card": nothing to take, only to look and go on
+            <p className="ba-ovtext">{pc.cards.length === 1 ? "It stays on top of the deck." : `Then: ${restLabel[pc.rest]}.`}</p>
+          ) : (
+            <p className="ba-ovtext">
+              Tap up to <b>{pc.takeCount}</b> highlighted card{pc.takeCount === 1 ? "" : "s"} to {modeLabel}
+              {pc.eligible.length === 0 ? " (nothing matches)" : ""}. Then: {restLabel[pc.rest]}.
+            </p>
+          )}
           <div className="ba-peekgrid">
             {pc.cards.map((iid, i) => {
               const c = cardOf(iid);
@@ -2444,7 +2449,7 @@ function GameScreen() {
           </div>
           <div className="ba-ovbtns">
             <button className="ba-btn primary big" data-act="peek-confirm" onClick={afterTake}>
-              {peekTake.length ? `Take ${peekTake.length}` : "Take none"}{ordered && remaining.length > 1 ? " →" : ""}
+              {peekTake.length ? `Take ${peekTake.length}` : pc.eligible.length === 0 ? "Continue" : "Take none"}{ordered && remaining.length > 1 ? " →" : ""}
             </button>
           </div>
         </div>
