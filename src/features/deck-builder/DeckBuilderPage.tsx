@@ -12,6 +12,7 @@ import { useUiStore } from "../../app/uiStore";
 import { loadCards } from "../cards/cardsDb";
 import { api } from "../../lib/api";
 import { Dock } from "../profiles/ProfilePages";
+import { parseDeckText } from "./deckText";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./deckbuilder.css";
@@ -216,7 +217,13 @@ function DeckBuilder() {
   const [q, setQ] = useState("");
   const [colFilter, setColFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [archetype, setArchetype] = useState("");       // card type text, e.g. "rocks pirates"
   const [sort, setSort] = useState("Cost ↑");
+
+  // import a decklist (modal)
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importErrors, setImportErrors] = useState([]);
 
   // advanced filters (modal)
   const [advOpen, setAdvOpen] = useState(false);
@@ -274,6 +281,20 @@ function DeckBuilder() {
     setSel(card);
   };
   const clearDeck = () => { setDeck({}); };
+
+  // Replace the deck on screen with a pasted list; nothing is saved until Save.
+  const importDeck = () => {
+    const { leaderId, cards, errors } = parseDeckText(importText, (id) => cardById[id]);
+    setImportErrors(errors);
+    if (errors.length) return;
+    const newLeader = cardById[leaderId];
+    setLeader(newLeader);
+    setSel(newLeader);
+    setDeck(cards);
+    setImportOpen(false);
+    setImportText("");
+    flash("Imported " + Object.values(cards).reduce((a, b) => a + b, 0) + " / " + MAIN_MAX + " cards — press Save to keep them");
+  };
 
   // Persist to the backend: PATCH if this deck already exists, else POST a new one.
   const saveDeck = async () => {
@@ -339,11 +360,14 @@ function DeckBuilder() {
   }, [deckCards]);
 
   // right pane list
+  const archetypes = useMemo(() => [...new Set(pool.flatMap((c) => c.tags))].sort((a, b) => a.localeCompare(b)), [pool]);
   const list = useMemo(() => {
+    const arch = archetype.trim().toLowerCase();
     let l = pool.filter((c) => {
       if (q && !c.name.toLowerCase().includes(q.toLowerCase())) return false;
       if (colFilter !== "All" && !c.cols.includes(colFilter)) return false;
       if (typeFilter !== "All" && TYPE_LABEL[c.t] !== typeFilter) return false;
+      if (arch && !c.tags.some((t) => t.toLowerCase().includes(arch))) return false;
       if (counterF !== "Any") {
         const ck = counterKind(c);
         if (counterF === "has" && (ck === "none")) return false;
@@ -361,7 +385,7 @@ function DeckBuilder() {
     else if (sort.startsWith("Color")) l = [...l].sort((a,b)=>a.col.localeCompare(b.col)*dir || a.cost-b.cost);
     else l = [...l].sort((a,b)=>a.name.localeCompare(b.name)*dir);
     return l;
-  }, [pool, q, colFilter, typeFilter, sort, counterF, kwF]);
+  }, [pool, q, colFilter, typeFilter, archetype, sort, counterF, kwF]);
 
   const shown = useMemo(() => list.slice(0, RENDER_LIMIT), [list]);
 
@@ -393,6 +417,9 @@ function DeckBuilder() {
         </div>
         <div className="snp-head-r db-head-r">
           <span className={"db-deckstate" + (deckValid ? " ok" : "")}>{deckValid ? "Deck legal" : (leader ? mainCount + " / 50 cards" : "Pick a leader")}</span>
+          <button className="db-import" data-act="deck-import" onClick={() => { setImportErrors([]); setImportOpen(true); }}>
+            <I n="copy" size={16} /> Import
+          </button>
           <button className="db-save" disabled={!leader || mainCount === 0 || saving} onClick={saveDeck}>
             <I n="save" size={16} /> {saving ? "Saving…" : currentDeckId ? "Save" : "Save Deck"}
           </button>
@@ -482,6 +509,15 @@ function DeckBuilder() {
             <I n="search" size={16} />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by card name…" />
           </div>
+          <div className="db-search db-archetype">
+            <I n="friends" size={16} />
+            <input value={archetype} list="db-archetypes" data-archetype-filter aria-label="Filter by archetype"
+              onChange={(e) => setArchetype(e.target.value)} placeholder="Filter by archetype, e.g. Rocks Pirates…" />
+            <datalist id="db-archetypes">
+              {archetypes.map((t) => <option key={t} value={t} />)}
+            </datalist>
+            {archetype && <button className="db-archetype-x" title="Clear archetype" onClick={() => setArchetype("")}>×</button>}
+          </div>
           <div className="db-filters">
             <div className="db-colfilter">
               <button className={"db-colpill all" + (colFilter === "All" ? " on" : "")} onClick={() => setColFilter("All")}>All</button>
@@ -542,6 +578,32 @@ function DeckBuilder() {
 
       {/* toast */}
       {toast && <div className="db-toast">{toast}</div>}
+
+      {/* import a decklist */}
+      {importOpen &&
+        <div className="db-modal-overlay" onClick={() => setImportOpen(false)}>
+          <div className="db-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="db-modal-head">
+              <div className="db-modal-title"><I n="copy" size={18} /> Import Decklist</div>
+              <button className="db-modal-x" onClick={() => setImportOpen(false)} title="Close">×</button>
+            </div>
+            <div className="db-modal-body">
+              <div className="db-mod-section">
+                <div className="db-mod-label">One card per line <small>(replaces the deck on screen)</small></div>
+                <textarea className="db-import-text" data-import-text autoFocus rows={12} spellCheck={false} value={importText}
+                  onChange={(e) => setImportText(e.target.value)} placeholder={"1xOP13-001\n4xOP13-016\n3xST30-004"} />
+                {importErrors.length > 0 &&
+                  <ul className="db-import-errors" role="alert">
+                    {importErrors.map((e) => <li key={e}>{e}</li>)}
+                  </ul>}
+              </div>
+            </div>
+            <div className="db-modal-foot">
+              <span className="db-mod-result"></span>
+              <button className="db-mod-apply" data-act="deck-import-apply" disabled={!importText.trim()} onClick={importDeck}>Import</button>
+            </div>
+          </div>
+        </div>}
 
       {/* advanced filters modal */}
       {advOpen &&
