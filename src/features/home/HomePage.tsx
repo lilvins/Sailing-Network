@@ -273,6 +273,9 @@ export function HomePage() {
               <span className="hu-me-sub">@{user?.username || ""}</span>
             </span>
           </button>
+          <button className="snp-iconbtn hu-logout" data-act="logout" title="Log out" onClick={() => void logout()}>
+            <PixelIcon name="exit" size={16} /> Logout
+          </button>
         </div>
       </header>
 

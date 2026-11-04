@@ -384,3 +384,4 @@
 .hu-credits a,.hu-credits-link{color:var(--txt);text-decoration:underline dotted;text-underline-offset:2px;}
 .hu-credits-link{background:none;border:0;font:inherit;cursor:pointer;padding:0;}
 .hu-credits a:hover,.hu-credits-link:hover{color:#fff;}
+.hu-head-r .hu-logout{width:auto;padding:0 12px;gap:8px;font:700 13px var(--display);}
