@@ -32,12 +32,34 @@ export interface SeatSetup {
   pid: PID;
   name: string;
   deck: DeckChoice;
-  /** Who plays this seat: a person at this screen, or the Pro bot. */
-  controller?: "human" | "ai";
+  /** Who plays this seat: a person at this screen, the Pro bot, or a friend in another browser. */
+  controller?: "human" | "ai" | "remote";
 }
 
 export const isAiSeat = (seats: SeatSetup[] | null, pid: PID): boolean =>
   !!seats?.some((s) => s.pid === pid && s.controller === "ai");
+
+/** Nobody at this screen plays this seat: the AI or a friend does. */
+export const notHere = (seats: SeatSetup[] | null, pid: PID): boolean =>
+  !!seats?.some((s) => s.pid === pid && (s.controller === "ai" || s.controller === "remote"));
+
+export interface RoomChatLine { seat: PID; text: string; at: number }
+
+/** The friend game this browser is in (room.ts keeps it in step with the server). */
+export interface OnlineState {
+  code: string;
+  mySeat: PID;
+  status: "waiting" | "playing";
+  /** How many of the room's moves are already in `game`. */
+  applied: number;
+  chat: RoomChatLine[];
+}
+
+/** Set by room.ts: the store only knows that moves have to go somewhere. */
+let onlineHooks: { send: (code: string, seq: number, intent: PlayerIntent) => void; leave: () => void } | null = null;
+export function setOnlineHooks(hooks: NonNullable<typeof onlineHooks>): void {
+  onlineHooks = hooks;
+}
 
 /** One move as it was before it was played — what a take-back restores. */
 export interface HistoryEntry {
@@ -122,8 +144,10 @@ interface AutoStoreState {
   undoRequest: { by: PID } | null;
   /** Coach mode: while paused, Step first shows the move the AI is about to make (and why), the next Step plays it. */
   aiPlan: AiPlan | null;
+  online: OnlineState | null;
 
   init: () => Promise<void>;
+  loadOnlineGame: (g: { seats: [SeatSetup, SeatSetup]; game: AutoGameState; events: GameEvent[]; online: OnlineState }) => void;
   /** pick → roll */
   confirmSeats: (seats: [SeatSetup, SeatSetup]) => void;
   doRoll: () => void;
@@ -164,6 +188,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   history: [],
   undoRequest: null,
   aiPlan: null,
+  online: null,
+
+  loadOnlineGame: ({ seats, game, events, online }) => {
+    agents = {};
+    set({ stage: "play", seats, game, events, online, banner: null, aiPaused: false, history: [], undoRequest: null, aiPlan: null });
+  },
 
   init: async () => {
     if (cardsById) {
@@ -227,8 +257,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   dispatch: (intent) => {
-    const { game, events, seats } = get();
+    const { game, events, seats, online } = get();
     if (!game || !cardDb) return false;
+    if (online && intent.player !== online.mySeat) {
+      set({ banner: { id: bannerSeq++, text: "It's your friend's move.", hint: "Wait for them to answer.", tone: "info" } });
+      return false;
+    }
     if (intent.type !== "concede" && game.phase !== "over" && isAiSeat(seats, actorOf(cardDb, game))) {
       set({ banner: { id: bannerSeq++, text: "The AI is playing this move.", hint: "Wait for it — or concede for that seat.", tone: "info" } });
       return false;
@@ -237,6 +271,10 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
       const r = applyIntent(cardDb, game, intent);
       const actor = actorOf(cardDb, game);
       set({ game: r.state, events: [...events, ...r.events], undoRequest: null, aiPlan: null, history: remember(get().history, { game, eventsLen: events.length, actor }) });
+      if (online) {
+        set({ online: { ...online, applied: online.applied + 1 } });
+        onlineHooks?.send(online.code, online.applied, intent);
+      }
       return true;
     } catch (e) {
       if (e instanceof EngineError) {
@@ -296,7 +334,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     });
   },
 
-  newGame: (aiOpponent) => set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }),
+  newGame: (aiOpponent) => { onlineHooks?.leave(); set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }); },
   setAiPaused: (aiPaused) => set({ aiPaused }),
   setAiDelay: (aiDelay) => set({ aiDelay }),
   setConfirmPicks: (confirmPicks) => {
@@ -308,7 +346,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   dismissBanner: () => set({ banner: null }),
 
   rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null, history: [], undoRequest: null, aiPlan: null }),
-  reset: () => set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null, history: [], undoRequest: null, aiPlan: null }),
+  reset: () => { onlineHooks?.leave(); set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null, history: [], undoRequest: null, aiPlan: null }); },
 }));
 
 const remember = (history: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] =>
@@ -334,6 +372,7 @@ function makeAgents(seats: SeatSetup[], seed: string): Record<PID, ProAgent> {
 // keep the game in progress across a page reload (savedGame.ts); a finished or abandoned one is dropped
 useAutoStore.subscribe((s, prev) => {
   if (s.game === prev.game && s.stage === prev.stage) return;
+  if (s.online) return; // a friend game comes back from the server (room.ts)
   if (s.stage === "play" && s.game && s.seats && s.game.phase !== "over") saveGame({ seats: s.seats, game: s.game, events: s.events, aiDelay: s.aiDelay });
   else clearGame();
 });

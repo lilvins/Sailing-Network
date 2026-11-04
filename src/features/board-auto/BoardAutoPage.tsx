@@ -9,13 +9,15 @@ import { fitChoice } from "../../autosim/engine/effects";
 import { effectivePower, keywordsOf, type AutoGameState, type Iid, type PID } from "../../autosim/engine/state";
 import type { Keyword } from "../../autosim/ir/types";
 import type { PlayerIntent } from "../../autosim/engine/intents";
-import { getCardDb, getCardsById, isAiSeat, useAutoStore, type SeatSetup } from "./autoStore";
+import { getCardDb, getCardsById, notHere, useAutoStore, type SeatSetup } from "./autoStore";
 import { automationInfo } from "./compile";
 import { restSplitOf } from "./restSplit";
 import { LAYOUT, layoutTuning, layoutVars, useLayoutVersion } from "./layout";
 import { LayoutTuner } from "./LayoutTuner";
 import { selectUnread, useInboxStore } from "../social/inboxStore";
-import { buildDemoDecks, metaDeckChoices, userDeckChoices, type DeckChoice, type MetaDeckFile } from "./decks";
+import type { DeckChoice } from "./decks";
+import { hasSavedRoom, resumeRoom, sendRoomChat } from "./room";
+import { useDeckOptions } from "./useDeckOptions";
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
 import "../home/home.css"; // .nsea layers (shared with the Home hero)
@@ -217,6 +219,9 @@ export function BoardAutoPage() {
   useEffect(() => {
     void init();
   }, [init]);
+  useEffect(() => {
+    if (catalogReady && hasSavedRoom()) void resumeRoom();
+  }, [catalogReady]);
 
   if (catalogError) {
     return (
@@ -266,34 +271,16 @@ function Banner() {
 function PickScreen() {
   const confirmSeats = useAutoStore((s) => s.confirmSeats);
   const user = useAuthStore((s) => s.user);
-  const setView = useUiStore((s) => s.setView);
+  const goBack = useUiStore((s) => s.goBack);
   const cards = getCardsById()!;
 
-  const demoDecks = useMemo(() => buildDemoDecks(cards), [cards]);
-  const [mine, setMine] = useState<DeckChoice[]>([]);
-  const [meta, setMeta] = useState<DeckChoice[]>([]);
-  useEffect(() => {
-    let alive = true;
-    fetch("/data/meta-decks.json")
-      .then((r) => (r.ok ? (r.json() as Promise<MetaDeckFile>) : Promise.reject(new Error(String(r.status)))))
-      .then((file) => { if (alive) setMeta(metaDeckChoices(file)); })
-      .catch(() => {});
-    api
-      .myDecks()
-      .then((r) => {
-        if (alive) setMine(userDeckChoices(r.decks));
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const { options, meta } = useDeckOptions();
+  const setView = useUiStore((s) => s.setView);
 
   const aiOpponent = useAutoStore((s) => s.aiOpponent);
   const [names, setNames] = useState<[string, string]>([user?.username ?? "Player 1", aiOpponent ? AI_NAMES[1] : "Player 2"]);
   const [sel, setSel] = useState<[DeckChoice | null, DeckChoice | null]>([null, null]);
   const [ctrl, setCtrl] = useState<[Controller, Controller]>(["human", aiOpponent ? "ai" : "human"]);
-  const options = [...meta, ...demoDecks, ...mine];
 
   const setController = (idx: 0 | 1, c: Controller) => {
     const nextCtrl: [Controller, Controller] = [...ctrl];
@@ -396,7 +383,7 @@ function PickScreen() {
       <div className="ba-ocean" aria-hidden="true"><i className="back" /><i className="clouds" /><i className="waves" /></div>
       <Banner />
       <header className="ba-setuphead">
-        <button className="ba-btn" data-act="home" onClick={() => setView("home")}>← Home</button>
+        <button className="ba-btn" data-act="home" onClick={goBack}>← Back</button>
         <h1>PLAY AUTO — FULL RULES</h1>
         <span className="ba-sub">Hotseat or against the AI · every rule enforced by the AUTOSIM engine</span>
       </header>
@@ -405,6 +392,9 @@ function PickScreen() {
         {seatCol(1)}
       </div>
       <footer className="ba-setupfoot">
+        <button className="ba-btn big" data-act="duel-room" onClick={() => setView("duel-room")}>
+          Duel Room
+        </button>
         <button
           className="ba-btn big"
           data-act="watch-ai"
@@ -527,6 +517,7 @@ function GameScreen() {
   const rematch = useAutoStore((s) => s.rematch);
   const reset = useAutoStore((s) => s.reset);
   const setView = useUiStore((s) => s.setView);
+  const goBack = useUiStore((s) => s.goBack);
 
   const db = getCardDb()!;
   // M5: "total cost / power of N or less", "different names" — the picks must fit
@@ -540,7 +531,7 @@ function GameScreen() {
    *  rested ones): answered by clicking the DON!! on the table — the clicks
    *  are counted and sent as the number / option the engine asks for. */
   const donChoice = ((): DonChoice | null => {
-    if (!pc || isAiSeat(seats, pc.player)) return null;
+    if (!pc || notHere(seats, pc.player)) return null;
     const player = pc.player;
     if (pc.kind === "chooseNumber" && (pc.purpose === "standDon" || pc.purpose === "restDon" || pc.purpose === "addDon")) {
       const from = pc.purpose === "standDon" ? "rested" : pc.purpose === "restDon" ? "active" : "deck";
@@ -556,7 +547,7 @@ function GameScreen() {
   })();
 
   /** "Rest 1 of your cards:" and its kin: what gets clicked is what gets rested. */
-  const restSplit = pc && !isAiSeat(seats, pc.player) ? restSplitOf(getCardDb()!, game) : null;
+  const restSplit = pc && !notHere(seats, pc.player) ? restSplitOf(getCardDb()!, game) : null;
 
   /** How the last battle ended, shown for a beat after it (HIT / REPELLED / K.O.). */
   const [recap, setRecap] = useState<{ text: string; sub: string; tone: "hit" | "miss" } | null>(null);
@@ -576,10 +567,10 @@ function GameScreen() {
   const undoRequest = useAutoStore((s) => s.undoRequest);
   const requestUndo = useAutoStore((s) => s.requestUndo);
   const answerUndo = useAutoStore((s) => s.answerUndo);
-  const lastHumanMove = [...history].reverse().find((h) => !isAiSeat(seats, h.actor)) ?? null;
-  const aiActing = game.phase !== "over" && isAiSeat(seats, lm.actor);
+  const lastHumanMove = [...history].reverse().find((h) => !notHere(seats, h.actor)) ?? null;
+  const aiActing = game.phase !== "over" && notHere(seats, lm.actor);
   /** Human against AI: the AI's hand stays face down (AI vs AI shows both to the spectator). */
-  const hiddenHand = (pid: PID) => game.phase !== "over" && isAiSeat(seats, pid) && !seats.every((s) => s.controller === "ai");
+  const hiddenHand = (pid: PID) => game.phase !== "over" && notHere(seats, pid) && !seats.every((s) => s.controller === "ai");
   useEffect(() => {
     if (!aiActing || aiPaused) return;
     // a battle is followed step by step: the AI never answers faster than you can read
@@ -588,6 +579,10 @@ function GameScreen() {
     return () => clearTimeout(t);
   }, [game, aiActing, aiPaused, aiDelay, aiStep, recap]);
 
+  const online = useAutoStore((s) => s.online);
+  // a friend game: each player sits at the bottom of their own screen
+  const BOTTOM: PID = online?.mySeat ?? SEAT_A;
+  const TOP: PID = BOTTOM === SEAT_A ? SEAT_B : SEAT_A;
   const seatName = (pid: PID) => seats.find((s) => s.pid === pid)?.name ?? pid;
   const leaderHex = (pid: PID) => {
     const leaderCard = cards.get(game.players[pid].instances[game.players[pid].leaderIid].cardId);
@@ -703,7 +698,7 @@ function GameScreen() {
   const noCounters = pc?.kind === "counterWindow" && lm.counterCards.length + lm.counterEvents.length === 0;
   const noBlockers = pc?.kind === "blockWindow" && pc.blockers.length === 0;
   useEffect(() => {
-    if (confirmPicks || !pc || isAiSeat(seats, pc.player)) return;
+    if (confirmPicks || !pc || notHere(seats, pc.player)) return;
     if (noBlockers) dispatch({ type: "respondBlock", player: pc.player, blockerIid: null });
     else if (noCounters) dispatch({ type: "passCounter", player: pc.player });
   }, [pc, noBlockers, noCounters, confirmPicks, seats, dispatch]);
@@ -1721,7 +1716,7 @@ function GameScreen() {
       picked.includes(iid) || (inHand && selectedHand === iid) ? "ba-picked" : "",
       mode.t === "attack" && mode.iid === iid ? "ba-attacker" : "",
       mode.t === "card" && mode.iid === iid ? "ba-selected" : "",
-      highlightSets.ready.has(iid) && !isAiSeat(seats, owner) ? "ba-ready" : "",
+      highlightSets.ready.has(iid) && !notHere(seats, owner) ? "ba-ready" : "",
       flash[iid] ? `ba-fl-${flash[iid]}` : "",
       drag?.iid === iid ? "ba-dragging" : "",
     ]
@@ -1859,7 +1854,7 @@ function GameScreen() {
             ×{given}{pc?.kind === "payDon" && payPick.given[iid] ? ` · −${payPick.given[iid]}` : ""}
           </span>
         )}
-        {highlightSets.ready.has(iid) && !isAiSeat(seats, owner) && <span className="ba-readybadge" title="Ready to attack — tap or drag"><PixelIcon name="swords" size={12} /></span>}
+        {highlightSets.ready.has(iid) && !notHere(seats, owner) && <span className="ba-readybadge" title="Ready to attack — tap or drag"><PixelIcon name="swords" size={12} /></span>}
         {/* in-place PLAY: the selected hand card, when the play is legal now */}
         {inHand && selectedHand === iid && !pc && owner === game.turnPlayer && lm.playableFromHand.some((x) => x.iid === iid) && (
           <button
@@ -2121,7 +2116,7 @@ function GameScreen() {
     const ss = (clocks[pid] ?? 0) % 60;
     // DuelingBook layout, mirrored around the log: the top seat reads
     // life bar → avatar → stats, the bottom seat stats → avatar → life bar
-    const top = pid === SEAT_B;
+    const top = pid === TOP;
     const life = p.zones.life.length;
     const maxLife = Math.max(life, cards.get(p.instances[p.leaderIid].cardId)?.cost ?? 5, 1);
     const fill = life / maxLife;
@@ -2164,7 +2159,7 @@ function GameScreen() {
   }
 
   function ConcedeButton({ pid }: { pid: PID }) {
-    if (game.phase === "over") return null;
+    if (game.phase === "over" || (online && pid !== online.mySeat)) return null;
     const arm = armConcede === pid;
     return (
           <button
@@ -2192,12 +2187,13 @@ function GameScreen() {
   const logRef = useRef<HTMLDivElement | null>(null);
   // ONE feed: duel log lines and table chat interleaved in time order (a chat
   // message sent after event N-1 shows right after that line)
+  const feedChat = online ? online.chat : chat;
   type FeedLine = { kind: string; text: string; cards?: { name: string; cardId: string }[] } | { seat: PID; text: string };
   const logLines = useMemo(() => {
     const out: FeedLine[] = [];
     let ci = 0;
     for (let i = 0; i <= events.length; i++) {
-      while (ci < chat.length && chat[ci].at <= i) out.push(chat[ci++]);
+      while (ci < feedChat.length && feedChat[ci].at <= i) out.push(feedChat[ci++]);
       if (i < events.length) {
         const l = fmtEvent(events[i], game, cards, seatName);
         if (l) out.push(l);
@@ -2206,7 +2202,7 @@ function GameScreen() {
     return out;
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [events, game, chat],
+    [events, game, feedChat],
   );
   useEffect(() => {
     const el = logRef.current;
@@ -2597,8 +2593,8 @@ function GameScreen() {
           <b className="ba-ovname big">{game.winner ? seatName(game.winner) : "?"} WINS</b>
           <p className="ba-ovtext">{WIN_REASON[game.winReason ?? ""] ?? game.winReason}</p>
           <div className="ba-ovbtns">
-            <button className="ba-btn primary" data-act="rematch" onClick={rematch}>Rematch</button>
-            <button className="ba-btn" data-act="newdecks" onClick={reset}>Change decks</button>
+            {!online && <button className="ba-btn primary" data-act="rematch" onClick={rematch}>Rematch</button>}
+            <button className="ba-btn" data-act="newdecks" onClick={reset}>{online ? "Leave table" : "Change decks"}</button>
             <button className="ba-btn" data-act="gohome" onClick={() => setView("home")}>Home</button>
           </div>
         </div>
@@ -2726,25 +2722,27 @@ function GameScreen() {
         >
           Confirm every choice: {confirmPicks ? "on" : "off"}
         </button>
-        <button
-          className="ba-btn ba-undo"
-          data-act="undo"
-          disabled={!lastHumanMove || !!undoRequest}
-          title={lastHumanMove ? `Ask to take back ${seatName(lastHumanMove.actor)}'s last move` : "No move to take back yet"}
-          onClick={requestUndo}
-        >
-          ↶ Take back last move
-        </button>
+        {!online && (
+          <button
+            className="ba-btn ba-undo"
+            data-act="undo"
+            disabled={!lastHumanMove || !!undoRequest}
+            title={lastHumanMove ? `Ask to take back ${seatName(lastHumanMove.actor)}'s last move` : "No move to take back yet"}
+            onClick={requestUndo}
+          >
+            ↶ Take back last move
+          </button>
+        )}
         <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
           Messages{unreadLetters > 0 ? ` (${unreadLetters})` : ""}
         </button>
-        <button className="ba-btn ghost" data-act="exit" onClick={() => setView("home")}>Exit to Home</button>
+        <button className="ba-btn ghost" data-act="exit" onClick={goBack}>← Back</button>
       </div>
 
       <div className="ba-centercol">
-        {HandRow({ pid: SEAT_B, small: true })}
+        {HandRow({ pid: TOP, small: true })}
         <div className="ba-field" ref={fieldRef}>
-          {Half({ pid: SEAT_B, flip: true })}
+          {Half({ pid: TOP, flip: true })}
           {/* the band between the halves: turn/phase at the left, End turn at
               the right edge (where the hand rests at a real table) */}
           <div className="ba-band">
@@ -2758,7 +2756,7 @@ function GameScreen() {
             </div>
             {endTurnButton}
           </div>
-          {Half({ pid: SEAT_A, flip: false })}
+          {Half({ pid: BOTTOM, flip: false })}
           {/* always mounted: its screen CTM is the field's coordinate oracle */}
           <svg className="ba-arrow" aria-hidden ref={svgRef}>
             {arrow && (() => {
@@ -2806,17 +2804,17 @@ function GameScreen() {
             </div>
           ))}
         </div>
-        {HandRow({ pid: SEAT_A })}
+        {HandRow({ pid: BOTTOM })}
       </div>
 
       <div className="ba-right">
-        {SeatPanel({ pid: SEAT_B })}
+        {SeatPanel({ pid: TOP })}
         {/* ONE box: duel log + table chat, typed at the bottom (DuelingBook) */}
         <div className="ba-log" data-chat>
           <div className="ba-log-scroll" ref={logRef}>
             {logLines.map((l, i) =>
               "seat" in l
-                ? <p key={i} className="ba-chatline"><b className={l.seat === SEAT_B ? "b" : ""}>{seatName(l.seat)}:</b> {l.text}</p>
+                ? <p key={i} className="ba-chatline"><b className={l.seat === TOP ? "b" : ""}>{seatName(l.seat)}:</b> {l.text}</p>
                 : <p key={i} className={`ba-logline ${l.kind}`}>{withCardNames(l.text, l.cards)}</p>,
             )}
           </div>
@@ -2826,18 +2824,21 @@ function GameScreen() {
               e.preventDefault();
               const text = chatDraft.trim();
               if (!text) return;
-              setChat((c) => [...c, { seat: chatSeat, text, at: events.length }]);
+              if (online) void sendRoomChat(text, events.length);
+              else setChat((c) => [...c, { seat: chatSeat, text, at: events.length }]);
               setChatDraft("");
             }}
           >
-            <button type="button" className="ba-chat-seat" title="Who is typing" onClick={() => setChatSeat(chatSeat === SEAT_A ? SEAT_B : SEAT_A)}>
-              {seatName(chatSeat).slice(0, 10)}
-            </button>
+            {!online && (
+              <button type="button" className="ba-chat-seat" title="Who is typing" onClick={() => setChatSeat(chatSeat === SEAT_A ? SEAT_B : SEAT_A)}>
+                {seatName(chatSeat).slice(0, 10)}
+              </button>
+            )}
             <input value={chatDraft} onChange={(e) => setChatDraft(e.target.value)} placeholder="Say something…" maxLength={200} data-chat-input />
             <button type="submit" data-act="chat-send" disabled={!chatDraft.trim()}>Send</button>
           </form>
         </div>
-        {SeatPanel({ pid: SEAT_A })}
+        {SeatPanel({ pid: BOTTOM })}
       </div>
 
       {overlay}

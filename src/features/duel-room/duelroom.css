@@ -250,3 +250,13 @@
 .dr-credit-all:hover{color:#fff;}
 /* the open duels are examples until matchmaking exists: say so */
 .dr-sample{margin-right:auto;margin-left:12px;font:400 18px/1 "VT323",monospace;color:#daab76;}
+
+/* live duels */
+.dr-joinpass{width:92px;flex:0 0 auto;}
+.dr-host-msg{grid-column:1/-1;margin:0;font-size:12px;font-weight:600;color:#ff9b8f;}
+.dr-host-wait{grid-column:1/-1;margin:0;}
+.dr-duel:has(.dr-joinpass){flex-wrap:wrap;}
+.dr-joinpass{margin-left:auto;}
+.dr-duel-mine{flex:0 0 auto;font:400 18px/1 "VT323",monospace;color:#daab76;}
+.dr-duel:has(.dr-joinpass) .dr-duel-main{flex:1 1 calc(100% - 52px);}
+.dr-joinpass{flex:1 1 60%;width:auto;margin-left:0;}

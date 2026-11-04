@@ -10,6 +10,7 @@ import { z } from "zod";
 import { initDb, all, run, get } from "./db.mjs";
 import { registerCardArt } from "./card-art.mjs";
 import { registerWelcome } from "./welcome.mjs";
+import { registerRooms } from "./rooms.mjs";
 import {
   hashPassword, verifyPassword, createUser, getUserById, getUserByEmail,
   getUserByUsername, getUserByLogin, createSession, getSessionUser,
@@ -624,6 +625,7 @@ app.get("/api/health", async () => ({ ok: true }));
 // ---- card art proxy (same-origin, disk-cached; see card-art.mjs) ----
 registerCardArt(app);
 await registerWelcome(app);
+registerRooms(app, requireUser);
 
 // ---- card catalog (our own DB; seeded by server/seed-cards.mjs) ----
 // Maps a `cards` row to the frontend Card shape (parse JSON cols, set_code->set).

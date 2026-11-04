@@ -5,6 +5,10 @@ import { loadCardsById, type Card } from "../cards/cardsDb";
 import "../home/home.css"; // shared .sn atoms (logo, pill, avatar, livedot, vars)
 import "../profiles/profiles.css";
 import { Dock } from "../profiles/ProfilePages";
+import { useAutoStore } from "../board-auto/autoStore";
+import { userDeckChoices, type DeckChoice } from "../board-auto/decks";
+import { presetDeckChoices } from "../board-auto/presetDecks";
+import { hostDuel, joinDuel, leaveRoom, listOpenDuels, type OpenDuel } from "../board-auto/room";
 import "@fontsource/silkscreen/400.css"; // pixel HUD labels (--hud in duelroom.css)
 import "@fontsource/silkscreen/700.css";
 import "@fontsource/vt323/400.css"; // pixel duelist names (--pixel)
@@ -164,60 +168,19 @@ function LogResultModal({ decks, onClose }: LogResultProps) {
   );
 }
 
-interface Duel {
-  host: string;
-  art: string;
-  elo: number;
-  type: string;
-  leader: string;
-  watchers: number;
-  locked: boolean;
-  note: string;
-}
-interface Format {
-  key: string;
-  name: string;
-  accent: string;
-  duels: Duel[];
-}
-
-const FORMATS: Format[] = [
-  {
-    key: "op16",
-    name: "Standard · OP16",
-    accent: "#3f9d7e",
-    duels: [
-      { host: "GearFifth", art: "#2f5e44", elo: 2350, type: "BO1", leader: "Black Luffy", watchers: 12, locked: false, note: "ft me" },
-      { host: "NavigatorNami", art: "#3a4a5e", elo: 2288, type: "BO3", leader: "Blue Doflamingo", watchers: 4, locked: true, note: "ask for pw" },
-      { host: "RogerPirate", art: "#7a3030", elo: 1990, type: "BO1", leader: "Red Shanks", watchers: 0, locked: false, note: "casual" },
-      { host: "BrookSoul", art: "#5b2a78", elo: 1740, type: "BO3", leader: "Purple Luffy", watchers: 2, locked: false, note: "" },
-    ],
-  },
-  {
-    key: "op15",
-    name: "Standard · OP15",
-    accent: "#c98a52",
-    duels: [
-      { host: "KingOfHearts", art: "#7a2b5a", elo: 2391, type: "BO3", leader: "Yellow Katakuri", watchers: 8, locked: false, note: "BO3 plz" },
-      { host: "SwordHawk", art: "#2a5e6e", elo: 2210, type: "BO3", leader: "Green Zoro", watchers: 1, locked: true, note: "" },
-      { host: "FrankyShip", art: "#b06a1f", elo: 1880, type: "BO1", leader: "Red-Green Law", watchers: 3, locked: false, note: "for fun" },
-    ],
-  },
-  {
-    key: "eastblue",
-    name: "East Blue",
-    accent: "#9a6ad0",
-    duels: [
-      { host: "ZoroSan", art: "#2f5e44", elo: 1620, type: "BO1", leader: "Starter Zoro", watchers: 0, locked: false, note: "new player" },
-      { host: "UsoppKing", art: "#b06a1f", elo: 1480, type: "BO1", leader: "Starter Luffy", watchers: 1, locked: false, note: "learning" },
-    ],
-  },
+/** The columns of Open Duels; each lists the live duels hosted in that format. */
+const FORMATS = [
+  { key: "op16", name: "Standard · OP16", accent: "#3f9d7e" },
+  { key: "op15", name: "Standard · OP15", accent: "#c98a52" },
+  { key: "eastblue", name: "East Blue", accent: "#9a6ad0" },
 ];
+const OPEN_DUELS_POLL_MS = 3000;
 
-function DuelRow({ d, mode }: { d: Duel; mode: string }) {
+function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName: string; disabled: boolean; onJoin: (password: string) => void }) {
+  const [password, setPassword] = useState("");
   return (
-    <div className="dr-duel">
-      <Avatar color={d.art} size={36} />
+    <div className="dr-duel" data-duel={d.host}>
+      <Avatar color="#2f5e44" size={36} />
       <div className="dr-duel-main">
         <div className="dr-duel-top">
           <span className="dr-duel-host">{d.host}</span>
@@ -226,12 +189,11 @@ function DuelRow({ d, mode }: { d: Duel; mode: string }) {
               <Icon name="lock" size={12} />
             </span>
           )}
-          <span className="dr-duel-elo">{d.elo}</span>
         </div>
         <div className="dr-duel-meta">
           <span>{d.type}</span>
           <span className="dot">·</span>
-          <span>{d.leader}</span>
+          <span>{leaderName}</span>
           {d.note && (
             <>
               <span className="dot">·</span>
@@ -240,18 +202,37 @@ function DuelRow({ d, mode }: { d: Duel; mode: string }) {
           )}
         </div>
       </div>
-      <span className="dr-duel-watch">
-        <Icon name="watch" size={13} /> {d.watchers}
-      </span>
-      <button className={"dr-join" + (mode === "watch" ? " watch" : "")}>
-        {mode === "watch" ? "Watch" : "Join"}
-      </button>
+      {d.locked && !d.mine && (
+        <input className="dr-input dr-joinpass" type="password" value={password} placeholder="Password" aria-label="Duel password" onChange={(e) => setPassword(e.target.value)} />
+      )}
+      {d.mine ? (
+        <span className="dr-duel-mine">Your duel</span>
+      ) : (
+        <button className="dr-join" data-act="duel-join" disabled={disabled || (d.locked && !password)} onClick={() => onJoin(password)}>
+          Join
+        </button>
+      )}
     </div>
   );
 }
 
 export function DuelRoomPage() {
   const setView = useUiStore((s) => s.setView);
+  const goBack = useUiStore((s) => s.goBack);
+  const online = useAutoStore((s) => s.online);
+  const game = useAutoStore((s) => s.game);
+  const inGame = online?.status === "playing" && !!game && game.phase !== "over";
+  const waiting = online?.status === "waiting";
+  const [duels, setDuels] = useState<OpenDuel[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [duelError, setDuelError] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const load = () => void listOpenDuels().then((list) => { if (alive) setDuels(list); }).catch(() => {});
+    load();
+    const id = window.setInterval(load, OPEN_DUELS_POLL_MS);
+    return () => { alive = false; window.clearInterval(id); };
+  }, [online?.status]);
 
   // real decks
   const [myDecks, setMyDecks] = useState<Deck[]>([]);
@@ -269,12 +250,11 @@ export function DuelRoomPage() {
       .then(([{ decks }, cardMap]) => {
         setMyDecks(decks);
         setCards(cardMap);
-        if (decks.length) setDeckId(decks[0].id);
+        setDeckId(decks.length ? decks[0].id : presetDeckChoices()[0].key);
       })
       .catch(() => {});
   }, []);
 
-  const [mode, setMode] = useState("duel");
   const [poolFormat, setPoolFormat] = useState("Standard · OP16 (Rated)");
   const [poolRules, setPoolRules] = useState("EN");
   const [poolType, setPoolType] = useState("BO3");
@@ -304,7 +284,10 @@ export function DuelRoomPage() {
       try { await api.leaveQueue(); } catch { /* silent */ }
       setInPool(false);
     } else {
-      if (!deckId) return;
+      if (!myDecks.some((d) => d.id === deckId)) {
+        setDuelError("The Duelist Pool needs one of your own decks.");
+        return;
+      }
       try {
         await api.joinQueue(deckId);
         setInPool(true);
@@ -317,28 +300,37 @@ export function DuelRoomPage() {
   const [fUser, setFUser] = useState("");
   const [fCard, setFCard] = useState("");
   const [fMatch, setFMatch] = useState("Any");
-  const [fSort, setFSort] = useState("Rating");
+  const [fSort, setFSort] = useState("Newest");
 
   const [hFormat, setHFormat] = useState("Standard · OP16");
-  const [hType, setHType] = useState("Best of 3");
+  const [hType, setHType] = useState("Best of 1");
   const [hNote, setHNote] = useState("");
   const [hPass, setHPass] = useState("");
-  const [watching, setWatching] = useState(true);
-  const [wNote, setWNote] = useState("");
-  const [wPass, setWPass] = useState("");
 
   const trackRef = useRef<HTMLDivElement>(null);
   const scrollFmt = (dir: number) => {
     if (trackRef.current) trackRef.current.scrollBy({ left: dir * 330, behavior: "smooth" });
   };
 
-  const filterDuels = (duels: Duel[]) => {
-    let r = duels.filter((d) => d.host.toLowerCase().includes(fUser.toLowerCase()));
+  const filterDuels = (format: string) => {
+    let r = duels.filter((d) => d.format === format && d.host.toLowerCase().includes(fUser.toLowerCase()));
     if (fMatch !== "Any") r = r.filter((d) => d.type === fMatch);
-    r = [...r].sort((a, b) =>
-      fSort === "Rating" ? b.elo - a.elo : fSort === "Watchers" ? b.watchers - a.watchers : a.host.localeCompare(b.host),
-    );
-    return r;
+    return fSort === "Name" ? [...r].sort((a, b) => a.host.localeCompare(b.host)) : [...r].reverse();
+  };
+
+  /** The deck picked in the Deck box: one of the ready-made lists or one of yours. */
+  const chosenDeck = (): DeckChoice | undefined => {
+    const all = [...presetDeckChoices(), ...userDeckChoices(myDecks)];
+    return all.find((d) => d.key === deckId || d.key === `mine:${deckId}`);
+  };
+  const withDeck = async (action: (deck: DeckChoice) => Promise<string | null>) => {
+    const deck = chosenDeck();
+    if (!deck) { setDuelError("Pick a deck in the Deck box first."); return; }
+    setBusy(true);
+    setDuelError(null);
+    const failed = await action(deck).catch((e: unknown) => (e instanceof Error ? e.message : "The server did not answer"));
+    setBusy(false);
+    if (failed) setDuelError(failed);
   };
 
   return (
@@ -352,7 +344,7 @@ export function DuelRoomPage() {
       </div>
       <header className="dr-head">
         <div className="dr-head-l">
-          <button className="dr-back" title="Back to menu" onClick={() => setView("home")}>
+          <button className="dr-back" title="Back" data-act="back" onClick={goBack}>
             <Icon name="back" size={18} />
           </button>
           <Logo />
@@ -403,7 +395,6 @@ export function DuelRoomPage() {
         <div className="dr-open">
           <div className="dr-open-head">
             <span className="dr-open-title">Open Duels</span>
-            <span className="dr-sample" title="Live tables arrive with matchmaking">Sample tables — live duels arrive with matchmaking</span>
             <div className="dr-open-arrows">
               <button onClick={() => scrollFmt(-1)} aria-label="Scroll left">
                 <Icon name="caret" size={16} />
@@ -415,7 +406,7 @@ export function DuelRoomPage() {
           </div>
           <div className="dr-track" ref={trackRef}>
             {FORMATS.map((f) => {
-              const list = filterDuels(f.duels);
+              const list = filterDuels(f.name);
               return (
                 <div className="dr-fmt card" key={f.key}>
                   <div className="dr-fmt-h" style={{ borderColor: f.accent }}>
@@ -425,7 +416,15 @@ export function DuelRoomPage() {
                   </div>
                   <div className="dr-fmt-list">
                     {list.length ? (
-                      list.map((d, i) => <DuelRow key={i} d={d} mode={mode} />)
+                      list.map((d) => (
+                        <DuelRow
+                          key={d.id}
+                          d={d}
+                          leaderName={cards?.get(d.leaderId)?.name ?? d.leaderId}
+                          disabled={busy || waiting || inGame}
+                          onJoin={(password) => void withDeck((deck) => joinDuel(d.id, deck, password))}
+                        />
+                      ))
                     ) : (
                       <div className="dr-empty">No open duels</div>
                     )}
@@ -440,33 +439,18 @@ export function DuelRoomPage() {
       <section className="dr-bottom">
         <div className="dr-tools">
           <div className="dr-mini card">
-            <div className="dr-mini-h">Mode</div>
-            <div className="dr-mode">
-              <button className={"dr-radio" + (mode === "duel" ? " on" : "")} onClick={() => setMode("duel")}>
-                <span className="dr-dot" />
-                <Icon name="duel" size={16} /> Duel
-              </button>
-              <button className={"dr-radio" + (mode === "watch" ? " on" : "")} onClick={() => setMode("watch")}>
-                <span className="dr-dot" />
-                <Icon name="watch" size={16} /> Watch
-              </button>
-            </div>
-          </div>
-
-          <div className="dr-mini card">
             <div className="dr-mini-h">Deck</div>
-            {myDecks.length > 0 ? (
-              <div className="dr-select">
-                <select value={deckId} onChange={(e) => setDeckId(e.target.value)}>
-                  {myDecks.map((d) => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
-                  ))}
-                </select>
-                <span className="dr-select-caret"><Icon name="caret" size={16} /></span>
-              </div>
-            ) : (
-              <span style={{ fontSize: 12, color: "var(--muted, #6b7a94)" }}>No decks — build one first</span>
-            )}
+            <div className="dr-select">
+              <select value={deckId} data-deck-select onChange={(e) => setDeckId(e.target.value)}>
+                {presetDeckChoices().map((d) => (
+                  <option key={d.key} value={d.key}>{d.name}</option>
+                ))}
+                {myDecks.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+              <span className="dr-select-caret"><Icon name="caret" size={16} /></span>
+            </div>
             <button className="dr-ghost-sm" onClick={() => setShowLogResult(true)}>
               <Icon name="duel" size={14} /> Log Result
             </button>
@@ -492,7 +476,7 @@ export function DuelRoomPage() {
           </div>
           <div className="dr-field">
             <label>Sort By</label>
-            <Select value={fSort} onChange={setFSort} options={["Rating", "Watchers", "Name"]} />
+            <Select value={fSort} onChange={setFSort} options={["Newest", "Name"]} />
           </div>
         </div>
 
@@ -508,7 +492,7 @@ export function DuelRoomPage() {
             </div>
             <div className="dr-hcell">
               <label>Type</label>
-              <Select value={hType} onChange={setHType} options={["Best of 3", "Best of 1", "Best of 5"]} />
+              <Select value={hType} onChange={setHType} options={["Best of 1"]} />
             </div>
             <div className="dr-hcell">
               <label>Duel Note</label>
@@ -518,23 +502,30 @@ export function DuelRoomPage() {
               <label>Duel Password</label>
               <input className="dr-input" type="password" value={hPass} onChange={(e) => setHPass(e.target.value)} placeholder="Optional" />
             </div>
-            <div className="dr-hcell">
-              <label>Watching</label>
-              <button className={"dr-check" + (watching ? " on" : "")} onClick={() => setWatching((v) => !v)}>
-                <span className="dr-box" /> {watching ? "Allowed" : "Off"}
+            {duelError && <p className="dr-host-msg" role="alert">{duelError}</p>}
+            {waiting && (
+              <div className="dr-pool-status dr-host-wait">
+                <span className="dr-spinner" /> Waiting for a duelist. The duel starts when someone joins.
+              </div>
+            )}
+            {inGame ? (
+              <button className="dr-host-btn" data-act="duel-resume" onClick={() => setView("board-auto")}>
+                <Icon name="duel" size={16} stroke="#fff" /> Back to your duel
               </button>
-            </div>
-            <div className="dr-hcell">
-              <label>Watch Note</label>
-              <input className="dr-input" disabled={!watching} value={wNote} onChange={(e) => setWNote(e.target.value)} placeholder={watching ? "Visible to spectators" : "Watching off"} />
-            </div>
-            <div className="dr-hcell">
-              <label>Watch Password</label>
-              <input className="dr-input" type="password" disabled={!watching} value={wPass} onChange={(e) => setWPass(e.target.value)} placeholder={watching ? "Optional" : "—"} />
-            </div>
-            <button className="dr-host-btn">
-              <Icon name="host" size={16} stroke="#fff" /> Host Duel
-            </button>
+            ) : waiting ? (
+              <button className="dr-host-btn" data-act="duel-cancel" onClick={leaveRoom}>
+                Cancel
+              </button>
+            ) : (
+              <button
+                className="dr-host-btn"
+                data-act="duel-host"
+                disabled={busy}
+                onClick={() => void withDeck((deck) => hostDuel(deck, { format: hFormat, type: hType.replace("Best of ", "BO"), note: hNote, password: hPass }))}
+              >
+                <Icon name="host" size={16} stroke="#fff" /> Host Duel
+              </button>
+            )}
           </div>
         </div>
       </section>

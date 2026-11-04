@@ -22,6 +22,7 @@ import { CreditsPage } from "../features/credits/CreditsPage";
 import { BoardPage } from "../features/board/BoardPage";
 import { BoardPage2 } from "../features/board/BoardPage2";
 import { BoardAutoPage } from "../features/board-auto/BoardAutoPage";
+import { hasSavedRoom } from "../features/board-auto/room";
 import { BoardBotPage } from "../features/board-bot/BoardBotPage";
 
 /**
@@ -161,6 +162,12 @@ export function App() {
     if (!user && view !== "login") setView("login");
     else if (user && view === "login") setView("home");
   }, [status, user, view, setView]);
+
+  // a friend game left by a reload leads straight back to the table
+  const signedIn = status === "ready" && !!user;
+  useEffect(() => {
+    if (signedIn && hasSavedRoom()) setView("board-auto");
+  }, [signedIn, setView]);
 
   if (status === "loading") return <AppLoading />;
 
