@@ -47,6 +47,17 @@ const giveUpToRested = (max: number): Effect["actions"][number] => ({
   options: Array.from({ length: max + 1 }, (_, n) => (n === 0 ? [] : [{ kind: "giveRestedDon" as const, count: n, sel: self1("characterArea") }])),
 });
 
+/** "add up to N DON!! cards from your DON!! deck": how many (0…N). */
+const addUpToDon = (max: number, rested: boolean): Effect["actions"][number] => ({
+  kind: "chooseOne",
+  labels: Array.from({ length: max + 1 }, (_, n) => (n === 0 ? "Add no DON!!" : `Add ${n} DON!!`)),
+  options: Array.from({ length: max + 1 }, (_, n) => (n === 0 ? [] : [{ kind: "placeDonInCostArea" as const, count: n, ...(rested ? { rested } : {}) }])),
+});
+
+const anyChar = (): Selector => ({ owner: "any", zone: "characterArea", count: 1, chooser: "controller", upTo: true });
+/** "up to 1 {Big Mom Pirates} type Character card with 4000 power" from the hand. */
+const bigMom4000 = (): Selector => self1("hand", { category: ["Character"], typeIncludes: ["Big Mom Pirates"], powerAtLeast: 4000, powerAtMost: 4000 }, { upTo: true });
+
 export const TEXT_IR: Record<string, TextIr> = {
   "OP15-058": {
     text: /\[Activate: Main\] \[Once Per Turn\] If it is your second turn or later, add up to 1 DON!! card from your DON!! deck and set it as active, and add up to 4 additional DON!! cards and rest them\. Then, give up to 4 rested DON!! cards to 1 of your Characters\./,
@@ -384,6 +395,112 @@ export const TEXT_IR: Record<string, TextIr> = {
         { kind: "ifThen", if: [{ kind: "countInZone", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller", filter: { powerAtLeast: 6000 } }, atLeast: 1 }],
           then: [{ kind: "powerMod", sel: own("leaderOrCharacter"), amount: 1000, duration: "thisTurn" }] }] },
       { timing: "trigger", actions: [{ kind: "powerMod", sel: own("leaderOrCharacter"), amount: 1000, duration: "thisTurn" }] },
+    ],
+  },
+  "EB05-006": {
+    text: /^\[Activate: Main\] \[Once Per Turn\] You may add 1 card from the top of your Life cards to your hand: Choose one:/,
+    reason: "optcg-ai also offers the bottom of the Life cards",
+    effects: [{ timing: "activateMain", oncePerTurn: true, optional: true, conditions: [{ kind: "lifeAtLeast", who: "self", count: 1 }],
+      cost: [{ kind: "lifeToHand", count: 1 }],
+      actions: [{ kind: "chooseOne", labels: ["Give up to 1 Character +3000 power", "Give up to 1 Character −4000 power"], options: [
+        [{ kind: "powerMod", sel: anyChar(), amount: 3000, duration: "thisTurn" }],
+        [{ kind: "powerMod", sel: anyChar(), amount: -4000, duration: "thisTurn" }]] }] }],
+  },
+  "EB05-008": {
+    text: /^\[Main\] You may give 1 active DON!! card to 1 of your Leader and reveal 2 red Event cards from your hand:/,
+    reason: "optcg-ai gives the DON!! as an effect, so the card worked with no active DON!! to pay",
+    effects: [
+      { timing: "main", optional: true,
+        cost: [
+          { kind: "action", action: { kind: "giveActiveDon", count: 1, sel: self1("leader") } },
+          { kind: "action", action: { kind: "reveal", sel: self1("hand", { colors: ["Red"], category: ["Event"] }, { count: 2 }) } }],
+        actions: [{ kind: "powerMod", sel: opp("characterArea", { rested: true }), amount: -7000, duration: "thisTurn" }] },
+      { timing: "counter", conditions: [{ kind: "countInZone", sel: { owner: "self", zone: "characterArea", count: 99, chooser: "controller", filter: { costAtLeast: 5 } }, atMost: 0 }],
+        actions: [{ kind: "powerMod", sel: own("leaderOrCharacter"), amount: 4000, duration: "thisBattle" }] },
+    ],
+  },
+  "EB05-017": {
+    text: /^\[On Your Opponent's Attack\] You may rest 1 of your DON!! cards and trash this Character: Your \{Fish-Man\} or \{Merfolk\} type Leader/,
+    reason: "optcg-ai says {Fish-Man Island}, which left {Fish-Man} Leaders out",
+    effects: [{ timing: "onYourOpponentsAttack", optional: true,
+      cost: [{ kind: "restDon", count: 1 }, { kind: "trashSelf" }],
+      actions: [{ kind: "powerMod", sel: { owner: "self", zone: "leader", count: 99, chooser: "controller", filter: { typeIncludes: ["Fish-Man", "Merfolk"] } }, amount: 4000, duration: "thisBattle" }] }],
+  },
+  "EB05-031": {
+    text: /^\[On Play\] DON!! −1: If your Leader has the \{The Vinsmoke Family\} type, trash 10 cards from the top of your deck\./,
+    reason: "\"up to 4\" DON!!, not always 4",
+    effects: [
+      { timing: "onPlay", optional: true, conditions: [{ kind: "leaderIs", filter: { typeIncludes: ["The Vinsmoke Family"] } }],
+        cost: [{ kind: "returnDonToDeck", count: 1 }], actions: [{ kind: "mill", who: "self", count: 10 }] },
+      { timing: "activateMain", optional: true,
+        conditions: [{ kind: "countInZone", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller", filter: { basePowerAtLeast: 8000 } }, atLeast: 1 }],
+        cost: [{ kind: "trashSelf" }], actions: [addUpToDon(4, false)] },
+    ],
+  },
+  "EB05-033": {
+    text: /^\[On Play\] If your Leader has the \{Straw Hat Crew\} type and the number of DON!! cards on your field is at least 6 less than the number on your opponent's field,/,
+    reason: "\"up to 4\" DON!!, not always 4",
+    effects: [{ timing: "onPlay",
+      conditions: [{ kind: "compare", left: { count: "donOnField", who: "self", plus: 6 }, op: "le", right: { count: "donOnField", who: "opponent" } }, { kind: "leaderIs", filter: { typeIncludes: ["Straw Hat Crew"] } }],
+      actions: [{ kind: "draw", count: 3 }, { kind: "discard", who: "self", sel: self1("hand", undefined, { count: 2 }) }, addUpToDon(4, true)] }],
+  },
+  "EB05-034": {
+    text: /^\[On Play\] DON!! −2: If you have 7 or more DON!! cards on your field,/,
+    reason: "the 7 DON!! are counted after paying DON!! −2, so the check belongs in the effect",
+    effects: [{ timing: "onPlay", optional: true, cost: [{ kind: "returnDonToDeck", count: 2 }],
+      actions: [{ kind: "ifThen", if: [{ kind: "donOnField", who: "self", atLeast: 7 }],
+        then: [{ kind: "powerMod", sel: opp("characterArea"), amount: -4000, duration: "thisTurn" }] }] }],
+  },
+  "EB05-046": {
+    text: /^If your opponent has a Character with 8000 base power or more, this Character gains \[Blocker\] and \+3000 power\./,
+    reason: "the 10 trash cards are counted after paying with the trashed card, so the check belongs in the effect",
+    effects: [
+      { timing: "static", conditions: [{ kind: "countInZone", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller", filter: { basePowerAtLeast: 8000 } }, atLeast: 1 }],
+        actions: [
+          { kind: "grantKeyword", sel: self1("characterArea", undefined, { self: true }), keyword: "Blocker", duration: "permanentWhileInPlay" },
+          { kind: "powerMod", sel: self1("characterArea", undefined, { self: true }), amount: 3000, duration: "permanentWhileInPlay" }] },
+      { timing: "onYourOpponentsAttack", optional: true, cost: [{ kind: "trashFromHand", sel: self1("hand") }],
+        actions: [{ kind: "ifThen", if: [{ kind: "countInZone", sel: { owner: "self", zone: "trash", count: 99, chooser: "controller" }, atLeast: 10 }],
+          then: [{ kind: "setBasePower", sel: { owner: "self", zone: "leader", count: 99, chooser: "controller" }, amount: 7000, duration: "thisTurn" }] }] },
+    ],
+  },
+  "EB05-048": {
+    text: /^\[Main\] You may rest 1 of your DON!! cards and K\.O\. 1 of your Characters with a type including "Baroque Works":/,
+    reason: "optcg-ai checks the DON!! but never rests it",
+    effects: [
+      { timing: "main", optional: true,
+        cost: [{ kind: "restDon", count: 1 }, { kind: "action", action: { kind: "koTarget", sel: self1("characterArea", { typeIncludes: ["Baroque Works", "Former Baroque Works"] }) } }],
+        actions: [{ kind: "restriction", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller", filter: { costAtMost: 0, hasKeyword: "Blocker" } }, what: "cannotBlock", duration: "thisTurn" }] },
+      { timing: "counter", actions: [{ kind: "powerMod", sel: { ...own("leaderOrCharacter"), zone: "leader" }, amount: 3000, duration: "thisBattle" }] },
+    ],
+  },
+  "EB05-053": {
+    text: /^\[When Attacking\] \[Once Per Turn\] If your opponent has 9 or more cards in their hand, add up to 1 card from your hand to the top of your Life cards\./,
+    reason: "\"up to 1\": optcg-ai forces the card",
+    effects: [
+      { timing: "whenAttacking", oncePerTurn: true, conditions: [{ kind: "handAtLeast", who: "opponent", count: 9 }],
+        actions: [{ kind: "addToLife", sel: self1("hand", undefined, { upTo: true }) }] },
+      { timing: "trigger", optional: true, conditions: [{ kind: "lifeAtMost", who: "self", count: 2 }],
+        cost: [{ kind: "trashFromHand", sel: self1("hand") }],
+        actions: [{ kind: "playFromZone", zone: "hand", free: true, sel: self1("hand", undefined, { self: true }) }] },
+    ],
+  },
+  "EB05-054": {
+    text: "-",
+    reason: "\"with 4000 power\" means exactly 4000: optcg-ai reads 4000 or less",
+    effects: [{ timing: "trigger", actions: [
+      { kind: "playFromZone", zone: "hand", free: true, sel: bigMom4000() },
+      { kind: "ifThen", if: [{ kind: "hadTargets" }], then: [{ kind: "playFromZone", zone: "hand", free: true, sel: bigMom4000() }] }] }],
+  },
+  "EB05-059": {
+    text: /^\[Main\] Draw 1 card, and all of your Characters with 4000 base power and the \{Big Mom Pirates\} type cannot be K\.O\.'d in battle/,
+    reason: "\"with 4000 power\" means exactly 4000: optcg-ai reads 4000 or less",
+    effects: [
+      { timing: "main", actions: [{ kind: "draw", count: 1 }, { kind: "restriction",
+        sel: { owner: "self", zone: "characterArea", count: 99, chooser: "controller", filter: { typeIncludes: ["Big Mom Pirates"], basePowerAtMost: 4000, basePowerAtLeast: 4000 } },
+        what: "cannotBeKOdInBattle", duration: "untilStartOfYourNextTurn" }] },
+      { timing: "trigger", actions: [{ kind: "draw", count: 1 }, { kind: "playFromZone", zone: "hand", free: true,
+        sel: self1("hand", { hasTrigger: true, category: ["Character"], powerAtLeast: 4000, powerAtMost: 4000 }, { upTo: true }) }] },
     ],
   },
 };
