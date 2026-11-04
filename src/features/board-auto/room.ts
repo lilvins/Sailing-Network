@@ -21,6 +21,8 @@ interface RoomInfo {
   firstPlayer: PID;
   seats: [RoomSeat, RoomSeat | null];
   total: number;
+  epoch: number;
+  undoBy: PID | null;
   moves: PlayerIntent[];
   chat: RoomChatLine[];
 }
@@ -82,24 +84,26 @@ function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; 
 function startPlaying(room: RoomInfo): void {
   const { game, events, seats } = buildGame(room);
   useAutoStore.getState().loadOnlineGame({ seats, game, events, online: {
-    code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat,
+    code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch,
   } });
+  useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
   remember(game.phase === "over" ? null : room.code);
 }
 
 /** Back to what the server holds: used whenever this browser may have drifted. */
-async function resync(code: string): Promise<void> {
+async function resync(code: string, message = "Game re-synced with the server."): Promise<void> {
   const r = await call(`/api/rooms/${code}`);
   if (r.room?.status === "playing") {
     startPlaying(r.room);
-    useAutoStore.getState().explain("Game re-synced with the server.", undefined, "info");
+    useAutoStore.getState().explain(message, undefined, "info");
   }
 }
 
 function applyRemote(room: RoomInfo): void {
   const store = useAutoStore.getState();
-  const { online, game, events } = store;
+  const { online, game, events, undoRequest } = store;
   if (!online || !game) return;
+  if ((undoRequest?.by ?? null) !== room.undoBy) useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
   const db = getCardDb()!;
   let g = game;
   let ev = events;
@@ -129,6 +133,13 @@ async function pollOnce(code: string): Promise<void> {
     const r = await call(`/api/rooms/${code}?after=${after}&chatAfter=${game ? online.chat.length : 0}`);
     const now = useAutoStore.getState();
     if (now.online?.code !== code) return;
+    if (r.status === 401) {
+      // logged out: stop asking, but keep the game saved for the next login
+      if (timer) clearInterval(timer);
+      timer = null;
+      useAutoStore.setState({ online: null });
+      return;
+    }
     if (r.status === 404 || r.status === 403) {
       leaveRoom();
       useAutoStore.getState().explain(r.error ?? "This game no longer exists.");
@@ -139,6 +150,7 @@ async function pollOnce(code: string): Promise<void> {
       startPlaying(r.room); // someone took the seat: to the table, from wherever the host is
       useUiStore.getState().setView("board-auto");
     }
+    else if (now.game && r.room.epoch !== now.online.epoch) await resync(code, "Move taken back.");
     else if (now.game && now.online.applied === after) applyRemote(r.room);
   } catch { /* offline for a moment: the next tick tries again */ } finally {
     polling = false;
@@ -151,7 +163,7 @@ function startPolling(code: string): void {
 }
 
 function enterRoom(room: RoomInfo): void {
-  useAutoStore.setState({ game: null, events: [], online: { code: room.code, mySeat: room.mySeat, status: room.status, applied: 0, chat: [] } });
+  useAutoStore.setState({ game: null, events: [], online: { code: room.code, mySeat: room.mySeat, status: room.status, applied: 0, chat: [], epoch: room.epoch } });
   remember(room.code);
   if (room.status === "playing") startPlaying(room);
   startPolling(room.code);
@@ -246,4 +258,12 @@ setOnlineHooks({
     });
   },
   leave: leaveRoom,
+  undo: (code, action) => {
+    void call(`/api/rooms/${code}/undo`, { method: "POST", body: { action } }).then((r) => {
+      if (r.status >= 400) {
+        useAutoStore.setState({ undoRequest: null });
+        useAutoStore.getState().explain(r.error ?? "Could not take the move back.");
+      }
+    });
+  },
 });

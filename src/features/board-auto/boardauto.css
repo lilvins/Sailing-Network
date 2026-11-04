@@ -350,13 +350,16 @@
    middle (reserved slot, overlay → no reflow), End turn right */
 .ba-band {
   flex: 0 0 44px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 190px 1fr; /* End turn in the exact middle of the table */
   align-items: center;
   gap: 12px;
   padding: 0 4px;
 }
-.ba-band .ba-turnbox { flex: 0 0 290px; }
-.ba-band .ba-endturn { flex: 0 0 190px; max-height: 44px; font-size: 17px; }
+.ba-band .ba-turnbox { grid-area: 1 / 1; justify-self: start; width: 290px; }
+.ba-band .ba-endturn { grid-area: 1 / 2; width: 100%; max-height: 44px; font-size: 17px; }
+/* a prompt or a selected card takes the middle of the band: End turn makes way until it closes */
+.ba-band:has(.ba-promptslot > *) .ba-endturn { visibility: hidden; }
 /* drag-to-play: the owner's half is the drop zone */
 .ba-half.ba-dropok { border-color: var(--brass-hi); background: rgba(201, 151, 59, 0.12); }
 .ba-root .gb-card.ba-dragging { opacity: 0.35; }
@@ -789,7 +792,8 @@
    In flow (not fixed) so it never covers DON cells or counter cards. ── */
 /* a permanently reserved slot between field and hand: prompts appear INSIDE
    it as an overlay, so the table never reflows when one opens or closes */
-.ba-promptslot { flex: 1 1 0; min-width: 0; height: 44px; position: relative; }
+.ba-promptslot { grid-area: 1 / 1 / 1 / -1; min-width: 0; height: 44px; position: relative; pointer-events: none; }
+.ba-promptslot > * { pointer-events: auto; }
 .ba-actionbar {
   position: absolute;
   left: 50%;
@@ -1283,3 +1287,7 @@
 .ba-tuner-actions { display: flex; gap: 6px; }
 .ba-tuner-out { width: 100%; resize: none; background: #000; color: #ffd23f; border: 1px solid #6b5a3a; font: 11px ui-monospace, monospace; padding: 4px; }
 .ba-tuner-warn { color: #ff8a80; font-weight: 700; }
+
+/* the trash popup: the table and the card preview stay readable behind it */
+.ba-overlay.ba-trashpop { background: rgba(4, 6, 10, 0.35); }
+.ba-pile[title] { cursor: pointer; }

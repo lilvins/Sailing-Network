@@ -607,6 +607,8 @@ function GameScreen() {
   };
 
   const [preview, setPreview] = useState<Card | null>(null);
+  /** Whose trash is open in its popup (public: either player's). */
+  const [trashOpen, setTrashOpen] = useState<PID | null>(null);
   const [mode, setMode] = useState<Mode>({ t: "idle" });
   const [picked, setPicked] = useState<Iid[]>([]);
   const [armConcede, setArmConcede] = useState<PID | null>(null);
@@ -708,7 +710,7 @@ function GameScreen() {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
-      if (e.key === "Escape") { setMode({ t: "idle" }); setSelectedHand(null); }
+      if (e.key === "Escape") { setMode({ t: "idle" }); setSelectedHand(null); setTrashOpen(null); }
       else if ((e.key === "e" || e.key === "E") && !e.ctrlKey && !e.metaKey && !e.altKey && lm.canEndTurn && !aiActing) {
         dispatch({ type: "endTurn", player: game.turnPlayer });
       }
@@ -1532,7 +1534,9 @@ function GameScreen() {
       };
       const title = paying
         ? `Pay the cost: ${COST_LABEL[pc.actionKind] ?? `${pc.actionKind} (${n})`}`
-        : `choose ${n} target${plural} — ${ACTION_LABEL[pc.actionKind] ?? pc.actionKind}`
+        : r?.awaitingRoom?.length
+          ? "Your Character area is full: trash 1 to play the new one"
+          : `choose ${n} target${plural} — ${ACTION_LABEL[pc.actionKind] ?? pc.actionKind}`
           + (pc.totalCostAtMost !== undefined ? ` (total cost ≤ ${pc.totalCostAtMost})` : "")
           + (pc.totalPowerAtMost !== undefined ? ` (total power ≤ ${pc.totalPowerAtMost})` : "")
           + (pc.distinctNames ? " (different names)" : "");
@@ -1914,7 +1918,12 @@ function GameScreen() {
       <div
         className={`ba-pile ${faceClass ?? ""}${picking !== undefined ? " ba-pickpile" : ""}`}
         data-pile={key}
-        onClick={picking !== undefined ? (e) => { e.stopPropagation(); onPick?.(); } : undefined}
+        title={label === "TRASH" && count > 0 ? "Open the trash" : undefined}
+        onClick={picking !== undefined
+          ? (e) => { e.stopPropagation(); onPick?.(); }
+          : label === "TRASH" && count > 0
+            ? (e) => { e.stopPropagation(); setTrashOpen(pid); }
+            : undefined}
       >
         {picking !== undefined && picking > 0 && <span className="ba-pickcount">+{picking}</span>}
         {label === "LIFE" && count > 0 ? (
@@ -2057,10 +2066,7 @@ function GameScreen() {
                 <div
                   className="gb-card ba-backcard"
                   data-trash-top={trashTop}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    inspect(trashCard.id);
-                  }}
+                  onMouseEnter={() => hover(trashCard.id)}
                 >
                   <CardArt inst={{ instanceId: trashTop, cardId: trashCard.id, faceUp: true, rested: false }} card={trashCard} />
                 </div>
@@ -2618,10 +2624,16 @@ function GameScreen() {
           <b className="ba-ovname">{seatName(undoRequest.by)} asks to take back their last move</b>
           {what && <p className="ba-ovtext">“{what}”</p>}
           <p className="ba-ovtext"><b>{opponent.name}</b>, do you accept? Everything after that move is undone too.</p>
-          <div className="ba-ovbtns">
-            <button className="ba-btn primary big" data-act="undo-accept" onClick={() => answerUndo(true)}>Accept</button>
-            <button className="ba-btn big" data-act="undo-decline" onClick={() => answerUndo(false)}>Decline</button>
-          </div>
+          {online?.mySeat === undoRequest.by ? (
+            <div className="ba-ovbtns">
+              <button className="ba-btn big" data-act="undo-cancel" onClick={() => answerUndo(false)}>Cancel request</button>
+            </div>
+          ) : (
+            <div className="ba-ovbtns">
+              <button className="ba-btn primary big" data-act="undo-accept" onClick={() => answerUndo(true)}>Accept</button>
+              <button className="ba-btn big" data-act="undo-decline" onClick={() => answerUndo(false)}>Decline</button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -2722,17 +2734,15 @@ function GameScreen() {
         >
           Confirm every choice: {confirmPicks ? "on" : "off"}
         </button>
-        {!online && (
-          <button
-            className="ba-btn ba-undo"
-            data-act="undo"
-            disabled={!lastHumanMove || !!undoRequest}
-            title={lastHumanMove ? `Ask to take back ${seatName(lastHumanMove.actor)}'s last move` : "No move to take back yet"}
-            onClick={requestUndo}
-          >
-            ↶ Take back last move
-          </button>
-        )}
+        <button
+          className="ba-btn ba-undo"
+          data-act="undo"
+          disabled={online ? game.phase === "over" || !!undoRequest : !lastHumanMove || !!undoRequest}
+          title={online ? "Ask your opponent to take back your last move" : lastHumanMove ? `Ask to take back ${seatName(lastHumanMove.actor)}'s last move` : "No move to take back yet"}
+          onClick={requestUndo}
+        >
+          ↶ Take back last move
+        </button>
         <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
           Messages{unreadLetters > 0 ? ` (${unreadLetters})` : ""}
         </button>
@@ -2743,8 +2753,7 @@ function GameScreen() {
         {HandRow({ pid: TOP, small: true })}
         <div className="ba-field" ref={fieldRef}>
           {Half({ pid: TOP, flip: true })}
-          {/* the band between the halves: turn/phase at the left, End turn at
-              the right edge (where the hand rests at a real table) */}
+          {/* the band between the halves: turn/phase at the left, End turn in the middle */}
           <div className="ba-band">
             <div className="ba-turnbox">
               <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
@@ -2842,6 +2851,27 @@ function GameScreen() {
       </div>
 
       {overlay}
+      {trashOpen && (
+        <div className="ba-overlay ba-trashpop" data-trash-popup onClick={() => setTrashOpen(null)}>
+          <div className="ba-panel ba-ov ba-peek" onClick={(e) => e.stopPropagation()}>
+            <span className="ba-ovtag">{seatName(trashOpen)} — trash ({game.players[trashOpen].zones.trash.length})</span>
+            <div className="ba-peekgrid">
+              {[...game.players[trashOpen].zones.trash].reverse().map((iid) => {
+                const card = cards.get(game.players[trashOpen].instances[iid]?.cardId ?? "");
+                return (
+                  <div key={iid} className="ba-peekcard" onMouseEnter={() => hover(card?.id ?? null)} onClick={() => hover(card?.id ?? null)}>
+                    <div className="ba-peekart">{card?.image && <img src={card.image} alt={card.name} />}</div>
+                    <b>{card?.name ?? iid}</b>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="ba-ovbtns">
+              <button className="ba-btn" data-act="trash-close" onClick={() => setTrashOpen(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     {/* drag-to-play ghost: viewport coordinates, card size at the stage scale */}
     {/* DON!! group drag ghost: the group as a small cascade + its count */}

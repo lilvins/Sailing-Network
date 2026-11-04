@@ -28,6 +28,7 @@ const hostSchema = z.object({
   note: z.string().trim().max(80).default(""),
   password: z.string().max(60).default(""),
 });
+const undoSchema = z.object({ action: z.enum(["request", "accept", "decline"]) });
 const chatSchema = z.object({ text: z.string().trim().min(1).max(200), at: z.number().int().min(0) });
 
 const rooms = new Map();
@@ -56,6 +57,9 @@ function toClient(room, seat, after, chatAfter) {
     firstPlayer: room.firstPlayer,
     seats: room.seats.map(publicSeat),
     total: room.moves.length,
+    /** Goes up when moves are taken back: every browser rebuilds the game. */
+    epoch: room.epoch,
+    undoBy: room.undoBy === null ? null : SEATS[room.undoBy],
     moves: room.moves.slice(after),
     chat: room.chat.slice(chatAfter),
   };
@@ -98,7 +102,7 @@ export function registerRooms(app, requireUser) {
       seed: `room-${randomBytes(9).toString("hex")}`,
       firstPlayer: SEATS[randomInt(2)],
       seats: [{ userId: user.id, name: seatName(user), deck: parsed.data.deck }, null],
-      moves: [], chat: [],
+      moves: [], chat: [], epoch: 0, undoBy: null,
     };
     rooms.set(room.code, room);
     return reply.code(201).send({ room: toClient(room, 0, 0, 0) });
@@ -148,8 +152,36 @@ export function registerRooms(app, requireUser) {
     if (parsed.data.seq !== room.moves.length) return reply.code(409).send({ error: "Out of sync" });
     if (room.moves.length >= MAX_MOVES) return reply.code(409).send({ error: "This game is too long" });
     room.moves.push(parsed.data.intent);
+    room.undoBy = null;
     room.touchedAt = Date.now();
     return reply.send({ total: room.moves.length });
+  });
+
+  // a take-back: one player asks, the other accepts; that player's last move and
+  // everything after it go
+  app.post("/api/rooms/:code/undo", async (req, reply) => {
+    const user = await requireUser(req, reply);
+    if (!user) return;
+    const room = rooms.get(roomCode(req));
+    if (!room) return reply.code(404).send({ error: "This game no longer exists" });
+    const seat = seatOf(room, user.id);
+    if (seat < 0) return reply.code(403).send({ error: "You are not in this game" });
+    const parsed = undoSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Invalid request" });
+    const { action } = parsed.data;
+    if (action === "request") {
+      if (!room.moves.some((m) => m.player === SEATS[seat])) return reply.code(409).send({ error: "You have no move to take back" });
+      room.undoBy = seat;
+    } else if (action === "decline") {
+      room.undoBy = null;
+    } else {
+      if (room.undoBy === null || room.undoBy === seat) return reply.code(409).send({ error: "Only your opponent can accept" });
+      room.moves.length = room.moves.findLastIndex((m) => m.player === SEATS[room.undoBy]);
+      room.undoBy = null;
+      room.epoch += 1;
+    }
+    room.touchedAt = Date.now();
+    return reply.send({ ok: true });
   });
 
   app.post("/api/rooms/:code/chat", async (req, reply) => {

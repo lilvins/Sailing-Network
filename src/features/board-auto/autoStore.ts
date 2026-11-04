@@ -53,10 +53,16 @@ export interface OnlineState {
   /** How many of the room's moves are already in `game`. */
   applied: number;
   chat: RoomChatLine[];
+  /** Goes up on the server when moves are taken back. */
+  epoch: number;
 }
 
 /** Set by room.ts: the store only knows that moves have to go somewhere. */
-let onlineHooks: { send: (code: string, seq: number, intent: PlayerIntent) => void; leave: () => void } | null = null;
+let onlineHooks: {
+  send: (code: string, seq: number, intent: PlayerIntent) => void;
+  leave: () => void;
+  undo: (code: string, action: "request" | "accept" | "decline") => void;
+} | null = null;
 export function setOnlineHooks(hooks: NonNullable<typeof onlineHooks>): void {
   onlineHooks = hooks;
 }
@@ -308,7 +314,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     }
   },
   requestUndo: () => {
-    const { history, seats } = get();
+    const { history, seats, online } = get();
+    if (online) {
+      set({ undoRequest: { by: online.mySeat } });
+      onlineHooks?.undo(online.code, "request");
+      return;
+    }
     const last = [...history].reverse().find((h) => !isAiSeat(seats, h.actor));
     if (!last) return;
     const opponent = seats?.find((s) => s.pid !== last.actor);
@@ -317,8 +328,13 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   answerUndo: (accept) => {
-    const { history, seats, undoRequest, events } = get();
+    const { history, seats, undoRequest, events, online } = get();
     if (!undoRequest) return;
+    if (online) {
+      set({ undoRequest: null });
+      onlineHooks?.undo(online.code, accept ? "accept" : "decline");
+      return;
+    }
     if (!accept) {
       set({ undoRequest: null, banner: { id: bannerSeq++, text: "Take-back declined.", tone: "info" } });
       return;
