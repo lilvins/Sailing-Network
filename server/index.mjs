@@ -622,6 +622,19 @@ app.get("/api/stats", async () => {
 
 app.get("/api/health", async () => ({ ok: true }));
 
+// a page that crashed while drawing (src/app/ErrorBoundary.tsx): into this console
+const clientErrorSchema = z.object({ message: z.string().max(500), stack: z.string().max(4000), url: z.string().max(200) });
+app.post(
+  "/api/client-errors",
+  { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } },
+  async (req, reply) => {
+    const p = clientErrorSchema.safeParse(req.body);
+    if (!p.success) return reply.code(400).send({ error: "Invalid input" });
+    console.error(`[client-error] ${p.data.url}: ${p.data.message}\n${p.data.stack}`);
+    return reply.send({ ok: true });
+  },
+);
+
 // ---- card art proxy (same-origin, disk-cached; see card-art.mjs) ----
 registerCardArt(app);
 await registerWelcome(app);

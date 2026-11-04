@@ -18,8 +18,12 @@ import "@fontsource/vt323/400.css";
 import "./features/pixel/index.css";
 import "./features/pixel/percent-glyph.css";
 
+import { ErrorBoundary } from "./app/ErrorBoundary";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 );
