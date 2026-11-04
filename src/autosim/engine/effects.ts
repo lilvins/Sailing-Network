@@ -280,7 +280,8 @@ export function fitChoice(
 ): Iid[] {
   const c: SetConstraints = { totalCostAtMost: choice.totalCostAtMost, totalPowerAtMost: choice.totalPowerAtMost, distinctNames: choice.distinctNames };
   const has = c.totalCostAtMost !== undefined || c.totalPowerAtMost !== undefined || !!c.distinctNames;
-  const refs = preferred.map((iid) => choice.candidates.find((x) => x.iid === iid)!);
+  // a pick left over from the previous choice is simply not part of this one
+  const refs = preferred.flatMap((iid) => choice.candidates.find((x) => x.iid === iid) ?? []);
   return fitSelection(db, state, refs, has ? c : null, choice.count).map((t) => t.iid);
 }
 

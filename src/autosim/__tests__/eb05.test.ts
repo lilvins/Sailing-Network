@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import type { PlayerIntent as Intent } from "../engine/intents";
+import { fitChoice } from "../engine/effects";
 import { legalMoves } from "../engine/legality";
 import { markStateEdited } from "../engine/stateVersion";
 import { effectivePower, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
@@ -242,5 +243,15 @@ describe("3-7-6-1: a Character played by an effect into a full area", () => {
       expect(s.players.alice.zones.characterArea).toHaveLength(5);
     }
     expect(s.pendingChoice).toBeNull();
+  });
+});
+
+describe("fitChoice", () => {
+  it("ignores a pick left over from the previous choice instead of crashing", () => {
+    const s = newGame();
+    const here = put(s, "BW");
+    const choice = { candidates: [{ owner: "alice" as PID, iid: here }], count: 1 };
+    expect(fitChoice(db, s, choice, ["left-over", here])).toEqual([here]);
+    expect(fitChoice(db, s, choice, ["left-over"])).toEqual([]);
   });
 });
