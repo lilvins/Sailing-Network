@@ -18,6 +18,8 @@ export function durationFor(key: string, sel: Selector, a: AbilityCtx): Duration
     case "BuffPowerToOwnersEnd": case "SilenceToOwnersEnd": case "CantAttack": case "CantRest":
       // "until the end of the target owner's turn" (spec B §1.13)
       if (sel.owner === "opponent" && OWN_TURN_TIMINGS.has(a.timing)) return "untilEndOfOpponentsNextTurn";
+      // on your own card from a [Trigger] / [Counter] (the opponent's turn): "until the end of your next turn"
+      if (sel.owner === "self" && (a.timing === "trigger" || a.timing === "counter")) return "untilEndOfYourNextTurn";
       if (sel.owner === "any") fail(`${key} on cards of either side`);
       return "thisTurn";
     default: return "thisTurn";

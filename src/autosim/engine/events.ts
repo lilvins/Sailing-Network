@@ -87,7 +87,7 @@ export type GameEvent =
   // [Trigger] lifecycle (10-1-5)
   | { type: "triggerActivated"; player: PID; iid: Iid; cardId: string } // 10-1-5-1 (revealed; leaves Life)
   | { type: "triggerCardTrashed"; player: PID; iid: Iid }            // 10-1-5-3
-  | { type: "triggerCardPlayed"; player: PID; iid: Iid }             // trigger "play this card"
+  | { type: "triggerCardPlayed"; player: PID; iid: Iid; rested?: boolean; zone?: "stage" } // trigger "play this card"
   // game end (1-2, 9-2)
   | { type: "gameEnded"; winner: PID; reason: string };
 
@@ -227,6 +227,12 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       // the first opposing turn AFTER the one it was created on.
       state.modifiers = state.modifiers.filter(
         (m) => !(m.duration === "untilEndOfOpponentsNextTurn" && e.player !== m.anchor && state.turn > m.createdTurn),
+      );
+      // "until the end of your next turn" (a [Trigger] or [Counter], used on
+      // the opponent's turn): expires at the end of the controller's own turn
+      // AFTER the one it was created on.
+      state.modifiers = state.modifiers.filter(
+        (m) => !(m.duration === "untilEndOfYourNextTurn" && e.player === m.anchor && state.turn > m.createdTurn),
       );
       break;
 
@@ -618,9 +624,10 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
 
     case "triggerCardPlayed": {
       const p = state.players[e.player];
-      p.zones.characterArea.push(e.iid);
       const inst = p.instances[e.iid];
-      inst.rested = false;
+      inst.rested = e.rested ?? false;
+      if (e.zone === "stage") { p.zones.stage.push(e.iid); break; }
+      p.zones.characterArea.push(e.iid);
       inst.playedOnTurn = state.turn; // 3-7-4 summoning sickness applies
       break;
     }

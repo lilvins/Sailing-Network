@@ -1,6 +1,6 @@
 {
  "fullyAutomaticNow": 2518,
- "effectsInCatalog": 3483,
+ "effectsInCatalog": 3484,
  "effectsManual": 0,
  "source": "optcg-ai public/data/optcg/bundle.json (actionV3) → src/autosim/compiler/fromOptcg.ts",
  "cards": 2935,

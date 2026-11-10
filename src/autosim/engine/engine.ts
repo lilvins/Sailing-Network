@@ -16,7 +16,7 @@ import {
   startDamageStep, startEndPhase, startOnPlayEffects, startTurn,
   useCounterEventCard,
 } from "./battle";
-import { canPayCost, canPayEventMainCost, conditionsMet, playLocked, satisfiesSet, watchers } from "./effects";
+import { canPayCost, canPayEventCost, conditionsMet, playLocked, satisfiesSet, watchers } from "./effects";
 import { emit, type GameEvent } from "./events";
 import { EngineError, type PlayerIntent } from "./intents";
 import {
@@ -271,7 +271,7 @@ export function applyIntentInPlace(db: CardDb, state: AutoGameState, intent: Pla
           if (!conditionsMet(db, state, intent.player, intent.iid, fx.conditions)) {
             throw new EngineError("[Main] effect conditions not met (8-4-1-1)");
           }
-          if (!canPayEventMainCost(db, state, intent.player, intent.iid, cost, fx.cost)) {
+          if (!canPayEventCost(db, state, intent.player, intent.iid, cost, fx.cost)) {
             throw new EngineError("cannot pay the [Main] effect's activation cost (8-3-1-3)");
           }
         }
@@ -404,7 +404,7 @@ export function applyIntentInPlace(db: CardDb, state: AutoGameState, intent: Pla
       if (p.don.active < cardCost + restDonNeed) {
         throw new EngineError(`not enough active DON!! (${p.don.active}/${cardCost + restDonNeed})`);
       }
-      if (!canPayCost(db, state, intent.player, intent.cardIid, counterFx.cost)) {
+      if (!canPayEventCost(db, state, intent.player, intent.cardIid, cardCost, counterFx.cost)) {
         throw new EngineError("cannot pay the [Counter] effect's activation cost (8-3-1-3)");
       }
       useCounterEventCard(db, state, log, intent.player, intent.cardIid, cardCost);

@@ -15,6 +15,18 @@ _Avoid_: prompt, popup
 **Impronta**:
 L'hash degli eventi di una partita giocata a seed fisso. Se cambia dopo una modifica "solo di velocità", la modifica ha cambiato le regole.
 
+**Tutti** (`COUNT_ALL`, 99):
+Il numero che in un selettore vuol dire "tutte le carte che ci sono": non si sceglie niente. Usato come costo ("dai −2000 al tuo Leader") basta che ce ne sia una.
+
+**Mano o cestino** (`handOrTrash`):
+La zona di un selettore che legge insieme la mano e il cestino ("from your hand or trash"). La carta giocata dice da quale delle due è venuta davvero.
+
+**Fino alla fine del tuo prossimo turno** (`untilEndOfYourNextTurn`):
+La durata di un effetto usato nel turno avversario ([Trigger], [Counter]) che resta per tutto il tuo turno successivo e sparisce quando finisce.
+
+**Override dal testo** (`TEXT_IR`):
+L'effetto di una carta scritto a mano dal testo stampato, quando i dati di optcg-ai sono sbagliati. Vale solo finché il testo nel catalogo è quello da cui è stato scritto.
+
 ## Bot
 
 **Agente**:

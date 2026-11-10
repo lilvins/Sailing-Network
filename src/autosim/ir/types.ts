@@ -75,6 +75,7 @@ export type Duration =
   | "thisTurn"                    // expires 6-6-1-3
   | "untilStartOfYourNextTurn"    // expires 6-2-1
   | "untilEndOfOpponentsNextTurn"
+  | "untilEndOfYourNextTurn"      // the controller's first turn after the one it was created on
   | "untilOwnersNextRefresh"      // consumed by the target owner's next Refresh Phase (6-2-4, M5)
   | "permanentWhileInPlay";
 
@@ -146,6 +147,9 @@ export interface SelectorFilter {
   or?: SelectorFilter;
 }
 
+/** A selector count that means "all of them" (no choice is made). */
+export const COUNT_ALL = 99;
+
 export interface Selector {
   owner: "self" | "opponent" | "any";
   zone:
@@ -154,9 +158,11 @@ export interface Selector {
     // M5: "your Leader or Stage", "your Characters or Stage", "your cards" on the field
     | "leaderOrStage" | "characterOrStage" | "field"
     // M5: "the top card of your Life cards" (a revealed Life card)
-    | "lifeTop";
+    | "lifeTop"
+    // "from your hand or trash": the cards of both
+    | "handOrTrash";
   filter?: SelectorFilter;
-  count: number;              // convention: 99 = "all" (auto-selected, no choice)
+  count: number;              // COUNT_ALL (99) = "all" (auto-selected, no choice)
   upTo?: boolean;             // 4-8: may choose 0..count
   self?: boolean;             // the compiled card itself
   /** "that card": the card(s) chosen by the PREVIOUS action of this effect
@@ -338,7 +344,7 @@ export type Action =
   | { kind: "select"; sel: Selector }                         // "Select up to 1 …": choose now, "the selected card" later (M5)
   | { kind: "reveal"; sel: Selector }                         // "reveal N cards from your hand" (M5; no movement)
   | { kind: "giveActiveDon"; sel: Selector; count: number }   // "give N active DON!! to …" (M5)
-  | { kind: "playFromZone"; zone: "hand" | "trash" | "revealed" | "life"; sel: Selector;
+  | { kind: "playFromZone"; zone: "hand" | "trash" | "revealed" | "life" | "handOrTrash"; sel: Selector;
       free?: boolean; rested?: boolean }
   | { kind: "peekDeck"; who: Who; count: number; then: PeekDisposition }
   | { kind: "mill"; who: Who; count: number; countFromPrev?: boolean } // M5: "the same number of cards as you did from your hand"

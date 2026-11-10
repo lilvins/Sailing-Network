@@ -12,7 +12,7 @@
  * playFromZone "revealed". `static` effects are continuous (8-1-3-3) and are
  * executed by the M4 fixpoint, not here.
  */
-import type { Action, CompareOp, Condition, CostItem, Quantity, Selector, SelectorFilter, Timing } from "../ir/types";
+import { COUNT_ALL, type Action, type CompareOp, type Condition, type CostItem, type Quantity, type Selector, type SelectorFilter, type Timing } from "../ir/types";
 import { emit, type GameEvent } from "./events";
 import {
   attributesOf, effectiveBasePower, effectiveCost, effectivePower, hasRestriction, keywordsOf, opponentOf, ownTurnCount,
@@ -316,6 +316,7 @@ export function resolveSelector(
       case "stage": pool = [...p.zones.stage]; break;
       case "hand": pool = [...p.zones.hand]; break;
       case "trash": pool = [...p.zones.trash]; break;
+      case "handOrTrash": pool = [...p.zones.hand, ...p.zones.trash]; break;
       case "leaderOrStage": pool = [p.leaderIid, ...p.zones.stage]; break;
       case "characterOrStage": pool = [...p.zones.characterArea, ...p.zones.stage]; break;
       case "field": pool = [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage]; break;
@@ -481,10 +482,10 @@ export function quantity(state: AutoGameState, controller: PID, q: Quantity, db:
 
 // ─── activation costs (8-3-1) — payable check ────────────────────────────────
 
-/** Whether an Event's [Main] cost can be paid once the Event itself is played:
- *  its own DON!! are rested and it has left the hand (2-7-3 / 8-4-2), so
- *  neither can pay the [Main] cost too. */
-export function canPayEventMainCost(
+/** Whether the cost of an Event's [Main] or [Counter] effect can be paid once
+ *  the Event itself is played: its own DON!! are rested and it has left the
+ *  hand (2-7-3 / 8-4-2), so neither can pay the effect's cost too. */
+export function canPayEventCost(
   db: CardDb, state: AutoGameState, player: PID, eventIid: Iid, cardCost: number, cost: CostItem[] | undefined,
 ): boolean {
   const p = state.players[player];
@@ -583,7 +584,9 @@ export function canPerformFully(db: CardDb, state: AutoGameState, player: PID, s
   }
   let candidates = actionCandidates(db, state, player, sourceIid, action);
   if (action.kind === "restTarget") candidates = candidates.filter((t) => !state.players[t.owner].instances[t.iid].rested);
-  return candidates.length >= action.sel.count;
+  // "your Leader" / "all of your …" (count 99): done to every card there is, so one is enough
+  const needed = action.sel.count === COUNT_ALL ? 1 : action.sel.count;
+  return candidates.length >= needed;
 }
 
 // ─── action planning & application ───────────────────────────────────────────
@@ -751,6 +754,11 @@ export function planAction(
     if (n === 0) return { kind: "apply", targets: [] };
     sel = { ...sel, count: n, upTo: false };
   }
+  if (act.kind === "powerMod" && act.perPrevTarget) {
+    // "+N for every card trashed / DON!! rested this way": none → no bonus, so no target is asked
+    const n = running.lastCount ?? running.lastTargets.length;
+    if (Math.floor(n / (act.perPrevEvery ?? 1)) === 0) return { kind: "apply", targets: [] };
+  }
   if (sel.prev) {
     // "that card" (M3): bind to the previous action's chosen targets; cards
     // that already left their area drop out (8-1-2 to the extent possible)
@@ -792,19 +800,30 @@ export function planAction(
   return { kind: "choose", chooser, candidates, count, upTo: sel.upTo ?? false };
 }
 
+/** The area a card played by an effect comes from — for "from your hand or
+ *  trash", the one it is in. */
+function playedFrom(state: AutoGameState, action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef): "hand" | "trash" | "life" {
+  if (action.zone === "handOrTrash") return state.players[t.owner].zones.trash.includes(t.iid) ? "trash" : "hand";
+  return action.zone === "trash" ? "trash" : action.zone === "life" ? "life" : "hand";
+}
+
 /** A Character played by an effect (free: the effect pays no DON!!). */
 export function playCharacterFromZone(
   db: CardDb, state: AutoGameState, log: GameEvent[], controller: PID, running: RunningEffect,
   action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef,
 ): void {
   const p = state.players[t.owner];
-  watchers(db, state, "onYouPlayCharacter", t.owner, t.iid, controller, { fromTrash: action.zone === "trash", source: running.sourceIid });
+  const from = playedFrom(state, action, t);
+  watchers(db, state, "onYouPlayCharacter", t.owner, t.iid, controller, { fromTrash: from === "trash", source: running.sourceIid });
   const played = {
-    type: "playedFromZone" as const, player: t.owner, iid: t.iid,
-    from: action.zone === "trash" ? "trash" as const : action.zone === "life" ? "life" as const : "hand" as const,
+    type: "playedFromZone" as const, player: t.owner, iid: t.iid, from,
     rested: (action.rested ?? false) || hasRestriction(db, state, t.owner, p.leaderIid, "charactersPlayedRested"),
   };
-  if (played.from === "life") emitLife(db, state, log, played); // M5: a revealed Life card is played
+  const tc = running.triggerCard;
+  if (tc && tc.iid === t.iid) { // [Trigger] "play this card": it comes from no area (10-1-5-3)
+    emit(state, log, { type: "triggerCardPlayed", player: t.owner, iid: t.iid, rested: played.rested });
+    tc.moved = true;
+  } else if (played.from === "life") emitLife(db, state, log, played); // M5: a revealed Life card is played
   else emit(state, log, played);
   // 10-2-6 [On Play] fires for effect plays too
   enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
@@ -1071,12 +1090,18 @@ export function applyAction(
       break;
     }
 
-    case "restDon": // rest up to N active DON!! of a player (M5)
+    case "restDon": { // rest up to N active DON!! of a player (M5)
+      let rested = 0;
       for (const pid of whoToPids(state, controller, action.who)) {
         const n = Math.min(action.count, state.players[pid].don.active);
         if (n > 0) emit(state, log, { type: "donRestedByEffect", player: pid, count: n });
+        rested += n;
       }
+      // "rest any number …": with a choice the count comes from resolveNumber (battle.ts);
+      // here there was nothing to choose, and "for every DON!! rested this way" must still read it
+      if (action.upTo) { running.lastTargets = []; running.lastCount = rested; }
       break;
+    }
 
     case "lifeTopToBottom": // M5
       for (const pid of whoToPids(state, controller, action.who)) {
@@ -1147,12 +1172,22 @@ export function applyAction(
       if (action.sel.self && tc) {
         const p = state.players[controller];
         const card = db(p.instances[tc.iid].cardId);
-        // 8-1-2 "to the extent possible": a full character area (3-7-6) or a
-        // non-Character card can't be played — the card falls to the trash.
-        if (card.category === "Character" && p.zones.characterArea.length < 5) {
-          emit(state, log, { type: "triggerCardPlayed", player: controller, iid: tc.iid });
+        if (card.category === "Stage") { // 3-8-5-1: the Stage already there is trashed
+          const old = p.zones.stage[0];
+          if (old) emit(state, log, { type: "characterTrashedByRule", player: controller, iid: old });
+          emit(state, log, { type: "triggerCardPlayed", player: controller, iid: tc.iid, zone: "stage" });
           tc.moved = true;
+          enqueueAutoEffects(db, state, controller, tc.iid, "onPlay");
+          break;
         }
+        // 8-1-2 "to the extent possible": a card that can't be played falls to the trash
+        if (card.category !== "Character" || playLocked(db, state, controller, tc.iid)
+          || hasRestriction(db, state, controller, tc.iid, "cannotBePlayedByEffects")) break;
+        const t = { owner: controller, iid: tc.iid };
+        // 3-7-6-1: a full area first trashes 1 Character by rule (the pump asks which)
+        if (p.zones.characterArea.length >= 5) { (running.awaitingRoom ??= []).push({ action, target: t }); break; }
+        // a play like any other: "when you play a Character" and its own [On Play] answer it (10-2-6)
+        playCharacterFromZone(db, state, log, controller, running, action, t);
         break;
       }
       // "play this card from your trash / hand" (M5)
@@ -1177,11 +1212,11 @@ export function applyAction(
           // "play up to 2 … type cards" may play a Stage (M5): 3-8-5-1, the old one is trashed
           const old = state.players[t.owner].zones.stage[0];
           if (old) emit(state, log, { type: "characterTrashedByRule", player: t.owner, iid: old });
-          emit(state, log, { type: "playedFromZone", player: t.owner, iid: t.iid, from: action.zone === "trash" ? "trash" : "hand", rested: false, zone: "stage" });
+          emit(state, log, { type: "playedFromZone", player: t.owner, iid: t.iid, from: playedFrom(state, action, t) === "trash" ? "trash" : "hand", rested: false, zone: "stage" });
           enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
           continue;
         }
-        if (card.category !== "Character" || playLocked(db, state, t.owner, t.iid, action.zone === "hand")) continue;
+        if (card.category !== "Character" || playLocked(db, state, t.owner, t.iid, playedFrom(state, action, t) === "hand")) continue;
         if (hasRestriction(db, state, t.owner, t.iid, "cannotBePlayedByEffects")) continue; // M5
         // 3-7-6-1: a full area first trashes 1 Character by rule (the pump asks which)
         if (p.zones.characterArea.length >= 5 || running.awaitingRoom?.length) {

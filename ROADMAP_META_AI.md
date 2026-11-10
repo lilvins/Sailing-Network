@@ -167,6 +167,17 @@ mano.
   mazzo ("con questo stato, giocando X succede Y").
 - Fuzz: 500 partite per coppia di mazzi senza blocchi né eccezioni.
 
+Stato al 10/11: revisione fatta su tutte le 391 carte dei mazzi meta, a 6
+gruppi, ognuno con un revisore indipendente. Corretti gli errori confermati
+(branch `fix/meta-cards-review`, test in `src/autosim/__tests__/meta-review.test.ts`):
+costi su "il tuo Leader", Luffy OP13-001 senza DON!!, condizioni dei [Trigger]
+sulle vite, [Counter] pagati con se stessi, "[Trigger] Play this card", tipi in
+pareggio ({Shandian Warrior}), "from your hand or trash", "until the end of
+your next turn", e Kalgara, Five Elders, Perona, Buggy dal testo.
+Restano: le domande di regole da decidere con Vins, gli errori minori ("fino
+a", nomi confrontati per pezzo di parola), i test di scenario per ogni Leader
+e il fuzz da 500 partite.
+
 ## Tappa 9 — Motore pronto per l'AI (velocità + interfaccia)
 
 - Cache del calcolo degli effetti continui (oggi ricalcolati a ogni domanda:
