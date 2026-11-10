@@ -223,8 +223,7 @@
 /* grid spanning hint */
 .db-list-more{grid-column:1/-1;text-align:center;color:var(--muted);font-size:12px;padding:12px 6px 4px;}
 .db-list-more .db-chip{margin-left:8px;}
-.db-intext{flex:0 0 auto;font-size:11px;padding:2px 7px;background:transparent;border:1px solid var(--edge);color:var(--muted);cursor:pointer;}
-.db-intext.on{color:var(--txt);border-color:var(--acc);}
+.db-list-split{grid-column:1/-1;font-size:12px;color:var(--muted);padding:10px 2px 2px;border-top:1px solid var(--edge);margin-top:4px;}
 .db-clearall{margin-left:auto;font-size:11px;padding:2px 8px;background:transparent;border:1px solid var(--edge);color:var(--txt);cursor:pointer;}
 .db-star{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:5px 8px;background:transparent;border:1px solid var(--edge);color:var(--muted);cursor:pointer;}
 .db-star.on{color:var(--txt);border-color:var(--acc);}
