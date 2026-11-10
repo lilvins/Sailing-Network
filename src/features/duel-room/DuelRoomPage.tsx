@@ -9,6 +9,7 @@ import { useAutoStore } from "../board-auto/autoStore";
 import { userDeckChoices, type DeckChoice } from "../board-auto/decks";
 import { presetDeckChoices } from "../board-auto/presetDecks";
 import { hostDuel, joinDuel, leaveRoom, listOpenDuels, type OpenDuel } from "../board-auto/room";
+import { rememberDuelDeck, rememberedDuelDeck } from "./duelDeck";
 import "@fontsource/silkscreen/400.css"; // pixel HUD labels (--hud in duelroom.css)
 import "@fontsource/silkscreen/700.css";
 import "@fontsource/vt323/400.css"; // pixel duelist names (--pixel)
@@ -170,6 +171,7 @@ function LogResultModal({ decks, onClose }: LogResultProps) {
 
 /** The columns of Open Duels; each lists the live duels hosted in that format. */
 const FORMATS = [
+  { key: "op17", name: "Standard · OP17", accent: "#4f8fd0" },
   { key: "op16", name: "Standard · OP16", accent: "#3f9d7e" },
   { key: "op15", name: "Standard · OP15", accent: "#c98a52" },
   { key: "eastblue", name: "East Blue", accent: "#9a6ad0" },
@@ -185,7 +187,7 @@ function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName:
         <div className="dr-duel-top">
           <span className="dr-duel-host">{d.host}</span>
           {d.locked && (
-            <span className="dr-duel-lock">
+            <span className="dr-duel-lock" title="This duel needs a password">
               <Icon name="lock" size={12} />
             </span>
           )}
@@ -197,7 +199,7 @@ function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName:
           {d.note && (
             <>
               <span className="dot">·</span>
-              <span className="dr-duel-note">“{d.note}”</span>
+              <span className="dr-duel-note" title={d.note}>“{d.note}”</span>
             </>
           )}
         </div>
@@ -250,7 +252,9 @@ export function DuelRoomPage() {
       .then(([{ decks }, cardMap]) => {
         setMyDecks(decks);
         setCards(cardMap);
-        setDeckId(decks.length ? decks[0].id : presetDeckChoices()[0].key);
+        const remembered = rememberedDuelDeck();
+        const known = remembered && (decks.some((d) => d.id === remembered) || presetDeckChoices().some((d) => d.key === remembered));
+        setDeckId(known ? remembered : decks.length ? decks[0].id : presetDeckChoices()[0].key);
       })
       .catch(() => {});
   }, []);
@@ -302,10 +306,41 @@ export function DuelRoomPage() {
   const [fMatch, setFMatch] = useState("Any");
   const [fSort, setFSort] = useState("Newest");
 
-  const [hFormat, setHFormat] = useState("Standard · OP16");
+  const [hFormat, setHFormat] = useState(FORMATS[0].name);
   const [hType, setHType] = useState("Best of 1");
   const [hNote, setHNote] = useState("");
   const [hPass, setHPass] = useState("");
+  // an invitation: the code of a duel, from the box or from a link (?duel=CODE)
+  const [joinCode, setJoinCode] = useState(() => new URLSearchParams(window.location.search).get("duel")?.toUpperCase() ?? "");
+  const [joinPass, setJoinPass] = useState("");
+  const [copied, setCopied] = useState(false);
+  const pickDeck = (id: string) => { setDeckId(id); rememberDuelDeck(id); };
+  const copyInvite = () => {
+    if (!online) return;
+    const link = `${window.location.origin}/?duel=${online.code}`;
+    const done = () => { setCopied(true); window.setTimeout(() => setCopied(false), 1600); };
+    void navigator.clipboard?.writeText(link).then(done, done);
+  };
+  const joinByCode = () => void withDeck(async (deck) => {
+    const failed = await joinDuel(joinCode.trim(), deck, joinPass);
+    if (!failed) window.history.replaceState(null, "", window.location.pathname); // the invitation is used
+    return failed;
+  });
+  const deckSelect = (
+    <div className="dr-select">
+      <select value={deckId} data-deck-select aria-label="Your deck" onChange={(e) => pickDeck(e.target.value)}>
+        {myDecks.length > 0 && (
+          <optgroup label="My decks">
+            {myDecks.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </optgroup>
+        )}
+        <optgroup label="Ready-made">
+          {presetDeckChoices().map((d) => <option key={d.key} value={d.key}>{d.name}</option>)}
+        </optgroup>
+      </select>
+      <span className="dr-select-caret"><Icon name="caret" size={16} /></span>
+    </div>
+  );
 
   const trackRef = useRef<HTMLDivElement>(null);
   const scrollFmt = (dir: number) => {
@@ -395,6 +430,7 @@ export function DuelRoomPage() {
         <div className="dr-open">
           <div className="dr-open-head">
             <span className="dr-open-title">Open Duels</span>
+            <label className="dr-open-deck">You play with {deckSelect}</label>
             <div className="dr-open-arrows">
               <button onClick={() => scrollFmt(-1)} aria-label="Scroll left">
                 <Icon name="caret" size={16} />
@@ -422,7 +458,7 @@ export function DuelRoomPage() {
                           d={d}
                           leaderName={cards?.get(d.leaderId)?.name ?? d.leaderId}
                           disabled={busy || waiting || inGame}
-                          onJoin={(password) => void withDeck((deck) => joinDuel(d.id, deck, password))}
+                          onJoin={(password) => void withDeck((deck) => joinDuel(d.id, deck, password, d.format))}
                         />
                       ))
                     ) : (
@@ -439,18 +475,13 @@ export function DuelRoomPage() {
       <section className="dr-bottom">
         <div className="dr-tools">
           <div className="dr-mini card">
-            <div className="dr-mini-h">Deck</div>
-            <div className="dr-select">
-              <select value={deckId} data-deck-select onChange={(e) => setDeckId(e.target.value)}>
-                {presetDeckChoices().map((d) => (
-                  <option key={d.key} value={d.key}>{d.name}</option>
-                ))}
-                {myDecks.map((d) => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
-                ))}
-              </select>
-              <span className="dr-select-caret"><Icon name="caret" size={16} /></span>
-            </div>
+            <div className="dr-mini-h">Join with a code</div>
+            <input className="dr-input" data-join-code autoComplete="off" spellCheck={false} maxLength={6} value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())} placeholder="Code from your friend" aria-label="Duel code" />
+            <input className="dr-input" type="text" autoComplete="off" value={joinPass} onChange={(e) => setJoinPass(e.target.value)} placeholder="Password, if any" aria-label="Password of that duel" />
+            <button className="dr-ghost-sm" data-act="join-code" disabled={busy || waiting || inGame || joinCode.trim().length !== 6} onClick={joinByCode}>
+              <Icon name="duel" size={14} /> Join
+            </button>
             <button className="dr-ghost-sm" onClick={() => setShowLogResult(true)}>
               <Icon name="duel" size={14} /> Log Result
             </button>
@@ -488,7 +519,11 @@ export function DuelRoomPage() {
           <div className="dr-host-form">
             <div className="dr-hcell">
               <label>Format</label>
-              <Select value={hFormat} onChange={setHFormat} options={["Standard · OP16", "Standard · OP15", "East Blue"]} />
+              <Select value={hFormat} onChange={setHFormat} options={FORMATS.map((f) => f.name)} />
+            </div>
+            <div className="dr-hcell">
+              <label>Your deck</label>
+              {deckSelect}
             </div>
             <div className="dr-hcell">
               <label>Type</label>
@@ -506,6 +541,12 @@ export function DuelRoomPage() {
             {waiting && (
               <div className="dr-pool-status dr-host-wait">
                 <span className="dr-spinner" /> Waiting for a duelist. The duel starts when someone joins.
+                {online && (
+                  <span className="dr-invite">
+                    Code <b data-duel-code>{online.code}</b>
+                    <button className="dr-ghost-sm" data-act="copy-invite" onClick={copyInvite}>{copied ? "Link copied" : "Copy invite link"}</button>
+                  </span>
+                )}
               </div>
             )}
             {waiting ? (

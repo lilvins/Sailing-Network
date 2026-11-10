@@ -311,7 +311,7 @@ async function runMigrations() {
 
   // M5: bot accounts + where a match row came from.
   //   users.is_bot    1 = AI account (scripts/bot-ladder), paired only with other bots.
-  //   matches.source  'ranked' (queue game), 'manual' (logged by hand), '' (older rows and seeds).
+  //   matches.source  'ranked' (queue game), 'manual' (logged by hand), 'friend' (friend game on the table), '' (older rows and seeds).
   const userCols = await db.execute(`PRAGMA table_info(users)`);
   if (!userCols.rows.some((c) => c.name === "is_bot")) {
     await db.execute(`ALTER TABLE users ADD COLUMN is_bot INTEGER NOT NULL DEFAULT 0`);

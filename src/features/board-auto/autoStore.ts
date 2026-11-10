@@ -55,6 +55,9 @@ export interface OnlineState {
   chat: RoomChatLine[];
   /** Goes up on the server when moves are taken back. */
   epoch: number;
+  /** After the game: who asked to play again, who has left the table. */
+  rematchVotes?: PID[];
+  leftSeats?: PID[];
 }
 
 /** Set by room.ts: the store only knows that moves have to go somewhere. */
@@ -147,7 +150,8 @@ interface AutoStoreState {
   /** Every move of this game, oldest first (take-backs). */
   history: HistoryEntry[];
   /** A player asked to take back their last move; the opponent must answer. */
-  undoRequest: { by: PID } | null;
+  /** `eventsLen`: friend games, where the move being taken back starts in `events`. */
+  undoRequest: { by: PID; eventsLen?: number } | null;
   /** Coach mode: while paused, Step first shows the move the AI is about to make (and why), the next Step plays it. */
   aiPlan: AiPlan | null;
   online: OnlineState | null;

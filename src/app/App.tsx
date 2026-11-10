@@ -167,6 +167,7 @@ export function App() {
   const signedIn = status === "ready" && !!user;
   useEffect(() => {
     if (signedIn && hasSavedRoom()) setView("board-auto");
+    else if (signedIn && new URLSearchParams(window.location.search).has("duel")) setView("duel-room"); // an invitation link
   }, [signedIn, setView]);
 
   if (status === "loading") return <AppLoading />;

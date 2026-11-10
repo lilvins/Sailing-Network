@@ -5,6 +5,7 @@
 // order, not whether it is legal. Rooms live in memory: a restart ends them.
 import { randomBytes, randomInt } from "node:crypto";
 import { z } from "zod";
+import { createMatch, getDeck } from "./store.mjs";
 
 const SEATS = ["seatA", "seatB"];
 const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O or 1/I/L
@@ -19,6 +20,8 @@ const deckSchema = z.object({
   name: z.string().min(1).max(80),
   leaderId: z.string().min(1).max(20),
   main: z.array(z.string().min(1).max(20)).min(1).max(60),
+  /** The saved deck it came from (none for a ready-made list): its record counts the game. */
+  deckId: z.string().min(1).max(60).optional(),
 });
 const moveSchema = z.object({ seq: z.number().int().min(0), intent: z.object({ type: z.string(), player: z.enum(SEATS) }).passthrough() });
 const hostSchema = z.object({
@@ -30,6 +33,8 @@ const hostSchema = z.object({
 });
 const undoSchema = z.object({ action: z.enum(["request", "accept", "decline"]), toLength: z.number().int().min(0).optional() });
 const chatSchema = z.object({ text: z.string().trim().min(1).max(200), at: z.number().int().min(0) });
+const rematchSchema = z.object({ action: z.enum(["request", "leave"]) });
+const resultSchema = z.object({ winner: z.enum(SEATS) });
 
 const rooms = new Map();
 
@@ -60,6 +65,9 @@ function toClient(room, seat, after, chatAfter) {
     /** Goes up when moves are taken back: every browser rebuilds the game. */
     epoch: room.epoch,
     undoBy: room.undoBy === null ? null : SEATS[room.undoBy],
+    rematchVotes: SEATS.filter((_, i) => room.rematch[i]),
+    leftSeats: SEATS.filter((_, i) => room.left[i]),
+    nextCode: room.next,
     moves: room.moves.slice(after),
     chat: room.chat.slice(chatAfter),
   };
@@ -79,6 +87,41 @@ const openDuel = (room, userId) => ({
 const roomCode = (req) => String(req.params.code).toUpperCase();
 const seatName = (user) => user.display_name || user.username;
 
+/** A new room object: moves, votes and results all start empty. */
+function newRoom(now, fields) {
+  return {
+    code: newCode(), touchedAt: now, hostSeenAt: now,
+    seed: `room-${randomBytes(9).toString("hex")}`,
+    firstPlayer: SEATS[randomInt(2)],
+    moves: [], chat: [], epoch: 0, undoBy: null,
+    rematch: [false, false], left: [false, false], next: null,
+    results: [null, null], recorded: false,
+    ...fields,
+  };
+}
+
+/** The saved deck behind a seat, only if it really is that player's. */
+async function ownDeckId(seat) {
+  if (!seat.deck.deckId) return null;
+  const deck = await getDeck(seat.deck.deckId);
+  return deck?.user_id === seat.userId ? deck.id : null;
+}
+
+/** Both players said who won and agree: one row each in their records. Marked
+ *  "friend", so it stays out of the ladder and the meta (server/stats). */
+async function recordFriendGame(room) {
+  const winner = room.results[0];
+  await Promise.all(room.seats.map(async (seat, i) => {
+    const other = room.seats[1 - i];
+    await createMatch({
+      userId: seat.userId, oppUserId: other.userId, myDeckId: await ownDeckId(seat),
+      myLeaderId: seat.deck.leaderId, oppLeaderId: other.deck.leaderId,
+      result: winner === SEATS[i] ? "win" : "loss", onPlay: room.firstPlayer === SEATS[i],
+      format: room.format, source: "friend",
+    });
+  }));
+}
+
 export function registerRooms(app, requireUser) {
   app.get("/api/rooms", async (req, reply) => {
     const user = await requireUser(req, reply);
@@ -96,14 +139,10 @@ export function registerRooms(app, requireUser) {
     const now = Date.now();
     dropExpired(now);
     for (const [code, r] of rooms) if (r.seats[0].userId === user.id && !r.seats[1]) rooms.delete(code);
-    const room = {
-      code: newCode(), touchedAt: now, hostSeenAt: now,
+    const room = newRoom(now, {
       format: parsed.data.format, type: parsed.data.type, note: parsed.data.note, password: parsed.data.password,
-      seed: `room-${randomBytes(9).toString("hex")}`,
-      firstPlayer: SEATS[randomInt(2)],
       seats: [{ userId: user.id, name: seatName(user), deck: parsed.data.deck }, null],
-      moves: [], chat: [], epoch: 0, undoBy: null,
-    };
+    });
     rooms.set(room.code, room);
     return reply.code(201).send({ room: toClient(room, 0, 0, 0) });
   });
@@ -199,6 +238,55 @@ export function registerRooms(app, requireUser) {
     if (room.chat.length >= MAX_CHAT) return reply.code(409).send({ error: "The chat is full" });
     room.chat.push({ seat: SEATS[seat], text: parsed.data.text, at: parsed.data.at });
     return reply.send({ ok: true });
+  });
+
+  // "Rematch": when both players asked, a new room with the same seats and decks
+  // (new seed, new first player); both browsers follow `nextCode` there.
+  // "leave": the other player is told, and no rematch can happen any more.
+  app.post("/api/rooms/:code/rematch", async (req, reply) => {
+    const user = await requireUser(req, reply);
+    if (!user) return;
+    const room = rooms.get(roomCode(req));
+    if (!room) return reply.code(404).send({ error: "This game no longer exists" });
+    const seat = seatOf(room, user.id);
+    if (seat < 0) return reply.code(403).send({ error: "You are not in this game" });
+    if (!room.seats[1]) return reply.code(409).send({ error: "The game has not started" });
+    const parsed = rematchSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Invalid request" });
+    if (parsed.data.action === "leave") {
+      if (!room.next) { room.left[seat] = true; room.rematch[seat] = false; }
+      return reply.send({ ok: true });
+    }
+    if (room.left[1 - seat]) return reply.code(409).send({ error: "Your opponent has left" });
+    room.rematch[seat] = true;
+    room.touchedAt = Date.now();
+    if (room.rematch[0] && room.rematch[1] && !room.next) {
+      const next = newRoom(Date.now(), { format: room.format, type: room.type, note: "", password: "", seats: [...room.seats] });
+      rooms.set(next.code, next);
+      room.next = next.code;
+    }
+    return reply.send({ ok: true });
+  });
+
+  // the end of a game, reported by each browser. The server does not run the
+  // engine, so a game counts only if both say the same winner, and only once.
+  app.post("/api/rooms/:code/result", async (req, reply) => {
+    const user = await requireUser(req, reply);
+    if (!user) return;
+    const room = rooms.get(roomCode(req));
+    if (!room) return reply.code(404).send({ error: "This game no longer exists" });
+    const seat = seatOf(room, user.id);
+    if (seat < 0) return reply.code(403).send({ error: "You are not in this game" });
+    if (!room.seats[1]) return reply.code(409).send({ error: "The game has not started" });
+    const parsed = resultSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: "Invalid result" });
+    room.results[seat] ??= parsed.data.winner;
+    const agreed = room.results[0] !== null && room.results[0] === room.results[1];
+    if (agreed && !room.recorded) {
+      room.recorded = true;
+      await recordFriendGame(room);
+    }
+    return reply.send({ recorded: room.recorded });
   });
 
   // only the host, and only before anyone joined: a started game stays for both
