@@ -14,6 +14,11 @@ describe("matchesSearch", () => {
     expect(matchesSearch(trio, "Sabo & Luffy")).toBe(true);
     expect(matchesSearch(xebec, "Rocks Navy")).toBe(false);
   });
+  it("reads the card's text only when asked", () => {
+    const fan = { id: "OP17-050", name: "Fan", tags: ["FILM"], fx: "Play a {Rocks Pirates} type card." };
+    expect(matchesSearch(fan, "Rocks Pirates")).toBe(false);
+    expect(matchesSearch(fan, "Rocks Pirates", true)).toBe(true);
+  });
   it("an empty search matches everything", () => {
     expect(matchesSearch(xebec, "  ")).toBe(true);
   });

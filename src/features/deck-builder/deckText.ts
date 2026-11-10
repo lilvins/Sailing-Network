@@ -1,6 +1,7 @@
-/** Reads a decklist written like an OPTCGSim .deck file: one `NxCODE` per line
- *  (`1xOP13-001`), the leader being the Leader card among them. Same format as
- *  the Deck Constructor's "Copy decklist". */
+/** Reads a pasted decklist, one card per line, the leader being the Leader
+ *  card among them. `NxCODE` (`1xOP13-001`) is the OPTCGSim .deck format and
+ *  what "Copy decklist" writes; lists from other sites also work: `4 CODE`,
+ *  `CODE x4`, `4 Name CODE`, `4 Name (CODE)`, a CODE alone = 1 copy. */
 
 export interface DeckTextCard {
   /** "L" = Leader. */
@@ -14,27 +15,49 @@ export interface ParsedDeck {
   cards: Record<string, number>;
   /** What stops this list from loading; empty = it can load. */
   errors: string[];
+  /** The `errors` that are only a line nobody could read or an unknown card:
+   *  when they are all there is, the rest of the list is still good. */
+  lineErrors: string[];
 }
 
 const MAX_COPIES = 4;
 const MAIN_SIZE = 50;
-const LINE = /^(\d+)\s*x\s*([A-Z0-9]+-\d+)$/i;
+const CODE = String.raw`[A-Z]+\d*-\d+`;
+// "4 XX99-999" before "4xXX99-999": the X of a code must not be read as "times"
+const EXACT = [new RegExp(String.raw`^(\d+)\s+(${CODE})$`, "i"), new RegExp(String.raw`^(\d+)\s*[x×]\s*(${CODE})$`, "i")];
+const CODE_IN_LINE = new RegExp(`(?<![A-Z0-9-])(${CODE})(?![A-Z0-9-])`, "i");
+const COPIES_FIRST = /^[x×]?\s*(\d+)(?:\s*[x×])?(?=\s|$)/i;
+const COPIES_LAST = /[x×]\s*(\d+)$/i;
+
+/** One line → how many copies of which code, or null if there is no code in it. */
+function readLine(line: string): { count: number; id: string } | null {
+  for (const re of EXACT) {
+    const m = re.exec(line);
+    if (m) return { count: Number(m[1]), id: m[2].toUpperCase() };
+  }
+  const found = CODE_IN_LINE.exec(line);
+  if (!found) return null;
+  const rest = `${line.slice(0, found.index)} ${line.slice(found.index + found[0].length)}`.trim();
+  const copies = COPIES_FIRST.exec(rest) ?? COPIES_LAST.exec(rest);
+  return { count: copies ? Number(copies[1]) : 1, id: found[1].toUpperCase() };
+}
 
 export function parseDeckText(text: string, lookup: (id: string) => DeckTextCard | undefined): ParsedDeck {
   const errors: string[] = [];
+  const lineErrors: string[] = [];
   const counts = new Map<string, number>();
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trim();
     if (!line) continue;
-    const m = LINE.exec(line);
-    if (!m) {
-      errors.push(`Can't read "${line}": write it like 4xOP01-001`);
+    const read = readLine(line);
+    if (!read) {
+      lineErrors.push(`Can't read "${line}": write it like 4xOP01-001`);
       continue;
     }
-    const id = m[2].toUpperCase();
-    if (!lookup(id)) errors.push(`Unknown card: ${id}`);
-    else counts.set(id, (counts.get(id) ?? 0) + Number(m[1]));
+    if (!lookup(read.id)) lineErrors.push(`Unknown card: ${read.id}`);
+    else counts.set(read.id, (counts.get(read.id) ?? 0) + read.count);
   }
+  errors.push(...lineErrors);
 
   const leaders = [...counts.keys()].filter((id) => lookup(id)!.t === "L");
   if (leaders.length === 0) errors.push("No Leader in the list");
@@ -54,5 +77,5 @@ export function parseDeckText(text: string, lookup: (id: string) => DeckTextCard
     total += count;
   }
   if (total > MAIN_SIZE) errors.push(`${total} cards: the maximum is ${MAIN_SIZE}`);
-  return { leaderId, cards, errors };
+  return { leaderId, cards, errors, lineErrors };
 }
