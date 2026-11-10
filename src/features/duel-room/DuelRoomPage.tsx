@@ -218,6 +218,10 @@ function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName:
   );
 }
 
+/** The Duelist Pool (ranked) stays closed until two players can share a ranked game:
+ *  today a match would open a table with no opponent (docs/release-checklist.md). */
+const RANKED_OPEN = false;
+
 export function DuelRoomPage() {
   const setView = useUiStore((s) => s.setView);
   const goBack = useUiStore((s) => s.goBack);
@@ -399,6 +403,13 @@ export function DuelRoomPage() {
             <Icon name="duel" size={17} stroke="#e3b24c" />
             <span>Duelist Pool</span>
           </div>
+          {!RANKED_OPEN && (
+            <p className="dr-pool-desc" data-pool-closed>
+              Ranked is not open yet: two players cannot share a ranked game. To play a friend,
+              use <b>Host a Duel</b> below or <b>Join with a code</b>.
+            </p>
+          )}
+          {RANKED_OPEN && (<>
           <p className="dr-pool-desc">
             Join the pool and we'll find a duelist near your skill level, given your constraints.
           </p>
@@ -425,6 +436,7 @@ export function DuelRoomPage() {
                 : "Finding a worthy opponent…"}
             </div>
           )}
+          </>)}
         </div>
 
         <div className="dr-open">
