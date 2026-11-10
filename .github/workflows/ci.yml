@@ -1,0 +1,27 @@
+# Checks every push and pull request: types, unit tests, API tests, production build.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Type check
+        run: npx tsc --noEmit -p tsconfig.app.json
+      - name: Unit tests
+        run: npm run test:unit
+      - name: API tests
+        run: npm run test:api
+      - name: Production build
+        run: npm run build

@@ -26,8 +26,9 @@ Load limits were not measured and legal exposure needs a lawyer.
 - [ ] **Start production from a clean DB.** The dev DB holds demo accounts with the public
       password `captain123`: the build and the seeds no longer ship them, but copying this
       DB online would.
-- [ ] **No deploy path.** `server/index.mjs:934` listens only on 127.0.0.1; nothing serves
-      `dist`; no Dockerfile, CI, backups or `trustProxy`; `public/cards` is not in git.
+- [ ] **Deploy path: the server side is ready, the host is not chosen.** Still to do: pick
+      the host (it needs one persistent disk), copy `public/cards` there (`SN_CARDS_DIR`),
+      set up database backups, and try the Docker image on the host (it was not built here).
 - [ ] **Legal pages and account basics.** No privacy policy, terms, account deletion,
       password reset or email verification.
 
@@ -36,8 +37,9 @@ Load limits were not measured and legal exposure needs a lawyer.
 - [ ] `/api/queue`, `/api/match-sessions/*` and `/api/queue/tick` work without login.
 - [ ] `registerBotGames` is never called: Play vs Bot records get a 404 and the learning
       loop has no data. Add auth before wiring it (it allows anonymous writes).
-- [ ] Rate limits behind a proxy put everyone in one bucket; only signup, login and chat have one.
-- [ ] CORS reflects any origin with credentials; no CSP or security headers.
+- [ ] Only signup, login and chat have a rate limit.
+- [ ] No CSP or security headers (static files send `nosniff` only).
+- [ ] The server does not compress responses: the host's proxy must (2.5 MB main script).
 - [ ] No block, report or delete for DMs and chat.
 - [ ] SQLite: no index on `matches.created_at`, one writer process only, the ladder replays the whole table after every new match, meta pages rescan it.
 - [ ] Duel Room shows invented tables; Join and Host Duel do nothing; the Messages badge is
@@ -48,6 +50,11 @@ Load limits were not measured and legal exposure needs a lawyer.
 
 ## Done
 
+- [x] Deploy, server side (2026-11-10, `server/README.md` → Production): in production the
+      server listens on every interface, serves the built site and the card images
+      (`static.mjs`), refuses to start without a real `COOKIE_SECRET`, allows no other
+      origin unless listed in `CORS_ORIGINS`, and reads `TRUST_PROXY` so rate limits are per
+      visitor. `Dockerfile`, `.env.example`, `npm start`, CI workflow, clean shutdown.
 - [x] Profiles no longer show an email to other users.
 - [x] The production build has no test login; demo seeds refuse `NODE_ENV=production`; `seed:admin` needs `ADMIN_PASSWORD` there.
 - [x] Results logged by hand stay in the player's records, out of the ladder and the meta.

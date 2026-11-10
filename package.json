@@ -12,6 +12,7 @@
     "cards": "node scripts/build-cards.mjs",
     "art": "node scripts/download-art.mjs",
     "server": "node server/index.mjs",
+    "start": "node server/index.mjs",
     "seed:cards": "node server/seed-cards.mjs",
     "seed:admin": "node server/seed-admin.mjs",
     "seed:demo": "node server/seed-demo.mjs",

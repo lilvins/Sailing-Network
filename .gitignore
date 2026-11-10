@@ -22,6 +22,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# Real settings and secrets (.env.example is the template)
+.env
+.env.*
+!.env.example
+
 # Backend (local SQLite DB)
 server/*.db
 server/*.db-wal

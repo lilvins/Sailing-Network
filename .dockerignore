@@ -1,0 +1,32 @@
+# Kept out of the image build: local state, caches, and what the image rebuilds itself.
+.git
+node_modules
+dist
+*.local
+.env
+.env.*
+!.env.example
+
+# local databases (production starts from a clean one, on the /data volume)
+server/*.db
+server/*.db-wal
+server/*.db-shm
+server/*.db-journal
+tests/*.db*
+server/.art-cache
+
+# card images: 638 MB, not in git — they go on the server's disk (SN_CARDS_DIR)
+public/cards/*
+!public/cards/DON.webp
+!public/cards/BACK.webp
+!public/cards/BACK-leader.webp
+!public/cards/BACK-don.webp
+
+# dev tooling output
+captures
+vendor
+_Reports
+scripts/.shots
+scripts/.qa
+scripts/.bot-ladder
+*.log
