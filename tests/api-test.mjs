@@ -60,7 +60,8 @@ function client() {
 function cleanupDb() {
   for (const suffix of ["", "-wal", "-shm"]) {
     const f = DB + suffix;
-    if (existsSync(f)) rmSync(f, { force: true });
+    // Windows keeps the file locked for a moment after the server exits: retry
+    if (existsSync(f)) rmSync(f, { force: true, maxRetries: 20, retryDelay: 100 });
   }
 }
 
@@ -323,8 +324,8 @@ try {
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
 } finally {
-  server.kill();
-  await new Promise((r) => setTimeout(r, 300));
+  // wait for the server to be gone before deleting its database
+  await new Promise((r) => { server.once("exit", r); server.kill(); });
   cleanupDb();
 }
 
