@@ -146,6 +146,9 @@ export interface SelectorFilter {
   or?: SelectorFilter;
 }
 
+/** A selector count that means "all of them" (no choice is made). */
+export const COUNT_ALL = 99;
+
 export interface Selector {
   owner: "self" | "opponent" | "any";
   zone:
@@ -156,7 +159,7 @@ export interface Selector {
     // M5: "the top card of your Life cards" (a revealed Life card)
     | "lifeTop";
   filter?: SelectorFilter;
-  count: number;              // convention: 99 = "all" (auto-selected, no choice)
+  count: number;              // COUNT_ALL (99) = "all" (auto-selected, no choice)
   upTo?: boolean;             // 4-8: may choose 0..count
   self?: boolean;             // the compiled card itself
   /** "that card": the card(s) chosen by the PREVIOUS action of this effect

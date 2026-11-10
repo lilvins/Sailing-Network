@@ -12,7 +12,7 @@
  * playFromZone "revealed". `static` effects are continuous (8-1-3-3) and are
  * executed by the M4 fixpoint, not here.
  */
-import type { Action, CompareOp, Condition, CostItem, Quantity, Selector, SelectorFilter, Timing } from "../ir/types";
+import { COUNT_ALL, type Action, type CompareOp, type Condition, type CostItem, type Quantity, type Selector, type SelectorFilter, type Timing } from "../ir/types";
 import { emit, type GameEvent } from "./events";
 import {
   attributesOf, effectiveBasePower, effectiveCost, effectivePower, hasRestriction, keywordsOf, opponentOf, ownTurnCount,
@@ -583,7 +583,9 @@ export function canPerformFully(db: CardDb, state: AutoGameState, player: PID, s
   }
   let candidates = actionCandidates(db, state, player, sourceIid, action);
   if (action.kind === "restTarget") candidates = candidates.filter((t) => !state.players[t.owner].instances[t.iid].rested);
-  return candidates.length >= action.sel.count;
+  // "your Leader" / "all of your …" (count 99): done to every card there is, so one is enough
+  const needed = action.sel.count === COUNT_ALL ? 1 : action.sel.count;
+  return candidates.length >= needed;
 }
 
 // ─── action planning & application ───────────────────────────────────────────
