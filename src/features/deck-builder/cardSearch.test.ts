@@ -10,6 +10,10 @@ describe("matchesSearch", () => {
     expect(matchesSearch(xebec, "op17-039")).toBe(true);
     expect(matchesSearch(xebec, "Rocks D Xebec")).toBe(true);
   });
+  it("an earlier word must be whole: Rocks Pirates is not Rockstar's Pirates", () => {
+    expect(matchesSearch({ id: "OP09-016", name: "Rockstar", tags: ["Red-Haired Pirates"] }, "Rocks Pirates")).toBe(false);
+    expect(matchesSearch(xebec, "xeb")).toBe(true);
+  });
   it("reads & in a name, and needs every word typed", () => {
     expect(matchesSearch(trio, "Sabo & Luffy")).toBe(true);
     expect(matchesSearch(xebec, "Rocks Navy")).toBe(false);
