@@ -93,15 +93,53 @@ If the email/username already exists, that user is **promoted** to admin.
 
 ## Config (env)
 
+Read once at start by `config.mjs`; `../.env.example` lists every variable with its
+meaning. In development none is needed.
+
 | Var | Default | |
 |-----|---------|--|
-| `PORT` | `8787` | API port |
-| `COOKIE_SECRET` | dev placeholder | **set in production** |
-| `SN_DB_PATH` | `server/sailing.db` | DB file location |
-| `NODE_ENV` | — | `production` ⇒ `secure` cookies (HTTPS only) |
+| `NODE_ENV` | — | `production` ⇒ https-only cookies, the built site served by the API, listening on `0.0.0.0`, and the checks below |
+| `COOKIE_SECRET` | dev placeholder | **required in production** (32+ random characters): the server does not start without it |
+| `PORT` / `SN_API_PORT` | `8787` | `PORT` is read in production only (hosts set it); `SN_API_PORT` always wins |
+| `SN_HOST` | `127.0.0.1` dev, `0.0.0.0` production | address to listen on |
+| `SN_DB_PATH` | `server/sailing.db` | DB file location — on a disk that survives redeploys |
+| `SN_STATIC_DIR` | `dist` in production | the built site; `off` = API only |
+| `SN_CARDS_DIR` | — | folder with the card images, served as `/cards/<file>` |
+| `CORS_ORIGINS` | none in production | other sites allowed to call the API with the cookie, comma separated |
+| `TRUST_PROXY` | off | `1` behind one proxy: each visitor gets their own rate limit |
 
-## Not yet wired
+## Production
 
-The frontend still uses the prototype (fake) login. Next step: an auth client +
-store, real Login/Signup screens, route protection, and an Admin panel. Profiles,
-decklists, friends, messages come after (see `../BACKEND_PLAN.md`).
+One process is the whole product: the API and the built site (`static.mjs`). It needs
+one disk that survives redeploys, for the database and the card images.
+
+```bash
+npm ci
+npm run build                 # the site → dist/
+cp .env.example .env          # fill in COOKIE_SECRET, SN_DB_PATH, SN_CARDS_DIR
+npm run seed:cards            # card list into the new database
+ADMIN_EMAIL=… ADMIN_USERNAME=… ADMIN_PASSWORD=… npm run seed:admin
+npm start                     # with the variables of .env in the environment
+```
+
+Or with Docker (`../Dockerfile`): `docker build -t sailing-network .`, then
+`docker run -p 8787:8787 -v sailing-data:/data --env-file .env sailing-network`, and run
+the two seeds once with `docker exec`.
+
+What to know before going online:
+
+- **Start from a clean database.** Never copy `server/sailing.db`: it holds the demo
+  accounts with a public password and the bots. `seed:demo`, `seed:ladder` and
+  `bots:seed` refuse to run with `NODE_ENV=production`.
+- **Card images are not in git** (`public/cards`, 638 MB). Copy the folder to the
+  server's disk and point `SN_CARDS_DIR` at it. The rights to the art are still an
+  open question (`../docs/release-checklist.md`).
+- **One instance only.** SQLite has one writer and friend games live in the memory of
+  the process (`rooms.mjs`): a second instance would not see them, and a restart or a
+  redeploy ends the games in progress.
+- **HTTPS and compression come from the host's proxy.** The session cookie is
+  `secure`, so the site must be reached over https; the server does not compress, and
+  the main script is 2.5 MB (about 340 kB gzipped).
+- **Back up the database file** (`SN_DB_PATH`, plus its `-wal` file): nothing does it yet.
+
+
