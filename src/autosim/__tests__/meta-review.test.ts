@@ -25,6 +25,7 @@ function addReal(id: string, o: Partial<EngineCard> = {}): void {
 }
 addCard("L", { category: "Leader", cost: 5, power: 5000 });
 addReal("OP13-001", { category: "Leader", cost: 5, power: 5000, name: "Monkey.D.Luffy", types: ["Supernovas", "Straw Hat Crew"] });
+addCard("L-EGG", { category: "Leader", cost: 5, power: 5000, types: ["Egghead"] });
 addCard("FILLER");
 // [Activate: Main] K.O. all of your opponent's Characters.
 addCard("KO-ALL", {}, [{ timing: "activateMain", actions: [{ kind: "koTarget", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller" } }] }]);
@@ -34,6 +35,7 @@ addReal("OP04-016", { category: "Event", cost: 1 });
 addReal("OP14-103", { cost: 2, power: 0, types: ["Amazon Lily"] });
 addReal("EB04-047", { cost: 3, power: 3000, name: "Helmeppo", types: ["Navy", "SWORD"] });
 addCard("SWORD-2", { cost: 2, types: ["Navy", "SWORD"] });
+addReal("OP07-099", { cost: 1, power: 2000, name: "Usopp", types: ["Egghead", "Straw Hat Crew"] });
 // [Trigger] Play this card.
 addCard("TRIGGER-STAGE", { category: "Stage" }, [{ timing: "trigger", actions: [{ kind: "playFromZone", zone: "hand", free: true, sel: { owner: "self", zone: "hand", count: 1, self: true, chooser: "controller" } }] }]);
 for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pads the deck to 50 at 4 copies each
@@ -199,6 +201,21 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     s = go(s, { type: "respondTargets", player: "alice", iids: [inHand] });
     expect(s.players.alice.zones.characterArea).toEqual([inHand]);
     expect(s.players.alice.zones.trash).toContain(helmeppo);
+  });
+
+  it("OP07-099 Usopp: the [Trigger]'s +2000 lasts until the end of your next turn", () => {
+    let s = newGame("L-EGG");
+    const leader = s.players.alice.leaderIid;
+    put(s, "OP07-099", "life");
+    s = letItHit(bobAttacksAlice(s));
+    s = go(s, { type: "respondTrigger", player: "alice", activate: true });
+    s = go(s, { type: "respondTargets", player: "alice", iids: [leader] });
+    expect(effectivePower(db, s, "alice", leader)).toBe(7000);
+    s = go(s, { type: "endTurn", player: "bob" });
+    expect(s.turnPlayer).toBe("alice");
+    expect(effectivePower(db, s, "alice", leader)).toBe(7000); // her next turn
+    s = go(s, { type: "endTurn", player: "alice" });
+    expect(effectivePower(db, s, "alice", leader)).toBe(5000);
   });
 
   it("a type that always comes with a wider one is compiled alone: {Shandian Warrior} is not {Sky Island}", () => {

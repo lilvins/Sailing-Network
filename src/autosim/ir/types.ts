@@ -75,6 +75,7 @@ export type Duration =
   | "thisTurn"                    // expires 6-6-1-3
   | "untilStartOfYourNextTurn"    // expires 6-2-1
   | "untilEndOfOpponentsNextTurn"
+  | "untilEndOfYourNextTurn"      // the controller's first turn after the one it was created on
   | "untilOwnersNextRefresh"      // consumed by the target owner's next Refresh Phase (6-2-4, M5)
   | "permanentWhileInPlay";
 

@@ -18,7 +18,7 @@ const TIMINGS = [
 ];
 const DURATIONS = [
   "instant", "thisBattle", "thisTurn", "untilStartOfYourNextTurn",
-  "untilEndOfOpponentsNextTurn", "untilOwnersNextRefresh", "permanentWhileInPlay",
+  "untilEndOfOpponentsNextTurn", "untilEndOfYourNextTurn", "untilOwnersNextRefresh", "permanentWhileInPlay",
 ];
 const CLASSIFICATIONS = ["vanilla", "keyword-only", "compiled", "partial", "unsupported"];
 const ZONES = [

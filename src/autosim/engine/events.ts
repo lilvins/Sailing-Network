@@ -228,6 +228,12 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       state.modifiers = state.modifiers.filter(
         (m) => !(m.duration === "untilEndOfOpponentsNextTurn" && e.player !== m.anchor && state.turn > m.createdTurn),
       );
+      // "until the end of your next turn" (a [Trigger] or [Counter], used on
+      // the opponent's turn): expires at the end of the controller's own turn
+      // AFTER the one it was created on.
+      state.modifiers = state.modifiers.filter(
+        (m) => !(m.duration === "untilEndOfYourNextTurn" && e.player === m.anchor && state.turn > m.createdTurn),
+      );
       break;
 
     case "cardPlayed": {
