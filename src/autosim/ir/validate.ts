@@ -23,7 +23,7 @@ const DURATIONS = [
 const CLASSIFICATIONS = ["vanilla", "keyword-only", "compiled", "partial", "unsupported"];
 const ZONES = [
   "characterArea", "leader", "leaderOrCharacter", "stage",
-  "hand", "trash", "deckTop", "costArea", "life", "leaderOrStage", "characterOrStage", "field", "lifeTop",
+  "hand", "trash", "deckTop", "costArea", "life", "leaderOrStage", "characterOrStage", "field", "lifeTop", "handOrTrash",
 ];
 const ACTION_KINDS = [
   "powerMod", "koTarget", "draw", "restTarget", "standTarget", "discard",

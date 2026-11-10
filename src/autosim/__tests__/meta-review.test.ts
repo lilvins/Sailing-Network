@@ -32,6 +32,8 @@ addReal("OP15-009", { cost: 1, power: 2000, types: ["East Blue", "Navy"] });
 addReal("OP06-115", { category: "Event", cost: 1, types: ["Sky Island"] });
 addReal("OP04-016", { category: "Event", cost: 1 });
 addReal("OP14-103", { cost: 2, power: 0, types: ["Amazon Lily"] });
+addReal("EB04-047", { cost: 3, power: 3000, name: "Helmeppo", types: ["Navy", "SWORD"] });
+addCard("SWORD-2", { cost: 2, types: ["Navy", "SWORD"] });
 // [Trigger] Play this card.
 addCard("TRIGGER-STAGE", { category: "Stage" }, [{ timing: "trigger", actions: [{ kind: "playFromZone", zone: "hand", free: true, sel: { owner: "self", zone: "hand", count: 1, self: true, chooser: "controller" } }] }]);
 for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pads the deck to 50 at 4 copies each
@@ -163,7 +165,7 @@ describe("meta cards follow the printed text (tappa 8)", () => {
 
   it("\"[Trigger] Play this card\" with 5 Characters: one is trashed by rule to make room (3-7-6-1)", () => {
     let s = newGame();
-    const five = [1, 2, 3, 4, 5].map((n) => put(s, `FILLER-${n}`, "characterArea"));
+    const five = ["FILLER", "FILLER", "FILLER", "FILLER", "FILLER-1"].map((id) => put(s, id, "characterArea"));
     const gloriosa = put(s, "OP14-103", "life");
     s = letItHit(bobAttacksAlice(s));
     s = go(s, { type: "respondTrigger", player: "alice", activate: true });
@@ -183,6 +185,20 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     s = go(s, { type: "respondTrigger", player: "alice", activate: true });
     expect(s.players.alice.zones.stage).toEqual([stage]);
     expect(s.players.alice.zones.trash).toContain(old);
+  });
+
+  it("EB04-047 Helmeppo plays a {SWORD} Character from the hand or from the trash", () => {
+    const candidatesOf = (s: AutoGameState) => (s.pendingChoice?.kind === "selectTargets" ? s.pendingChoice.candidates.map((c) => c.iid) : []);
+    let s = newGame();
+    const helmeppo = put(s, "EB04-047", "characterArea");
+    const inHand = put(s, "SWORD-2", "hand");
+    const inTrash = put(s, "SWORD-2", "trash");
+    put(s, "EB04-047", "trash"); // "other than [Helmeppo]"
+    s = go(s, { type: "activateMain", player: "alice", iid: helmeppo, effectIndex: 0 });
+    expect(candidatesOf(s).sort()).toEqual([inHand, inTrash].sort());
+    s = go(s, { type: "respondTargets", player: "alice", iids: [inHand] });
+    expect(s.players.alice.zones.characterArea).toEqual([inHand]);
+    expect(s.players.alice.zones.trash).toContain(helmeppo);
   });
 
   it("a type that always comes with a wider one is compiled alone: {Shandian Warrior} is not {Sky Island}", () => {

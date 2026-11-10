@@ -194,10 +194,12 @@ function trashPicks(steps: OptcgStep[], i: number, view: CollectedView, a: Abili
     if (keys.length !== 1) fail(`trash pick ${keys.join("+")}`);
     const f = { ...base, ...filterOf(spec, a) };
     const raw = num(spec.TargetCount);
-    const sel: Selector = { owner: a.flipped ? "opponent" : "self", zone: "trash", count: raw === 0 || raw >= 10 ? 99 : raw, upTo: true, chooser: a.flipped ? "opponent" : "controller" };
+    // "play … from your hand or trash": the pick reads the hand next to the trash view
+    const zone = keys[0] === "DeployCharacter" && on(spec.HandCard) ? "handOrTrash" : "trash";
+    const sel: Selector = { owner: a.flipped ? "opponent" : "self", zone, count: raw === 0 || raw >= 10 ? 99 : raw, upTo: true, chooser: a.flipped ? "opponent" : "controller" };
     if (Object.keys(f).length > 0) sel.filter = f;
     if (keys[0] === "SendToHand") actions.push({ kind: "addFromTrashToHand", sel });
-    else if (keys[0] === "DeployCharacter") actions.push({ kind: "playFromZone", zone: "trash", sel, free: true, ...(on(p.effect?.DeploysRested) ? { rested: true } : {}) });
+    else if (keys[0] === "DeployCharacter") actions.push({ kind: "playFromZone", zone, sel, free: true, ...(on(p.effect?.DeploysRested) ? { rested: true } : {}) });
     else if (keys[0] === "SendToDeckBottom" || keys[0] === "SendToDeckTop") actions.push({ kind: "returnToDeck", sel, where: keys[0] === "SendToDeckTop" ? "top" : "bottom" });
     else if (keys[0] === "SendToTopLife") actions.push({ kind: "addToLife", sel, ...(on(p.effect?.ForcedFaceUp) ? { faceUp: true } : {}) });
     else fail(`trash pick ${keys[0]}`);

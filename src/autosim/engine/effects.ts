@@ -316,6 +316,7 @@ export function resolveSelector(
       case "stage": pool = [...p.zones.stage]; break;
       case "hand": pool = [...p.zones.hand]; break;
       case "trash": pool = [...p.zones.trash]; break;
+      case "handOrTrash": pool = [...p.zones.hand, ...p.zones.trash]; break;
       case "leaderOrStage": pool = [p.leaderIid, ...p.zones.stage]; break;
       case "characterOrStage": pool = [...p.zones.characterArea, ...p.zones.stage]; break;
       case "field": pool = [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage]; break;
@@ -799,16 +800,23 @@ export function planAction(
   return { kind: "choose", chooser, candidates, count, upTo: sel.upTo ?? false };
 }
 
+/** The area a card played by an effect comes from — for "from your hand or
+ *  trash", the one it is in. */
+function playedFrom(state: AutoGameState, action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef): "hand" | "trash" | "life" {
+  if (action.zone === "handOrTrash") return state.players[t.owner].zones.trash.includes(t.iid) ? "trash" : "hand";
+  return action.zone === "trash" ? "trash" : action.zone === "life" ? "life" : "hand";
+}
+
 /** A Character played by an effect (free: the effect pays no DON!!). */
 export function playCharacterFromZone(
   db: CardDb, state: AutoGameState, log: GameEvent[], controller: PID, running: RunningEffect,
   action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef,
 ): void {
   const p = state.players[t.owner];
-  watchers(db, state, "onYouPlayCharacter", t.owner, t.iid, controller, { fromTrash: action.zone === "trash", source: running.sourceIid });
+  const from = playedFrom(state, action, t);
+  watchers(db, state, "onYouPlayCharacter", t.owner, t.iid, controller, { fromTrash: from === "trash", source: running.sourceIid });
   const played = {
-    type: "playedFromZone" as const, player: t.owner, iid: t.iid,
-    from: action.zone === "trash" ? "trash" as const : action.zone === "life" ? "life" as const : "hand" as const,
+    type: "playedFromZone" as const, player: t.owner, iid: t.iid, from,
     rested: (action.rested ?? false) || hasRestriction(db, state, t.owner, p.leaderIid, "charactersPlayedRested"),
   };
   const tc = running.triggerCard;
@@ -1204,11 +1212,11 @@ export function applyAction(
           // "play up to 2 … type cards" may play a Stage (M5): 3-8-5-1, the old one is trashed
           const old = state.players[t.owner].zones.stage[0];
           if (old) emit(state, log, { type: "characterTrashedByRule", player: t.owner, iid: old });
-          emit(state, log, { type: "playedFromZone", player: t.owner, iid: t.iid, from: action.zone === "trash" ? "trash" : "hand", rested: false, zone: "stage" });
+          emit(state, log, { type: "playedFromZone", player: t.owner, iid: t.iid, from: playedFrom(state, action, t) === "trash" ? "trash" : "hand", rested: false, zone: "stage" });
           enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
           continue;
         }
-        if (card.category !== "Character" || playLocked(db, state, t.owner, t.iid, action.zone === "hand")) continue;
+        if (card.category !== "Character" || playLocked(db, state, t.owner, t.iid, playedFrom(state, action, t) === "hand")) continue;
         if (hasRestriction(db, state, t.owner, t.iid, "cannotBePlayedByEffects")) continue; // M5
         // 3-7-6-1: a full area first trashes 1 Character by rule (the pump asks which)
         if (p.zones.characterArea.length >= 5 || running.awaitingRoom?.length) {
