@@ -203,7 +203,7 @@ function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName:
         </div>
       </div>
       {d.locked && !d.mine && (
-        <input className="dr-input dr-joinpass" type="password" value={password} placeholder="Password" aria-label="Duel password" onChange={(e) => setPassword(e.target.value)} />
+        <input className="dr-input dr-joinpass" type="text" autoComplete="off" value={password} placeholder="Password" aria-label="Duel password" onChange={(e) => setPassword(e.target.value)} />
       )}
       {d.mine ? (
         <span className="dr-duel-mine">Your duel</span>
@@ -496,11 +496,11 @@ export function DuelRoomPage() {
             </div>
             <div className="dr-hcell">
               <label>Duel Note</label>
-              <input className="dr-input" value={hNote} onChange={(e) => setHNote(e.target.value)} placeholder="Visible to duelists" />
+              <input className="dr-input" autoComplete="off" value={hNote} onChange={(e) => setHNote(e.target.value)} placeholder="Visible to duelists" />
             </div>
             <div className="dr-hcell">
               <label>Duel Password</label>
-              <input className="dr-input" type="password" value={hPass} onChange={(e) => setHPass(e.target.value)} placeholder="Optional" />
+              <input className="dr-input" type="text" autoComplete="off" data-duel-password value={hPass} onChange={(e) => setHPass(e.target.value)} placeholder="Optional" />
             </div>
             {duelError && <p className="dr-host-msg" role="alert">{duelError}</p>}
             {waiting && (
@@ -509,7 +509,7 @@ export function DuelRoomPage() {
               </div>
             )}
             {waiting ? (
-              <button className="dr-host-btn" data-act="duel-cancel" onClick={leaveRoom}>
+              <button className="dr-host-btn" data-act="duel-cancel" onClick={() => { leaveRoom(); setHPass(""); }}>
                 Cancel
               </button>
             ) : (

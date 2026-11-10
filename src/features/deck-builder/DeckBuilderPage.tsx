@@ -13,6 +13,7 @@ import { loadCards } from "../cards/cardsDb";
 import { api } from "../../lib/api";
 import { Dock } from "../profiles/ProfilePages";
 import { parseDeckText } from "./deckText";
+import { matchesSearch } from "./cardSearch";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./deckbuilder.css";
@@ -364,7 +365,7 @@ function DeckBuilder() {
   const list = useMemo(() => {
     const arch = archetype.trim().toLowerCase();
     let l = pool.filter((c) => {
-      if (q && !c.name.toLowerCase().includes(q.toLowerCase())) return false;
+      if (!matchesSearch(c, q)) return false;
       if (colFilter !== "All" && !c.cols.includes(colFilter)) return false;
       if (typeFilter !== "All" && TYPE_LABEL[c.t] !== typeFilter) return false;
       if (arch && !c.tags.some((t) => t.toLowerCase().includes(arch))) return false;
@@ -387,7 +388,10 @@ function DeckBuilder() {
     return l;
   }, [pool, q, colFilter, typeFilter, archetype, sort, counterF, kwF]);
 
-  const shown = useMemo(() => list.slice(0, RENDER_LIMIT), [list]);
+  // how many tiles are on screen: "Show more" adds a page, a new search starts over
+  const [renderLimit, setRenderLimit] = useState(RENDER_LIMIT);
+  useEffect(() => { setRenderLimit(RENDER_LIMIT); }, [list]);
+  const shown = useMemo(() => list.slice(0, renderLimit), [list, renderLimit]);
 
   const deckValid = leader && mainCount === MAIN_MAX;
 
@@ -507,7 +511,7 @@ function DeckBuilder() {
           </div>
           <div className="db-search">
             <I n="search" size={16} />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by card name…" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, code or type…" />
           </div>
           <div className="db-search db-archetype">
             <I n="friends" size={16} />
@@ -567,7 +571,7 @@ function DeckBuilder() {
                   onDoubleClick={() => toggleFav(card.id)} />
               ))}
               {list.length > shown.length &&
-                <div className="db-list-more">Showing {shown.length} of {list.length} — refine your search or filters to see more.</div>}
+                <div className="db-list-more">Showing {shown.length} of {list.length} <button className="db-chip" data-act="show-more" onClick={() => setRenderLimit((n) => n + RENDER_LIMIT)}>Show more</button></div>}
             </div>
           )}
         </section>
