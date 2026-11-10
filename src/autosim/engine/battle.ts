@@ -935,11 +935,7 @@ function processDamage(db: CardDb, state: AutoGameState, log: GameEvent[], remai
       continue;
     }
     const cardId = def.instances[top].cardId;
-    const trigger = triggerEffectOf(db, cardId);
-    // offer the [Trigger] only if it is actually activatable right now
-    // (conditions 8-4-1-1, payable cost 8-3-1-3)
-    if (trigger && conditionsMet(db, state, defId, top, trigger.fx.conditions)
-        && canPayCost(db, state, defId, top, trigger.fx.cost)) {
+    if (triggerUsable(db, state, defId, top)) {
       // 8-6-2-1: temporarily suspend damage processing; the owner decides
       // whether to reveal and activate the [Trigger] (10-1-5-1/2)
       state.pendingChoice = { kind: "triggerDecision", player: defId, iid: top, cardId };
@@ -990,8 +986,7 @@ function effectDamage(db: CardDb, state: AutoGameState, log: GameEvent[], r: Run
     }
     const top = def.zones.life[def.zones.life.length - 1];
     const cardId = def.instances[top].cardId;
-    const trigger = triggerEffectOf(db, cardId);
-    if (trigger && conditionsMet(db, state, pid, top, trigger.fx.conditions) && canPayCost(db, state, pid, top, trigger.fx.cost)) {
+    if (triggerUsable(db, state, pid, top)) {
       state.pendingChoice = { kind: "triggerDecision", player: pid, iid: top, cardId, effectDamage: true };
       return true;
     }
@@ -1006,6 +1001,20 @@ function triggerEffectOf(db: CardDb, cardId: string): { fx: Effect; effectIndex:
   if (!compiled) return null;
   const effectIndex = compiled.effects.findIndex((fx) => fx.timing === "trigger");
   return effectIndex === -1 ? null : { fx: compiled.effects[effectIndex], effectIndex };
+}
+
+/** Whether the [Trigger] of the Life card `top` can be activated (conditions
+ *  8-4-1-1, payable cost 8-3-1-3). Read as the game stands once the card is
+ *  revealed: it is in no area then (10-1-5-3), so it is no longer a Life card
+ *  — "If you have 0 Life cards" holds for the last one. */
+function triggerUsable(db: CardDb, state: AutoGameState, pid: PID, top: Iid): boolean {
+  const p = state.players[pid];
+  const trigger = triggerEffectOf(db, p.instances[top].cardId);
+  if (!trigger) return false;
+  const revealed: AutoGameState = { ...state, players: { ...state.players, [pid]: {
+    ...p, zones: { ...p.zones, life: p.zones.life.filter((iid) => iid !== top) },
+  } } };
+  return conditionsMet(db, revealed, pid, top, trigger.fx.conditions) && canPayCost(db, revealed, pid, top, trigger.fx.cost);
 }
 
 /** Answer to a triggerDecision (10-1-5): activate the [Trigger] instead of

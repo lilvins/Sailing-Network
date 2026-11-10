@@ -28,6 +28,7 @@ addCard("FILLER");
 // [Activate: Main] K.O. all of your opponent's Characters.
 addCard("KO-ALL", {}, [{ timing: "activateMain", actions: [{ kind: "koTarget", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller" } }] }]);
 addReal("OP15-009", { cost: 1, power: 2000, types: ["East Blue", "Navy"] });
+addReal("OP06-115", { category: "Event", cost: 1, types: ["Sky Island"] });
 for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pads the deck to 50 at 4 copies each
 
 const db: CardDb = (id) => CARDS[id] ?? (() => { throw new Error(`unknown card ${id}`); })();
@@ -51,6 +52,12 @@ function put(s: AutoGameState, cardId: string, zone: "characterArea" | "hand" | 
   }
   throw new Error(`no ${cardId}`);
 }
+/** Empties one of alice's zones into her deck. */
+function clear(s: AutoGameState, zone: "hand" | "life"): void {
+  const p = s.players.alice;
+  p.zones.deck.push(...p.zones[zone].splice(0));
+  markStateEdited(s);
+}
 function setDon(s: AutoGameState, pid: PID, active: number, given: Record<string, number> = {}): void {
   const d = s.players[pid].don;
   const onCards = Object.values(given).reduce((a, b) => a + b, 0);
@@ -61,6 +68,12 @@ function setDon(s: AutoGameState, pid: PID, active: number, given: Record<string
 function bobAttacksAlice(s: AutoGameState): AutoGameState {
   s = go(s, { type: "endTurn", player: "alice" });
   return go(s, { type: "attack", player: "bob", attackerIid: s.players.bob.leaderIid, targetIid: s.players.alice.leaderIid });
+}
+/** alice neither blocks nor counters: the attack reaches the damage step. */
+function letItHit(s: AutoGameState): AutoGameState {
+  if (s.pendingChoice?.kind === "blockWindow") s = go(s, { type: "respondBlock", player: "alice", blockerIid: null });
+  if (s.pendingChoice?.kind === "counterWindow") s = go(s, { type: "passCounter", player: "alice" });
+  return s;
 }
 
 describe("meta cards follow the printed text (tappa 8)", () => {
@@ -93,5 +106,18 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     s = go(s, { type: "respondReplace", player: "bob", use: true });
     expect(s.players.bob.zones.characterArea).toContain(koby);
     expect(effectivePower(db, s, "bob", s.players.bob.leaderIid)).toBe(3000);
+  });
+
+  it("OP06-115: \"[Trigger] If you have 0 Life cards\" counts the Life left once the card is revealed", () => {
+    let s = newGame();
+    clear(s, "life");
+    put(s, "OP06-115", "life");
+    s = letItHit(bobAttacksAlice(s));
+    expect(s.pendingChoice).toMatchObject({ kind: "triggerDecision", player: "alice" }); // it was the last Life card
+
+    let t = newGame();
+    put(t, "OP06-115", "life"); // on top of the 5 starting Life cards
+    t = letItHit(bobAttacksAlice(t));
+    expect(t.pendingChoice?.kind).not.toBe("triggerDecision"); // 5 Life cards left
   });
 });
