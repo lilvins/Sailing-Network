@@ -481,10 +481,10 @@ export function quantity(state: AutoGameState, controller: PID, q: Quantity, db:
 
 // ─── activation costs (8-3-1) — payable check ────────────────────────────────
 
-/** Whether an Event's [Main] cost can be paid once the Event itself is played:
- *  its own DON!! are rested and it has left the hand (2-7-3 / 8-4-2), so
- *  neither can pay the [Main] cost too. */
-export function canPayEventMainCost(
+/** Whether the cost of an Event's [Main] or [Counter] effect can be paid once
+ *  the Event itself is played: its own DON!! are rested and it has left the
+ *  hand (2-7-3 / 8-4-2), so neither can pay the effect's cost too. */
+export function canPayEventCost(
   db: CardDb, state: AutoGameState, player: PID, eventIid: Iid, cardCost: number, cost: CostItem[] | undefined,
 ): boolean {
   const p = state.players[player];

@@ -3,6 +3,7 @@ import type { Effect } from "../ir/types";
 import { applyIntent, createGame, type GameConfig } from "../engine/engine";
 import type { PlayerIntent as Intent } from "../engine/intents";
 import { canPayCost } from "../engine/effects";
+import { legalMoves } from "../engine/legality";
 import { markStateEdited } from "../engine/stateVersion";
 import { effectivePower, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
 import { getGeneratedCard } from "../data/compiled";
@@ -29,6 +30,7 @@ addCard("FILLER");
 addCard("KO-ALL", {}, [{ timing: "activateMain", actions: [{ kind: "koTarget", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller" } }] }]);
 addReal("OP15-009", { cost: 1, power: 2000, types: ["East Blue", "Navy"] });
 addReal("OP06-115", { category: "Event", cost: 1, types: ["Sky Island"] });
+addReal("OP04-016", { category: "Event", cost: 1 });
 for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pads the deck to 50 at 4 copies each
 
 const db: CardDb = (id) => CARDS[id] ?? (() => { throw new Error(`unknown card ${id}`); })();
@@ -119,5 +121,30 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     put(t, "OP06-115", "life"); // on top of the 5 starting Life cards
     t = letItHit(bobAttacksAlice(t));
     expect(t.pendingChoice?.kind).not.toBe("triggerDecision"); // 5 Life cards left
+  });
+
+  it("OP04-016: the [Counter] needs another card in hand to trash", () => {
+    const atCounter = (extraCard: boolean) => {
+      let s = newGame();
+      clear(s, "hand");
+      const ev = put(s, "OP04-016", "hand");
+      if (extraCard) put(s, "FILLER", "hand");
+      setDon(s, "alice", 3);
+      s = bobAttacksAlice(s);
+      if (s.pendingChoice?.kind === "blockWindow") s = go(s, { type: "respondBlock", player: "alice", blockerIid: null });
+      expect(s.pendingChoice).toMatchObject({ kind: "counterWindow" });
+      return { s, ev };
+    };
+    const alone = atCounter(false);
+    expect(legalMoves(db, alone.s).counterEvents).toEqual([]);
+    expect(() => applyIntent(db, alone.s, { type: "useCounterEvent", player: "alice", cardIid: alone.ev })).toThrow(/activation cost/);
+
+    const two = atCounter(true);
+    expect(legalMoves(db, two.s).counterEvents.map((c) => c.iid)).toEqual([two.ev]);
+    const leader = two.s.players.alice.leaderIid;
+    let s = go(two.s, { type: "useCounterEvent", player: "alice", cardIid: two.ev });
+    if (s.pendingChoice?.kind === "selectTargets") s = go(s, { type: "respondTargets", player: "alice", iids: [leader] });
+    expect(s.players.alice.zones.hand).toEqual([]); // the other card paid the cost
+    expect(effectivePower(db, s, "alice", leader)).toBe(8000);
   });
 });
