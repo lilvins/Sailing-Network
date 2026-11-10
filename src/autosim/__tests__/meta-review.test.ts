@@ -31,6 +31,9 @@ addCard("KO-ALL", {}, [{ timing: "activateMain", actions: [{ kind: "koTarget", s
 addReal("OP15-009", { cost: 1, power: 2000, types: ["East Blue", "Navy"] });
 addReal("OP06-115", { category: "Event", cost: 1, types: ["Sky Island"] });
 addReal("OP04-016", { category: "Event", cost: 1 });
+addReal("OP14-103", { cost: 2, power: 0, types: ["Amazon Lily"] });
+// [Trigger] Play this card.
+addCard("TRIGGER-STAGE", { category: "Stage" }, [{ timing: "trigger", actions: [{ kind: "playFromZone", zone: "hand", free: true, sel: { owner: "self", zone: "hand", count: 1, self: true, chooser: "controller" } }] }]);
 for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pads the deck to 50 at 4 copies each
 
 const db: CardDb = (id) => CARDS[id] ?? (() => { throw new Error(`unknown card ${id}`); })();
@@ -146,5 +149,39 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     if (s.pendingChoice?.kind === "selectTargets") s = go(s, { type: "respondTargets", player: "alice", iids: [leader] });
     expect(s.players.alice.zones.hand).toEqual([]); // the other card paid the cost
     expect(effectivePower(db, s, "alice", leader)).toBe(8000);
+  });
+
+  it("OP14-103 Gloriosa: \"[Trigger] Play this card\" is a play — her [On Play] is offered", () => {
+    let s = newGame();
+    const gloriosa = put(s, "OP14-103", "life");
+    s = letItHit(bobAttacksAlice(s));
+    expect(s.pendingChoice).toMatchObject({ kind: "triggerDecision", iid: gloriosa });
+    s = go(s, { type: "respondTrigger", player: "alice", activate: true });
+    expect(s.players.alice.zones.characterArea).toContain(gloriosa);
+    expect(s.pendingChoice).toMatchObject({ kind: "mayActivate", player: "alice", sourceIid: gloriosa });
+  });
+
+  it("\"[Trigger] Play this card\" with 5 Characters: one is trashed by rule to make room (3-7-6-1)", () => {
+    let s = newGame();
+    const five = [1, 2, 3, 4, 5].map((n) => put(s, `FILLER-${n}`, "characterArea"));
+    const gloriosa = put(s, "OP14-103", "life");
+    s = letItHit(bobAttacksAlice(s));
+    s = go(s, { type: "respondTrigger", player: "alice", activate: true });
+    expect(s.pendingChoice).toMatchObject({ kind: "selectTargets", player: "alice", actionKind: "trashTarget", count: 1 });
+    s = go(s, { type: "respondTargets", player: "alice", iids: [five[0]] });
+    expect(s.players.alice.zones.characterArea).toContain(gloriosa);
+    expect(s.players.alice.zones.characterArea).toHaveLength(5);
+    expect(s.players.alice.zones.trash).toContain(five[0]);
+  });
+
+  it("\"[Trigger] Play this card\" on a Stage puts it in the Stage area, the old Stage is trashed", () => {
+    let s = newGame();
+    const old = put(s, "TRIGGER-STAGE", "characterArea");
+    s.players.alice.zones.stage.push(s.players.alice.zones.characterArea.pop()!);
+    const stage = put(s, "TRIGGER-STAGE", "life");
+    s = letItHit(bobAttacksAlice(s));
+    s = go(s, { type: "respondTrigger", player: "alice", activate: true });
+    expect(s.players.alice.zones.stage).toEqual([stage]);
+    expect(s.players.alice.zones.trash).toContain(old);
   });
 });

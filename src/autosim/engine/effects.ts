@@ -811,7 +811,11 @@ export function playCharacterFromZone(
     from: action.zone === "trash" ? "trash" as const : action.zone === "life" ? "life" as const : "hand" as const,
     rested: (action.rested ?? false) || hasRestriction(db, state, t.owner, p.leaderIid, "charactersPlayedRested"),
   };
-  if (played.from === "life") emitLife(db, state, log, played); // M5: a revealed Life card is played
+  const tc = running.triggerCard;
+  if (tc && tc.iid === t.iid) { // [Trigger] "play this card": it comes from no area (10-1-5-3)
+    emit(state, log, { type: "triggerCardPlayed", player: t.owner, iid: t.iid, rested: played.rested });
+    tc.moved = true;
+  } else if (played.from === "life") emitLife(db, state, log, played); // M5: a revealed Life card is played
   else emit(state, log, played);
   // 10-2-6 [On Play] fires for effect plays too
   enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
@@ -1160,12 +1164,22 @@ export function applyAction(
       if (action.sel.self && tc) {
         const p = state.players[controller];
         const card = db(p.instances[tc.iid].cardId);
-        // 8-1-2 "to the extent possible": a full character area (3-7-6) or a
-        // non-Character card can't be played — the card falls to the trash.
-        if (card.category === "Character" && p.zones.characterArea.length < 5) {
-          emit(state, log, { type: "triggerCardPlayed", player: controller, iid: tc.iid });
+        if (card.category === "Stage") { // 3-8-5-1: the Stage already there is trashed
+          const old = p.zones.stage[0];
+          if (old) emit(state, log, { type: "characterTrashedByRule", player: controller, iid: old });
+          emit(state, log, { type: "triggerCardPlayed", player: controller, iid: tc.iid, zone: "stage" });
           tc.moved = true;
+          enqueueAutoEffects(db, state, controller, tc.iid, "onPlay");
+          break;
         }
+        // 8-1-2 "to the extent possible": a card that can't be played falls to the trash
+        if (card.category !== "Character" || playLocked(db, state, controller, tc.iid)
+          || hasRestriction(db, state, controller, tc.iid, "cannotBePlayedByEffects")) break;
+        const t = { owner: controller, iid: tc.iid };
+        // 3-7-6-1: a full area first trashes 1 Character by rule (the pump asks which)
+        if (p.zones.characterArea.length >= 5) { (running.awaitingRoom ??= []).push({ action, target: t }); break; }
+        // a play like any other: "when you play a Character" and its own [On Play] answer it (10-2-6)
+        playCharacterFromZone(db, state, log, controller, running, action, t);
         break;
       }
       // "play this card from your trash / hand" (M5)
