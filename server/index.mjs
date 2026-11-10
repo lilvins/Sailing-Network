@@ -1,6 +1,6 @@
 // index.mjs — Sailing Network API (Fastify + libsql/SQLite + argon2).
 // Accounts, sessions (httpOnly cookie), roles (user/admin), admin user management.
-// Dev only for now: CORS open to the Vite origin with credentials.
+// In production it also serves the built site (static.mjs); settings in config.mjs.
 
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
@@ -11,6 +11,8 @@ import { initDb, all, run, get } from "./db.mjs";
 import { registerCardArt } from "./card-art.mjs";
 import { registerWelcome } from "./welcome.mjs";
 import { registerRooms } from "./rooms.mjs";
+import { registerStatic } from "./static.mjs";
+import { loadConfig } from "./config.mjs";
 import {
   hashPassword, verifyPassword, createUser, getUserById, getUserByEmail,
   getUserByUsername, getUserByLogin, createSession, getSessionUser,
@@ -36,21 +38,28 @@ import {
 import { leaderboard as ladderBoard, profileStats, meta as metaStats, metaReport, ladderRating } from "./stats/index.mjs";
 
 const COOKIE = "sn_session";
-const isProd = process.env.NODE_ENV === "production";
-// SN_API_PORT wins; PORT only in production (hosts set it). In dev, tools that
-// launch `npm run dev` set PORT for the Vite port, and the API must not take it.
-const PORT = Number(process.env.SN_API_PORT || (isProd && process.env.PORT) || 8787);
+let config;
+try {
+  config = loadConfig();
+} catch (err) {
+  console.error(err.message);
+  process.exit(1);
+}
+const isProd = config.isProd;
+const PORT = config.port;
 
 await initDb();
 
-const app = Fastify({ logger: false });
+// trustProxy: behind a host's proxy every request comes from the proxy's
+// address; with it, req.ip is the visitor's, and each one has their own rate limit.
+const app = Fastify({ logger: false, trustProxy: config.trustProxy });
 
 await app.register(cors, {
-  origin: true, // dev: reflect the requesting origin (Vite on :5173)
+  origin: config.corsOrigin, // dev: the requesting origin (Vite on :5173); production: only CORS_ORIGINS
   credentials: true,
 });
 await app.register(cookie, {
-  secret: process.env.COOKIE_SECRET || "dev-insecure-secret-change-me",
+  secret: config.cookieSecret,
 });
 await app.register(rateLimit, { global: false });
 
@@ -958,9 +967,19 @@ if (process.env.MATCHMAKING_OFF !== "1") {
   timer.unref();
 }
 
+if (config.staticDir) registerStatic(app, { dir: config.staticDir, cardsDir: config.cardsDir });
+
+// A host stops the process with SIGTERM on every deploy: finish the requests
+// in flight, then leave. Friend games live in memory (rooms.mjs) and end here.
+for (const signal of ["SIGTERM", "SIGINT"]) {
+  process.once(signal, () => {
+    app.close().finally(() => process.exit(0));
+  });
+}
+
 app
-  .listen({ port: PORT, host: "127.0.0.1" })
-  .then(() => console.log(`Sailing Network API → http://localhost:${PORT}`))
+  .listen({ port: PORT, host: config.host })
+  .then(() => console.log(`Sailing Network ${config.staticDir ? "site + API" : "API"} → http://${config.host === "0.0.0.0" ? "localhost" : config.host}:${PORT}`))
   .catch((err) => {
     console.error(err);
     process.exit(1);
