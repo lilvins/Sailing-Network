@@ -753,6 +753,11 @@ export function planAction(
     if (n === 0) return { kind: "apply", targets: [] };
     sel = { ...sel, count: n, upTo: false };
   }
+  if (act.kind === "powerMod" && act.perPrevTarget) {
+    // "+N for every card trashed / DON!! rested this way": none → no bonus, so no target is asked
+    const n = running.lastCount ?? running.lastTargets.length;
+    if (Math.floor(n / (act.perPrevEvery ?? 1)) === 0) return { kind: "apply", targets: [] };
+  }
   if (sel.prev) {
     // "that card" (M3): bind to the previous action's chosen targets; cards
     // that already left their area drop out (8-1-2 to the extent possible)
@@ -1073,12 +1078,18 @@ export function applyAction(
       break;
     }
 
-    case "restDon": // rest up to N active DON!! of a player (M5)
+    case "restDon": { // rest up to N active DON!! of a player (M5)
+      let rested = 0;
       for (const pid of whoToPids(state, controller, action.who)) {
         const n = Math.min(action.count, state.players[pid].don.active);
         if (n > 0) emit(state, log, { type: "donRestedByEffect", player: pid, count: n });
+        rested += n;
       }
+      // "rest any number …": with a choice the count comes from resolveNumber (battle.ts);
+      // here there was nothing to choose, and "for every DON!! rested this way" must still read it
+      if (action.upTo) { running.lastTargets = []; running.lastCount = rested; }
       break;
+    }
 
     case "lifeTopToBottom": // M5
       for (const pid of whoToPids(state, controller, action.who)) {

@@ -23,6 +23,7 @@ function addReal(id: string, o: Partial<EngineCard> = {}): void {
   addCard(id, { compiled: getGeneratedCard(id)!, ...o });
 }
 addCard("L", { category: "Leader", cost: 5, power: 5000 });
+addReal("OP13-001", { category: "Leader", cost: 5, power: 5000, name: "Monkey.D.Luffy", types: ["Supernovas", "Straw Hat Crew"] });
 addCard("FILLER");
 // [Activate: Main] K.O. all of your opponent's Characters.
 addCard("KO-ALL", {}, [{ timing: "activateMain", actions: [{ kind: "koTarget", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller" } }] }]);
@@ -50,8 +51,37 @@ function put(s: AutoGameState, cardId: string, zone: "characterArea" | "hand" | 
   }
   throw new Error(`no ${cardId}`);
 }
+function setDon(s: AutoGameState, pid: PID, active: number, given: Record<string, number> = {}): void {
+  const d = s.players[pid].don;
+  const onCards = Object.values(given).reduce((a, b) => a + b, 0);
+  d.deck = 10 - active - onCards; d.active = active; d.rested = 0; d.given = given;
+  markStateEdited(s);
+}
+/** bob's turn starts and bob's Leader attacks alice's Leader. */
+function bobAttacksAlice(s: AutoGameState): AutoGameState {
+  s = go(s, { type: "endTurn", player: "alice" });
+  return go(s, { type: "attack", player: "bob", attackerIid: s.players.bob.leaderIid, targetIid: s.players.alice.leaderIid });
+}
 
 describe("meta cards follow the printed text (tappa 8)", () => {
+  it("OP13-001 Luffy: +2000 for every DON!! rested, nothing with no active DON!!", () => {
+    let s = newGame("OP13-001");
+    const leader = s.players.alice.leaderIid;
+    setDon(s, "alice", 2, { [leader]: 1 });
+    s = bobAttacksAlice(s);
+    expect(s.pendingChoice).toMatchObject({ kind: "chooseNumber", player: "alice", max: 2 });
+    s = go(s, { type: "respondNumber", player: "alice", value: 2 });
+    s = go(s, { type: "respondTargets", player: "alice", iids: [leader] });
+    expect(effectivePower(db, s, "alice", leader)).toBe(9000);
+
+    let t = newGame("OP13-001");
+    setDon(t, "alice", 0, { [leader]: 1 });
+    t = bobAttacksAlice(t);
+    expect(t.pendingChoice?.kind).not.toBe("selectTargets"); // no bonus to hand out: no target asked
+    expect(effectivePower(db, t, "alice", leader)).toBe(5000);
+  });
+
+
   it("OP15-009 Koby: a Character that would be removed stays, the Leader takes −2000", () => {
     let s = newGame();
     const koby = put(s, "OP15-009", "characterArea", "bob");
