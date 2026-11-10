@@ -39,9 +39,11 @@ export function buildCategoryMap(
 ): Record<number, string[]> {
   const byId = new Map(catalog.map((c) => [c.id, c]));
   const counts = new Map<number, Map<string, number>>();
+  const cardsWith = new Map<string, number>(); // catalog type → how many shared cards carry it
   for (const card of Object.values(optcg)) {
     const cat = byId.get(card.id);
     if (!cat) continue;
+    for (const t of cat.types) cardsWith.set(t, (cardsWith.get(t) ?? 0) + 1);
     for (const id of card.categories) {
       const m = counts.get(id) ?? new Map<string, number>();
       for (const t of cat.types) m.set(t, (m.get(t) ?? 0) + 1);
@@ -54,8 +56,13 @@ export function buildCategoryMap(
     const m = counts.get(id);
     if (!m || m.size === 0) { out[id] = [spacedName(name)]; continue; }
     const max = Math.max(...m.values());
-    const tied = [...m.entries()].filter(([, n]) => n === max).map(([t]) => t).sort();
-    // ties (every Admiral is also Navy): keep the type(s) the enum name spells
+    const onAll = [...m.entries()].filter(([, n]) => n === max).map(([t]) => t).sort();
+    // ties (every Admiral is also Navy, every Shandian Warrior is also Sky
+    // Island): the id is the type fewest other cards carry — the wider one
+    // would let a {Shandian Warrior} effect take any {Sky Island} card
+    const fewest = Math.min(...onAll.map((t) => cardsWith.get(t) ?? 0));
+    const tied = onAll.filter((t) => (cardsWith.get(t) ?? 0) === fewest);
+    // still tied (CP7/CP8 on one card): keep the type(s) the enum name spells
     const flat = (x: string) => x.toLowerCase().replace(/[^a-z0-9]/g, "");
     const named = tied.filter((t) => flat(t).includes(flat(name)) || flat(name).includes(flat(t)));
     out[id] = named.length > 0 ? named : tied;

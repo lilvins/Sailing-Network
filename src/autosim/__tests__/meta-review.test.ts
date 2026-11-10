@@ -184,4 +184,15 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     expect(s.players.alice.zones.stage).toEqual([stage]);
     expect(s.players.alice.zones.trash).toContain(old);
   });
+
+  it("a type that always comes with a wider one is compiled alone: {Shandian Warrior} is not {Sky Island}", () => {
+    const typesIn = (id: string) => [...JSON.stringify(getGeneratedCard(id)!.effects).matchAll(/"typeIncludes":\[([^\]]*)\]/g)].map((m) => m[1]);
+    for (const id of ["OP06-113", "OP06-114", "OP08-098", "OP08-109", "OP08-115", "OP08-116", "OP12-116", "OP15-101", "OP15-110", "OP15-112"]) {
+      expect(typesIn(id), id).toContain('"Shandian Warrior"');
+      expect(typesIn(id).join(), id).not.toContain("Sky Island");
+    }
+    expect(typesIn("OP01-099")).toEqual(['"Kurozumi Clan"']);        // not every {Land of Wano}
+    expect(typesIn("OP15-073")).toContain('"Vassals"');              // not every {Sky Island}
+    expect(typesIn("OP06-028")).toEqual(['"New Fish-Man Pirates"']); // not every {Fish-Man} Leader
+  });
 });
