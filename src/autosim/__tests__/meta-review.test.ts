@@ -5,7 +5,7 @@ import type { PlayerIntent as Intent } from "../engine/intents";
 import { canPayCost } from "../engine/effects";
 import { legalMoves } from "../engine/legality";
 import { markStateEdited } from "../engine/stateVersion";
-import { effectivePower, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
+import { effectivePower, keywordsOf, type AutoGameState, type CardDb, type EngineCard, type PID } from "../engine/state";
 import { getGeneratedCard } from "../data/compiled";
 
 /**
@@ -26,6 +26,8 @@ function addReal(id: string, o: Partial<EngineCard> = {}): void {
 addCard("L", { category: "Leader", cost: 5, power: 5000 });
 addReal("OP13-001", { category: "Leader", cost: 5, power: 5000, name: "Monkey.D.Luffy", types: ["Supernovas", "Straw Hat Crew"] });
 addCard("L-EGG", { category: "Leader", cost: 5, power: 5000, types: ["Egghead"] });
+addCard("L-IMU", { category: "Leader", cost: 5, power: 5000, name: "Imu" });
+addReal("OP08-098", { category: "Leader", cost: 5, power: 5000, name: "Kalgara", types: ["Jaya", "Sky Island", "Shandian Warrior"] });
 addCard("FILLER");
 // [Activate: Main] K.O. all of your opponent's Characters.
 addCard("KO-ALL", {}, [{ timing: "activateMain", actions: [{ kind: "koTarget", sel: { owner: "opponent", zone: "characterArea", count: 99, chooser: "controller" } }] }]);
@@ -36,12 +38,24 @@ addReal("OP14-103", { cost: 2, power: 0, types: ["Amazon Lily"] });
 addReal("EB04-047", { cost: 3, power: 3000, name: "Helmeppo", types: ["Navy", "SWORD"] });
 addCard("SWORD-2", { cost: 2, types: ["Navy", "SWORD"] });
 addReal("OP07-099", { cost: 1, power: 2000, name: "Usopp", types: ["Egghead", "Straw Hat Crew"] });
+addCard("SHANDIAN", { cost: 1, types: ["Sky Island", "Shandian Warrior"] });
+addCard("SKY-ISLAND", { cost: 1, types: ["Sky Island"] });
+addReal("OP13-082", { cost: 10, power: 12000, name: "Five Elders", types: ["Celestial Dragons", "Five Elders"] });
+addCard("ELDER-A", { cost: 5, power: 5000, types: ["Celestial Dragons", "Five Elders"] });
+addCard("ELDER-B", { cost: 5, power: 5000, types: ["Celestial Dragons", "Five Elders"] });
+addReal("OP16-048", { cost: 5, power: 6000, name: "Buggy", types: ["Impel Down", "Buggy Pirates"] });
+addCard("PRISONER", { name: "Prisoner of Impel Down", types: ["Impel Down"] });
 // [Trigger] Play this card.
 addCard("TRIGGER-STAGE", { category: "Stage" }, [{ timing: "trigger", actions: [{ kind: "playFromZone", zone: "hand", free: true, sel: { owner: "self", zone: "hand", count: 1, self: true, chooser: "controller" } }] }]);
-for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pads the deck to 50 at 4 copies each
+for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pad the deck to 50
 
 const db: CardDb = (id) => CARDS[id] ?? (() => { throw new Error(`unknown card ${id}`); })();
-const DECK = Object.keys(CARDS).filter((id) => CARDS[id].category !== "Leader").flatMap((id) => Array<string>(4).fill(id)).slice(0, 50);
+// 2 copies of every card under test, then FILLER cards up to 50
+const isFiller = (id: string) => id.startsWith("FILLER");
+const DECK = [
+  ...Object.keys(CARDS).filter((id) => CARDS[id].category !== "Leader" && !isFiller(id)).flatMap((id) => [id, id]),
+  ...Object.keys(CARDS).filter(isFiller).flatMap((id) => Array<string>(4).fill(id)),
+].slice(0, 50);
 
 function newGame(leader = "L"): AutoGameState {
   const config: GameConfig = { seed: "meta-review", firstPlayer: "alice", players: [{ id: "alice", leader, deck: DECK }, { id: "bob", leader: "L", deck: DECK }] };
@@ -52,10 +66,11 @@ function newGame(leader = "L"): AutoGameState {
   return s;
 }
 const go = (s: AutoGameState, i: Intent) => applyIntent(db, s, i).state;
-/** Moves one copy of a card from a player's deck or hand to a zone and returns it. */
+/** Moves one copy of a card to a zone from wherever else it is (deck, hand, Life) and returns it. */
 function put(s: AutoGameState, cardId: string, zone: "characterArea" | "hand" | "life" | "trash", pid: PID = "alice"): string {
   const p = s.players[pid];
-  for (const from of ["deck", "hand"] as const) {
+  for (const from of ["deck", "hand", "life"] as const) {
+    if (from === zone) continue;
     const i = p.zones[from].findIndex((iid) => p.instances[iid].cardId === cardId);
     if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); markStateEdited(s); return iid; }
   }
@@ -193,8 +208,8 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     const candidatesOf = (s: AutoGameState) => (s.pendingChoice?.kind === "selectTargets" ? s.pendingChoice.candidates.map((c) => c.iid) : []);
     let s = newGame();
     const helmeppo = put(s, "EB04-047", "characterArea");
-    const inHand = put(s, "SWORD-2", "hand");
     const inTrash = put(s, "SWORD-2", "trash");
+    const inHand = put(s, "SWORD-2", "hand"); // the other copy
     put(s, "EB04-047", "trash"); // "other than [Helmeppo]"
     s = go(s, { type: "activateMain", player: "alice", iid: helmeppo, effectIndex: 0 });
     expect(candidatesOf(s).sort()).toEqual([inHand, inTrash].sort());
@@ -216,6 +231,67 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     expect(effectivePower(db, s, "alice", leader)).toBe(7000); // her next turn
     s = go(s, { type: "endTurn", player: "alice" });
     expect(effectivePower(db, s, "alice", leader)).toBe(5000);
+  });
+
+  it("OP08-098 Kalgara: the Life card is taken only if a Character was played", () => {
+    const attack = (withShandian: boolean) => {
+      let s = newGame("OP08-098");
+      const leader = s.players.alice.leaderIid;
+      clear(s, "hand");
+      put(s, "SKY-ISLAND", "hand"); // a {Sky Island} card is not a {Shandian Warrior}
+      const warrior = withShandian ? put(s, "SHANDIAN", "hand") : null;
+      setDon(s, "alice", 2, { [leader]: 1 });
+      s = go(s, { type: "attack", player: "alice", attackerIid: leader, targetIid: s.players.bob.leaderIid });
+      return { s, warrior };
+    };
+    const none = attack(false);
+    expect(none.s.pendingChoice?.kind).not.toBe("selectTargets");
+    expect(none.s.players.alice.zones.life).toHaveLength(5);
+
+    const one = attack(true);
+    expect(one.s.pendingChoice).toMatchObject({ kind: "selectTargets", player: "alice", upTo: true, candidates: [{ iid: one.warrior }] });
+    const declined = go(one.s, { type: "respondTargets", player: "alice", iids: [] });
+    expect(declined.players.alice.zones.life).toHaveLength(5);
+    const played = go(one.s, { type: "respondTargets", player: "alice", iids: [one.warrior!] });
+    expect(played.players.alice.zones.characterArea).toContain(one.warrior);
+    expect(played.players.alice.zones.life).toHaveLength(4);
+  });
+
+  it("OP13-082 Five Elders: trashes all your Characters, then plays Five Elders with different names from the trash", () => {
+    let s = newGame("L-IMU");
+    const elders = put(s, "OP13-082", "characterArea");
+    const other = put(s, "FILLER", "characterArea");
+    const [a1, a2, b] = [put(s, "ELDER-A", "trash"), put(s, "ELDER-A", "trash"), put(s, "ELDER-B", "trash")];
+    clear(s, "hand");
+    put(s, "FILLER", "hand");
+    setDon(s, "alice", 2);
+    s = go(s, { type: "activateMain", player: "alice", iid: elders, effectIndex: 0 });
+    expect(s.players.alice.don.active).toBe(1);
+    expect(s.players.alice.zones.hand).toEqual([]);
+    expect(s.players.alice.zones.trash).toEqual(expect.arrayContaining([elders, other]));
+    expect(s.pendingChoice).toMatchObject({ kind: "selectTargets", player: "alice", count: 5, upTo: true });
+    expect(() => applyIntent(db, s, { type: "respondTargets", player: "alice", iids: [a1, a2] })).toThrow(); // same card name
+    s = go(s, { type: "respondTargets", player: "alice", iids: [a1, b] });
+    expect(s.players.alice.zones.characterArea.sort()).toEqual([a1, b].sort());
+  });
+
+  it("OP16-048 Buggy: on the opponent's attack you may give a [Prisoner of Impel Down] [Blocker], whatever your Leader", () => {
+    let s = newGame();
+    const buggy = put(s, "OP16-048", "characterArea");
+    const prisoner = put(s, "PRISONER", "characterArea");
+    s = bobAttacksAlice(s);
+    expect(s.pendingChoice).toMatchObject({ kind: "mayActivate", player: "alice", sourceIid: buggy });
+    s = go(s, { type: "respondMay", player: "alice", activate: true });
+    expect(s.pendingChoice).toMatchObject({ kind: "selectTargets", upTo: true, candidates: [{ iid: prisoner }] });
+    s = go(s, { type: "respondTargets", player: "alice", iids: [prisoner] });
+    expect(keywordsOf(db, s, "alice", prisoner).has("Blocker")).toBe(true);
+  });
+
+  it("OP14-111 Perona's [On K.O.] lasts through the opponent's next turn when she is K.O.'d on your turn", () => {
+    const onKO = getGeneratedCard("OP14-111")!.effects.filter((fx) => fx.timing === "onKO");
+    const duration = (turn: "yourTurn" | "opponentsTurn") => JSON.stringify(onKO.find((fx) => fx.conditions?.some((c) => c.kind === turn))?.actions).match(/"duration":"(\w+)"/)?.[1];
+    expect(duration("opponentsTurn")).toBe("thisTurn"); // "your opponent's next End Phase" is this turn's
+    expect(duration("yourTurn")).toBe("untilEndOfOpponentsNextTurn");
   });
 
   it("a type that always comes with a wider one is compiled alone: {Shandian Warrior} is not {Sky Island}", () => {

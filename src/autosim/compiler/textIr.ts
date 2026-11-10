@@ -503,4 +503,47 @@ export const TEXT_IR: Record<string, TextIr> = {
         sel: self1("hand", { hasTrigger: true, category: ["Character"], powerAtLeast: 4000, powerAtMost: 4000 }, { upTo: true }) }] },
     ],
   },
+  // ── review of the meta decks against the printed text (2026-11-10) ──
+  "OP08-098": {
+    text: "[DON!! x1] [When Attacking] Play up to 1 {Shandian Warrior} type Character card from your hand with a cost equal to or less than the number of DON!! cards on your field. If you do, add 1 card from the top of your Life cards to your hand.",
+    reason: "\"up to 1 … If you do\": optcg-ai forces the play and takes the Life card even when nothing was played",
+    effects: [{ timing: "whenAttacking", conditions: [{ kind: "donAttached", count: 1 }], actions: [
+      { kind: "playFromZone", zone: "hand", free: true,
+        sel: self1("hand", { category: ["Character"], typeIncludes: ["Shandian Warrior"], costAtMostQ: { count: "donOnField", who: "self" } }, { upTo: true }) },
+      { kind: "ifThen", if: [{ kind: "hadTargets" }], then: [{ kind: "lifeToHand", who: "self", count: 1 }] }] }],
+  },
+  "OP13-082": {
+    text: "[Activate: Main] If your Leader is [Imu], you may rest 1 of your DON!! cards and trash 1 card from your hand: Trash all of your Characters and play up to 5 {Five Elders} type Character cards with 5000 power and different card names from your trash.",
+    reason: "optcg-ai puts \"trash all of your Characters\" in the cost and loses \"different card names\"",
+    effects: [{ timing: "activateMain", optional: true, conditions: [{ kind: "leaderIs", filter: { nameIncludes: ["Imu"] } }],
+      cost: [{ kind: "restDon", count: 1 }, { kind: "trashFromHand", sel: self1("hand") }],
+      actions: [
+        { kind: "trashTarget", sel: { owner: "self", zone: "characterArea", count: 99, chooser: "controller" } },
+        { kind: "playFromZone", zone: "trash", free: true,
+          sel: self1("trash", { category: ["Character"], typeIncludes: ["Five Elders"], powerAtLeast: 5000, powerAtMost: 5000 }, { count: 5, upTo: true, distinctNames: true }) }] }],
+  },
+  "OP14-111": {
+    text: "[On Play]/[On K.O.] Up to 1 of your opponent's Characters with a cost of 6 or less cannot attack until the end of your opponent's next End Phase.",
+    reason: "optcg-ai ends the [On K.O.] with the turn: right when she is K.O.'d on the opponent's turn, nothing when it is yours",
+    effects: [
+      { timing: "onPlay", actions: [{ kind: "restriction", what: "cannotAttack", duration: "untilEndOfOpponentsNextTurn", sel: opp("characterArea", { costAtMost: 6 }) }] },
+      { timing: "onKO", conditions: [{ kind: "opponentsTurn" }],
+        actions: [{ kind: "restriction", what: "cannotAttack", duration: "thisTurn", sel: opp("characterArea", { costAtMost: 6 }) }] },
+      { timing: "onKO", conditions: [{ kind: "yourTurn" }],
+        actions: [{ kind: "restriction", what: "cannotAttack", duration: "untilEndOfOpponentsNextTurn", sel: opp("characterArea", { costAtMost: 6 }) }] },
+      { timing: "trigger", actions: [{ kind: "playFromZone", zone: "trash", free: true, rested: true,
+        sel: self1("trash", { category: ["Character"], typeIncludes: ["Thriller Bark Pirates"], costAtMost: 4, excludeSelf: true }, { upTo: true }) }] },
+    ],
+  },
+  "OP16-048": {
+    text: "[On Play] If your Leader has the {Impel Down} type, draw 1 card and play up to 1 [Prisoner of Impel Down] card from your hand.\n[Once Per Turn] This effect can be activated when your opponent attacks. Up to 1 of your [Prisoner of Impel Down] cards gains [Blocker] during this turn.",
+    reason: "the second effect has no Leader condition, is a choice (\"can be activated\") and says \"up to 1\"",
+    effects: [
+      { timing: "onPlay", conditions: [{ kind: "leaderIs", filter: { typeIncludes: ["Impel Down"] } }], actions: [
+        { kind: "draw", count: 1 },
+        { kind: "playFromZone", zone: "hand", free: true, sel: self1("hand", { nameIncludes: ["Prisoner of Impel Down"] }, { upTo: true }) }] },
+      { timing: "onYourOpponentsAttack", oncePerTurn: true, optional: true, actions: [
+        { kind: "grantKeyword", keyword: "Blocker", duration: "thisTurn", sel: self1("characterArea", { nameIncludes: ["Prisoner of Impel Down"] }, { upTo: true }) }] },
+    ],
+  },
 };
