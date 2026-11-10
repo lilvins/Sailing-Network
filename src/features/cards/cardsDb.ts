@@ -68,6 +68,7 @@ export function loadCards(): Promise<Card[]> {
       if (!r.ok) throw new Error(`Failed to load card database (${r.status})`);
       const body = (await r.json()) as { cards: Card[] };
       const cards = body.cards;
+      for (const c of cards) c.name = c.name.replace(/&amp;/g, "&"); // the source data escapes it in 33 names
       // Single source of truth for art paths (see field doc).
       for (const c of cards) c.image = cardArtUrl(c.id);
       return cards;

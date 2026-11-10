@@ -1291,3 +1291,13 @@
 /* the trash popup: the table and the card preview stay readable behind it */
 .ba-overlay.ba-trashpop { background: rgba(4, 6, 10, 0.35); }
 .ba-pile[title] { cursor: pointer; }
+
+/* a card at full size (click on the preview rail) */
+.ba-prevart.zoomable { cursor: zoom-in; }
+.ba-zoom { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; gap: 28px; padding: 24px; background: rgba(4, 6, 10, 0.78); cursor: zoom-out; }
+.ba-zoom img { height: min(88vh, 760px); width: auto; }
+.ba-zoomtext { max-width: 360px; color: var(--ivory, #f2f3f5); font-size: 15px; line-height: 1.5; white-space: pre-wrap; }
+.ba-zoomtext p { margin: 10px 0 0; }
+.ba-zoomtext small { opacity: 0.65; }
+.ba-whoseturn { align-self: center; font-size: 11px; letter-spacing: 1px; color: var(--ivory, #f2f3f5); opacity: 0.7; white-space: nowrap; }
+.ba-whoseturn.mine { color: var(--brass-hi); opacity: 1; font-weight: 700; }
