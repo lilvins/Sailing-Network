@@ -222,6 +222,30 @@
 
 /* grid spanning hint */
 .db-list-more{grid-column:1/-1;text-align:center;color:var(--muted);font-size:12px;padding:12px 6px 4px;}
+.db-list-more .db-chip{margin-left:8px;}
+.db-intext{flex:0 0 auto;font-size:11px;padding:2px 7px;background:transparent;border:1px solid var(--edge);color:var(--muted);cursor:pointer;}
+.db-intext.on{color:var(--txt);border-color:var(--acc);}
+.db-clearall{margin-left:auto;font-size:11px;padding:2px 8px;background:transparent;border:1px solid var(--edge);color:var(--txt);cursor:pointer;}
+.db-star{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;padding:5px 8px;background:transparent;border:1px solid var(--edge);color:var(--muted);cursor:pointer;}
+.db-star.on{color:var(--txt);border-color:var(--acc);}
+.db-detail-img.zoomable{cursor:zoom-in;}
+.db-mod-selects{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.db-mod-selects label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);}
+.db-deck-foot{flex-wrap:wrap;gap:8px 18px;}
+.db-curve-box{flex:1 1 170px;min-width:170px;}
+.db-curve-box .db-foot-label{display:block;margin:0 0 4px;}
+.db-curve{display:flex;align-items:flex-end;gap:3px;height:48px;}
+.db-curve-col{position:relative;flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:14px;}
+.db-curve-col i{display:block;width:100%;min-height:1px;background:var(--acc,#e3b24c);}
+.db-curve-col b{position:absolute;bottom:15px;font-size:10px;color:#fff;text-shadow:0 1px 0 #000;}
+.db-curve-col small{position:absolute;bottom:0;font-size:9px;color:var(--muted);}
+.db-deck-counts{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:1px 12px;font-size:11px;color:var(--muted);}
+.db-deck-counts b{color:var(--txt);}
+.db-zoom{position:fixed;z-index:300;gap:24px;cursor:zoom-out;}
+.db-zoom img{height:min(86vh,720px);width:auto;}
+.db-zoom-text{max-width:340px;color:var(--txt);font-size:14px;line-height:1.5;white-space:pre-wrap;}
+.db-zoom-text small{color:var(--muted);}
+.db-zoom-text p{margin:10px 0 0;}
 
 /* loading screen */
 .db-loading{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);}

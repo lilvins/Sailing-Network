@@ -13,6 +13,8 @@ import { loadCards } from "../cards/cardsDb";
 import { api } from "../../lib/api";
 import { Dock } from "../profiles/ProfilePages";
 import { parseDeckText } from "./deckText";
+import { matchesSearch } from "./cardSearch";
+import { rememberDuelDeck } from "../duel-room/duelDeck";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./deckbuilder.css";
@@ -65,6 +67,7 @@ function mapCard(c) {
     fx: c.effect || "",
     trigger: c.trigger || null,
     set: c.set,
+    attrs: Array.isArray(c.attributes) ? c.attributes : [],
     rarity: c.rarity || "",
     image: c.image || "",
     max: t === "L" ? 1 : 4,
@@ -87,13 +90,13 @@ function counterKind(card) {
 
 /* ---------- the card tile (placeholder art) ---------- */
 /* left click = add one copy, right click = take one out (list AND deck panel) */
-function CardTile({ card, count, onClick, onRemove, onHover, onDoubleClick, faded, mini, dim, locked }) {
+function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, locked }) {
   const c = hueColor(card.col);
   return (
     <button className={"db-card t-" + card.t + (faded ? " faded" : "") + (mini ? " mini" : "") + (dim ? " dim" : "") + (locked ? " locked" : "")}
-      style={{ "--cc": c }} onClick={onClick} onDoubleClick={onDoubleClick} onMouseEnter={onHover} onFocus={onHover}
+      style={{ "--cc": c }} onClick={onClick} onMouseEnter={onHover} onFocus={onHover}
       onContextMenu={onRemove ? (e) => { e.preventDefault(); onRemove(); } : undefined}
-      title={card.name + (onRemove ? " — left click: add · right click: remove" : "") + (onDoubleClick ? " · double-click to star" : "")}>
+      title={card.name + (onRemove ? " — left click: add · shift + click: all copies · right click: remove" : "")}>
       <span className="db-card-art">
         <span className="db-card-glow" style={{ background:`radial-gradient(120% 80% at 50% 12%, ${c}dd, ${c}55 46%, #0a0f17 88%)` }}></span>
         {card.image && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
@@ -110,7 +113,7 @@ function CardTile({ card, count, onClick, onRemove, onHover, onDoubleClick, fade
 }
 
 /* ---------- left: card detail panel ---------- */
-function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, allowedNames }) {
+function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, allowedNames, isFav, toggleFav, zoom }) {
   if (!card) {
     return <aside className="db-detail empty"><div className="db-detail-empty"><I n="cards" size={34} /><p>Select a card to inspect it</p></div></aside>;
   }
@@ -120,10 +123,13 @@ function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, 
       {/* the card image already shows cost, power, counter and text: show it alone */}
       <div className="db-detail-art" style={{ "--cc": c }}>
         {card.image
-          ? <img className="db-detail-img" src={card.image} loading="lazy" alt={card.name} draggable={false} />
+          ? <img className="db-detail-img zoomable" src={card.image} loading="lazy" alt={card.name} draggable={false} title="Click to enlarge" onClick={() => zoom(card)} />
           : <div className="db-detail-noimg">{card.name}</div>}
       </div>
       <div className="db-detail-actions">
+        <button className={"db-star" + (isFav ? " on" : "")} data-act="card-star" onClick={() => toggleFav(card.id)}>
+          <I n="star" size={14} /> {isFav ? "In favorites" : "Add to favorites"}
+        </button>
         {card.t === "L"
           ? (isCurrentLeader
               ? <div className="db-leader-state"><I n="check" size={16} /> Your deck’s Leader</div>
@@ -143,6 +149,10 @@ function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, 
    MAIN
    ================================================================= */
 const MAIN_MAX = 50;
+/** The deck as text, to tell whether anything changed since it was saved. */
+function deckSnapshot(name, leaderId, deck) {
+  return JSON.stringify([name, leaderId, Object.entries(deck).sort(([a], [b]) => a.localeCompare(b))]);
+}
 const RENDER_LIMIT = 240; // cap rendered tiles (catalog is ~2.6k cards)
 function DeckBuilder() {
   const setView = useUiStore((s) => s.setView);
@@ -157,6 +167,10 @@ function DeckBuilder() {
   const [copied, setCopied] = useState(false);
   const [currentDeckId, setCurrentDeckId] = useState(null); // null = unsaved/new
   const [saving, setSaving] = useState(false);
+  const [zoomed, setZoomed] = useState(null);      // the card shown full size
+  // what the deck looked like when last loaded or saved (see `dirty`)
+  const [savedSnap, setSavedSnap] = useState(() => deckSnapshot("New Deck", null, {}));
+  const [leaveAsk, setLeaveAsk] = useState(null);  // the page "Back" wants, while asking about unsaved changes
 
   // load the card database, then (if opened from My Decks) the chosen deck
   useEffect(() => {
@@ -181,17 +195,20 @@ function DeckBuilder() {
           setDeck(dm);
           setDeckName(d.name);
           setCurrentDeckId(d.id);
+          setSavedSnap(deckSnapshot(d.name, ldr ? ldr.id : null, dm));
         } catch {
           if (!alive) return;
-          setLeader(firstLeader);
+          setLeader(null);
           setSel(firstLeader);
         }
       } else {
-        setLeader(firstLeader);
+        // no Leader until the player picks one; the panel shows the first as an example
+        setLeader(null);
         setSel(firstLeader);
         setCurrentDeckId(null);
         setDeck({});
         setDeckName("New Deck");
+        setSavedSnap(deckSnapshot("New Deck", null, {}));
       }
       setLoading(false);
     })().catch(() => { if (alive) setLoading(false); });
@@ -215,6 +232,7 @@ function DeckBuilder() {
 
   // right-pane filters
   const [q, setQ] = useState("");
+  const [inText, setInText] = useState(false);          // the search also reads the card's text
   const [colFilter, setColFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [archetype, setArchetype] = useState("");       // card type text, e.g. "rocks pirates"
@@ -224,14 +242,23 @@ function DeckBuilder() {
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState("");
   const [importErrors, setImportErrors] = useState([]);
+  const [importPartial, setImportPartial] = useState(false); // the only errors are lines that can be skipped
 
   // advanced filters (modal)
   const [advOpen, setAdvOpen] = useState(false);
   const [counterF, setCounterF] = useState("Any");      // Any | has | 1000 | 2000 | none | event
   const [kwF, setKwF] = useState([]);                   // active keywords (AND)
   const toggleKw = (k) => setKwF((s) => s.includes(k) ? s.filter((x) => x !== k) : [...s, k]);
-  const resetAdv = () => { setCounterF("Any"); setKwF([]); };
-  const advCount = (counterF !== "Any" ? 1 : 0) + kwF.length;
+  const [costF, setCostF] = useState([]);               // costs (10 = 10 or more); Leaders have none
+  const toggleCost = (n) => setCostF((s) => s.includes(n) ? s.filter((x) => x !== n) : [...s, n]);
+  const [setF, setSetF] = useState("Any");
+  const [powerF, setPowerF] = useState("Any");
+  const [rarityF, setRarityF] = useState("Any");
+  const [attrF, setAttrF] = useState("Any");
+  const resetAdv = () => { setCounterF("Any"); setKwF([]); setCostF([]); setSetF("Any"); setPowerF("Any"); setRarityF("Any"); setAttrF("Any"); };
+  const advCount = (counterF !== "Any" ? 1 : 0) + kwF.length + costF.length + [setF, powerF, rarityF, attrF].filter((v) => v !== "Any").length;
+  const filtersOn = !!q || inText || colFilter !== "All" || typeFilter !== "All" || !!archetype || advCount > 0;
+  const clearFilters = () => { setQ(""); setInText(false); setColFilter("All"); setTypeFilter("All"); setArchetype(""); resetAdv(); };
 
   const mainCount = useMemo(() => Object.values(deck).reduce((a, b) => a + b, 0), [deck]);
   const cardById = useMemo(() => Object.fromEntries(pool.map((c) => [c.id, c])), [pool]);
@@ -247,7 +274,8 @@ function DeckBuilder() {
   const [toast, setToast] = useState(null);
   const flash = (msg) => { setToast(msg); clearTimeout(window.__dbT); window.__dbT = setTimeout(() => setToast(null), 2200); };
 
-  const add = (card) => {
+  /** `copies`: shift + click takes as many as the card allows. */
+  const add = (card, copies = 1) => {
     if (card.t === "L") {
       setLeader(card); setSel(card);
       // prune off-color cards that no longer match the new leader
@@ -263,11 +291,11 @@ function DeckBuilder() {
       return;
     }
     if (!colorOK(card)) { flash("Only " + allowedNames + " cards can go in this deck (your Leader’s color)"); setSel(card); return; }
-    setDeck((d) => {
-      const cur = d[card.id] || 0;
-      if (cur >= card.max || mainCount >= MAIN_MAX) return d;
-      return { ...d, [card.id]: cur + 1 };
-    });
+    const cur = deck[card.id] || 0;
+    if (cur >= card.max) { flash("Already " + card.max + " copies of " + card.name + ": the maximum"); setSel(card); return; }
+    if (mainCount >= MAIN_MAX) { flash("The deck is full: " + MAIN_MAX + " cards"); setSel(card); return; }
+    const n = Math.min(copies, card.max - cur, MAIN_MAX - mainCount);
+    setDeck((d) => ({ ...d, [card.id]: (d[card.id] || 0) + n }));
     setSel(card);
   };
   const remove = (card) => {
@@ -283,22 +311,25 @@ function DeckBuilder() {
   const clearDeck = () => { setDeck({}); };
 
   // Replace the deck on screen with a pasted list; nothing is saved until Save.
-  const importDeck = () => {
-    const { leaderId, cards, errors } = parseDeckText(importText, (id) => cardById[id]);
+  const importDeck = (skipBadLines = false) => {
+    const { leaderId, cards, errors, lineErrors } = parseDeckText(importText, (id) => cardById[id]);
     setImportErrors(errors);
-    if (errors.length) return;
+    setImportPartial(errors.length > 0 && errors.length === lineErrors.length);
+    if (errors.length && !(skipBadLines && errors.length === lineErrors.length)) return;
+    setImportErrors([]);
+    setImportPartial(false);
     const newLeader = cardById[leaderId];
     setLeader(newLeader);
     setSel(newLeader);
     setDeck(cards);
     setImportOpen(false);
     setImportText("");
-    flash("Imported " + Object.values(cards).reduce((a, b) => a + b, 0) + " / " + MAIN_MAX + " cards — press Save to keep them");
+    flash("Imported " + Object.values(cards).reduce((a, b) => a + b, 0) + " / " + MAIN_MAX + " cards" + (lineErrors.length ? " (" + lineErrors.length + " lines skipped)" : "") + " — press Save to keep them");
   };
 
   // Persist to the backend: PATCH if this deck already exists, else POST a new one.
   const saveDeck = async () => {
-    if (!leader || saving) return;
+    if (!leader || saving) return false;
     setSaving(true);
     try {
       const cards = Object.entries(deck).map(([id, count]) => ({ id, count }));
@@ -309,13 +340,22 @@ function DeckBuilder() {
         const { deck: created } = await api.createDeck(payload);
         setCurrentDeckId(created.id);
       }
+      setSavedSnap(deckSnapshot(deckName, leader.id, deck));
       flash("Deck saved");
+      return true;
     } catch (e) {
       flash((e && e.message) || "Save failed");
+      return false;
     } finally {
       setSaving(false);
     }
   };
+
+  const dirty = deckSnapshot(deckName, leader ? leader.id : null, deck) !== savedSnap;
+  /** Leave the editor, asking first if there is something not saved. */
+  const leaveTo = (next) => { if (dirty) setLeaveAsk(next); else setView(next); };
+  /** To the Duel Room with this deck already chosen there. */
+  const playWithDeck = () => { rememberDuelDeck(currentDeckId); setView("duel-room"); };
 
   // Copy the decklist as plain text: "{count}x{CODE}", leader first, one per line.
   const copyDeck = () => {
@@ -364,7 +404,12 @@ function DeckBuilder() {
   const list = useMemo(() => {
     const arch = archetype.trim().toLowerCase();
     let l = pool.filter((c) => {
-      if (q && !c.name.toLowerCase().includes(q.toLowerCase())) return false;
+      if (!matchesSearch(c, q, inText)) return false;
+      if (costF.length && (c.t === "L" || !costF.includes(Math.min(c.cost, 10)))) return false;
+      if (setF !== "Any" && c.set !== setF) return false;
+      if (powerF !== "Any" && String(c.pow) !== powerF) return false;
+      if (rarityF !== "Any" && c.rarity !== rarityF) return false;
+      if (attrF !== "Any" && !c.attrs.includes(attrF)) return false;
       if (colFilter !== "All" && !c.cols.includes(colFilter)) return false;
       if (typeFilter !== "All" && TYPE_LABEL[c.t] !== typeFilter) return false;
       if (arch && !c.tags.some((t) => t.toLowerCase().includes(arch))) return false;
@@ -385,9 +430,36 @@ function DeckBuilder() {
     else if (sort.startsWith("Color")) l = [...l].sort((a,b)=>a.col.localeCompare(b.col)*dir || a.cost-b.cost);
     else l = [...l].sort((a,b)=>a.name.localeCompare(b.name)*dir);
     return l;
-  }, [pool, q, colFilter, typeFilter, archetype, sort, counterF, kwF]);
+  }, [pool, q, inText, colFilter, typeFilter, archetype, sort, counterF, kwF, costF, setF, powerF, rarityF, attrF]);
 
-  const shown = useMemo(() => list.slice(0, RENDER_LIMIT), [list]);
+  // the choices of the Advanced filters, from what the catalog really holds
+  const options = useMemo(() => ({
+    sets: [...new Set(pool.map((c) => c.set))].sort(),
+    powers: [...new Set(pool.filter((c) => c.t !== "E" && c.t !== "S").map((c) => c.pow))].sort((a, b) => a - b).map(String),
+    rarities: [...new Set(pool.map((c) => c.rarity).filter(Boolean))].sort(),
+    attrs: [...new Set(pool.flatMap((c) => c.attrs))].filter((a) => a !== "Unknown").sort(),
+  }), [pool]);
+
+  // the numbers of the deck: cost curve (10 = 10 or more), kinds of card, counters
+  const deckStats = useMemo(() => {
+    const curve = Array(11).fill(0);
+    const s = { curve, C: 0, E: 0, S: 0, c1000: 0, c2000: 0, counterEvents: 0, triggers: 0 };
+    for (const { card, n } of deckCards) {
+      curve[Math.min(card.cost, 10)] += n;
+      s[card.t] += n;
+      const ck = counterKind(card);
+      if (ck === "1000") s.c1000 += n;
+      if (ck === "2000") s.c2000 += n;
+      if (ck === "event") s.counterEvents += n;
+      if (card.trigger) s.triggers += n;
+    }
+    return s;
+  }, [deckCards]);
+
+  // how many tiles are on screen: "Show more" adds a page, a new search starts over
+  const [renderLimit, setRenderLimit] = useState(RENDER_LIMIT);
+  useEffect(() => { setRenderLimit(RENDER_LIMIT); }, [list]);
+  const shown = useMemo(() => list.slice(0, renderLimit), [list, renderLimit]);
 
   const deckValid = leader && mainCount === MAIN_MAX;
 
@@ -410,7 +482,7 @@ function DeckBuilder() {
       <PixelScene kind="ocean" />
       {/* header */}
       <header className="snp-head db-head has-hero slim" style={{ "--hero-img": 'url("/assets/bg/sec-decks.png")' }}>
-        <button className="snp-back" title="Back to My Decks" onClick={() => setView("my-decks")}><I n="back" /></button>
+        <button className="snp-back" title="Back to My Decks" onClick={() => leaveTo("my-decks")}><I n="back" /></button>
         <div className="snp-head-title">
           <h1>Deck Constructor</h1>
           <span className="sn-kicker">Build your crew</span>
@@ -423,6 +495,10 @@ function DeckBuilder() {
           <button className="db-save" disabled={!leader || mainCount === 0 || saving} onClick={saveDeck}>
             <I n="save" size={16} /> {saving ? "Saving…" : currentDeckId ? "Save" : "Save Deck"}
           </button>
+          <button className="db-import" data-act="deck-play" disabled={!deckValid || !currentDeckId || dirty} onClick={playWithDeck}
+            title={!deckValid ? "The deck needs a Leader and 50 cards" : !currentDeckId || dirty ? "Save the deck first" : "Open the Duel Room with this deck"}>
+            <I n="play" size={16} /> Play
+          </button>
         </div>
       </header>
 
@@ -434,6 +510,7 @@ function DeckBuilder() {
           isCurrentLeader={sel && sel.t === "L" && leader && leader.id === sel.id}
           offColor={sel && sel.t !== "L" && !colorOK(sel)}
           allowedNames={allowedNames}
+          isFav={sel && favorites.has(sel.id)} toggleFav={toggleFav} zoom={setZoomed}
           canAdd={sel && sel.t !== "L" && colorOK(sel) && (deck[sel.id] || 0) < sel.max && mainCount < MAIN_MAX} />
 
         {/* CENTER — current deck */}
@@ -477,7 +554,7 @@ function DeckBuilder() {
               ? <div className="db-deck-empty"><I n="cards" size={30} /><p>Left click a card on the right to add it, right click to take it out.<br/>A legal deck has exactly 50 cards.</p></div>
               : <div className="db-deck-grid">
                   {deckCards.map(({ card, n }) => (
-                    <CardTile key={card.id} card={card} count={n} mini onClick={() => add(card)} onRemove={() => remove(card)} onHover={() => setSel(card)} />
+                    <CardTile key={card.id} card={card} count={n} mini onClick={(e) => add(card, e.shiftKey ? card.max : 1)} onRemove={() => remove(card)} onHover={() => setSel(card)} />
                   ))}
                 </div>}
           </div>
@@ -495,6 +572,27 @@ function DeckBuilder() {
                   ))}
               </div>
             </div>
+            <div className="db-curve-box" data-deck-stats>
+              <span className="db-foot-label">Cost curve</span>
+              <div className="db-curve">
+                {deckStats.curve.map((n, cost) => (
+                  <span className="db-curve-col" key={cost} title={n + " cards with cost " + cost + (cost === 10 ? " or more" : "")}>
+                    <i style={{ height: Math.min(100, n * 5) + "%" }} />
+                    <b>{n || ""}</b>
+                    <small>{cost === 10 ? "10+" : cost}</small>
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="db-deck-counts">
+              <span>Characters <b>{deckStats.C}</b></span>
+              <span>Events <b>{deckStats.E}</b></span>
+              <span>Stages <b>{deckStats.S}</b></span>
+              <span>+1000 <b>{deckStats.c1000}</b></span>
+              <span>+2000 <b>{deckStats.c2000}</b></span>
+              <span>[Counter] <b>{deckStats.counterEvents}</b></span>
+              <span>[Trigger] <b>{deckStats.triggers}</b></span>
+            </div>
           </div>
         </section>
 
@@ -503,11 +601,12 @@ function DeckBuilder() {
           <div className="db-list-tabs">
             <button className={"db-tab" + (activeTab === "list" ? " active" : "")} onClick={() => setActiveTab("list")}><I n="cards" size={15} /> Card List</button>
             <button className={"db-tab" + (activeTab === "favs" ? " active" : "")} onClick={() => setActiveTab("favs")}><I n="star" size={15} /> Favorites {favorites.size > 0 && <span className="db-adv-badge">{favorites.size}</span>}</button>
-            <button className="db-tab" onClick={() => setView("my-decks")}><I n="save" size={15} /> My Decks</button>
+            <button className="db-tab" onClick={() => leaveTo("my-decks")}><I n="save" size={15} /> My Decks</button>
           </div>
           <div className="db-search">
             <I n="search" size={16} />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by card name…" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, code or type…" aria-label="Search cards" />
+            <button className={"db-intext" + (inText ? " on" : "")} data-act="search-in-text" aria-pressed={inText} title="Also search the text of the cards" onClick={() => setInText(!inText)}>in text</button>
           </div>
           <div className="db-search db-archetype">
             <I n="friends" size={16} />
@@ -533,14 +632,15 @@ function DeckBuilder() {
             <button className={"db-advbtn" + (advCount ? " on" : "")} onClick={() => setAdvOpen(true)}>
               <I n="sliders" size={15} /> Advanced filters{advCount ? <span className="db-adv-badge">{advCount}</span> : null}
             </button>
-            <span className="db-list-count">{list.length} cards</span>
+            {filtersOn && <button className="db-clearall" data-act="clear-filters" onClick={clearFilters}>Clear all</button>}
+            <span className="db-list-count">{list.length} {list.length === 1 ? "card" : "cards"}</span>
           </div>
           {activeTab === "favs" ? (
             <div className="db-list-grid">
               {favorites.size === 0 ? (
                 <div className="db-deck-empty" style={{ gridColumn: "1/-1" }}>
                   <I n="star" size={28} />
-                  <p>No favorites yet.<br/>Double-click any card to star it.</p>
+                  <p>No favorites yet.<br/>Select a card and press “Add to favorites” under it.</p>
                 </div>
               ) : (
                 pool.filter((c) => favorites.has(c.id)).map((card) => (
@@ -548,7 +648,7 @@ function DeckBuilder() {
                     count={card.t === "L" ? (leader && leader.id === card.id ? 1 : 0) : (deck[card.id] || 0)}
                     dim={card.t !== "L" && (deck[card.id] || 0) >= card.max}
                     locked={card.t !== "L" && !colorOK(card)}
-                    onClick={() => add(card)}
+                    onClick={(e) => add(card, e.shiftKey ? card.max : 1)}
                     onRemove={() => remove(card)}
                     onHover={() => setSel(card)} />
                 ))
@@ -561,13 +661,12 @@ function DeckBuilder() {
                   count={card.t === "L" ? (leader && leader.id === card.id ? 1 : 0) : (deck[card.id] || 0)}
                   dim={card.t !== "L" && (deck[card.id] || 0) >= card.max}
                   locked={card.t !== "L" && !colorOK(card)}
-                  onClick={() => add(card)}
+                  onClick={(e) => add(card, e.shiftKey ? card.max : 1)}
                   onRemove={() => remove(card)}
-                  onHover={() => setSel(card)}
-                  onDoubleClick={() => toggleFav(card.id)} />
+                  onHover={() => setSel(card)} />
               ))}
               {list.length > shown.length &&
-                <div className="db-list-more">Showing {shown.length} of {list.length} — refine your search or filters to see more.</div>}
+                <div className="db-list-more">Showing {shown.length} of {list.length} <button className="db-chip" data-act="show-more" onClick={() => setRenderLimit((n) => n + RENDER_LIMIT)}>Show more</button></div>}
             </div>
           )}
         </section>
@@ -589,7 +688,7 @@ function DeckBuilder() {
             </div>
             <div className="db-modal-body">
               <div className="db-mod-section">
-                <div className="db-mod-label">One card per line <small>(replaces the deck on screen)</small></div>
+                <div className="db-mod-label">One card per line, with its code <small>(replaces the deck on screen)</small></div>
                 <textarea className="db-import-text" data-import-text autoFocus rows={12} spellCheck={false} value={importText}
                   onChange={(e) => setImportText(e.target.value)} placeholder={"1xOP13-001\n4xOP13-016\n3xST30-004"} />
                 {importErrors.length > 0 &&
@@ -600,7 +699,34 @@ function DeckBuilder() {
             </div>
             <div className="db-modal-foot">
               <span className="db-mod-result"></span>
-              <button className="db-mod-apply" data-act="deck-import-apply" disabled={!importText.trim()} onClick={importDeck}>Import</button>
+              {importPartial && <button className="db-mod-reset" data-act="deck-import-partial" onClick={() => importDeck(true)}>Skip those lines</button>}
+              <button className="db-mod-apply" data-act="deck-import-apply" disabled={!importText.trim()} onClick={() => importDeck()}>Import</button>
+            </div>
+          </div>
+        </div>}
+
+      {/* a card at full size, with its text */}
+      {zoomed &&
+        <div className="db-modal-overlay db-zoom" data-card-zoom onClick={() => setZoomed(null)}>
+          <img src={zoomed.image} alt={zoomed.name} />
+          <div className="db-zoom-text">
+            <b>{zoomed.name}</b> <small>{zoomed.id}</small>
+            {zoomed.fx && zoomed.fx !== "-" && <p>{zoomed.fx}</p>}
+            {zoomed.trigger && <p>{zoomed.trigger}</p>}
+          </div>
+        </div>}
+
+      {/* leaving with changes that are not saved */}
+      {leaveAsk &&
+        <div className="db-modal-overlay" data-unsaved onClick={() => setLeaveAsk(null)}>
+          <div className="db-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="db-modal-head"><div className="db-modal-title"><I n="save" size={18} /> Unsaved changes</div></div>
+            <div className="db-modal-body"><p>“{deckName}” has changes that are not saved.</p></div>
+            <div className="db-modal-foot">
+              <button className="db-mod-reset" data-act="unsaved-stay" onClick={() => setLeaveAsk(null)}>Keep editing</button>
+              <button className="db-mod-reset" data-act="unsaved-discard" onClick={() => setView(leaveAsk)}>Discard</button>
+              <button className="db-mod-apply" data-act="unsaved-save" disabled={!leader || mainCount === 0 || saving}
+                onClick={async () => { if (await saveDeck()) setView(leaveAsk); }}>Save</button>
             </div>
           </div>
         </div>}
@@ -614,6 +740,20 @@ function DeckBuilder() {
               <button className="db-modal-x" onClick={() => setAdvOpen(false)} title="Close">×</button>
             </div>
             <div className="db-modal-body">
+              <div className="db-mod-section">
+                <div className="db-mod-label">Cost <small>(Characters, Events and Stages)</small></div>
+                <div className="db-mod-chips">
+                  {Array.from({ length: 11 }, (_, n) => (
+                    <button key={n} className={"db-chip" + (costF.includes(n) ? " on" : "")} onClick={() => toggleCost(n)}>{n === 10 ? "10+" : n}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="db-mod-section db-mod-selects">
+                <label>Set <Select value={setF} onChange={setSetF} options={["Any", ...options.sets]} /></label>
+                <label>Power <Select value={powerF} onChange={setPowerF} options={["Any", ...options.powers]} /></label>
+                <label>Rarity <Select value={rarityF} onChange={setRarityF} options={["Any", ...options.rarities]} /></label>
+                <label>Attribute <Select value={attrF} onChange={setAttrF} options={["Any", ...options.attrs]} /></label>
+              </div>
               <div className="db-mod-section">
                 <div className="db-mod-label">Counter</div>
                 <div className="db-mod-chips">

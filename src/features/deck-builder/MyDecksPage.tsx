@@ -9,6 +9,7 @@ import * as React from "react";
 import { useUiStore } from "../../app/uiStore";
 import { api } from "../../lib/api";
 import { loadCardsById } from "../cards/cardsDb";
+import { rememberDuelDeck } from "../duel-room/duelDeck";
 import { Dock } from "../profiles/ProfilePages";
 import "../home/home.css";
 import "../profiles/profiles.css";
@@ -154,6 +155,11 @@ function MyDecks() {
                   <div className="md-meta">
                     <span className="md-leadname"><span className="md-dot" style={{ background: c }}></span>{colorName} · {leaderName}</span>
                   </div>
+                  {legal && (
+                    <button className="md-play" data-act="deck-play" onClick={() => { rememberDuelDeck(d.id); setView("duel-room"); }}>
+                      <I n="play" size={13} /> Play with this deck
+                    </button>
+                  )}
                   <div className="md-stats">
                     <span className={"md-count" + (legal ? " ok" : "")}>{legal ? <I n="check" size={12} /> : null}{count}/50</span>
                     <span className="md-wl"><b className="w">{d.wins}W</b> · <b className="l">{d.losses}L</b></span>

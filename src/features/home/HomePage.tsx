@@ -69,7 +69,7 @@ const MODES: Mode[] = [
     id: "duel-room",
     badge: "Multiplayer",
     name: "Duel Room",
-    sub: "Queue up and duel other captains live.",
+    sub: "Host a game for a friend, or queue up against other captains.",
     go: "Enter",
     view: "duel-room",
     cls: "m-duel",

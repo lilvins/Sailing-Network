@@ -16,7 +16,7 @@ import { LAYOUT, layoutTuning, layoutVars, useLayoutVersion } from "./layout";
 import { LayoutTuner } from "./LayoutTuner";
 import { selectUnread, useInboxStore } from "../social/inboxStore";
 import type { DeckChoice } from "./decks";
-import { hasSavedRoom, resumeRoom, sendRoomChat } from "./room";
+import { askRematch, hasSavedRoom, resumeRoom, sendRoomChat } from "./room";
 import { useDeckOptions } from "./useDeckOptions";
 import { fmtEvent } from "./log";
 import { NightSea } from "../home/NightSea";
@@ -619,7 +619,15 @@ function GameScreen() {
   const [trashOpen, setTrashOpen] = useState<PID | null>(null);
   const [mode, setMode] = useState<Mode>({ t: "idle" });
   const [picked, setPicked] = useState<Iid[]>([]);
-  const [armConcede, setArmConcede] = useState<PID | null>(null);
+  const [askConcede, setAskConcede] = useState<PID | null>(null);
+  const [zoomCard, setZoomCard] = useState<Card | null>(null);
+  const [counterPick, setCounterPick] = useState<Iid | null>(null); // "Confirm every choice": the counter waiting for a Confirm
+  useEffect(() => {
+    if (!zoomCard) return;
+    const close = (e: KeyboardEvent) => { if (e.key === "Escape") setZoomCard(null); };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [zoomCard]);
   // fixed-resolution stage, scaled (and rotated in portrait) to the viewport
   useLayoutVersion();
   const stage = useStageFit();
@@ -701,6 +709,7 @@ function GameScreen() {
     setPayPick({ active: [], rested: [], given: {} });
     setDonPick([]);
     setNumberPick(null);
+    setCounterPick(null);
   }, [pc, game.turn, game.battle?.step, game.phase]);
 
   // windows with nothing to decide close by themselves (unless "confirm every
@@ -1193,7 +1202,8 @@ function GameScreen() {
       dispatch({ type: "useCounterEvent", player: owner, cardIid: iid });
       return;
     }
-    explain("This card can't counter.", "Usable now: cards with a counter value, or [Counter] Events you can pay.");
+    const isCounterEvent = cards.get(game.players[owner].instances[iid].cardId)?.category === "Event";
+    explain(isCounterEvent ? "This Event can't be used now." : "This card has no counter value.", isCounterEvent ? "A [Counter] Event needs its cost in active DON!!, and its own cost paid." : undefined);
   };
 
   const onHandTap = (owner: PID, iid: Iid) => {
@@ -1204,6 +1214,8 @@ function GameScreen() {
       return;
     }
     if (pc?.kind === "counterWindow" && pc.player === owner) {
+      const usable = lm.counterCards.some((c) => c.iid === iid) || lm.counterEvents.some((c) => c.iid === iid);
+      if (confirmPicks && usable) { setCounterPick(iid); return; }
       counterWith(owner, iid);
       return;
     }
@@ -1500,10 +1512,22 @@ function GameScreen() {
     }
     if (pc?.kind === "counterWindow") {
       const usable = lm.counterCards.length + lm.counterEvents.length;
+      const inHand = lm.counterCards.reduce((sum, c) => sum + c.amount, 0);
+      if (counterPick) {
+        const name = cards.get(game.players[pc.player].instances[counterPick].cardId)?.name ?? "this card";
+        const amount = lm.counterCards.find((c) => c.iid === counterPick)?.amount;
+        return (
+          <div className="ba-actionbar">
+            <span className="ba-actlabel">Use <b>{name}</b>{amount ? ` (+${amount})` : ""}?</span>
+            <button className="ba-btn primary big" data-act="counter-confirm" onClick={() => { const iid = counterPick; setCounterPick(null); counterWith(pc.player, iid); }}>Use it</button>
+            <button className="ba-btn big" data-act="counter-cancel" onClick={() => setCounterPick(null)}>Cancel</button>
+          </div>
+        );
+      }
       return (
         <div className="ba-actionbar">
           <span className="ba-actlabel">
-            <b>{seatName(pc.player)}</b> — counter step: {usable > 0 ? "tap highlighted cards in hand (repeatable), then" : "nothing usable in hand —"}
+            <b>{seatName(pc.player)}</b> — counter step: {usable > 0 ? `tap highlighted cards in hand${inHand > 0 ? ` (+${inHand} available)` : ""}, then` : "nothing usable in hand —"}
           </span>
           <button className="ba-btn primary big" data-act="endcounters" onClick={() => dispatch({ type: "passCounter", player: pc.player })}>
             End counters
@@ -2174,25 +2198,18 @@ function GameScreen() {
 
   function ConcedeButton({ pid }: { pid: PID }) {
     if (game.phase === "over" || (online && pid !== online.mySeat)) return null;
-    const arm = armConcede === pid;
     return (
           <button
-            className={`ba-concede${arm ? " armed" : ""}`}
+            className="ba-concede"
             data-act={`concede-${pid}`}
             title="Concede"
             aria-label="Concede"
             onClick={(e) => {
               e.stopPropagation();
-              if (!arm) {
-                setArmConcede(pid);
-                setTimeout(() => setArmConcede((a) => (a === pid ? null : a)), 2500);
-                return;
-              }
-              setArmConcede(null);
-              dispatch({ type: "concede", player: pid });
+              setAskConcede(pid);
             }}
           >
-            {arm ? "Sure?" : "Concede"}
+            Concede
           </button>
     );
   }
@@ -2605,16 +2622,38 @@ function GameScreen() {
       </div>
     );
   } else if (game.phase === "over") {
+    const opponent = online ? seats.find((s) => s.pid !== online.mySeat) : undefined;
+    const iAsked = !!online?.rematchVotes?.includes(online.mySeat);
+    const theyAsked = !!online?.rematchVotes?.some((p) => p !== online.mySeat);
+    const theyLeft = !!online?.leftSeats?.some((p) => p !== online.mySeat);
+    /** Leaving a friend game: the room is left too, nothing to come back to. */
+    const leaveTo = (view: "duel-room" | "home") => { reset(); setView(view); };
+    const copyLog = () => {
+      const decks = seats.map((s) => `${s.name}: ${s.deck.leaderId} + ${s.deck.main.join(" ")}`);
+      const lines = events.map((e) => fmtEvent(e, game, cards, seatName)?.text).filter(Boolean);
+      void navigator.clipboard?.writeText([...decks, "", ...lines].join("\n")).then(() => explain("Game log copied.", undefined, "info"));
+    };
     overlay = (
       <div className="ba-overlay">
-        <div className="ba-panel ba-ov">
+        <div className="ba-panel ba-ov" data-game-over>
           <span className="ba-ovtag">GAME OVER</span>
           <b className="ba-ovname big">{game.winner ? seatName(game.winner) : "?"} WINS</b>
           <p className="ba-ovtext">{WIN_REASON[game.winReason ?? ""] ?? game.winReason}</p>
+          {online && <p className="ba-ovtext" data-rematch-state>
+            {theyLeft ? `${opponent?.name} has left the table.`
+              : iAsked ? `Waiting for ${opponent?.name}…`
+              : theyAsked ? `${opponent?.name} wants a rematch.`
+              : "This game is in your Duel Records."}
+          </p>}
           <div className="ba-ovbtns">
-            {!online && <button className="ba-btn primary" data-act="rematch" onClick={rematch}>Rematch</button>}
-            <button className="ba-btn" data-act="newdecks" onClick={reset}>{online ? "Leave table" : "Change decks"}</button>
-            <button className="ba-btn" data-act="gohome" onClick={() => setView("home")}>Home</button>
+            {online
+              ? <button className="ba-btn primary" data-act="rematch" disabled={iAsked || theyLeft} onClick={() => void askRematch()}>{iAsked ? "Rematch asked" : "Rematch"}</button>
+              : <button className="ba-btn primary" data-act="rematch" onClick={rematch}>Rematch</button>}
+            {online
+              ? <button className="ba-btn" data-act="to-duel-room" onClick={() => leaveTo("duel-room")}>Duel Room</button>
+              : <button className="ba-btn" data-act="newdecks" onClick={reset}>Change decks</button>}
+            <button className="ba-btn" data-act="gohome" onClick={() => (online ? leaveTo("home") : setView("home"))}>Home</button>
+            <button className="ba-btn" data-act="copy-log" onClick={copyLog}>Copy log</button>
           </div>
         </div>
       </div>
@@ -2628,7 +2667,10 @@ function GameScreen() {
   // a take-back request waits for the opponent before anything else
   if (undoRequest) {
     const entry = [...history].reverse().find((h) => h.actor === undoRequest.by);
-    const what = entry ? events.slice(entry.eventsLen).map((e) => fmtEvent(e, game, cards, seatName)).find(Boolean)?.text : null;
+    const from = undoRequest.eventsLen ?? entry?.eventsLen; // where the move being taken back starts
+    const undone = from === undefined ? [] : events.slice(from);
+    const what = undone.map((e) => fmtEvent(e, game, cards, seatName)).find(Boolean)?.text;
+    const sawCards = undone.some((e) => e.type === "cardsDrawn" || e.type === "deckPeeked" || e.type === "cardsRevealed" || e.type === "lifePeeked");
     const opponent = seats.find((s) => s.pid !== undoRequest.by)!;
     overlay = (
       <div className="ba-overlay">
@@ -2636,6 +2678,7 @@ function GameScreen() {
           <span className="ba-ovtag">TAKE-BACK</span>
           <b className="ba-ovname">{seatName(undoRequest.by)} asks to take back their last move</b>
           {what && <p className="ba-ovtext">“{what}”</p>}
+          {sawCards && <p className="ba-ovtext">Careful: that move drew or showed cards.</p>}
           <p className="ba-ovtext"><b>{opponent.name}</b>, do you accept? Everything after that move is undone too.</p>
           {online?.mySeat === undoRequest.by ? (
             <div className="ba-ovbtns">
@@ -2647,6 +2690,22 @@ function GameScreen() {
               <button className="ba-btn big" data-act="undo-decline" onClick={() => answerUndo(false)}>Decline</button>
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (askConcede && game.phase !== "over") {
+    overlay = (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov" data-concede-confirm>
+          <span className="ba-ovtag">CONCEDE</span>
+          <b className="ba-ovname">Concede this game?</b>
+          <p className="ba-ovtext"><b>{seatName(askConcede)}</b> loses at once.</p>
+          <div className="ba-ovbtns">
+            <button className="ba-btn big" data-act="concede-yes" onClick={() => { const pid = askConcede; setAskConcede(null); dispatch({ type: "concede", player: pid }); }}>Concede</button>
+            <button className="ba-btn primary big" data-act="concede-no" onClick={() => setAskConcede(null)}>Keep playing</button>
+          </div>
         </div>
       </div>
     );
@@ -2664,7 +2723,7 @@ function GameScreen() {
     <>
       {/* the card itself, as big as the rail allows: the printed text is the
           text (no transcription under it). Only the automation disclosure stays. */}
-      <div className="ba-prevart" key={shown.id}>
+      <div className="ba-prevart zoomable" key={shown.id} title="Click to enlarge" data-act="card-zoom" onClick={(e) => { e.stopPropagation(); setZoomCard(shown); }}>
         {shown.image
           ? <img src={shown.image} alt={`${shown.name} — ${shown.effect ?? ""}`} />
           : <div className="ba-prevfx">{shown.name}{"\n\n"}{shown.effect}</div>}
@@ -2691,6 +2750,17 @@ function GameScreen() {
   return (
     <div className="ba-stagewrap" data-stage-scale={stage.scale.toFixed(4)} data-stage-rotate={stage.rotate ? "1" : "0"}>
     {layoutTuning && <LayoutTuner rotated={stage.rotate} />}
+    {/* a card at full size with its text: outside the scaled stage, as big as the window */}
+    {zoomCard && (
+      <div className="ba-zoom" data-card-zoom onClick={() => setZoomCard(null)}>
+        {zoomCard.image && <img src={zoomCard.image} alt={zoomCard.name} />}
+        <div className="ba-zoomtext">
+          <b>{zoomCard.name}</b> <small>{zoomCard.id}</small>
+          {zoomCard.effect && zoomCard.effect !== "-" && <p>{zoomCard.effect}</p>}
+          {zoomCard.trigger && <p>{zoomCard.trigger}</p>}
+        </div>
+      </div>
+    )}
     {/* the living night-sea pixel scene behind the table (same real layers as
         the Home hero), at viewport size OUTSIDE the scaled stage */}
     <div className={`ba-scene${stage.rotate ? " rot" : ""}`}><NightSea /></div>
@@ -2771,10 +2841,15 @@ function GameScreen() {
             <div className="ba-turnbox">
               <span className="ba-turnpill">TURN <b>{Math.max(1, game.turn)}</b></span>
               <span className="ba-phasepill">{phaseLabel}</span>
+              {game.phase !== "over" && (
+                <span className={`ba-whoseturn${online?.mySeat === game.turnPlayer ? " mine" : ""}`} data-whose-turn>
+                  {online?.mySeat === game.turnPlayer ? "YOUR TURN" : `${seatName(game.turnPlayer).toUpperCase()}'S TURN`}
+                </span>
+              )}
             </div>
             {/* reserved slot: prompts overlay here, the table never reflows */}
             <div className="ba-promptslot">
-              {aiActing ? <div className="ba-aithinking" data-ai-thinking>{seatName(lm.actor)} {aiPaused ? "— paused" : "is thinking…"}</div> : actionBar}
+              {aiActing ? <div className="ba-aithinking" data-ai-thinking>{online ? `Waiting for ${seatName(lm.actor)}…` : `${seatName(lm.actor)} ${aiPaused ? "— paused" : "is thinking…"}`}</div> : actionBar}
             </div>
             {endTurnButton}
           </div>

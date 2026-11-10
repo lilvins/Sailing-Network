@@ -229,6 +229,13 @@
    drifts a few native pixels and back; a dark wash keeps the panels legible. */
 .sn.dr{position:relative;isolation:isolate;background:#8aa4ad;}
 .dr > :not(.dr-scene){position:relative;z-index:1;}
+.dr > .dr-modal-overlay{position:fixed;z-index:200;}
+.dr-open-deck{display:flex;align-items:center;gap:8px;margin:0 12px 0 auto;font-size:12px;color:var(--muted);white-space:nowrap;}
+.dr-open-deck .dr-select{width:190px;}
+.dr-mini{display:flex;flex-direction:column;gap:8px;}
+.dr-mini .dr-mini-h{margin-bottom:0;}
+.dr-invite{display:flex;align-items:center;gap:10px;margin-top:6px;}
+.dr-invite b{letter-spacing:2px;color:var(--txt);user-select:all;}
 .dr-scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .dr-scene i{position:absolute;inset:0;background-size:cover;background-position:center bottom;background-repeat:no-repeat;image-rendering:pixelated;}
 .dr-scene .sky{background-image:url("/assets/bg/sunset-sea/sky.png");}

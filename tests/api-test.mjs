@@ -321,6 +321,49 @@ try {
   r = await u1.get("/api/admin/users");
   check("non-admin on admin route → 403", r.status === 403);
 
+  // ============================ FRIEND GAMES ============================
+  section("friend games");
+  const host = client();
+  const guest = client();
+  await host.post("/api/auth/signup", { email: "host@test.local", username: "room_host", password: "password123" });
+  await guest.post("/api/auth/signup", { email: "guest@test.local", username: "room_guest", password: "password123" });
+  const deckFor = (name) => ({ name, leaderId: "OP01-001", main: Array(50).fill("OP01-016") });
+  const myDeck = (await host.post("/api/me/decks", { name: "Host deck", leaderId: "OP01-001", cards: [] })).json.deck;
+  const hosted = (await host.post("/api/rooms", { deck: { ...deckFor("H"), deckId: myDeck.id }, format: "Standard · OP17", type: "BO1" })).json.room;
+  check("a hosted duel has a code", /^[A-Z2-9]{6}$/.test(hosted.code));
+  r = await guest.post(`/api/rooms/${hosted.code}/join`, { deck: { ...deckFor("G"), deckId: myDeck.id } });
+  check("joins by code", r.status === 200 && r.json.room.mySeat === "seatB");
+  const recordsOf = async (c) => (await c.get("/api/me/matches")).json.matches;
+
+  r = await host.post(`/api/rooms/${hosted.code}/result`, { winner: "seatA" });
+  check("one report records nothing", r.json.recorded === false && (await recordsOf(host)).length === 0);
+  r = await guest.post(`/api/rooms/${hosted.code}/result`, { winner: "seatA" });
+  check("both agree → recorded", r.json.recorded === true);
+  const hostRows = await recordsOf(host);
+  const guestRows = await recordsOf(guest);
+  check("a row each, with the result of each", hostRows.length === 1 && guestRows.length === 1 && hostRows[0].result === "win" && guestRows[0].result === "loss");
+  check("the host's deck counts, not someone else's", (await host.get(`/api/decks/${myDeck.id}`)).json.deck.wins === 1);
+  await host.post(`/api/rooms/${hosted.code}/result`, { winner: "seatA" });
+  check("reporting again adds nothing", (await recordsOf(host)).length === 1);
+
+  r = await host.post(`/api/rooms/${hosted.code}/rematch`, { action: "request" });
+  let seen = (await guest.get(`/api/rooms/${hosted.code}`)).json.room;
+  check("one rematch request: no new room", r.status === 200 && seen.rematchVotes.join() === "seatA" && seen.nextCode === null);
+  await guest.post(`/api/rooms/${hosted.code}/rematch`, { action: "request" });
+  seen = (await host.get(`/api/rooms/${hosted.code}`)).json.room;
+  check("both asked: a new room", !!seen.nextCode && seen.nextCode !== hosted.code);
+  const again = (await guest.get(`/api/rooms/${seen.nextCode}`)).json.room;
+  check("same seats, no moves", again.status === "playing" && again.mySeat === "seatB" && again.total === 0 && again.seats[0].deck.name === "H");
+
+  const other = (await host.post("/api/rooms", { deck: deckFor("H"), format: "East Blue", type: "BO1" })).json.room;
+  await guest.post(`/api/rooms/${other.code}/join`, { deck: deckFor("G") });
+  await host.post(`/api/rooms/${other.code}/result`, { winner: "seatA" });
+  r = await guest.post(`/api/rooms/${other.code}/result`, { winner: "seatB" });
+  check("different winners → not recorded", r.json.recorded === false);
+  await guest.post(`/api/rooms/${other.code}/rematch`, { action: "leave" });
+  r = await host.post(`/api/rooms/${other.code}/rematch`, { action: "request" });
+  check("no rematch once the other has left", r.status === 409);
+
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
 } finally {

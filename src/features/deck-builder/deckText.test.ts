@@ -13,8 +13,35 @@ const parse = (text: string) => parseDeckText(text, (id) => CARDS[id]);
 describe("parseDeckText", () => {
   it("reads the leader and the cards, ignoring blank lines and spacing", () => {
     expect(parse("1xOP13-001\r\n\n4xOP13-016\n  3 x op07-022  ")).toEqual({
-      leaderId: "OP13-001", cards: { "OP13-016": 4, "OP07-022": 3 }, errors: [],
+      leaderId: "OP13-001", cards: { "OP13-016": 4, "OP07-022": 3 }, errors: [], lineErrors: [],
     });
+  });
+
+  it.each([
+    ["4 OP13-016", 4],
+    ["OP13-016 x4", 4],
+    ["x3 OP13-016", 3],
+    ["4 Edward.Newgate OP13-016", 4],
+    ["2 Monkey.D.Luffy (OP13-016)", 2],
+    ["OP13-016", 1],
+    ["Monkey.D.Luffy (OP13-016)", 1],
+    ["3x OP13-016", 3],
+    ["OP13-016_p1 x2", 2],
+  ])("reads %s from other sites' lists", (line, copies) => {
+    const result = parse(`1xOP13-001\n${line}`);
+    expect(result.errors).toEqual([]);
+    expect(result.cards).toEqual({ "OP13-016": copies });
+  });
+
+  it("does not swallow the X of a code", () => {
+    expect(parse("1xOP13-001\n4 XX99-999").errors).toEqual(["Unknown card: XX99-999"]);
+  });
+
+  it("keeps the good lines when only some lines are unreadable", () => {
+    const result = parse("1xOP13-001\nLeader:\n4xOP13-016\n2xOP99-999");
+    expect(result.cards).toEqual({ "OP13-016": 4 });
+    expect(result.lineErrors).toHaveLength(2);
+    expect(result.errors).toEqual(result.lineErrors);
   });
 
   it("adds up a card written twice", () => {

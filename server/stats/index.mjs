@@ -21,7 +21,7 @@ export const bountyOf = (rating) => Math.round(rating) * TUNING.bounty.berriesPe
 
 // A result logged by hand is the player's own word: it stays in their records,
 // never in the ladder or the meta.
-const COUNTS = `source <> 'manual'`;
+const COUNTS = `source NOT IN ('manual', 'friend')`;
 
 // ---------- cached ladder ----------
 let cache = { key: "", ladder: null };

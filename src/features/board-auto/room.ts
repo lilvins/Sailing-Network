@@ -13,7 +13,7 @@ import type { AutoGameState, PID } from "../../autosim/engine/state";
 import { getCardDb, setOnlineHooks, useAutoStore, type RoomChatLine, type SeatSetup } from "./autoStore";
 import type { DeckChoice } from "./decks";
 
-interface RoomSeat { name: string; deck: { name: string; leaderId: string; main: string[] } }
+interface RoomSeat { name: string; deck: { name: string; leaderId: string; main: string[]; deckId?: string } }
 interface RoomInfo {
   code: string;
   mySeat: PID;
@@ -24,6 +24,9 @@ interface RoomInfo {
   total: number;
   epoch: number;
   undoBy: PID | null;
+  rematchVotes: PID[];
+  leftSeats: PID[];
+  nextCode: string | null;
   moves: PlayerIntent[];
   chat: RoomChatLine[];
 }
@@ -89,7 +92,30 @@ function startPlaying(room: RoomInfo): void {
   } });
   const auto = takeBack && takeBack.code === room.code && room.undoBy === takeBack.by; // a step of a take-back in progress
   useAutoStore.setState({ undoRequest: !auto && room.undoBy ? { by: room.undoBy } : null });
+  if (!auto && room.undoBy) void describeTakeBack(room.code, room.undoBy);
   remember(game.phase === "over" ? null : room.code);
+  reportIfOver(room.code);
+}
+
+/** Tells the server who won, once per game: it records the game when both browsers agree. */
+const reported = new Set<string>();
+function reportIfOver(code: string): void {
+  const winner = useAutoStore.getState().game?.winner;
+  if (!winner || reported.has(code)) return;
+  reported.add(code);
+  void call(`/api/rooms/${code}/result`, { method: "POST", body: { winner } }).catch(() => {});
+}
+
+/** Works out where the take-back would return to, so the player who has to
+ *  answer can read which move it is and what it would undo. */
+async function describeTakeBack(code: string, by: PID): Promise<void> {
+  const { room } = await call(`/api/rooms/${code}?after=0`).catch(() => ({ room: undefined }));
+  if (!room) return;
+  const start = takeBackStart(room.moves, by);
+  if (start < 0) return;
+  const before = buildGame({ ...room, moves: room.moves.slice(0, start) });
+  const current = useAutoStore.getState().undoRequest;
+  if (current?.by === by) useAutoStore.setState({ undoRequest: { by, eventsLen: before.events.length } });
 }
 
 /** Back to what the server holds: used whenever this browser may have drifted. */
@@ -107,7 +133,12 @@ function applyRemote(room: RoomInfo): void {
   if (!online || !game) return;
   // a take-back being completed step by step: no panel for each step
   const auto = takeBack && takeBack.code === online.code && room.undoBy === takeBack.by;
-  if (!auto && (undoRequest?.by ?? null) !== room.undoBy) useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
+  if (!auto && (undoRequest?.by ?? null) !== room.undoBy) {
+    useAutoStore.setState({ undoRequest: room.undoBy ? { by: room.undoBy } : null });
+    if (room.undoBy) void describeTakeBack(online.code, room.undoBy);
+    // my request is gone and the moves are still there: the opponent said no
+    else if (undoRequest?.by === online.mySeat && room.epoch === online.epoch) store.explain("Your opponent declined the take-back.", undefined, "info");
+  }
   const db = getCardDb()!;
   let g = game;
   let ev = events;
@@ -124,7 +155,29 @@ function applyRemote(room: RoomInfo): void {
   const chat = room.chat.length > 0 ? [...online.chat, ...room.chat] : online.chat;
   if (room.moves.length === 0 && chat === online.chat) return;
   useAutoStore.setState({ game: g, events: ev, online: { ...online, applied: online.applied + room.moves.length, chat } });
-  if (g.phase === "over") remember(null);
+  if (g.phase === "over") { remember(null); reportIfOver(online.code); }
+}
+
+/** What the players said about playing again; follows them into the new room. */
+function followRematch(room: RoomInfo): boolean {
+  const { online } = useAutoStore.getState();
+  if (!online) return false;
+  if (room.nextCode) {
+    const next = room.nextCode;
+    void call(`/api/rooms/${next}`).then((r) => {
+      if (!r.room) return;
+      enterRoom(r.room);
+      useAutoStore.getState().explain("Rematch! New game, same decks.", undefined, "info");
+    });
+    if (timer) clearInterval(timer);
+    timer = null;
+    return true;
+  }
+  const same = (a: PID[] | undefined, b: PID[]) => (a ?? []).join() === b.join();
+  if (!same(online.rematchVotes, room.rematchVotes) || !same(online.leftSeats, room.leftSeats)) {
+    useAutoStore.setState({ online: { ...online, rematchVotes: room.rematchVotes, leftSeats: room.leftSeats } });
+  }
+  return false;
 }
 
 async function pollOnce(code: string): Promise<void> {
@@ -150,9 +203,11 @@ async function pollOnce(code: string): Promise<void> {
       return;
     }
     if (!r.room) return; // a network hiccup: the next tick tries again
+    if (followRematch(r.room)) return;
     if (r.room.status === "playing" && !now.game) {
       startPlaying(r.room); // someone took the seat: to the table, from wherever the host is
       useUiStore.getState().setView("board-auto");
+      useAutoStore.getState().explain(`${r.room.seats[1]?.name ?? "Someone"} joined your duel.`, undefined, "info");
     }
     else if (now.game && r.room.epoch !== now.online.epoch) await resync(code, "Move taken back.");
     else if (now.game && now.online.applied === after) applyRemote(r.room);
@@ -173,10 +228,24 @@ function enterRoom(room: RoomInfo): void {
   startPolling(room.code);
 }
 
-const deckBody = (deck: DeckChoice) => ({ name: deck.name, leaderId: deck.leaderId, main: deck.main });
+const deckBody = (deck: DeckChoice) => ({
+  name: deck.name, leaderId: deck.leaderId, main: deck.main,
+  ...(deck.key.startsWith("mine:") ? { deckId: deck.key.slice("mine:".length) } : {}),
+});
+
+/** A "Standard · OP16" duel takes no card from a later OP set. Only the booster
+ *  numbers are compared: the release order of ST/EB/PRB sets is not in the data. */
+export function formatProblem(ids: string[], format: string): string | null {
+  const limit = /Standard · OP(\d+)/.exec(format);
+  if (!limit) return null;
+  const later = ids.find((id) => { const m = /^OP(\d+)-/.exec(id); return !!m && Number(m[1]) > Number(limit[1]); });
+  return later ? `Deck not legal for ${format}: ${later} comes from a later set` : null;
+}
 
 /** The engine's own deck rules (50 cards, 4 copies, colours), before anyone waits on a bad list. */
-async function deckProblem(deck: DeckChoice): Promise<string | null> {
+async function deckProblem(deck: DeckChoice, format?: string): Promise<string | null> {
+  const wrongSet = format ? formatProblem([deck.leaderId, ...deck.main], format) : null;
+  if (wrongSet) return wrongSet;
   await useAutoStore.getState().init();
   const db = getCardDb();
   if (!db) return "The card catalog is not available";
@@ -206,7 +275,7 @@ export async function listOpenDuels(): Promise<OpenDuel[]> {
 }
 
 export async function hostDuel(deck: DeckChoice, duel: { format: string; type: string; note: string; password: string }): Promise<string | null> {
-  const problem = await deckProblem(deck);
+  const problem = await deckProblem(deck, duel.format);
   if (problem) return problem;
   const r = await call("/api/rooms", { method: "POST", body: { ...duel, deck: deckBody(deck) } });
   if (!r.room) return r.error ?? "Could not host the duel";
@@ -214,8 +283,9 @@ export async function hostDuel(deck: DeckChoice, duel: { format: string; type: s
   return null;
 }
 
-export async function joinDuel(id: string, deck: DeckChoice, password: string): Promise<string | null> {
-  const problem = await deckProblem(deck);
+/** `format`: known when joining from the list; a code alone does not say it. */
+export async function joinDuel(id: string, deck: DeckChoice, password: string, format?: string): Promise<string | null> {
+  const problem = await deckProblem(deck, format);
   if (problem) return problem;
   const r = await call(`/api/rooms/${encodeURIComponent(id)}/join`, { method: "POST", body: { deck: deckBody(deck), password } });
   if (!r.room) return r.error ?? "Could not join the duel";
@@ -232,6 +302,7 @@ export function leaveRoom(): void {
   timer = null;
   remember(null);
   if (online.status === "waiting") void call(`/api/rooms/${online.code}`, { method: "DELETE" }).catch(() => {});
+  else void call(`/api/rooms/${online.code}/rematch`, { method: "POST", body: { action: "leave" } }).catch(() => {});
   useAutoStore.setState({ online: null });
 }
 
@@ -248,6 +319,15 @@ export async function resumeRoom(): Promise<void> {
 
 export const hasSavedRoom = (): boolean => savedCode() !== null;
 
+/** "Rematch" at the end of a game: the new one starts when both have asked. */
+export async function askRematch(): Promise<void> {
+  const { online } = useAutoStore.getState();
+  if (!online) return;
+  useAutoStore.setState({ online: { ...online, rematchVotes: [...(online.rematchVotes ?? []), online.mySeat] } });
+  const r = await call(`/api/rooms/${online.code}/rematch`, { method: "POST", body: { action: "request" } }).catch(() => null);
+  if (!r || r.status >= 400) useAutoStore.getState().explain(r?.error ?? "Could not ask for a rematch.");
+}
+
 export async function sendRoomChat(text: string, at: number): Promise<void> {
   const { online } = useAutoStore.getState();
   if (online) await call(`/api/rooms/${online.code}/chat`, { method: "POST", body: { text, at } }).catch(() => {});
@@ -258,7 +338,7 @@ setOnlineHooks({
     sending = sending.then(async () => {
       const r = await call(`/api/rooms/${code}/moves`, { method: "POST", body: { seq, intent } }).catch(() => null);
       if (!r || r.status >= 400) await resync(code);
-      else if (useAutoStore.getState().game?.phase === "over") remember(null);
+      else if (useAutoStore.getState().game?.phase === "over") { remember(null); reportIfOver(code); }
     });
   },
   leave: leaveRoom,

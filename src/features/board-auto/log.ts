@@ -34,6 +34,12 @@ function makeNamer(game: AutoGameState | null, cards: Map<string, Card> | null, 
   };
 }
 
+/** How the cards write a timing: activateMain → "Activate: Main". */
+const TIMING_WORDS: Record<string, string> = { activateMain: "Activate: Main", onPlay: "On Play", onKO: "On K.O.", whenAttacking: "When Attacking", main: "Main", counter: "Counter", trigger: "Trigger" };
+function timingLabel(timing: string): string {
+  return TIMING_WORDS[timing] ?? timing.replace(/^on(?=[A-Z])/, "On").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (c) => c.toUpperCase());
+}
+
 export function fmtEvent(
   e: GameEvent,
   game: AutoGameState | null,
@@ -102,7 +108,7 @@ function fmtLine(e: GameEvent, n: (iid: Iid) => string, seatName: (pid: PID) => 
     case "battleEnded":
       return { text: "End of the battle.", kind: "battle" };
     case "effectActivated":
-      return { text: `${seatName(e.player)} activates ${n(e.sourceIid)} [${e.timing}].`, kind: "effect" };
+      return { text: `${seatName(e.player)} activates ${n(e.sourceIid)} [${timingLabel(e.timing)}].`, kind: "effect" };
     case "effectDeclined":
       return { text: `${seatName(e.player)} declines ${n(e.sourceIid)}'s optional effect.`, kind: "effect" };
     case "costPaid": {
@@ -118,7 +124,7 @@ function fmtLine(e: GameEvent, n: (iid: Iid) => string, seatName: (pid: PID) => 
     case "cardStood":
       return { text: `${n(e.iid)} stands.`, kind: "effect" };
     case "cardsDiscarded":
-      return { text: `${seatName(e.player)} discards ${e.iids.map((iid) => n(iid)).join(", ")}.`, kind: "effect" };
+      return { text: `${seatName(e.player)} trashes ${e.iids.map((iid) => n(iid)).join(", ")} from hand.`, kind: "effect" };
     case "manualResolved":
       return { text: `${seatName(e.player)} resolves ${n(e.sourceIid)} manually.`, kind: "effect" };
     // M3 — tier-2 executor
