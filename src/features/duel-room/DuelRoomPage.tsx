@@ -171,6 +171,7 @@ function LogResultModal({ decks, onClose }: LogResultProps) {
 
 /** The columns of Open Duels; each lists the live duels hosted in that format. */
 const FORMATS = [
+  { key: "op18", name: "Standard · OP18", accent: "#d0a24f" }, // only the revealed OP18 cards so far
   { key: "op17", name: "Standard · OP17", accent: "#4f8fd0" },
   { key: "op16", name: "Standard · OP16", accent: "#3f9d7e" },
   { key: "op15", name: "Standard · OP15", accent: "#c98a52" },
