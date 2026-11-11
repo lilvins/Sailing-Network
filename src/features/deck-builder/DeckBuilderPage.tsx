@@ -92,6 +92,7 @@ function counterKind(card) {
 /* left click = add one copy, right click = take one out (list AND deck panel) */
 function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, locked }) {
   const c = hueColor(card.col);
+  const [noArt, setNoArt] = React.useState(!card.image); // no file for it yet (revealed cards)
   return (
     <button className={"db-card t-" + card.t + (faded ? " faded" : "") + (mini ? " mini" : "") + (dim ? " dim" : "") + (locked ? " locked" : "")}
       style={{ "--cc": c }} onClick={onClick} onMouseEnter={onHover} onFocus={onHover}
@@ -99,12 +100,12 @@ function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, l
       title={card.name + (onRemove ? " — left click: add · shift + click: all copies · right click: remove" : "")}>
       <span className="db-card-art">
         <span className="db-card-glow" style={{ background:`radial-gradient(120% 80% at 50% 12%, ${c}dd, ${c}55 46%, #0a0f17 88%)` }}></span>
-        {card.image && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
-          onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+        {!noArt && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
+          onError={() => setNoArt(true)} />}
         {/* the cost is printed on the card; write it only when there is no image */}
         {card.t === "L"
           ? <span className="db-card-badge"><I n="leader" size={mini?12:15} /></span>
-          : !card.image && <span className="db-card-cost">{card.cost}</span>}
+          : noArt && <span className="db-card-cost">{card.cost}</span>}
         {locked && <span className="db-card-lock"><I n="lock" size={mini?12:15} /></span>}
         <span className="db-card-foot"><span className="db-card-name">{card.name}</span></span>
       </span>
@@ -114,6 +115,8 @@ function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, l
 
 /* ---------- left: card detail panel ---------- */
 function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, allowedNames, isFav, toggleFav, zoom }) {
+  // the picture of this card failed to load: write the card instead (revealed cards have none yet)
+  const [brokenId, setBrokenId] = React.useState(null);
   if (!card) {
     return <aside className="db-detail empty"><div className="db-detail-empty"><I n="cards" size={34} /><p>Select a card to inspect it</p></div></aside>;
   }
@@ -122,9 +125,18 @@ function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, 
     <aside className="db-detail">
       {/* the card image already shows cost, power, counter and text: show it alone */}
       <div className="db-detail-art" style={{ "--cc": c }}>
-        {card.image
-          ? <img className="db-detail-img zoomable" src={card.image} loading="lazy" alt={card.name} draggable={false} title="Click to enlarge" onClick={() => zoom(card)} />
-          : <div className="db-detail-noimg">{card.name}</div>}
+        {card.image && brokenId !== card.id
+          ? <img className="db-detail-img zoomable" src={card.image} loading="lazy" alt={card.name} draggable={false} title="Click to enlarge"
+              onClick={() => zoom(card)} onError={() => setBrokenId(card.id)} />
+          : <div className="db-detail-textcard" data-card-text>
+              <b>{card.name}</b> <small>{card.id}</small>
+              <div>{card.t === "L" ? `Life ${card.cost}` : `Cost ${card.cost}`}
+                {card.pow ? ` · ${card.pow} power` : ""}{card.cnt ? ` · +${card.cnt} counter` : ""}</div>
+              {card.tags.length > 0 && <div className="db-textcard-types">{card.tags.join(" / ")}</div>}
+              {card.fx && card.fx !== "-" && <p>{card.fx}</p>}
+              {card.trigger && <p>[Trigger] {card.trigger}</p>}
+              <small>No picture yet</small>
+            </div>}
       </div>
       <div className="db-detail-actions">
         <button className={"db-star" + (isFav ? " on" : "")} data-act="card-star" onClick={() => toggleFav(card.id)}>
