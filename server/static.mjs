@@ -60,11 +60,15 @@ async function fileStat(path) {
   }
 }
 
+const CARD_IMAGE = /^\/cards\/([A-Z0-9]+-\d+)\.webp$/;
+
 /**
  * Registers the site on `app`. `dir` is the build folder; `cardsDir`, when
  * given, is where /cards/<file> is read from instead of dir/cards.
+ * `cardFace(id)`, when given, answers a card image that has no file yet: an
+ * SVG text, or null for an unknown card (then 404).
  */
-export function registerStatic(app, { dir, cardsDir }) {
+export function registerStatic(app, { dir, cardsDir, cardFace }) {
   const root = resolve(dir);
   const cardsRoot = cardsDir ? resolve(cardsDir) : null;
 
@@ -104,6 +108,14 @@ export function registerStatic(app, { dir, cardsDir }) {
       const inBuild = fileIn(root, urlPath);
       const sb = inBuild ? await fileStat(inBuild) : null;
       if (sb) return send(reply, req, inBuild, sb, urlPath);
+    }
+    // a known card with no picture yet: drawn with its text
+    const card = cardFace && CARD_IMAGE.exec(urlPath);
+    const face = card ? await cardFace(card[1]) : null;
+    if (face) {
+      reply.header("cache-control", "public, max-age=3600"); // the real art may arrive later
+      reply.header("x-content-type-options", "nosniff");
+      return reply.type("image/svg+xml").send(face);
     }
     if (extname(urlPath) !== "") return reply.code(404).send({ error: "Not found" });
 

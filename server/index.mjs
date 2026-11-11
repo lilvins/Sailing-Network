@@ -12,6 +12,7 @@ import { registerCardArt } from "./card-art.mjs";
 import { registerWelcome } from "./welcome.mjs";
 import { registerRooms } from "./rooms.mjs";
 import { registerStatic } from "./static.mjs";
+import { cardFaceSvg } from "./cardFace.mjs";
 import { loadConfig } from "./config.mjs";
 import {
   hashPassword, verifyPassword, createUser, getUserById, getUserByEmail,
@@ -967,7 +968,14 @@ if (process.env.MATCHMAKING_OFF !== "1") {
   timer.unref();
 }
 
-if (config.staticDir) registerStatic(app, { dir: config.staticDir, cardsDir: config.cardsDir });
+if (config.staticDir) {
+  // a card with no picture file yet is drawn with its text (cardFace.mjs)
+  const cardFace = async (id) => {
+    const row = await get(`SELECT * FROM cards WHERE id=?`, [id]);
+    return row ? cardFaceSvg(row) : null;
+  };
+  registerStatic(app, { dir: config.staticDir, cardsDir: config.cardsDir, cardFace });
+}
 
 // A host stops the process with SIGTERM on every deploy: finish the requests
 // in flight, then leave. Friend games live in memory (rooms.mjs) and end here.
