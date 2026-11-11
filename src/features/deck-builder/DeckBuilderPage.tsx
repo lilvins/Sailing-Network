@@ -13,7 +13,7 @@ import { loadCards } from "../cards/cardsDb";
 import { api } from "../../lib/api";
 import { Dock } from "../profiles/ProfilePages";
 import { parseDeckText } from "./deckText";
-import { matchesSearch } from "./cardSearch";
+import { searchRank } from "./cardSearch";
 import { rememberDuelDeck } from "../duel-room/duelDeck";
 import "../home/home.css";
 import "../profiles/profiles.css";
@@ -92,6 +92,7 @@ function counterKind(card) {
 /* left click = add one copy, right click = take one out (list AND deck panel) */
 function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, locked }) {
   const c = hueColor(card.col);
+  const [noArt, setNoArt] = React.useState(!card.image); // no file for it yet (revealed cards)
   return (
     <button className={"db-card t-" + card.t + (faded ? " faded" : "") + (mini ? " mini" : "") + (dim ? " dim" : "") + (locked ? " locked" : "")}
       style={{ "--cc": c }} onClick={onClick} onMouseEnter={onHover} onFocus={onHover}
@@ -99,12 +100,12 @@ function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, l
       title={card.name + (onRemove ? " — left click: add · shift + click: all copies · right click: remove" : "")}>
       <span className="db-card-art">
         <span className="db-card-glow" style={{ background:`radial-gradient(120% 80% at 50% 12%, ${c}dd, ${c}55 46%, #0a0f17 88%)` }}></span>
-        {card.image && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
-          onError={(e) => { e.currentTarget.style.display = "none"; }} />}
+        {!noArt && <img className="db-card-img" src={card.image} loading="lazy" alt="" draggable={false}
+          onError={() => setNoArt(true)} />}
         {/* the cost is printed on the card; write it only when there is no image */}
         {card.t === "L"
           ? <span className="db-card-badge"><I n="leader" size={mini?12:15} /></span>
-          : !card.image && <span className="db-card-cost">{card.cost}</span>}
+          : noArt && <span className="db-card-cost">{card.cost}</span>}
         {locked && <span className="db-card-lock"><I n="lock" size={mini?12:15} /></span>}
         <span className="db-card-foot"><span className="db-card-name">{card.name}</span></span>
       </span>
@@ -114,6 +115,8 @@ function CardTile({ card, count, onClick, onRemove, onHover, faded, mini, dim, l
 
 /* ---------- left: card detail panel ---------- */
 function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, allowedNames, isFav, toggleFav, zoom }) {
+  // the picture of this card failed to load: write the card instead (revealed cards have none yet)
+  const [brokenId, setBrokenId] = React.useState(null);
   if (!card) {
     return <aside className="db-detail empty"><div className="db-detail-empty"><I n="cards" size={34} /><p>Select a card to inspect it</p></div></aside>;
   }
@@ -122,9 +125,18 @@ function Detail({ card, inDeck, add, remove, canAdd, isCurrentLeader, offColor, 
     <aside className="db-detail">
       {/* the card image already shows cost, power, counter and text: show it alone */}
       <div className="db-detail-art" style={{ "--cc": c }}>
-        {card.image
-          ? <img className="db-detail-img zoomable" src={card.image} loading="lazy" alt={card.name} draggable={false} title="Click to enlarge" onClick={() => zoom(card)} />
-          : <div className="db-detail-noimg">{card.name}</div>}
+        {card.image && brokenId !== card.id
+          ? <img className="db-detail-img zoomable" src={card.image} loading="lazy" alt={card.name} draggable={false} title="Click to enlarge"
+              onClick={() => zoom(card)} onError={() => setBrokenId(card.id)} />
+          : <div className="db-detail-textcard" data-card-text>
+              <b>{card.name}</b> <small>{card.id}</small>
+              <div>{card.t === "L" ? `Life ${card.cost}` : `Cost ${card.cost}`}
+                {card.pow ? ` · ${card.pow} power` : ""}{card.cnt ? ` · +${card.cnt} counter` : ""}</div>
+              {card.tags.length > 0 && <div className="db-textcard-types">{card.tags.join(" / ")}</div>}
+              {card.fx && card.fx !== "-" && <p>{card.fx}</p>}
+              {card.trigger && <p>[Trigger] {card.trigger}</p>}
+              <small>No picture yet</small>
+            </div>}
       </div>
       <div className="db-detail-actions">
         <button className={"db-star" + (isFav ? " on" : "")} data-act="card-star" onClick={() => toggleFav(card.id)}>
@@ -232,7 +244,6 @@ function DeckBuilder() {
 
   // right-pane filters
   const [q, setQ] = useState("");
-  const [inText, setInText] = useState(false);          // the search also reads the card's text
   const [colFilter, setColFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [archetype, setArchetype] = useState("");       // card type text, e.g. "rocks pirates"
@@ -257,8 +268,8 @@ function DeckBuilder() {
   const [attrF, setAttrF] = useState("Any");
   const resetAdv = () => { setCounterF("Any"); setKwF([]); setCostF([]); setSetF("Any"); setPowerF("Any"); setRarityF("Any"); setAttrF("Any"); };
   const advCount = (counterF !== "Any" ? 1 : 0) + kwF.length + costF.length + [setF, powerF, rarityF, attrF].filter((v) => v !== "Any").length;
-  const filtersOn = !!q || inText || colFilter !== "All" || typeFilter !== "All" || !!archetype || advCount > 0;
-  const clearFilters = () => { setQ(""); setInText(false); setColFilter("All"); setTypeFilter("All"); setArchetype(""); resetAdv(); };
+  const filtersOn = !!q || colFilter !== "All" || typeFilter !== "All" || !!archetype || advCount > 0;
+  const clearFilters = () => { setQ(""); setColFilter("All"); setTypeFilter("All"); setArchetype(""); resetAdv(); };
 
   const mainCount = useMemo(() => Object.values(deck).reduce((a, b) => a + b, 0), [deck]);
   const cardById = useMemo(() => Object.fromEntries(pool.map((c) => [c.id, c])), [pool]);
@@ -401,10 +412,13 @@ function DeckBuilder() {
 
   // right pane list
   const archetypes = useMemo(() => [...new Set(pool.flatMap((c) => c.tags))].sort((a, b) => a.localeCompare(b)), [pool]);
-  const list = useMemo(() => {
+  const { list, nameHits } = useMemo(() => {
     const arch = archetype.trim().toLowerCase();
+    const rank = new Map();                              // card id → 0 found by name/code/type, 1 only in text
     let l = pool.filter((c) => {
-      if (!matchesSearch(c, q, inText)) return false;
+      const r = searchRank(c, q);
+      if (r === null) return false;
+      rank.set(c.id, r);
       if (costF.length && (c.t === "L" || !costF.includes(Math.min(c.cost, 10)))) return false;
       if (setF !== "Any" && c.set !== setF) return false;
       if (powerF !== "Any" && String(c.pow) !== powerF) return false;
@@ -429,8 +443,10 @@ function DeckBuilder() {
     else if (sort.startsWith("Power")) l = [...l].sort((a,b)=>((a.pow||0)-(b.pow||0))*dir || a.name.localeCompare(b.name));
     else if (sort.startsWith("Color")) l = [...l].sort((a,b)=>a.col.localeCompare(b.col)*dir || a.cost-b.cost);
     else l = [...l].sort((a,b)=>a.name.localeCompare(b.name)*dir);
-    return l;
-  }, [pool, q, inText, colFilter, typeFilter, archetype, sort, counterF, kwF, costF, setF, powerF, rarityF, attrF]);
+    // the cards found by name, code or type first, then the ones found only in their text
+    const byName = l.filter((c) => rank.get(c.id) === 0);
+    return { list: [...byName, ...l.filter((c) => rank.get(c.id) === 1)], nameHits: byName.length };
+  }, [pool, q, colFilter, typeFilter, archetype, sort, counterF, kwF, costF, setF, powerF, rarityF, attrF]);
 
   // the choices of the Advanced filters, from what the catalog really holds
   const options = useMemo(() => ({
@@ -605,8 +621,7 @@ function DeckBuilder() {
           </div>
           <div className="db-search">
             <I n="search" size={16} />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, code or type…" aria-label="Search cards" />
-            <button className={"db-intext" + (inText ? " on" : "")} data-act="search-in-text" aria-pressed={inText} title="Also search the text of the cards" onClick={() => setInText(!inText)}>in text</button>
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name, code, type or text…" aria-label="Search cards" />
           </div>
           <div className="db-search db-archetype">
             <I n="friends" size={16} />
@@ -656,14 +671,17 @@ function DeckBuilder() {
             </div>
           ) : (
             <div className="db-list-grid">
-              {shown.map((card) => (
-                <CardTile key={card.id} card={card}
-                  count={card.t === "L" ? (leader && leader.id === card.id ? 1 : 0) : (deck[card.id] || 0)}
-                  dim={card.t !== "L" && (deck[card.id] || 0) >= card.max}
-                  locked={card.t !== "L" && !colorOK(card)}
-                  onClick={(e) => add(card, e.shiftKey ? card.max : 1)}
-                  onRemove={() => remove(card)}
-                  onHover={() => setSel(card)} />
+              {shown.map((card, i) => (
+                <React.Fragment key={card.id}>
+                  {i === nameHits && <div className="db-list-split" data-text-hits>Found in the card text</div>}
+                  <CardTile card={card}
+                    count={card.t === "L" ? (leader && leader.id === card.id ? 1 : 0) : (deck[card.id] || 0)}
+                    dim={card.t !== "L" && (deck[card.id] || 0) >= card.max}
+                    locked={card.t !== "L" && !colorOK(card)}
+                    onClick={(e) => add(card, e.shiftKey ? card.max : 1)}
+                    onRemove={() => remove(card)}
+                    onHover={() => setSel(card)} />
+                </React.Fragment>
               ))}
               {list.length > shown.length &&
                 <div className="db-list-more">Showing {shown.length} of {list.length} <button className="db-chip" data-act="show-more" onClick={() => setRenderLimit((n) => n + RENDER_LIMIT)}>Show more</button></div>}

@@ -7,6 +7,7 @@ import Fastify from "fastify";
 import { afterAll, describe, expect, it } from "vitest";
 import { loadConfig } from "../server/config.mjs";
 import { registerStatic } from "../server/static.mjs";
+import { cardFaceSvg, wrap } from "../server/cardFace.mjs";
 
 const SECRET = "x".repeat(40);
 const site = mkdtempSync(join(tmpdir(), "sn-site-"));
@@ -59,6 +60,13 @@ describe("server settings (config.mjs)", () => {
   });
 });
 
+describe("a card drawn with its text (cardFace.mjs)", () => {
+  it("wraps at spaces and keeps the card's own line breaks", () => {
+    expect(wrap("Draw 1 card and trash 1 card", 12)).toEqual(["Draw 1 card", "and trash 1", "card"]);
+    expect(wrap("[On Play] A\n[Trigger] B", 40)).toEqual(["[On Play] A", "[Trigger] B"]);
+  });
+});
+
 describe("the site served by the API (static.mjs)", () => {
   const app = Fastify();
   app.get("/api/health", async () => ({ ok: true }));
@@ -96,6 +104,22 @@ describe("the site served by the API (static.mjs)", () => {
     expect(unknown.statusCode).toBe(404);
     expect(unknown.json()).toEqual({ error: "Not found" });
     expect((await app.inject({ method: "POST", url: "/duel-room" })).statusCode).toBe(404);
+  });
+
+  it("a known card with no picture yet is drawn with its text; an unknown one stays 404", async () => {
+    const faces = Fastify();
+    const karoo = { id: "OP18-001", name: "Karoo", category: "Leader", colors: '["Red","Blue"]', cost: 4, power: 5000, counter: null,
+      types: '["Animal","Alabasta"]', effect: "All of your Characters gain [Rush] & +1000 power.", trigger: null };
+    registerStatic(faces, { dir: site, cardsDir: cards, cardFace: async (id) => (id === "OP18-001" ? cardFaceSvg(karoo) : null) });
+    const res = await faces.inject({ method: "GET", url: "/cards/OP18-001.webp" });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/image\/svg\+xml/);
+    expect(res.body).toContain("Karoo");
+    expect(res.body).toContain("Life 4 · 5000 power");
+    expect(res.body).toContain("[Rush] &amp;"); // escaped for SVG
+    expect(res.body).not.toContain(" & ");
+    expect((await faces.inject({ method: "GET", url: "/cards/OP18-999.webp" })).statusCode).toBe(404);
+    expect((await faces.inject({ method: "GET", url: "/cards/OP01-001.webp" })).body).toBe("card"); // a real file wins
   });
 
   it("no address reaches a file outside the site", async () => {

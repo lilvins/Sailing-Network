@@ -17,6 +17,8 @@ import { mkdirSync, rmSync, readdirSync, readFileSync, writeFileSync, existsSync
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
+// Node runs this TypeScript file as it is (its imports are types only)
+import { ATTRIBUTES, COLORS, buildCategoryMap, buildNameMap } from "../src/autosim/compiler/catalogMaps.ts";
 
 const REPO = "https://github.com/buhbbl/punk-records.git";
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -125,6 +127,8 @@ function build() {
     });
   }
 
+  const revealed = addRevealed(byId);
+
   // stable sort: by set, then by the numeric part of the id
   const cards = [...byId.values()].sort((a, b) => {
     if (a.set !== b.set) return a.set < b.set ? -1 : 1;
@@ -142,6 +146,54 @@ function build() {
   console.log(`\n✅ Wrote ${cards.length} cards → ${OUT}`);
   console.log(`   ${sets.length} sets: ${sets.join(", ")}`);
   console.log(`   categories:`, byCat);
+  console.log(`   revealed cards of sets not out yet: ${revealed}`);
+}
+
+// --- 3b. revealed cards of a set punk-records does not have yet -----------------
+// The engine's data (public/data/optcg/bundle.json, from optcgwebsim) already
+// knows the cards revealed before a set comes out (OP18 in 2026-11). They are
+// added with `preview: true`, only for sets punk-records has no card of: once
+// the set is out, the next `npm run cards` takes the official list instead.
+// Numbers become names with the compiler's own tables (catalogMaps.ts).
+const BUNDLE = join(PROJECT, "public", "data", "optcg", "bundle.json");
+const CATEGORY_NAMES = join(PROJECT, "src", "autosim", "compiler", "optcg-categories.json");
+
+function addRevealed(byId) {
+  const optcg = JSON.parse(readFileSync(BUNDLE, "utf8")).db;
+  const official = [...byId.values()];
+  const typeNames = buildCategoryMap(optcg, official, JSON.parse(readFileSync(CATEGORY_NAMES, "utf8")));
+  const cardNames = buildNameMap(optcg, official); // "Monkey D. Luffy" → "Monkey.D.Luffy"
+  const officialSets = new Set(official.map((c) => c.set));
+  let added = 0;
+  for (const card of Object.values(optcg)) {
+    const set = card.id.split("-")[0];
+    if (officialSets.has(set) || !BASE_ID.test(card.id)) continue;
+    // the text keeps [Trigger] on its own line, as the catalog keeps it in its own field
+    const lines = card.text.split("\n");
+    const trigger = lines.find((l) => l.startsWith("[Trigger]"));
+    const leader = card.type === "Leader";
+    const fighter = card.type === "Leader" || card.type === "Character";
+    byId.set(card.id, {
+      id: card.id,
+      name: cardNames[card.name] ?? card.name,
+      category: card.type,
+      colors: card.colors.map((i) => COLORS[i]),
+      cost: leader ? card.life : card.cost, // the catalog keeps a Leader's life in cost
+      power: fighter ? card.power : null,
+      counter: card.counter || null,
+      types: [...new Set(card.categories.flatMap((i) => typeNames[i] ?? []))],
+      attributes: card.attributes.map((i) => ATTRIBUTES[i]),
+      effect: lines.filter((l) => l !== trigger).join("\n").trim(),
+      trigger: trigger ? trigger.replace(/^\[Trigger\]\s*/, "") : null,
+      rarity: leader ? "Leader" : "", // not known before the set is out
+      set,
+      image: `https://static.dotgg.gg/onepiece/card/${card.id}.webp`,
+      imageOfficial: "",
+      preview: true,
+    });
+    added++;
+  }
+  return added;
 }
 
 clone();

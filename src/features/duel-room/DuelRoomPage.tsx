@@ -171,6 +171,7 @@ function LogResultModal({ decks, onClose }: LogResultProps) {
 
 /** The columns of Open Duels; each lists the live duels hosted in that format. */
 const FORMATS = [
+  { key: "op18", name: "Standard · OP18", accent: "#d0a24f" }, // only the revealed OP18 cards so far
   { key: "op17", name: "Standard · OP17", accent: "#4f8fd0" },
   { key: "op16", name: "Standard · OP16", accent: "#3f9d7e" },
   { key: "op15", name: "Standard · OP15", accent: "#c98a52" },
@@ -217,6 +218,10 @@ function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName:
     </div>
   );
 }
+
+/** The Duelist Pool (ranked) stays closed until two players can share a ranked game:
+ *  today a match would open a table with no opponent (docs/release-checklist.md). */
+const RANKED_OPEN = false;
 
 export function DuelRoomPage() {
   const setView = useUiStore((s) => s.setView);
@@ -399,6 +404,13 @@ export function DuelRoomPage() {
             <Icon name="duel" size={17} stroke="#e3b24c" />
             <span>Duelist Pool</span>
           </div>
+          {!RANKED_OPEN && (
+            <p className="dr-pool-desc" data-pool-closed>
+              Ranked is not open yet: two players cannot share a ranked game. To play a friend,
+              use <b>Host a Duel</b> below or <b>Join with a code</b>.
+            </p>
+          )}
+          {RANKED_OPEN && (<>
           <p className="dr-pool-desc">
             Join the pool and we'll find a duelist near your skill level, given your constraints.
           </p>
@@ -425,6 +437,7 @@ export function DuelRoomPage() {
                 : "Finding a worthy opponent…"}
             </div>
           )}
+          </>)}
         </div>
 
         <div className="dr-open">

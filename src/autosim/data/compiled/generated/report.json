@@ -1,10 +1,10 @@
 {
- "fullyAutomaticNow": 2518,
- "effectsInCatalog": 3484,
- "effectsManual": 0,
+ "fullyAutomaticNow": 2543,
+ "effectsInCatalog": 3535,
+ "effectsManual": 6,
  "source": "optcg-ai public/data/optcg/bundle.json (actionV3) → src/autosim/compiler/fromOptcg.ts",
  "cards": 2935,
- "inCatalog": 2850,
+ "inCatalog": 2886,
  "counts": {
   "vanilla": 298,
   "keyword-only": 53,
@@ -15,13 +15,13 @@
   "coveredPct": 99.4
  },
  "catalogCounts": {
-  "vanilla": 288,
-  "keyword-only": 49,
-  "compiled": 2513,
-  "partial": 0,
-  "unsupported": 0,
-  "total": 2850,
-  "coveredPct": 100
+  "vanilla": 289,
+  "keyword-only": 53,
+  "compiled": 2538,
+  "partial": 5,
+  "unsupported": 1,
+  "total": 2886,
+  "coveredPct": 99.8
  },
  "bySet": {
   "EB01": {
