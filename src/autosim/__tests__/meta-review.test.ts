@@ -45,6 +45,7 @@ addCard("ELDER-A", { cost: 5, power: 5000, types: ["Celestial Dragons", "Five El
 addCard("ELDER-B", { cost: 5, power: 5000, types: ["Celestial Dragons", "Five Elders"] });
 addReal("OP16-048", { cost: 5, power: 6000, name: "Buggy", types: ["Impel Down", "Buggy Pirates"] });
 addCard("PRISONER", { name: "Prisoner of Impel Down", types: ["Impel Down"] });
+addReal("OP16-001", { category: "Leader", cost: 5, power: 5000, name: "Portgas.D.Ace", types: ["Whitebeard Pirates"] });
 // [Trigger] Play this card.
 addCard("TRIGGER-STAGE", { category: "Stage" }, [{ timing: "trigger", actions: [{ kind: "playFromZone", zone: "hand", free: true, sel: { owner: "self", zone: "hand", count: 1, self: true, chooser: "controller" } }] }]);
 for (let n = 1; n <= 12; n++) addCard(`FILLER-${n}`); // pad the deck to 50
@@ -56,6 +57,10 @@ const DECK = [
   ...Object.keys(CARDS).filter((id) => CARDS[id].category !== "Leader" && !isFiller(id)).flatMap((id) => [id, id]),
   ...Object.keys(CARDS).filter(isFiller).flatMap((id) => Array<string>(4).fill(id)),
 ].slice(0, 50);
+// Not in the deck (the other tests keep their shuffle): putAs() brings them to the board
+addCard("LUFFY-2000", { name: "Monkey.D.Luffy", types: ["Straw Hat Crew"] });
+addCard("WHITEBEARD-2000", { types: ["Whitebeard Pirates"] });
+addCard("WHITEBEARD-8000", { cost: 7, power: 8000, types: ["Whitebeard Pirates"] });
 
 function newGame(leader = "L"): AutoGameState {
   const config: GameConfig = { seed: "meta-review", firstPlayer: "alice", players: [{ id: "alice", leader, deck: DECK }, { id: "bob", leader: "L", deck: DECK }] };
@@ -75,6 +80,13 @@ function put(s: AutoGameState, cardId: string, zone: "characterArea" | "hand" | 
     if (i >= 0) { const [iid] = p.zones[from].splice(i, 1); p.zones[zone].push(iid); markStateEdited(s); return iid; }
   }
   throw new Error(`no ${cardId}`);
+}
+/** Puts a FILLER on alice's board as a copy of a card the deck does not hold, and returns it. */
+function putAs(s: AutoGameState, cardId: string): string {
+  const iid = put(s, "FILLER", "characterArea");
+  s.players.alice.instances[iid].cardId = cardId;
+  markStateEdited(s);
+  return iid;
 }
 /** Empties one of alice's zones into her deck. */
 function clear(s: AutoGameState, zone: "hand" | "life"): void {
@@ -287,6 +299,17 @@ describe("meta cards follow the printed text (tappa 8)", () => {
     expect(keywordsOf(db, s, "alice", prisoner).has("Blocker")).toBe(true);
   });
 
+  it("OP16-001 Ace: \"with 8000 power or more\" is asked of the {Whitebeard Pirates}, not of [Monkey.D.Luffy]", () => {
+    let s = newGame("OP16-001");
+    const luffy = putAs(s, "LUFFY-2000");
+    putAs(s, "WHITEBEARD-2000");
+    const big = putAs(s, "WHITEBEARD-8000");
+    s = go(s, { type: "activateMain", player: "alice", iid: s.players.alice.leaderIid, effectIndex: 0 });
+    const candidates = s.pendingChoice?.kind === "selectTargets" ? s.pendingChoice.candidates.map((c) => c.iid) : [];
+    expect(candidates.sort()).toEqual([luffy, big].sort());
+    s = go(s, { type: "respondTargets", player: "alice", iids: [luffy] });
+    expect(keywordsOf(db, s, "alice", luffy).has("Rush")).toBe(true);
+  });
   it("OP14-111 Perona's [On K.O.] lasts through the opponent's next turn when she is K.O.'d on your turn", () => {
     const onKO = getGeneratedCard("OP14-111")!.effects.filter((fx) => fx.timing === "onKO");
     const duration = (turn: "yourTurn" | "opponentsTurn") => JSON.stringify(onKO.find((fx) => fx.conditions?.some((c) => c.kind === turn))?.actions).match(/"duration":"(\w+)"/)?.[1];
