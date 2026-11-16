@@ -444,6 +444,15 @@ export function effectiveCounter(db: CardDb, state: AutoGameState, owner: PID, i
   return db(state.players[owner].instances[iid].cardId).counter ?? 0;
 }
 
+/** The counter value a card in the hand can be trashed for (7-1-3-2-1): a
+ *  Character's, or the one an effect gives a card of another kind ("All Stage
+ *  cards in your hand have a +3000 Counter"). */
+export function usableCounter(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
+  const given = activeModifiers(db, state).some((m) => m.kind === "counter" && m.targetOwner === owner && m.targetIid === iid);
+  if (!given && db(state.players[owner].instances[iid].cardId).category !== "Character") return 0;
+  return effectiveCounter(db, state, owner, iid);
+}
+
 export function effectiveCost(db: CardDb, state: AutoGameState, owner: PID, iid: Iid): number {
   const inst = state.players[owner].instances[iid];
   const base = db(inst.cardId).cost ?? 0;

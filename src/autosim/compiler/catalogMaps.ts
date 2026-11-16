@@ -14,6 +14,24 @@ export function buildNameMap(optcg: Record<string, OptcgCard>, catalog: (Catalog
 
 export const catalogNames = (names: string[], a: { ctx: CompileContext }) => names.map((n) => a.ctx.names[n] ?? n);
 
+/**
+ * Category ids → the catalog's type strings. `a type including "X"` (2-4-3)
+ * means every type whose name contains X: optcgwebsim lists the ones it has,
+ * the catalog may have more ("CP" → {CP6} and {CP8} too). A card that also
+ * names such a type in braces keeps the data's list.
+ */
+export function typesOfCategories(ids: number[], a: { ctx: CompileContext; cardText?: string }, unknown: (id: number) => never): string[] {
+  const out = new Set(ids.flatMap((id) => a.ctx.categoryTypes[id] ?? unknown(id)));
+  const text = a.cardText ?? "";
+  for (const m of text.matchAll(/types? includ(?:es|ing) "([^"]+)"/gi)) {
+    const word = m[1];
+    if (![...out].some((t) => t.includes(word))) continue; // another filter of this card
+    if ([...text.matchAll(/\{([^}]+)\}/g)].some((b) => b[1].includes(word))) continue;
+    for (const t of a.ctx.catalogTypes ?? []) if (t.includes(word)) out.add(t);
+  }
+  return [...out];
+}
+
 // ─── enums ──────────────────────────────────────────────────────────────────
 
 /** optcgwebsim StrikeType enum order → catalog attribute spelling. */

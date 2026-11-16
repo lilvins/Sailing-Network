@@ -352,7 +352,7 @@ function payNextCost(db: CardDb, state: AutoGameState, log: GameEvent[], ): bool
         continue;
 
       case "trashFromLife": { // top Life card(s) → trash (3-10 ordering)
-        for (let i = 0; i < item.count && p.zones.life.length > 0; i++) {
+        for (let i = 0; (item.all || i < item.count) && p.zones.life.length > 0; i++) {
           emitLife(db, state, log, { type: "lifeCardTrashed", player: r.controller, iid: item.bottom ? p.zones.life[0] : p.zones.life[p.zones.life.length - 1] });
         }
         r.costIndex += 1;
@@ -360,7 +360,7 @@ function payNextCost(db: CardDb, state: AutoGameState, log: GameEvent[], ): bool
       }
 
       case "lifeToHand": { // "add N from your Life to your hand:" (M3) — top cards
-        for (let i = 0; i < item.count && p.zones.life.length > 0; i++) {
+        for (let i = 0; (item.all || i < item.count) && p.zones.life.length > 0; i++) {
           emitLife(db, state, log, { type: "lifeCardToHand", player: r.controller, iid: item.bottom ? p.zones.life[0] : p.zones.life[p.zones.life.length - 1] });
         }
         r.costIndex += 1;

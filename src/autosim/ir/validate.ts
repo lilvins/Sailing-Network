@@ -33,7 +33,7 @@ const ACTION_KINDS = [
   "standDon", "costMod", "setBasePower", "negateEffect", "redirectAttack",
   "endBattle", "ifThen", "chooseOne", "mayPay", "manual",
   "trashTarget", "reveal", "giveActiveDon", "flipLife", "select", "restDon", "lifeTopToBottom", "peekLife", "scheduleEndOfTurn",
-  "shuffleDeck", "shuffleHandIntoDeck", "declareCost", "activateEvent", "arrangeLife", "setCounter", "winGame", "takeExtraTurn", "nextPlayDiscount", "dealDamage", "freezeDon", "moveGivenDon", "swapBasePower", "ungiveDon",
+  "shuffleDeck", "shuffleHandIntoDeck", "declareCost", "activateEvent", "activateTrigger", "arrangeLife", "setCounter", "winGame", "takeExtraTurn", "nextPlayDiscount", "dealDamage", "freezeDon", "moveGivenDon", "swapBasePower", "ungiveDon",
 ];
 const COST_KINDS = [
   "restDon", "returnDonToDeck", "restSelf", "trashFromHand", "trashSelf",

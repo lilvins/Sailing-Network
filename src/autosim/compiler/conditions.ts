@@ -1,6 +1,6 @@
 /** proc / step `details` keys → IR Conditions, and the proc timing table. (optcg-ai → AUTOSIM compiler, see README.md) */
 import type { Condition, Selector, SelectorFilter, Timing } from "../ir/types";
-import { ATTRIBUTES, catalogNames } from "./catalogMaps";
+import { ATTRIBUTES, catalogNames, typesOfCategories } from "./catalogMaps";
 import { extraCondition } from "./extraConditions";
 import { CONTROL_KEYS, fail, keysOn, list, num, on } from "./dsl";
 import { filterOf } from "./selectors";
@@ -22,7 +22,7 @@ export const PROC_TIMING: Record<string, Timing | "passive"> = {
   YourCharacterKOd: "onCharacterKOd", AnyCharacterKOd: "onCharacterKOd", YourCharacterRemoved: "onCharacterRemoved",
   YouRemovedCharacter: "onCharacterRemoved", YouRestedCharacter: "onCharacterRestedBy", YouDeployed: "onYouPlayCharacter",
   HandSentToTrashMyEffect: "onHandTrashed",
-  YouDeployedFromTrash: "onYouPlayCharacter", MyLeaderAttacks: "onLeaderAttacks", MyLeaderAttacked: "onLeaderAttacked",
+  YouDeployedFromTrash: "onYouPlayCharacter", DeployedAnyFromTrash: "onYouPlayCharacter", MyLeaderAttacks: "onLeaderAttacks", MyLeaderAttacked: "onLeaderAttacked",
   MyLeaderHit: "onTakeDamage", LifeSentToHand: "onLifeRemoved", OpponentActivatesBlocker: "onOpponentBlocks",
   AfterBattleCharacter: "afterBattleWithCharacter", DonGiven: "onDonGiven",
   CardTrashedFromMyCategory: "onHandTrashed", OppDeploysOriginalCostXOrMore: "onYouPlayCharacter", OppDeploysThroughCharacter: "onYouPlayCharacter",
@@ -35,7 +35,7 @@ export const PROC_TIMING: Record<string, Timing | "passive"> = {
  *  such abilities are dropped (listed in the notes) rather than run at a
  *  wrong moment. `Pre*` replacement keys are matched by prefix. */
 export const DROP_TIMINGS = new Set([
-  "QueuedStartOfMainPhase", "StartOfGame", "DeployedAnyFromTrash", "DeckOut",
+  "QueuedStartOfMainPhase", "StartOfGame", "DeckOut",
 ]);
 /** Proc keys with no rules meaning for the IR (labels / feasibility checks of
  *  costs the engine verifies itself). */
@@ -98,7 +98,7 @@ function baseCondition(key: string, v: unknown, a: AbilityCtx, where: "proc" | "
     case "YourTurn": return { kind: "yourTurn" };
     case "OpponentTurn": return { kind: "opponentsTurn" };
     case "LeaderCategoryRequired": {
-      const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
+      const types = typesOfCategories(list<number>(v), a, (id) => fail(`unknown category ${id}`));
       const byType: Condition = { kind: "leaderIs", filter: { typeIncludes: [...new Set(types)] } };
       // "… has the {X} type or is [Name] / has the <Strike> attribute" (M5)
       const alt: Condition[] = [];
@@ -183,7 +183,7 @@ function baseCondition(key: string, v: unknown, a: AbilityCtx, where: "proc" | "
     // "If you have 5 {Impel Down} type Characters with different card names" (M5)
     case "FieldIsFullAndUnique": return { kind: "compare", left: { count: "distinctNames", who: self }, op: "ge", right: 5 };
     case "FieldIsOnlyCategory": {
-      const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
+      const types = typesOfCategories(list<number>(v), a, (id) => fail(`unknown category ${id}`));
       return { kind: "countInZone", sel: zoneCount("characterArea", self, { typeExcludes: [...new Set(types)] }), atMost: 0 };
     }
     case "ActivatedEventXOrMore": // "If you have activated an Event with a base cost of N or more during this turn" (M5)
@@ -216,7 +216,7 @@ function baseCondition(key: string, v: unknown, a: AbilityCtx, where: "proc" | "
     case "SelfRestedCharacters": return { kind: "countInZone", sel: zoneCount("characterArea", self, { rested: true }), atLeast: n };
     case "Rested": if (where === "proc") return { kind: "selfRested" }; break;
     case "CategoryInPlayRequired": {
-      const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
+      const types = typesOfCategories(list<number>(v), a, (id) => fail(`unknown category ${id}`));
       return { kind: "countInZone", sel: zoneCount("characterArea", self, { typeIncludes: [...new Set(types)] }), atLeast: Math.max(1, num(all.CategoryInPlayCount)) };
     }
     case "CategoryInPlayCount": return null; // modifier of CategoryInPlayRequired
@@ -226,7 +226,7 @@ function baseCondition(key: string, v: unknown, a: AbilityCtx, where: "proc" | "
     case "TopDeckCountOrMore": return null; // view feasibility — the peek handles an empty view
     // "if the revealed card's type includes …" — the top card of the deck (M5)
     case "TopDeckHasCategory": {
-      const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
+      const types = typesOfCategories(list<number>(v), a, (id) => fail(`unknown category ${id}`));
       return { kind: "countInZone", sel: { owner: self, zone: "deckTop", count: 1, chooser: "controller", filter: { typeIncludes: [...new Set(types)] } }, atLeast: 1 };
     }
     case "TopDeckMatches": // a revealed-card check moved here by views.ts

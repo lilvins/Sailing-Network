@@ -4,7 +4,7 @@
  * enforcement point; this is advisory).
  */
 import type { AutoGameState, CardDb, Iid, PID } from "./state";
-import { attackTargetAllowed, attackTax, baseCostLocked, effectiveCost, effectiveCounter, hasRestriction, isNegated, isPlayersFirstTurn, keywordsOf, opponentOf } from "./state";
+import { attackTargetAllowed, attackTax, baseCostLocked, effectiveCost, hasRestriction, isNegated, isPlayersFirstTurn, keywordsOf, opponentOf, usableCounter } from "./state";
 import { canPayCost, canPayEventCost, conditionsMet, playLocked } from "./effects";
 
 export interface LegalMoves {
@@ -37,8 +37,8 @@ export function legalMoves(db: CardDb, state: AutoGameState): LegalMoves {
       const p = state.players[actor];
       const inHand = p.zones.hand.map((iid) => ({ iid, card: db(p.instances[iid].cardId) }));
       res.counterCards = inHand
-        .filter(({ iid, card }) => card.category === "Character" && effectiveCounter(db, state, actor, iid) > 0)
-        .map(({ iid }) => ({ iid, amount: effectiveCounter(db, state, actor, iid) }));
+        .map(({ iid }) => ({ iid, amount: usableCounter(db, state, actor, iid) }))
+        .filter(({ amount }) => amount > 0);
       // [Counter] Events: playable if the card cost + DON costs fit (7-1-3-2-2)
       res.counterEvents = inHand
         .filter(({ iid, card }) => {
