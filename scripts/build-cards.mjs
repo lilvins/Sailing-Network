@@ -168,6 +168,9 @@ function addRevealed(byId) {
   for (const card of Object.values(optcg)) {
     const set = card.id.split("-")[0];
     if (officialSets.has(set) || !BASE_ID.test(card.id)) continue;
+    // an effect with no text to show (AN4-001, a Leader for sealed events only):
+    // the catalog could not tell the player what the card does, so leave it out
+    if (!card.text && card.abilities.length > 0) continue;
     // the text keeps [Trigger] on its own line, as the catalog keeps it in its own field
     const lines = card.text.split("\n");
     const trigger = lines.find((l) => l.startsWith("[Trigger]"));

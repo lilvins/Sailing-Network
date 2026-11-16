@@ -1,29 +1,47 @@
 {
- "fullyAutomaticNow": 2543,
- "effectsInCatalog": 3535,
- "effectsManual": 6,
+ "fullyAutomaticNow": 2605,
+ "effectsInCatalog": 3662,
+ "effectsManual": 11,
  "source": "optcg-ai public/data/optcg/bundle.json (actionV3) → src/autosim/compiler/fromOptcg.ts",
- "cards": 2935,
- "inCatalog": 2886,
+ "cards": 3021,
+ "inCatalog": 2971,
  "counts": {
-  "vanilla": 298,
-  "keyword-only": 53,
-  "compiled": 2567,
-  "partial": 5,
-  "unsupported": 12,
-  "total": 2935,
+  "vanilla": 304,
+  "keyword-only": 55,
+  "compiled": 2643,
+  "partial": 4,
+  "unsupported": 15,
+  "total": 3021,
   "coveredPct": 99.4
  },
  "catalogCounts": {
-  "vanilla": 289,
-  "keyword-only": 53,
-  "compiled": 2538,
-  "partial": 5,
-  "unsupported": 1,
-  "total": 2886,
+  "vanilla": 295,
+  "keyword-only": 55,
+  "compiled": 2614,
+  "partial": 4,
+  "unsupported": 3,
+  "total": 2971,
   "coveredPct": 99.8
  },
  "bySet": {
+  "AN4": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 0,
+   "partial": 0,
+   "unsupported": 1,
+   "total": 1,
+   "coveredPct": 0
+  },
+  "ALL": {
+   "vanilla": 304,
+   "keyword-only": 55,
+   "compiled": 2643,
+   "partial": 4,
+   "unsupported": 15,
+   "total": 3021,
+   "coveredPct": 99.4
+  },
   "EB01": {
    "vanilla": 6,
    "keyword-only": 1,
@@ -32,15 +50,6 @@
    "unsupported": 0,
    "total": 61,
    "coveredPct": 100
-  },
-  "ALL": {
-   "vanilla": 298,
-   "keyword-only": 53,
-   "compiled": 2567,
-   "partial": 5,
-   "unsupported": 12,
-   "total": 2935,
-   "coveredPct": 99.4
   },
   "EB02": {
    "vanilla": 6,
@@ -232,13 +241,13 @@
    "coveredPct": 100
   },
   "OP18": {
-   "vanilla": 1,
-   "keyword-only": 4,
-   "compiled": 25,
-   "partial": 5,
-   "unsupported": 1,
-   "total": 36,
-   "coveredPct": 83.3
+   "vanilla": 7,
+   "keyword-only": 6,
+   "compiled": 99,
+   "partial": 4,
+   "unsupported": 3,
+   "total": 119,
+   "coveredPct": 94.1
   },
   "P": {
    "vanilla": 20,
@@ -589,6 +598,24 @@
    "partial": 0,
    "unsupported": 0,
    "total": 5,
+   "coveredPct": 100
+  },
+  "ST37": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 1,
+   "partial": 0,
+   "unsupported": 0,
+   "total": 1,
+   "coveredPct": 100
+  },
+  "ST38": {
+   "vanilla": 0,
+   "keyword-only": 0,
+   "compiled": 1,
+   "partial": 0,
+   "unsupported": 0,
+   "total": 1,
    "coveredPct": 100
   }
  }
