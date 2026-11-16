@@ -83,6 +83,8 @@ export type Who = "self" | "opponent" | "both";
 
 export interface SelectorFilter {
   typeIncludes?: string[];    // {Type} braces (2-4-3)
+  /** every one of these types ("with both the {Animal} and {Alabasta} types"). */
+  typeIncludesAll?: string[];
   nameIncludes?: string[];    // [Name] / "partial" (2-1-2)
   nameExcludes?: string[];    // "other than [Name]" (M2; 2-1-2)
   colors?: string[];
@@ -391,6 +393,10 @@ export type Action =
    *  effect resolves now (conditions and cost as when played, 8-4-1), the
    *  card goes to the trash */
   | { kind: "activateEvent"; sel: Selector }
+  /** "reveal up to 1 … from your hand. Activate the [Trigger] effect of the
+   *  revealed card": its [Trigger] resolves now (conditions and cost as from
+   *  Life, 10-1-5); the card stays in the hand unless that effect moves it */
+  | { kind: "activateTrigger"; sel: Selector }
   | { kind: "winGame" }   // "you win the game" (M5)
   | { kind: "freezeDon"; who: Who; count: number }
   /** "return N total of your currently given DON!! cards to your cost area rested" (M5; taken in field order) */

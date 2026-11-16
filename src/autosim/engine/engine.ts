@@ -20,7 +20,7 @@ import { canPayCost, canPayEventCost, conditionsMet, playLocked, satisfiesSet, w
 import { emit, type GameEvent } from "./events";
 import { EngineError, type PlayerIntent } from "./intents";
 import {
-  effectiveCost, effectiveCounter, hasRestriction, isNegated, opponentOf, playDiscountFor,
+  effectiveCost, hasRestriction, isNegated, opponentOf, playDiscountFor, usableCounter,
   type AutoGameState, type AutoPlayerState, type CardDb, type EngineCard, type Iid, type PID,
 } from "./state";
 import type { SelectorFilter } from "../ir/types";
@@ -362,10 +362,9 @@ export function applyIntentInPlace(db: CardDb, state: AutoGameState, intent: Pla
       }
       const p = requirePlayer(state, intent.player);
       if (!p.zones.hand.includes(intent.cardIid)) throw new EngineError("counter card not in hand");
-      const card = db(p.instances[intent.cardIid].cardId);
-      // 7-1-3-2-1: a Character card with a counter value, trashed from hand
-      const counter = effectiveCounter(db, state, intent.player, intent.cardIid);
-      if (card.category !== "Character" || counter <= 0) {
+      // 7-1-3-2-1: a card with a counter value, trashed from hand
+      const counter = usableCounter(db, state, intent.player, intent.cardIid);
+      if (counter <= 0) {
         throw new EngineError("card has no counter value");
       }
       const isOwnLeaderOrChar =

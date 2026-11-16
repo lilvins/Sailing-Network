@@ -102,6 +102,7 @@ function matchesOne(
   if (filter.excludeSelf && iid === sourceIid) return false;
   if (filter.category && !filter.category.includes(card.category)) return false;
   if (filter.typeIncludes && !filter.typeIncludes.some((t) => card.types.includes(t))) return false;
+  if (filter.typeIncludesAll && !filter.typeIncludesAll.every((t) => card.types.includes(t))) return false;
   if (filter.colors && !filter.colors.some((c) => card.colors.includes(c))) return false;
   // 2-1-2: name matching needs the card name; a missing name never matches
   // "Also treat this card's name as [X]" (M5): X matches too
@@ -604,7 +605,7 @@ export type ActionPlan =
 
 const SELECTOR_ACTIONS = new Set<Action["kind"]>([
   "powerMod", "koTarget", "restTarget", "standTarget", "discard", "grantKeyword",
-  "restriction", "costMod", "activateEvent", "moveGivenDon", "swapBasePower",
+  "restriction", "costMod", "activateEvent", "activateTrigger", "moveGivenDon", "swapBasePower",
   // tier-2 (M3)
   "returnToHand", "returnToDeck", "playFromZone", "addFromTrashToHand", "giveRestedDon",
   // M5
@@ -1239,6 +1240,23 @@ export function applyAction(
       emit(state, log, { type: "eventCardUsed", player: t.owner, iid: t.iid, donRested: 0, baseCost: db(cardId).cost ?? 0,
         ...(state.players[t.owner].zones.hand.includes(t.iid) ? {} : { stays: true }) });
       enqueueEventActivationReactions(db, state, controller);
+      state.exec!.suspended = [...(state.exec!.suspended ?? []), running];
+      beginEffect(db, state, log, controller, t.iid, cardId, idx);
+      break;
+    }
+
+    case "activateTrigger": { // the revealed card's [Trigger] resolves before the rest of this effect
+      const t = targets[0];
+      if (!t) break;
+      emit(state, log, { type: "cardsRevealed", player: t.owner, iids: [t.iid] });
+      const cardId = state.players[t.owner].instances[t.iid].cardId;
+      const effects = db(cardId).compiled?.effects ?? [];
+      const idx = effects.findIndex((fx) => fx.timing === "trigger");
+      if (idx < 0) break;
+      // 8-4-1-1, 8-3-1-3: read with the card where it is, in the hand
+      if (!conditionsMet(db, state, controller, t.iid, effects[idx].conditions) || !canPayCost(db, state, controller, t.iid, effects[idx].cost)) break;
+      for (const pid of state.order) enqueueReactions(db, state, pid, fieldOf(state, pid), "onTriggerActivated", { subjectOwner: t.owner });
+      // no triggerCard: the card is in the hand, not area-less (10-1-5-3), so it is not trashed afterwards
       state.exec!.suspended = [...(state.exec!.suspended ?? []), running];
       beginEffect(db, state, log, controller, t.iid, cardId, idx);
       break;

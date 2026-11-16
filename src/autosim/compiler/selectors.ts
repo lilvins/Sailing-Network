@@ -20,6 +20,8 @@ export const ZONE_KEYS = new Set(["DeployedCharacter", "HandCard", "TopDeckCard"
   "LifeCard", "TrashCard", "AttachedDon", "DeckCard"]);
 export const IGNORED_SPEC_KEYS = new Set(["FriendlyOnly", "EnemyOnly", "TargetCount", "OverrideUITargetCount",
   "WillBeRemoved", "AutoAllMatchingTargets",
+  // "with both the {A} and {B} types", read with OnlyCategories
+  "RequireAllCategories",
   // set constraints, read by selectorOf
   "CombinedCostXOrLess", "CombinedPowerXOrLess", "NoDuplicateNames",
   // the alternative target, read by selectorOf
@@ -58,9 +60,12 @@ export function filterOf(spec: Json, a: AbilityCtx): SelectorFilter {
       case "NotBlocker": f.lacksKeyword = "Blocker"; break; // M5: "without [Blocker]"
       case "OriginalPowerXOrMore": f.basePowerAtLeast = num(v); break;
       case "OnlyCategories": {
-        if (on(spec.RequireAllCategories)) fail("RequireAllCategories");
-        const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
-        f.typeIncludes = [...new Set(types)];
+        const each = list<number>(v).map((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
+        if (on(spec.RequireAllCategories)) {
+          // "with both the {Animal} and {Alabasta} types": every one of them
+          if (each.some((types) => types.length !== 1)) fail("RequireAllCategories over a type with several spellings");
+          f.typeIncludesAll = [...new Set(each.flat())];
+        } else f.typeIncludes = [...new Set(each.flat())];
         break;
       }
       case "OnlyTypes": f.category = list<number>(v).map((t) => CARD_TYPES[t] ?? fail(`card type ${t}`)); break;
@@ -78,7 +83,7 @@ export function filterOf(spec: Json, a: AbilityCtx): SelectorFilter {
       case "HasActivateMain": f.hasTiming = "main"; break; // an Event's [Main]
       case "BasePowerZero": f.basePowerAtMost = 0; break;
       case "StrikeTypeOverrides": break; // after the loop
-      case "NameOverrides": case "ColoredEventOverrides": break; // after the loop
+      case "NameOverrides": case "ColoredEventOverrides": case "StageOverrides": break; // after the loop
       case "CostOppLifeOrLess": case "CostCombinedLifeOrLess": case "CostDonOrLess": case "CostOppDonOrLess": case "CostMyLifeOrLess": {
         const [q, phrase] = DYNAMIC_COST[k];
         if (!phrase.test(a.tailText ?? "")) fail(`${k} without the printed phrase`);
@@ -105,22 +110,25 @@ export function filterOf(spec: Json, a: AbilityCtx): SelectorFilter {
   return withOverrides(f, spec, a);
 }
 
-/** "… or [Name]" / "… or Event card": a second filter a card may match instead. */
+/** "… or [Name]" / "… or Event card" / "Stage cards or …": a second filter a card may match instead. */
 function withOverrides(f: SelectorFilter, spec: Json, a: AbilityCtx): SelectorFilter {
   const names = list<string>(spec.NameOverrides);
   const eventColors = list<number>(spec.ColoredEventOverrides);
   const strikes = list<number>(spec.StrikeTypeOverrides);
   if (strikes.length > 0) {
     // "{X} type or <Slash> attribute Character card": the attribute replaces the type only
-    if (names.length > 0 || eventColors.length > 0) fail("several overrides");
-    const { typeIncludes: _t, ...others } = f;
+    if (names.length > 0 || eventColors.length > 0 || on(spec.StageOverrides)) fail("several overrides");
+    const { typeIncludes: _t, typeIncludesAll: _all, ...others } = f;
     return { ...f, or: { ...others, attributes: strikes.map((t) => ATTRIBUTES[t] ?? fail(`attribute ${t}`)) } };
   }
-  if (names.length === 0 && eventColors.length === 0) return f;
-  if (names.length > 0 && eventColors.length > 0) fail("NameOverrides + ColoredEventOverrides");
+  // "Stage cards or {Water Seven} type cards"
+  const stage = on(spec.StageOverrides);
+  if (names.length === 0 && eventColors.length === 0 && !stage) return f;
+  if ([names.length > 0, eventColors.length > 0, stage].filter(Boolean).length > 1) fail("several overrides");
   const or: SelectorFilter = {};
   for (const k of OR_KEEPS) if (f[k] !== undefined) (or as Record<string, unknown>)[k] = f[k];
   if (names.length > 0) or.nameIncludes = catalogNames(names, a);
+  else if (stage) or.category = ["Stage"];
   else {
     or.category = ["Event"];
     if (eventColors.length < COLORS.length) or.colors = eventColors.map((c) => COLORS[c] ?? fail(`color ${c}`));

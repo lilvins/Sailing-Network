@@ -104,6 +104,12 @@ function passiveM5(k: string, v: unknown, step: OptcgStep, card: OptcgCard, text
       const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
       return [{ kind: "setCounter", sel: { owner: "self", zone: "hand", count: 99, chooser: "controller", filter: { category: ["Character"], typeIncludes: [...new Set(types)], counter: "none" } }, amount: 1000, duration: P }];
     }
+    // "All Stage cards in your hand have a +3000 Counter."
+    case "ValidTargetsHaveXCounter": {
+      const s = selectorOf(step.target?.[0], a, false);
+      if (s.zone !== "hand" || s.owner !== "self") return null;
+      return [{ kind: "setCounter", sel: { ...s, count: 99, upTo: undefined } as Selector, amount: num(v), duration: P }];
+    }
     // "Give blue Events in your hand −1 cost" / "the cost of playing … from your hand will be reduced by 1" (M5)
     case "AllyHandPlayCostReduce": {
       const s = selectorOf(step.target?.[0], a, false);
@@ -536,6 +542,10 @@ function watchedOf(p: Json, timing: Timing, text: string, a: AbilityCtx): Effect
       return { by: "you", whose: "opponents", filter: { category: ["Character"] } };
     case "onYouPlayCharacter":
       if (p.YouDeployedFromTrash !== undefined) return { whose: "yours", fromTrash: true, filter: chars("YouDeployedFromTrash") };
+      if (on(p.DeployedAnyFromTrash)) {
+        if (!/When a Character is played from your trash/i.test(text)) fail("DeployedAnyFromTrash without its text");
+        return { whose: "yours", fromTrash: true, filter: { category: ["Character"] } };
+      }
       // "when your opponent plays a Character with a base cost of 8 or more, or … using a Character's effect" (M5)
       if (p.OppDeploysOriginalCostXOrMore !== undefined || on(p.OppDeploysThroughCharacter)) {
         const n = num(p.OppDeploysOriginalCostXOrMore);

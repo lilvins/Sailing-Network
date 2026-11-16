@@ -1,27 +1,27 @@
 {
- "fullyAutomaticNow": 2605,
+ "fullyAutomaticNow": 2609,
  "effectsInCatalog": 3662,
- "effectsManual": 11,
+ "effectsManual": 4,
  "source": "optcg-ai public/data/optcg/bundle.json (actionV3) → src/autosim/compiler/fromOptcg.ts",
  "cards": 3021,
  "inCatalog": 2971,
  "counts": {
   "vanilla": 304,
   "keyword-only": 55,
-  "compiled": 2643,
-  "partial": 4,
-  "unsupported": 15,
+  "compiled": 2650,
+  "partial": 0,
+  "unsupported": 12,
   "total": 3021,
-  "coveredPct": 99.4
+  "coveredPct": 99.6
  },
  "catalogCounts": {
   "vanilla": 295,
   "keyword-only": 55,
-  "compiled": 2614,
-  "partial": 4,
-  "unsupported": 3,
+  "compiled": 2621,
+  "partial": 0,
+  "unsupported": 0,
   "total": 2971,
-  "coveredPct": 99.8
+  "coveredPct": 100
  },
  "bySet": {
   "AN4": {
@@ -36,11 +36,11 @@
   "ALL": {
    "vanilla": 304,
    "keyword-only": 55,
-   "compiled": 2643,
-   "partial": 4,
-   "unsupported": 15,
+   "compiled": 2650,
+   "partial": 0,
+   "unsupported": 12,
    "total": 3021,
-   "coveredPct": 99.4
+   "coveredPct": 99.6
   },
   "EB01": {
    "vanilla": 6,
@@ -243,11 +243,11 @@
   "OP18": {
    "vanilla": 7,
    "keyword-only": 6,
-   "compiled": 99,
-   "partial": 4,
-   "unsupported": 3,
+   "compiled": 106,
+   "partial": 0,
+   "unsupported": 0,
    "total": 119,
-   "coveredPct": 94.1
+   "coveredPct": 100
   },
   "P": {
    "vanilla": 20,

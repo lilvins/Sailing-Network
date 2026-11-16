@@ -161,6 +161,7 @@ const BUILDERS: Record<string, Builder> = {
     return { kind: "giveActiveDon", sel, count: num(s.value) || 1 };
   },
   RevealCard: (s) => {
+    if (on(s.effect.ActivateTriggerOfCard)) return []; // the activation reveals the card
     const sel = s.sel();
     if (sel.zone !== "hand") fail(`reveal from ${sel.zone}`);
     return { kind: "reveal", sel };
@@ -422,6 +423,13 @@ const BUILDERS: Record<string, Builder> = {
     if (sel.zone !== "hand" && sel.zone !== "trash") fail(`activate an Event from ${sel.zone}`);
     if (sel.count !== 1 || !sel.filter?.category?.every((c) => c === "Event")) fail("activate a card that is not an Event");
     return { kind: "activateEvent", sel };
+  },
+  // "reveal up to 1 … from your hand. Activate the [Trigger] effect of the revealed card."
+  ActivateTriggerOfCard: (s) => {
+    const sel = s.sel();
+    if (sel.zone !== "hand" || sel.owner !== "self" || sel.count !== 1) fail("activate the [Trigger] of a card outside your hand");
+    if (!/Activate the \[Trigger\] effect of the revealed card/i.test(s.a.tailText ?? "")) fail("ActivateTriggerOfCard without its text");
+    return { kind: "activateTrigger", sel: { ...sel, filter: { ...(sel.filter ?? {}), hasTrigger: true } } };
   },
   CleanUpTopDeck: () => [], // the view already closed (a 1-card reveal stays on top)
   MatchOpponentPowerUntilTurnEnd: (s) => matchPower(s, s.sel(), "thisTurn"),

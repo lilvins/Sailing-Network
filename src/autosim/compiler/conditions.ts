@@ -22,7 +22,7 @@ export const PROC_TIMING: Record<string, Timing | "passive"> = {
   YourCharacterKOd: "onCharacterKOd", AnyCharacterKOd: "onCharacterKOd", YourCharacterRemoved: "onCharacterRemoved",
   YouRemovedCharacter: "onCharacterRemoved", YouRestedCharacter: "onCharacterRestedBy", YouDeployed: "onYouPlayCharacter",
   HandSentToTrashMyEffect: "onHandTrashed",
-  YouDeployedFromTrash: "onYouPlayCharacter", MyLeaderAttacks: "onLeaderAttacks", MyLeaderAttacked: "onLeaderAttacked",
+  YouDeployedFromTrash: "onYouPlayCharacter", DeployedAnyFromTrash: "onYouPlayCharacter", MyLeaderAttacks: "onLeaderAttacks", MyLeaderAttacked: "onLeaderAttacked",
   MyLeaderHit: "onTakeDamage", LifeSentToHand: "onLifeRemoved", OpponentActivatesBlocker: "onOpponentBlocks",
   AfterBattleCharacter: "afterBattleWithCharacter", DonGiven: "onDonGiven",
   CardTrashedFromMyCategory: "onHandTrashed", OppDeploysOriginalCostXOrMore: "onYouPlayCharacter", OppDeploysThroughCharacter: "onYouPlayCharacter",
@@ -35,7 +35,7 @@ export const PROC_TIMING: Record<string, Timing | "passive"> = {
  *  such abilities are dropped (listed in the notes) rather than run at a
  *  wrong moment. `Pre*` replacement keys are matched by prefix. */
 export const DROP_TIMINGS = new Set([
-  "QueuedStartOfMainPhase", "StartOfGame", "DeployedAnyFromTrash", "DeckOut",
+  "QueuedStartOfMainPhase", "StartOfGame", "DeckOut",
 ]);
 /** Proc keys with no rules meaning for the IR (labels / feasibility checks of
  *  costs the engine verifies itself). */
