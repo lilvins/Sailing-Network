@@ -58,7 +58,7 @@ export type GameEvent =
   | { type: "deckPeeked"; player: PID; iids: Iid[] }                 // "look at N from the top" (log marker)
   | { type: "peekResolved"; player: PID; toHand: Iid[]; played: { iid: Iid; rested: boolean }[];
       top: Iid[]; bottom: Iid[]; trashed: Iid[] }                    // 8-4-4-4, 11-2-1
-  | { type: "playedFromZone"; player: PID; iid: Iid; from: "hand" | "trash" | "life"; rested: boolean; zone?: "stage" } // playFromZone (M5: a Stage)
+  | { type: "playedFromZone"; player: PID; iid: Iid; from: "hand" | "trash" | "life" | "deck"; rested: boolean; zone?: "stage" } // playFromZone (M5: a Stage)
   | { type: "returnedToHand"; player: PID; iid: Iid }                // bounce (field → hand)
   | { type: "returnedToDeck"; player: PID; iid: Iid; where: "top" | "bottom"; from: "field" | "hand" | "trash" | "deck" | "life" }
   | { type: "cardsRevealed"; player: PID; iids: Iid[] }              // reveal from hand / the top of a deck (M5, log only)
@@ -461,6 +461,7 @@ export function applyEvent(state: AutoGameState, e: GameEvent): void {
       p.zones.hand = p.zones.hand.filter((x) => x !== e.iid);
       p.zones.trash = p.zones.trash.filter((x) => x !== e.iid);
       p.zones.life = p.zones.life.filter((x) => x !== e.iid); // M5: from the Life area
+      if (e.from === "deck") p.zones.deck = p.zones.deck.filter((x) => x !== e.iid); // "from your deck or trash"
       const inst = p.instances[e.iid];
       inst.rested = e.rested;
       delete inst.faceUp;

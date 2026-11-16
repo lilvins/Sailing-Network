@@ -67,6 +67,9 @@ addCard("CP6-DRAW", { types: ["CP6"], compiled: compiled("CP6-DRAW", [{ timing: 
 addCard("DISCARDER", { compiled: compiled("DISCARDER", [{ timing: "activateMain", optional: true,
   cost: [{ kind: "trashFromHand", sel: { owner: "self", zone: "hand", count: 1, chooser: "controller" } }], actions: [{ kind: "draw", count: 1 }] }]) });
 
+addCard("VA-MOMONGA", { name: "Momonga", types: ["Vice Admiral", "Navy"] });
+addCard("VA-ONIGUMO", { name: "Onigumo", types: ["Vice Admiral", "Navy"] });
+addCard("VA-DOBERMAN", { name: "Doberman", types: ["Vice Admiral", "Navy"] });
 const db: CardDb = (id) => CARDS[id] ?? (() => { throw new Error(`unknown card ${id}`); })();
 const DECK = Array<string>(50).fill("FILLER");
 
@@ -352,5 +355,27 @@ describe("OP18 review: what the first compile got wrong", () => {
     };
     expect(afterTrash("leader")).toBe(0);     // −1 trashed, +1 from Van Augur
     expect(afterTrash("character")).toBe(0);  // −1 trashed, +1 from the card's own "Draw 1 card", none from Van Augur
+  });
+
+  it("OP18-117 Buster Call then plays {Vice Admiral} Characters with different names from the deck or the trash", () => {
+    let s = newGame("L-SPANDAM");
+    const ev = put(s, "OP18-117", "hand");
+    const momonga = put(s, "VA-MOMONGA", "deck"), twin = put(s, "VA-MOMONGA", "deck"), onigumo = put(s, "VA-ONIGUMO", "deck");
+    const doberman = put(s, "VA-DOBERMAN", "trash");
+    put(s, "DUCK", "trash"); // not a {Vice Admiral}
+    const mine = put(s, "DUCK");
+    setDon(s, 10);
+    s = yes(go(s, { type: "playCard", player: "alice", iid: ev }));
+    expect(candidates(s)).toEqual([momonga, twin, onigumo, doberman].sort());
+    expect(() => applyIntent(db, s, { type: "respondTargets", player: "alice", iids: [momonga, twin] })).toThrow(); // the same name twice
+    const deck = s.players.alice.zones.deck.length;
+    s = go(s, { type: "respondTargets", player: "alice", iids: [momonga, onigumo, doberman] });
+    const alice = s.players.alice.zones;
+    expect([...alice.characterArea].sort()).toEqual([momonga, onigumo, doberman].sort());
+    expect(alice.deck).toHaveLength(deck - 2);
+    expect(alice.deck).toContain(twin);
+    expect(alice.trash).toContain(mine); // "trash all Characters" came first
+    expect(alice.trash).not.toContain(doberman);
+    expect(s.pendingChoice).toBeNull();
   });
 });

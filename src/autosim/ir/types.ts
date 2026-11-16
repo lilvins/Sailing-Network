@@ -162,7 +162,9 @@ export interface Selector {
     // M5: "the top card of your Life cards" (a revealed Life card)
     | "lifeTop"
     // "from your hand or trash": the cards of both
-    | "handOrTrash";
+    | "handOrTrash"
+    // "from your deck or trash": the cards of both (the deck is searched, shuffle it afterwards)
+    | "deckOrTrash";
   filter?: SelectorFilter;
   count: number;              // COUNT_ALL (99) = "all" (auto-selected, no choice)
   upTo?: boolean;             // 4-8: may choose 0..count
@@ -348,7 +350,7 @@ export type Action =
   | { kind: "select"; sel: Selector }                         // "Select up to 1 …": choose now, "the selected card" later (M5)
   | { kind: "reveal"; sel: Selector }                         // "reveal N cards from your hand" (M5; no movement)
   | { kind: "giveActiveDon"; sel: Selector; count: number }   // "give N active DON!! to …" (M5)
-  | { kind: "playFromZone"; zone: "hand" | "trash" | "revealed" | "life" | "handOrTrash"; sel: Selector;
+  | { kind: "playFromZone"; zone: "hand" | "trash" | "revealed" | "life" | "handOrTrash" | "deckOrTrash"; sel: Selector;
       free?: boolean; rested?: boolean }
   | { kind: "peekDeck"; who: Who; count: number; then: PeekDisposition }
   | { kind: "mill"; who: Who; count: number; countFromPrev?: boolean } // M5: "the same number of cards as you did from your hand"

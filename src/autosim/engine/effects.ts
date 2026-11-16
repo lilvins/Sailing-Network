@@ -318,6 +318,7 @@ export function resolveSelector(
       case "hand": pool = [...p.zones.hand]; break;
       case "trash": pool = [...p.zones.trash]; break;
       case "handOrTrash": pool = [...p.zones.hand, ...p.zones.trash]; break;
+      case "deckOrTrash": pool = [...p.zones.deck, ...p.zones.trash]; break;
       case "leaderOrStage": pool = [p.leaderIid, ...p.zones.stage]; break;
       case "characterOrStage": pool = [...p.zones.characterArea, ...p.zones.stage]; break;
       case "field": pool = [p.leaderIid, ...p.zones.characterArea, ...p.zones.stage]; break;
@@ -803,10 +804,14 @@ export function planAction(
 
 /** The area a card played by an effect comes from — for "from your hand or
  *  trash", the one it is in. */
-function playedFrom(state: AutoGameState, action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef): "hand" | "trash" | "life" {
+function playedFrom(state: AutoGameState, action: Extract<Action, { kind: "playFromZone" }>, t: TargetRef): "hand" | "trash" | "life" | "deck" {
   if (action.zone === "handOrTrash") return state.players[t.owner].zones.trash.includes(t.iid) ? "trash" : "hand";
+  if (action.zone === "deckOrTrash") return state.players[t.owner].zones.trash.includes(t.iid) ? "trash" : "deck";
   return action.zone === "trash" ? "trash" : action.zone === "life" ? "life" : "hand";
 }
+
+/** Where a Stage played by an effect comes from (a Stage is never played from Life). */
+const stageFrom = (from: ReturnType<typeof playedFrom>): "hand" | "trash" | "deck" => (from === "life" ? "hand" : from);
 
 /** A Character played by an effect (free: the effect pays no DON!!). */
 export function playCharacterFromZone(
@@ -1213,7 +1218,7 @@ export function applyAction(
           // "play up to 2 … type cards" may play a Stage (M5): 3-8-5-1, the old one is trashed
           const old = state.players[t.owner].zones.stage[0];
           if (old) emit(state, log, { type: "characterTrashedByRule", player: t.owner, iid: old });
-          emit(state, log, { type: "playedFromZone", player: t.owner, iid: t.iid, from: playedFrom(state, action, t) === "trash" ? "trash" : "hand", rested: false, zone: "stage" });
+          emit(state, log, { type: "playedFromZone", player: t.owner, iid: t.iid, from: stageFrom(playedFrom(state, action, t)), rested: false, zone: "stage" });
           enqueueAutoEffects(db, state, t.owner, t.iid, "onPlay");
           continue;
         }

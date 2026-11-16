@@ -183,6 +183,36 @@ function deckPeek(steps: OptcgStep[], i: number, kind: string, view: CollectedVi
   return { kind: "peekDeck", who, count: kind === "StartTopDeckFromDeck" ? 50 : num(open[kind]), then };
 }
 
+/** "play up to a total of 5 … Character cards with different card names from
+ *  your deck or trash. Then, shuffle your deck." — a deck search whose picks,
+ *  one per step, may also come from the trash: one play of up to N, then the
+ *  shuffle. Null when the view is not one. */
+function deckOrTrashPlay(view: CollectedView, a: AbilityCtx): Action[] | null {
+  const both = (p: OptcgStep) => !!p.target?.[0] && on(p.target[0].TopDeckCard) && on(p.target[0].TrashCard);
+  if (view.picks.length === 0 || !view.picks.some(both)) return null;
+  if (a.flipped) fail("deck-or-trash play under ForceOpponent");
+  if (view.close !== "ShuffleDeck") fail("deck search without a shuffle");
+  if (!/from your deck or trash/i.test(a.tailText ?? "")) fail("deck-or-trash play without its text");
+  const first = JSON.stringify(view.picks[0].target);
+  for (const p of view.picks) {
+    if (!both(p) || pickKeys(p).join() !== "DeployCharacter" || num(p.target![0].TargetCount) !== 1) fail("deck-or-trash pick that is not a play of 1");
+    if (JSON.stringify(p.target) !== first) fail("deck-or-trash picks with different filters");
+    // "up to a total of N": each pick after the first is written as "if the one before was made"
+    const { HasPreviousTargets: _h, ...details } = (p.details ?? {}) as Json;
+    if (stepConditions(details, a).length > 0) fail("conditional pick inside a view");
+  }
+  const spec = view.picks[0].target![0];
+  const filter = filterOf(spec, a);
+  const count = view.picks.length;
+  const sel: Selector = { owner: "self", zone: "deckOrTrash", count, upTo: true, chooser: "controller",
+    ...(Object.keys(filter).length ? { filter } : {}), ...(on(spec.NoDuplicateNames) && count > 1 ? { distinctNames: true } : {}) };
+  a.lastSel = sel;
+  return [
+    { kind: "playFromZone", zone: "deckOrTrash", free: true, sel, ...(view.picks.every((p) => on(p.effect?.DeploysRested)) ? { rested: true } : {}) },
+    { kind: "shuffleDeck", who: "self" },
+  ];
+}
+
 /** "Add / play up to N … from your trash" → one action per pick. */
 function trashPicks(steps: OptcgStep[], i: number, view: CollectedView, a: AbilityCtx): Action[] {
   if (view.close !== null && view.close !== "CleanUpTopDeck") fail(`trash view closed by ${view.close}`);
@@ -260,6 +290,10 @@ export function viewActions(steps: OptcgStep[], i: number, end: number, a: Abili
     }
   }
   const view = collectView(steps, i, end, kind);
+  if (kind === "StartTopDeckFromDeck") {
+    const both = deckOrTrashPlay(view, a);
+    if (both) return { actions: both, next: view.next };
+  }
   for (const p of view.picks) {
     if (stepConditions(p.details, a).length > 0) fail("conditional pick inside a view");
     if (p.effect?.Choices) fail("Choices inside a view");
