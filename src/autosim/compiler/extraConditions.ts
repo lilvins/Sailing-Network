@@ -2,7 +2,7 @@
  *  `compare`, `anyOf`, `selfMatches`, `ownTurnAtLeast` and the new filter
  *  fields. (optcg-ai → AUTOSIM compiler, see README.md) */
 import type { CompareOp, Condition, Quantity, Selector, SelectorFilter } from "../ir/types";
-import { ATTRIBUTES, catalogNames, COLORS } from "./catalogMaps";
+import { ATTRIBUTES, catalogNames, COLORS, typesOfCategories } from "./catalogMaps";
 import { fail, list, num } from "./dsl";
 import type { AbilityCtx, Json } from "./types";
 
@@ -16,7 +16,7 @@ const atLeast = (sel: Selector, n: number): Condition => ({ kind: "countInZone",
 const atMost = (sel: Selector, n: number): Condition => ({ kind: "countInZone", sel, atMost: n });
 
 const typesOf = (ids: number[], a: AbilityCtx): string[] =>
-  [...new Set(ids.flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`)))];
+  typesOfCategories(ids, a, (id) => fail(`unknown category ${id}`));
 const attributesOf = (ids: number[]): string[] => ids.map((id) => ATTRIBUTES[id] ?? fail(`attribute ${id}`));
 const leaderIs = (filter: SelectorFilter): Condition => ({ kind: "leaderIs", filter });
 

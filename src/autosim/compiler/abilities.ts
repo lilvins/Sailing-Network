@@ -1,6 +1,6 @@
 /** One ability → IR Effect: passives (keywords / statics) and triggered or activated abilities. (optcg-ai → AUTOSIM compiler, see README.md) */
 import type { Action, Condition, CostItem, Effect, Keyword, Quantity, Selector, SelectorFilter, Timing } from "../ir/types";
-import { ATTRIBUTES } from "./catalogMaps";
+import { ATTRIBUTES, typesOfCategories } from "./catalogMaps";
 import { procConditions, stepConditions } from "./conditions";
 import { alternativeCost, orderChoiceCost, trashViewCost } from "./costActions";
 import { costOf, lifeChoiceCost } from "./costs";
@@ -101,8 +101,8 @@ function passiveM5(k: string, v: unknown, step: OptcgStep, card: OptcgCard, text
     case "CharactersWithNoCounterHaveXCounter":
       return [{ kind: "setCounter", sel: { owner: "self", zone: "hand", count: 99, chooser: "controller", filter: { category: ["Character"], counter: "none" } }, amount: num(v), duration: P }];
     case "CharacterTypeHas1KCounter": {
-      const types = list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
-      return [{ kind: "setCounter", sel: { owner: "self", zone: "hand", count: 99, chooser: "controller", filter: { category: ["Character"], typeIncludes: [...new Set(types)], counter: "none" } }, amount: 1000, duration: P }];
+      const types = typesOfCategories(list<number>(v), a, (id) => fail(`unknown category ${id}`));
+      return [{ kind: "setCounter", sel: { owner: "self", zone: "hand", count: 99, chooser: "controller", filter: { category: ["Character"], typeIncludes: types, counter: "none" } }, amount: 1000, duration: P }];
     }
     // "All Stage cards in your hand have a +3000 Counter."
     case "ValidTargetsHaveXCounter": {
@@ -380,6 +380,16 @@ function readCost(steps: OptcgStep[], text: string, ab: OptcgAbility, a: Ability
     steps[read.next] = { ...pay, effect };
   }
   if (read.cost.length === 0) fail(`a cost (":") that does not map onto IR costs: ${costShape(steps[read.next])}`);
+  // "add / trash all of your Life cards:" is written as one step per card: one cost, every card
+  const allLife = /\b(add|trash) all of your Life cards\b/i.test(beforeColon(text));
+  const isLife = (c: CostItem): c is Extract<CostItem, { kind: "lifeToHand" | "trashFromLife" }> =>
+    (c.kind === "lifeToHand" || c.kind === "trashFromLife") && c.count === 1 && !c.bottom;
+  const life = read.cost.filter(isLife);
+  if (allLife && life.length > 1 && life.every((c) => c.kind === life[0].kind)) {
+    const at = read.cost.indexOf(life[0]);
+    read.cost = read.cost.filter((c) => !isLife(c));
+    read.cost.splice(at, 0, { kind: life[0].kind, count: 1, all: true });
+  }
   return read;
 }
 
@@ -512,7 +522,7 @@ function reactOf(ab: OptcgAbility, timing: Timing, text: string, a: AbilityCtx):
 
 /** Watching timings (M5): whose card, which cards, whose effect. */
 function watchedOf(p: Json, timing: Timing, text: string, a: AbilityCtx): Effect["react"] | null {
-  const types = (key: string): string[] => [...new Set(list<number>(p[key]).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`)))];
+  const types = (key: string): string[] => typesOfCategories(list<number>(p[key]), a, (id) => fail(`unknown category ${id}`));
   const chars = (key: string): SelectorFilter => {
     const f: SelectorFilter = { category: ["Character"] };
     const t = types(key);
@@ -569,6 +579,10 @@ function watchedOf(p: Json, timing: Timing, text: string, a: AbilityCtx): Effect
         if (!/trashed from your hand by your \{[^}]+\} type card's effect/i.test(text)) fail("CardTrashedFromMyCategory without its text");
         return { whose: "yours", by: "you", sourceFilter: { typeIncludes: types("CardTrashedFromMyCategory") } };
       }
+      // "When a card is trashed from your hand by your [Marshall.D.Teach] Leader's effect"
+      if (/trashed from your hand by your \[[^\]]+\] Leader's effect/i.test(text)) {
+        return { whose: "yours", by: "you", sourceFilter: { category: ["Leader"] } };
+      }
       return { whose: "yours", byEffect: true };
     default: return null;
   }
@@ -582,13 +596,15 @@ export function triggeredEffect(card: OptcgCard, cat: CatalogCard | undefined, a
   if (isOncePerTurn(card, ab, timing, text)) base.oncePerTurn = true;
   const react = reactOf(ab, timing, text, a);
   if (react) base.react = react;
-  a.tailText = text;
+  // "[Trigger] Activate this card's [Main] effect.": the effect, and its cost, are the ones the [Main] prints
+  const costText = timing === "trigger" && /Activate this card's \[Main\] effect/i.test(text) ? abilityText(card, cat, "main", 0) : text;
+  a.tailText = costText;
   try {
     const conds = procConditions(ab.proc, a);
     const steps = payoffSteps(card, timing, ab.steps);
     // a delayed ("at the end of this turn") ability has no cost of its own:
     // the colon in its text belongs to the ability that scheduled it
-    const { cost, gate, optional, next } = readCost(steps, timing === "delayed" ? "" : text, ab, a);
+    const { cost, gate, optional, next } = readCost(steps, timing === "delayed" ? "" : costText, ab, a);
     let actions = sequence(steps, next, steps.length, a);
     if (actions.length === 0) fail("no executable step");
     const allConds = [...conds, ...gate];

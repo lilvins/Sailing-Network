@@ -2,7 +2,7 @@
  *  "replacement" (8-1-3-4, M5): `replaces` from the proc keys, the "instead"
  *  steps as its cost. (optcg-ai → AUTOSIM compiler, see README.md) */
 import type { CostItem, Effect, SelectorFilter } from "../ir/types";
-import { ATTRIBUTES, COLORS, catalogNames } from "./catalogMaps";
+import { ATTRIBUTES, COLORS, catalogNames, typesOfCategories } from "./catalogMaps";
 import { procConditions, stepConditions } from "./conditions";
 import { trashViewCost } from "./costActions";
 import { costOf, lifeChoiceCost } from "./costs";
@@ -28,7 +28,7 @@ function allyFilter(p: Json, a: AbilityCtx): SelectorFilter & { excludeSelf?: bo
   for (const k of keysOn(p)) {
     const v = p[k];
     switch (k) {
-      case "PreAllyCategory": f.typeIncludes = [...new Set(list<number>(v).flatMap((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`)))]; break;
+      case "PreAllyCategory": f.typeIncludes = typesOfCategories(list<number>(v), a, (id) => fail(`unknown category ${id}`)); break;
       case "PreAllyColor": f.colors = list<number>(v).map((c) => COLORS[c] ?? fail(`color ${c}`)); break;
       case "PreAllyOriginalCostOrLower": f.baseCostAtMost = num(v); break;
       case "PreAllyOriginalCostOrMore": f.baseCostAtLeast = num(v); break;

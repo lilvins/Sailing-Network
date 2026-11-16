@@ -50,6 +50,23 @@ addCard("CP-PLAY", { types: ["CP9"], compiled: compiled("CP-PLAY", [{ timing: "t
 addCard("CP-PLAIN", { types: ["CP9"] });
 addCard("OTHER-TRIGGER", { compiled: compiled("OTHER-TRIGGER", [{ timing: "trigger", actions: [{ kind: "draw", count: 1 }] }]) });
 
+addCard("L-VIVI", { category: "Leader", cost: 5, power: 5000, name: "Nefeltari Vivi", types: ["Alabasta"] });
+addCard("L-SPANDAM", { category: "Leader", cost: 4, power: 5000, name: "Spandam", types: ["CP9"] });
+addReal("OP09-081", { category: "Leader", cost: 5, power: 5000, name: "Marshall.D.Teach", types: ["The Four Emperors", "Blackbeard Pirates"] });
+addReal("OP18-019", { category: "Event", cost: 1, power: null, counter: null, name: "Quack!!!", types: ["Animal", "Alabasta"] });
+addReal("OP18-020", { category: "Event", cost: 1, power: null, counter: null, name: "Stop Fighting!!!", types: ["Alabasta"] });
+addReal("OP18-058", { category: "Event", cost: 3, power: null, counter: null, name: "This Kingdom is Doomed. You Can't Save It!", types: ["Baroque Works"] });
+addReal("OP18-064", { cost: 5, power: 6000, name: "Saint Killingham", types: ["Celestial Dragons", "Holy Knights of God"] });
+addReal("OP18-080", { cost: 4, power: 5000, name: "Van Augur", types: ["Egghead", "Blackbeard Pirates"] });
+addReal("OP18-117", { category: "Event", cost: 10, power: null, counter: null, name: "Buster Call", types: ["Navy", "CP9"] });
+addCard("BIG", { power: 7000 });
+addCard("SMALL-3000", { power: 3000 });
+addCard("SMALL-4000", { power: 4000 });
+addCard("CP6-DRAW", { types: ["CP6"], compiled: compiled("CP6-DRAW", [{ timing: "trigger", actions: [{ kind: "draw", count: 1 }] }]) });
+// "You may trash 1 card from your hand: Draw 1 card." on a Character
+addCard("DISCARDER", { compiled: compiled("DISCARDER", [{ timing: "activateMain", optional: true,
+  cost: [{ kind: "trashFromHand", sel: { owner: "self", zone: "hand", count: 1, chooser: "controller" } }], actions: [{ kind: "draw", count: 1 }] }]) });
+
 const db: CardDb = (id) => CARDS[id] ?? (() => { throw new Error(`unknown card ${id}`); })();
 const DECK = Array<string>(50).fill("FILLER");
 
@@ -230,5 +247,110 @@ describe("OP18-105 Spandam: \"Activate the [Trigger] effect of the revealed card
     s = bobAttacksAlice(s);
     if (s.pendingChoice?.kind === "counterWindow") s = go(s, { type: "passCounter", player: "alice" });
     expect(s.pendingChoice?.kind).not.toBe("triggerDecision");
+  });
+});
+
+describe("OP18 review: what the first compile got wrong", () => {
+  const setDon = (s: AutoGameState, active: number): void => { s.players.alice.don.active = active; markStateEdited(s); };
+  const yes = (s: AutoGameState): AutoGameState => (s.pendingChoice?.kind === "mayActivate" ? go(s, { type: "respondMay", player: "alice", activate: true }) : s);
+
+  it("a type including \"CP\" covers {CP6}: Leader and revealed card", () => {
+    let s = newGame("L-CP6");
+    const spandam = put(s, "OP18-105", "life"), cp6 = put(s, "CP6-DRAW", "hand");
+    s = bobAttacksAlice(s);
+    if (s.pendingChoice?.kind === "counterWindow") s = go(s, { type: "passCounter", player: "alice" });
+    expect(s.pendingChoice).toMatchObject({ kind: "triggerDecision", iid: spandam });
+    s = go(s, { type: "respondTrigger", player: "alice", activate: true });
+    expect(candidates(s)).toEqual([cp6]);
+  });
+
+  it("OP18-020 pays with all the Life cards there are, not with ten", () => {
+    let s = newGame("L-VIVI");
+    const ev = put(s, "OP18-020", "hand");
+    setDon(s, 5);
+    const hand = s.players.alice.zones.hand.length, life = s.players.alice.zones.life.length;
+    expect(life).toBeGreaterThan(0);
+    s = bobAttacksAlice(s);
+    expect(legalMoves(db, s).counterEvents.some((c) => c.iid === ev)).toBe(true);
+    s = yes(go(s, { type: "useCounterEvent", player: "alice", cardIid: ev }));
+    expect(s.players.alice.zones.life).toHaveLength(0);
+    expect(s.players.alice.zones.hand.length).toBe(hand - 1 + life);
+    expect(effectivePower(db, s, "bob", s.players.bob.leaderIid)).toBe(0);
+  });
+
+  it("OP18-117 Buster Call trashes all the Life cards and every Character", () => {
+    let s = newGame("L-SPANDAM");
+    const ev = put(s, "OP18-117", "hand");
+    put(s, "DUCK"); put(s, "DUCK", "characterArea", "bob");
+    setDon(s, 10);
+    expect(legalMoves(db, s).playableFromHand.some((c) => c.iid === ev)).toBe(true);
+    s = yes(go(s, { type: "playCard", player: "alice", iid: ev }));
+    expect(s.players.alice.zones.life).toHaveLength(0);
+    expect(s.players.alice.zones.characterArea).toHaveLength(0);
+    expect(s.players.bob.zones.characterArea).toHaveLength(0);
+  });
+
+  it("OP18-058 [Trigger] asks for the [Main]'s cost: no Character to return, no effect", () => {
+    const attacked = (withCharacter: boolean): AutoGameState => {
+      let s = newGame();
+      put(s, "OP18-058", "life");
+      if (withCharacter) put(s, "DUCK");
+      put(s, "DUCK", "characterArea", "bob");
+      s = bobAttacksAlice(s);
+      if (s.pendingChoice?.kind === "counterWindow") s = go(s, { type: "passCounter", player: "alice" });
+      return s;
+    };
+    expect(attacked(false).pendingChoice?.kind).not.toBe("triggerDecision");
+    let s = attacked(true);
+    expect(s.pendingChoice).toMatchObject({ kind: "triggerDecision", player: "alice" });
+    const mine = s.players.alice.zones.characterArea[0], theirs = s.players.bob.zones.characterArea[0];
+    s = yes(go(s, { type: "respondTrigger", player: "alice", activate: true }));
+    if (s.pendingChoice?.kind === "selectTargets" && candidates(s).includes(mine)) s = go(s, { type: "respondTargets", player: "alice", iids: [mine] });
+    expect(s.players.alice.zones.hand).toContain(mine);
+    if (s.pendingChoice?.kind === "selectTargets") s = go(s, { type: "respondTargets", player: "alice", iids: [theirs] });
+    expect(s.players.bob.zones.characterArea).not.toContain(theirs);
+    expect(s.players.bob.zones.deck[s.players.bob.zones.deck.length - 1] === theirs || s.players.bob.zones.deck[0] === theirs).toBe(true);
+  });
+
+  it("OP18-064 Killingham: the second Character is another one", () => {
+    let s = newGame();
+    const killingham = put(s, "OP18-064", "hand");
+    const a = put(s, "SMALL-4000", "characterArea", "bob"), b = put(s, "SMALL-3000", "characterArea", "bob");
+    setDon(s, 6);
+    s = yes(go(s, { type: "playCard", player: "alice", iid: killingham }));
+    if (s.pendingChoice?.kind === "payDon") s = go(s, { type: "respondPayDon", player: "alice", fromActive: 0, fromRested: 1, fromGiven: {} });
+    expect(candidates(s)).toEqual([a, b].sort()); // 7000 base power or less
+    s = go(s, { type: "respondTargets", player: "alice", iids: [a] });
+    expect(candidates(s)).toEqual([b]); // 5000 base power or less, and not the first one
+  });
+
+  it("OP18-019 Quack!!! does nothing with a Character of 7000 base power", () => {
+    const playable = (withBig: boolean): boolean => {
+      const s = newGame();
+      const ev = put(s, "OP18-019", "hand");
+      if (withBig) put(s, "BIG");
+      put(s, "DUCK", "characterArea", "bob");
+      setDon(s, 5);
+      return legalMoves(db, s).playableFromHand.some((c) => c.iid === ev);
+    };
+    expect(playable(false)).toBe(true);
+    expect(playable(true)).toBe(false);
+  });
+
+  it("OP18-080 Van Augur draws when the [Marshall.D.Teach] Leader trashes a card, not when another card does", () => {
+    const afterTrash = (by: "leader" | "character"): number => {
+      let s = newGame("OP09-081");
+      put(s, "OP18-080");
+      const discarder = put(s, "DISCARDER");
+      const hand = s.players.alice.zones.hand.length;
+      s = by === "leader"
+        ? go(s, { type: "activateMain", player: "alice", iid: s.players.alice.leaderIid, effectIndex: 1 })
+        : go(s, { type: "activateMain", player: "alice", iid: discarder, effectIndex: 0 });
+      s = yes(s);
+      if (s.pendingChoice?.kind === "selectTargets") s = go(s, { type: "respondTargets", player: "alice", iids: [s.players.alice.zones.hand[0]] });
+      return s.players.alice.zones.hand.length - hand;
+    };
+    expect(afterTrash("leader")).toBe(0);     // −1 trashed, +1 from Van Augur
+    expect(afterTrash("character")).toBe(0);  // −1 trashed, +1 from the card's own "Draw 1 card", none from Van Augur
   });
 });

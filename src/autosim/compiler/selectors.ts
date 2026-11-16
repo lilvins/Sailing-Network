@@ -1,6 +1,6 @@
 /** actionV3 target specs → IR Selector (zone, owner, count, filter). (optcg-ai → AUTOSIM compiler, see README.md) */
 import type { Quantity, Selector, SelectorFilter } from "../ir/types";
-import { ATTRIBUTES, CARD_TYPES, COLORS, catalogNames } from "./catalogMaps";
+import { ATTRIBUTES, CARD_TYPES, COLORS, catalogNames, typesOfCategories } from "./catalogMaps";
 import { fail, keysOn, list, num, on } from "./dsl";
 import type { AbilityCtx, Json, OptcgCard } from "./types";
 
@@ -19,7 +19,7 @@ export function ownerOf(spec: Json, a: AbilityCtx): Selector["owner"] {
 export const ZONE_KEYS = new Set(["DeployedCharacter", "HandCard", "TopDeckCard", "Leader", "StageCard", "DonAreaCard",
   "LifeCard", "TrashCard", "AttachedDon", "DeckCard"]);
 export const IGNORED_SPEC_KEYS = new Set(["FriendlyOnly", "EnemyOnly", "TargetCount", "OverrideUITargetCount",
-  "WillBeRemoved", "AutoAllMatchingTargets",
+  "WillBeRemoved", "AutoAllMatchingTargets", "NoUsingPreviousTargets",
   // "with both the {A} and {B} types", read with OnlyCategories
   "RequireAllCategories",
   // set constraints, read by selectorOf
@@ -60,7 +60,7 @@ export function filterOf(spec: Json, a: AbilityCtx): SelectorFilter {
       case "NotBlocker": f.lacksKeyword = "Blocker"; break; // M5: "without [Blocker]"
       case "OriginalPowerXOrMore": f.basePowerAtLeast = num(v); break;
       case "OnlyCategories": {
-        const each = list<number>(v).map((id) => a.ctx.categoryTypes[id] ?? fail(`unknown category ${id}`));
+        const each = list<number>(v).map((id) => typesOfCategories([id], a, (id) => fail(`unknown category ${id}`)));
         if (on(spec.RequireAllCategories)) {
           // "with both the {Animal} and {Alabasta} types": every one of them
           if (each.some((types) => types.length !== 1)) fail("RequireAllCategories over a type with several spellings");
@@ -188,9 +188,11 @@ export function selectorOf(spec: Json | undefined, a: AbilityCtx, full: boolean)
     a.lastSel = sel;
     return sel;
   }
-  if (on(spec.NoUsingPreviousTargets) || on(spec.AutoMainTarget)) fail("previous/main-target binding");
+  if (on(spec.AutoMainTarget)) fail("previous/main-target binding");
   const zone = zoneOf(spec);
   const filter = filterOf(spec, a);
+  // "up to 1 … and up to 1 …": the second pick is not the card just picked
+  if (on(spec.NoUsingPreviousTargets)) filter.notPrev = true;
   const all = on(spec.AutoAllMatchingTargets);
   const raw = spec.TargetCountHandOverflow !== undefined ? 99 : num(spec.TargetCount);
   const count = all || raw === 0 || raw >= 10 ? 99 : raw;

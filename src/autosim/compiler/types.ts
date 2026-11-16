@@ -43,6 +43,8 @@ export interface CompileContext {
   categoryTypes: Record<number, string[]>;
   /** optcgwebsim card name → the catalog's spelling ("Tony Tony Chopper" → "Tony Tony.Chopper"). */
   names: Record<string, string>;
+  /** every type string of the catalog (for `a type including "X"`). */
+  catalogTypes?: string[];
 }
 
 // ─── per-ability translation state ──────────────────────────────────────────
@@ -61,6 +63,8 @@ export interface AbilityCtx {
   depth: number;
   /** text for a "continue by hand" tail; null = whole-ability manual only */
   tailText: string | null;
+  /** the whole printed text of the card, [Trigger] included */
+  cardText?: string;
   /** M5: inside a "look at your opponent's top card" (flip up … flip down) */
   peekFlipOpen?: boolean;
   /** the step being translated (builders that read a second target, M5) */

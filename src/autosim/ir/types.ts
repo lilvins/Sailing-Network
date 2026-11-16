@@ -186,8 +186,10 @@ export type CostItem =
   | { kind: "restSelf" }
   | { kind: "trashFromHand"; sel: Selector }
   | { kind: "trashSelf" }
-  | { kind: "trashFromLife"; count: number; bottom?: boolean }
-  | { kind: "lifeToHand"; count: number; bottom?: boolean }   // "add N card(s) from your Life to your hand:" (M2; M5: from the bottom)
+  | { kind: "trashFromLife"; count: number; bottom?: boolean; all?: boolean }
+  /** "add N card(s) from your Life to your hand:" (M2; M5: from the bottom).
+   *  `all` (both Life costs): "all of your Life cards" — at least `count`, then every one. */
+  | { kind: "lifeToHand"; count: number; bottom?: boolean; all?: boolean }
   | { kind: "handToDeckBottom"; count: number }   // "place N card(s) from your hand at the bottom of your deck:" (M3)
   | { kind: "returnToHand"; sel: Selector }       // "return N Character(s) to your hand:" (M3)
   | { kind: "restFromField"; sel: Selector }      // "rest N of your Characters:" (M3)

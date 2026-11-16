@@ -5,6 +5,7 @@ import { bulletsOf, labelOptions } from "./choiceLabels";
 import { stepConditions } from "./conditions";
 import { costOf, lifeChoiceCost } from "./costs";
 import { Unsupported, VIEW_OPEN, fail, keysOn, list, num, on } from "./dsl";
+import { selectorOf } from "./selectors";
 import type { AbilityCtx, Json, OptcgStep } from "./types";
 import { viewActions } from "./views";
 
@@ -74,6 +75,19 @@ export function sequenceStep(steps: OptcgStep[], i: number, end: number, a: Abil
     const fx = step.effect ?? {};
     const conds = prevTargetsCheck(stepConditions(step.details, a, true), out, a);
     const required = on(step.details?.Required);
+
+    // "If you have no Characters with 7000 base power or more, …": the cards are
+    // selected in a step of their own and the next step asks that there were none
+    const after = i + 1 < end ? steps[i + 1] : undefined;
+    if (keysOn(fx).length === 0 && step.target?.[0] && on(step.target[0].AutoAllMatchingTargets)
+      && after && keysOn(after.effect).length === 0 && !after.target && on(after.details?.NoPreviousTargets) && on(after.details?.Required)) {
+      const sel = selectorOf(step.target[0], a, false);
+      const { NoPreviousTargets: _n, ...details } = after.details as Json;
+      const none: Condition = { kind: "countInZone", sel, atMost: 0 };
+      const rest = sequence(steps, i + 2, end, a);
+      if (rest.length > 0) out.push({ kind: "ifThen", if: [none, ...stepConditions(details, a, true).filter((c) => c.kind !== "hadTargets")], then: rest });
+      return null;
+    }
 
     if (keysOn(fx).length === 0 && !step.target) {
       // pure gate / landing pad / confirm prompt

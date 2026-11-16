@@ -39,6 +39,7 @@ export { textSegments } from "./text";
 /** Translate every ability of a card into `res` (timing by timing). */
 function translateAbilities(card: OptcgCard, cat: CatalogCard | undefined, ctx: CompileContext, res: AbilityResult, rules: CardRules): void {
   const seen = new Map<Timing, number>();
+  const cardText = `${cat?.effect ?? card.text ?? ""}\n${cat?.trigger ?? ""}`;
   for (const ab0 of card.abilities) {
     if (isRuleAbility(ab0, rules)) continue; // a printed game rule: CompiledCard.rules (M5)
     // the queued half of "… at the start of their next Main Phase" (M5): the engine runs it from the restriction
@@ -49,7 +50,7 @@ function translateAbilities(card: OptcgCard, cat: CatalogCard | undefined, ctx: 
     if (keysOn(ab.proc).some((k) => /^Pre[A-Z]/.test(k))) {
       // "If … would be K.O.'d / removed …, you may … instead" (8-1-3-4, M5)
       const text = textSegments((cat?.effect ?? card.text ?? "")).find((l) => /would be|instead/i.test(l)) ?? (cat?.effect ?? card.text ?? "");
-      const a: AbilityCtx = { card, ctx, timing: "replacement", flipped: false, lastSel: null, approx: res.approx, depth: 0, tailText: text };
+      const a: AbilityCtx = { card, ctx, timing: "replacement", flipped: false, lastSel: null, approx: res.approx, depth: 0, tailText: text, cardText };
       try {
         replacementEffect(ab, text, a, res);
       } catch (e) {
@@ -92,7 +93,7 @@ function translateAbilities(card: OptcgCard, cat: CatalogCard | undefined, ctx: 
     }
     for (const key of timingKeys) {
       const raw = PROC_TIMING[key];
-      const a: AbilityCtx = { card, ctx, timing: raw === "passive" ? "static" : raw, flipped: false, lastSel: null, approx: res.approx, depth: 0, tailText: null };
+      const a: AbilityCtx = { card, ctx, timing: raw === "passive" ? "static" : raw, flipped: false, lastSel: null, approx: res.approx, depth: 0, tailText: null, cardText };
       if (raw === "passive") {
         translatePassive(card, cat, ab, a, res);
         continue;
@@ -234,7 +235,8 @@ export function coverageOf(cards: CompiledCard[]): Record<string, CoverageCounts
 export function compileAllOptcg(
   optcg: Record<string, OptcgCard>, catalog: (CatalogCard & { name?: string })[], enumNames: Record<string, string>,
 ): CompiledCard[] {
-  const ctx: CompileContext = { categoryTypes: buildCategoryMap(optcg, catalog, enumNames), names: buildNameMap(optcg, catalog) };
+  const ctx: CompileContext = { categoryTypes: buildCategoryMap(optcg, catalog, enumNames), names: buildNameMap(optcg, catalog),
+    catalogTypes: [...new Set(catalog.flatMap((c) => c.types))].sort() };
   const byId = new Map(catalog.map((c) => [c.id, c]));
   return Object.keys(optcg).sort().flatMap((id) => compileOptcgCard(optcg[id], byId.get(id), ctx) ?? []);
 }
