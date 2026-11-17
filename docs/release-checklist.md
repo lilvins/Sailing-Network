@@ -10,7 +10,7 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 - [x] **Card art:** the card images stay (dotgg, `npm run art`). ST37-001 and ST38-001
       have no image there yet: they stay drawn in SVG.
 - [x] **Ranked:** it must be a game both players share, run through the server. It may
-      stay locked during the beta (`RANKED_OPEN` in `DuelRoomPage.tsx`).
+      stay locked during the beta: `SN_RANKED` is `closed` in production until set to `open`.
 - [x] **Database:** production starts from a clean one (`seed:cards` + `seed:admin`).
       That also leaves out the 40 bots, the demo accounts and the made-up games.
 - [x] **Replays:** public by link; the players' names and the chat show to whoever has it.
@@ -20,13 +20,10 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
 ## Blockers
 
-- [ ] **Two people cannot play ranked.** The pool is closed (`RANKED_OPEN = false`).
-      `src/` only calls `/me/queue/join`, `/leave` and `/status`: nothing calls `/ready`,
-      `/complete` or `/cancel`, and a ranked game has no table of its own. Friend games
-      already share a table through `server/rooms.mjs`; ranked needs the same, with the
-      result written by the server.
-- [ ] **Colluding accounts can still farm rating.** A game counts when both players report
-      the same winner. Only a game the server runs closes this; do it with the item above.
+- [ ] **Ranked shows both hands to both browsers.** The server judges the game, but each
+      browser still holds the whole of it (both hands, both decks), as in a friend game:
+      a player who opens the developer tools can read the opponent's hand. Before ranked
+      opens to strangers the server must send each player only what they may see.
 - [ ] **Deploy.** Pick the host, copy `public/cards` there (2,973 files, 666 MB,
       `SN_CARDS_DIR`), set up database backups, try the Docker image (never built: no
       Docker here), and get CI running.
@@ -35,9 +32,14 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
 ## Important
 
-- [ ] A replay's events are still the browser's word: the server does not run the
-      engine. A player can send in a made-up game of their own; closing it needs the
-      engine on the server, the same work as ranked.
+- [ ] The replay of a friend game, or of a game against the AI or at one screen, is
+      still the browser's word for what happened (a ranked replay is the server's own).
+      The engine is on the server now: a friend game can be judged the same way.
+- [ ] Ranked has no turn clock: a player who stays at the table without moving holds the
+      game until the 2 hour limit cancels it with no result. Two accounts of one person
+      can still trade wins by conceding, when the queue pairs them.
+- [ ] A ranked game lives in the server's memory: a restart loses the games in progress
+      (they end with no result, and the players are told).
 - [ ] No block, report or delete for DMs and chat (admins can ban an account).
 - [ ] SQLite: no index on `matches.created_at`; one writer process only; the ladder
       reads every counted row again after each new match (`server/stats/index.mjs:30`).
@@ -54,6 +56,12 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
 ## Done
 
+- [x] Two people play ranked (2026-11-17): the queue leads both to a table the server
+      sets (seats, decks, seed, first player) and plays with the rules engine
+      (`server/engine.mjs`). An illegal move is refused; the result and the replay are
+      written by the server; no take-back, no rematch; a player who leaves the table for
+      2 minutes loses. Nothing a browser reports counts, so two accounts cannot agree on
+      a result without playing it. Tried with two accounts in two browser tabs.
 - [x] Weight (2026-11-17): the first script is 268 kB (72 kB on the wire), it was
       2,584 kB: every page but Login and Home loads on demand, the rules engine with
       the cards' effects when a table opens. The server compresses what it sends and
