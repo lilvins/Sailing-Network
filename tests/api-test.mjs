@@ -431,6 +431,27 @@ try {
   r = await client().post("/api/replays", { record: recordOf([concede]) });
   check("sending one in needs an account", r.status === 401);
 
+  // a take-back is not in the replay: the room forgets the moves taken back,
+  // and keeps only a record that has exactly the moves that stood
+  const fourth = (await host.post("/api/rooms", { deck: deckFor("H"), format: "East Blue", type: "BO1" })).json.room;
+  await guest.post(`/api/rooms/${fourth.code}/join`, { deck: deckFor("G") });
+  const endA = { type: "endTurn", player: "seatA" };
+  const endB = { type: "endTurn", player: "seatB" };
+  const regretted = { type: "attachDon", player: "seatA" };
+  await host.post(`/api/rooms/${fourth.code}/moves`, { seq: 0, intent: endA });
+  await guest.post(`/api/rooms/${fourth.code}/moves`, { seq: 1, intent: endB });
+  await host.post(`/api/rooms/${fourth.code}/moves`, { seq: 2, intent: regretted });
+  await host.post(`/api/rooms/${fourth.code}/undo`, { action: "request" });
+  r = await guest.post(`/api/rooms/${fourth.code}/undo`, { action: "accept" });
+  check("a take-back is accepted", r.status === 200 && (await host.get(`/api/rooms/${fourth.code}`)).json.room.total === 2);
+  await host.post(`/api/rooms/${fourth.code}/moves`, { seq: 2, intent: concede });
+  r = await host.post(`/api/rooms/${fourth.code}/result`, { winner: "seatB", record: recordOf([endA, endB, regretted, concede]) });
+  check("a record that still has the move taken back is not kept", r.status === 200 && r.json.replayId === null);
+  r = await guest.post(`/api/rooms/${fourth.code}/result`, { winner: "seatB", record: recordOf([endA, endB, concede]) });
+  const afterTakeBack = r.json.replayId ? (await client().get(`/api/replays/${r.json.replayId}`)).json.replay : null;
+  check("the replay has the moves that stood, not the one taken back",
+    afterTakeBack?.plays === 3 && afterTakeBack.record.moves.map((m) => m.type).join() === "endTurn,endTurn,concede");
+
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
 } finally {
