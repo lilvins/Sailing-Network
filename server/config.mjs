@@ -62,6 +62,12 @@ export function loadConfig(env = process.env) {
     if (!existsSync(cardsDir)) problems.push(`SN_CARDS_DIR does not exist: ${cardsDir}`);
   }
 
+  // API requests one visitor may make in a minute, over the routes with no limit of
+  // their own. 0 = no such limit: the default in dev, where the tests and the bot
+  // ladder all come from this computer.
+  const rateLimit = Number(env.SN_RATE_LIMIT ?? (isProd ? 900 : 0));
+  if (!Number.isInteger(rateLimit) || rateLimit < 0) problems.push(`SN_RATE_LIMIT must be a whole number, 0 or more: ${env.SN_RATE_LIMIT}`);
+
   if (problems.length > 0) throw new Error(`Configuration:\n- ${problems.join("\n- ")}`);
-  return { isProd, port, host, cookieSecret, corsOrigin, trustProxy: trustProxyOf(env.TRUST_PROXY), staticDir, cardsDir };
+  return { isProd, port, host, cookieSecret, corsOrigin, trustProxy: trustProxyOf(env.TRUST_PROXY), staticDir, cardsDir, rateLimit };
 }

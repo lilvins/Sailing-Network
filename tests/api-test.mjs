@@ -454,6 +454,18 @@ try {
 
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
+
+  section("Security");
+  for (const [method, path] of [["get", "/api/queue"], ["get", "/api/match-sessions/active"], ["get", "/api/match-sessions/nosuch"], ["post", "/api/queue/tick"]]) {
+    r = await client()[method](path);
+    check(`${method.toUpperCase()} ${path} needs an account`, r.status === 401);
+  }
+  const health = await fetch(`${BASE}/api/health`);
+  check("an answer carries the security headers",
+    !!health.headers.get("content-security-policy")?.includes("default-src 'self'") && health.headers.get("x-frame-options") === "DENY");
+  const statuses = [];
+  for (let i = 0; i < 31; i++) statuses.push((await u1.post("/api/queue/tick")).status);
+  check("a route's own limit: the matchmaking pass can be forced 30 times a minute, not 31", statuses[0] === 200 && statuses.includes(429));
 } finally {
   // wait for the server to be gone before deleting its database
   await new Promise((r) => { server.once("exit", r); server.kill(); });

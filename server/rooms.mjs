@@ -7,6 +7,7 @@ import { randomBytes, randomInt } from "node:crypto";
 import { z } from "zod";
 import { createMatch, getDeck } from "./store.mjs";
 import { RECORD_BODY_LIMIT, parseRecord, saveReplay } from "./replays.mjs";
+import { limit } from "./security.mjs";
 
 const SEATS = ["seatA", "seatB"];
 const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O or 1/I/L
@@ -151,7 +152,7 @@ export function registerRooms(app, requireUser) {
     return reply.send({ duels: open.map((r) => openDuel(r, user.id)) });
   });
 
-  app.post("/api/rooms", async (req, reply) => {
+  app.post("/api/rooms", limit(20, "10 minutes"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const parsed = hostSchema.safeParse(req.body);
@@ -167,7 +168,7 @@ export function registerRooms(app, requireUser) {
     return reply.code(201).send({ room: toClient(room, 0, 0, 0) });
   });
 
-  app.post("/api/rooms/:code/join", async (req, reply) => {
+  app.post("/api/rooms/:code/join", limit(20, "1 minute"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -184,7 +185,7 @@ export function registerRooms(app, requireUser) {
     return reply.send({ room: toClient(room, 1, 0, 0) });
   });
 
-  app.get("/api/rooms/:code", async (req, reply) => {
+  app.get("/api/rooms/:code", limit(300, "1 minute"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -197,7 +198,7 @@ export function registerRooms(app, requireUser) {
     return reply.send({ room: toClient(room, seat, after, chatAfter) });
   });
 
-  app.post("/api/rooms/:code/moves", async (req, reply) => {
+  app.post("/api/rooms/:code/moves", limit(300, "1 minute"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -219,7 +220,7 @@ export function registerRooms(app, requireUser) {
   // a take-back: one player asks, the other accepts and says how far back the
   // moves go (src/autosim/engine/takeBack.ts decides, so the whole action goes);
   // without that, the requester's last move and everything after it
-  app.post("/api/rooms/:code/undo", async (req, reply) => {
+  app.post("/api/rooms/:code/undo", limit(60, "1 minute"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -246,7 +247,7 @@ export function registerRooms(app, requireUser) {
     return reply.send({ ok: true });
   });
 
-  app.post("/api/rooms/:code/chat", async (req, reply) => {
+  app.post("/api/rooms/:code/chat", limit(40, "1 minute"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -263,7 +264,7 @@ export function registerRooms(app, requireUser) {
   // "Rematch": when both players asked, a new room with the same seats and decks
   // (new seed, new first player); both browsers follow `nextCode` there.
   // "leave": the other player is told, and no rematch can happen any more.
-  app.post("/api/rooms/:code/rematch", async (req, reply) => {
+  app.post("/api/rooms/:code/rematch", limit(30, "1 minute"), async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -291,7 +292,7 @@ export function registerRooms(app, requireUser) {
   // the end of a game, reported by each browser. The server does not run the
   // engine, so a game counts only if both say the same winner, and only once.
   // Each report may carry the game's record: the first good one becomes the replay.
-  app.post("/api/rooms/:code/result", { bodyLimit: RECORD_BODY_LIMIT }, async (req, reply) => {
+  app.post("/api/rooms/:code/result", { bodyLimit: RECORD_BODY_LIMIT, ...limit(20, "10 minutes") }, async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));

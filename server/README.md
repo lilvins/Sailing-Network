@@ -107,6 +107,7 @@ meaning. In development none is needed.
 | `SN_CARDS_DIR` | — | folder with the card images, served as `/cards/<file>` |
 | `CORS_ORIGINS` | none in production | other sites allowed to call the API with the cookie, comma separated |
 | `TRUST_PROXY` | off | `1` behind one proxy: each visitor gets their own rate limit |
+| `SN_RATE_LIMIT` | 900 in production, 0 in dev | API requests a visitor may make in a minute, over the routes with no limit of their own; 0 = no limit |
 
 ## Production
 
