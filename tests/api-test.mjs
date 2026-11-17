@@ -400,7 +400,7 @@ try {
   check("the room says where the replay is", (await host.get(`/api/rooms/${third.code}`)).json.room.replayId === replayId);
   r = await u1.get(`/api/replays/${replayId}`);
   const kept = r.json?.replay;
-  check("anyone signed in opens it by its link", r.status === 200 && kept.source === "friend" && kept.format === "East Blue" && kept.winner === "seatB" && kept.firstPlayer === "seatB" && kept.turns === 2 && kept.plays === 1);
+  check("anyone signed in opens it by its link", r.status === 200 && kept.source === "friend" && kept.format === "East Blue" && kept.winner === "seatB" && kept.firstPlayer === third.firstPlayer && kept.turns === 2 && kept.plays === 1);
   check("someone who was not in the game has no seat in it", kept.viewerSeat === null);
   check("a player is told which seat was theirs", (await guest.get(`/api/replays/${replayId}`)).json.replay.viewerSeat === "seatB");
   check("names, moves and chat are the room's, not the browser's", kept.seats[0].name === "room_host" && kept.record.seats[1].name === "room_guest" && kept.record.moves[0].type === "concede" && kept.record.chat[0]?.text === "gg");
@@ -424,6 +424,24 @@ try {
   r = await u1.get("/api/me/replays");
   const mine = r.json.replays.find((x) => x.id === aiReplay);
   check("it is listed as theirs: their seat, not the AI's", mine?.source === "ai" && mine.viewerSeat === "seatA");
+  const sentIn = (await client().get(`/api/replays/${aiReplay}`)).json.replay;
+  check("its names are the server's: the sender's account and a bot", sentIn.seats[0].name === "tester_one" && sentIn.record.seats[1].name === "Bot");
+  const forged = { ...recordOf([concede], { names: ["room_host", "room_guest"] }), chat: [{ seat: "seatA", text: "I cheat", at: 1 }] };
+  r = await u1.post("/api/replays", { record: forged });
+  const forgedReplay = (await client().get(`/api/replays/${r.json?.id}`)).json?.replay;
+  check("a record sent in cannot carry other players' names or a chat",
+    r.status === 201 && forgedReplay.source === "local" && forgedReplay.seats.map((s) => s.name).join("|") === "tester_one|tester_one's guest"
+      && forgedReplay.record.chat.length === 0 && !JSON.stringify(forgedReplay).includes("room_host"));
+  r = await u1.post("/api/replays", { record: recordOf([concede], { names: ["tester_one", "Bot Pro 2"], ai: true }) });
+  check("a bot keeps its own name", (await client().get(`/api/replays/${r.json?.id}`)).json.replay.seats[1].name === "Bot Pro 2");
+
+  const mismatch = (await host.post("/api/rooms", { deck: deckFor("H"), format: "East Blue", type: "BO1" })).json.room;
+  await guest.post(`/api/rooms/${mismatch.code}/join`, { deck: deckFor("G") });
+  await host.post(`/api/rooms/${mismatch.code}/moves`, { seq: 0, intent: concede });
+  await host.post(`/api/rooms/${mismatch.code}/result`, { winner: "seatA", record: recordOf([concede]) }); // the record ends with seat B winning
+  r = await guest.post(`/api/rooms/${mismatch.code}/result`, { winner: "seatA" });
+  check("a record that ends another way than both players said: the result counts, no replay", r.json.recorded === true && r.json.replayId === null);
+
   r = await u1.post("/api/replays", { record: recordOf([concede], { over: false }) });
   check("a game that is not over → 400", r.status === 400);
   r = await u1.post("/api/replays", { record: { ...recordOf([concede]), cuts: [1, 2] } });
@@ -454,6 +472,25 @@ try {
 
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
+
+  section("Weight");
+  const catalog = await fetch(`${BASE}/api/cards`, { headers: { "accept-encoding": "identity" } });
+  const tag = catalog.headers.get("etag");
+  check("the card catalog carries a tag", catalog.status === 200 && !!tag);
+  const catalogAgain = await fetch(`${BASE}/api/cards`, { headers: { "if-none-match": tag ?? "" } });
+  check("a browser that already has it gets a 304 and no body", catalogAgain.status === 304 && (await catalogAgain.text()) === "");
+
+  section("Security");
+  for (const [method, path] of [["get", "/api/queue"], ["get", "/api/match-sessions/active"], ["get", "/api/match-sessions/nosuch"], ["post", "/api/queue/tick"]]) {
+    r = await client()[method](path);
+    check(`${method.toUpperCase()} ${path} needs an account`, r.status === 401);
+  }
+  const health = await fetch(`${BASE}/api/health`);
+  check("an answer carries the security headers",
+    !!health.headers.get("content-security-policy")?.includes("default-src 'self'") && health.headers.get("x-frame-options") === "DENY");
+  const statuses = [];
+  for (let i = 0; i < 31; i++) statuses.push((await u1.post("/api/queue/tick")).status);
+  check("a route's own limit: the matchmaking pass can be forced 30 times a minute, not 31", statuses[0] === 200 && statuses.includes(429));
 } finally {
   // wait for the server to be gone before deleting its database
   await new Promise((r) => { server.once("exit", r); server.kill(); });

@@ -2,6 +2,7 @@
 // Accounts, sessions (httpOnly cookie), roles (user/admin), admin user management.
 // In production it also serves the built site (static.mjs); settings in config.mjs.
 
+import { createHash } from "node:crypto";
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
@@ -13,6 +14,8 @@ import { registerWelcome } from "./welcome.mjs";
 import { registerRooms } from "./rooms.mjs";
 import { registerReplays } from "./replays.mjs";
 import { registerStatic } from "./static.mjs";
+import { limit, registerSecurityHeaders } from "./security.mjs";
+import { registerCompression } from "./compress.mjs";
 import { cardFaceSvg } from "./cardFace.mjs";
 import { loadConfig } from "./config.mjs";
 import {
@@ -63,7 +66,10 @@ await app.register(cors, {
 await app.register(cookie, {
   secret: config.cookieSecret,
 });
-await app.register(rateLimit, { global: false });
+// every route with no limit of its own shares one count per visitor (config.rateLimit, 0 = off)
+await app.register(rateLimit, { global: config.rateLimit > 0, max: config.rateLimit || 900, timeWindow: "1 minute" });
+registerSecurityHeaders(app, { isProd });
+registerCompression(app);
 
 // ---- helpers ----
 function setSessionCookie(reply, token) {
@@ -281,7 +287,7 @@ app.get("/api/me/profile", async (req, reply) => {
   return reply.send({ user: publicUser(user), profile: profileToClient(profile) });
 });
 
-app.patch("/api/me/profile", async (req, reply) => {
+app.patch("/api/me/profile", limit(30, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const p = profilePatchSchema.safeParse(req.body);
@@ -328,7 +334,7 @@ async function followCounts(userId, viewerId) {
   const me = await get(`SELECT 1 AS x FROM follows WHERE follower_id=? AND followee_id=?`, [viewerId, userId]);
   return { followers: Number(f.c), following: Number(g.c), isFollowing: !!me };
 }
-app.post("/api/follows/:username", async (req, reply) => {
+app.post("/api/follows/:username", limit(60, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const target = await getUserByUsername(req.params.username);
@@ -381,7 +387,7 @@ app.get("/api/me/decks", async (req, reply) => {
   return reply.send({ decks: decks.map(deckToClient) });
 });
 
-app.post("/api/me/decks", async (req, reply) => {
+app.post("/api/me/decks", limit(60, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const p = deckCreateSchema.safeParse(req.body);
@@ -397,7 +403,7 @@ app.get("/api/decks/:id", async (req, reply) => {
   return reply.send({ deck: deckToClient(deck) });
 });
 
-app.patch("/api/decks/:id", async (req, reply) => {
+app.patch("/api/decks/:id", limit(120, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const deck = await getDeck(req.params.id);
@@ -436,7 +442,7 @@ const matchLogSchema = z.object({
   oppUsername: z.string().max(24).nullable().optional(),
   format: z.string().max(20).optional(),
 });
-app.post("/api/me/matches", async (req, reply) => {
+app.post("/api/me/matches", limit(60, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const p = matchLogSchema.safeParse(req.body);
@@ -510,7 +516,7 @@ app.get("/api/me/friends", async (req, reply) => {
 
 const msgBody = z.object({ body: z.string().min(1).max(1000) });
 
-app.post("/api/me/friends/:username", async (req, reply) => {
+app.post("/api/me/friends/:username", limit(30, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const target = await getUserByUsername(req.params.username);
@@ -577,7 +583,7 @@ app.get("/api/threads/:username", async (req, reply) => {
   });
 });
 
-app.post("/api/threads/:username", async (req, reply) => {
+app.post("/api/threads/:username", limit(30, "1 minute"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const p = msgBody.safeParse(req.body);
@@ -681,9 +687,14 @@ app.get("/api/cards", async (req, reply) => {
       : Number(a.id.split("-")[1]) - Number(b.id.split("-")[1])
   );
   // revalidate every load: after `npm run seed:cards` the new sets must show up at once
-  // (an hour of max-age kept serving the old catalog — "unknown card OP17-089")
+  // (an hour of max-age kept serving the old catalog — "unknown card OP17-089").
+  // The tag names this exact catalog: a browser that already has it gets a 304, not 1.6 MB.
+  const body = JSON.stringify({ cards: rows.map(cardRowToClient) });
+  const tag = `W/"${createHash("sha1").update(body).digest("base64url")}"`;
   reply.header("Cache-Control", "no-cache");
-  return reply.send({ cards: rows.map(cardRowToClient) });
+  reply.header("ETag", tag);
+  if (req.headers["if-none-match"] === tag) return reply.code(304).send();
+  return reply.type("application/json; charset=utf-8").send(body);
 });
 
 app.get("/api/cards/:id", async (req, reply) => {
@@ -703,7 +714,7 @@ async function ownDeckId(req, reply, user) {
   return deckId;
 }
 
-app.post("/api/me/match-sessions/create", async (req, reply) => {
+app.post("/api/me/match-sessions/create", limit(30, "10 minutes"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const deckId = await ownDeckId(req, reply, user);
@@ -729,6 +740,7 @@ app.post("/api/match-sessions/:sessionId/join", async (req, reply) => {
 });
 
 app.get("/api/match-sessions/active", async (req, reply) => {
+  if (!(await requireUser(req, reply))) return;
   const matches = await listActiveMatches();
   return reply.send({ sessions: matches.map(matchSessionToClient) });
 });
@@ -742,6 +754,7 @@ app.get("/api/me/match-sessions", async (req, reply) => {
 });
 
 app.get("/api/match-sessions/:sessionId", async (req, reply) => {
+  if (!(await requireUser(req, reply))) return;
   const session = await getMatchSession(req.params.sessionId);
   if (!session) return reply.code(404).send({ error: "Match not found" });
   return reply.send({ session: matchSessionToClient(session) });
@@ -791,7 +804,7 @@ app.post("/api/match-sessions/:sessionId/cancel", async (req, reply) => {
 });
 
 // ---- ranked queue ----
-app.post("/api/me/queue/join", async (req, reply) => {
+app.post("/api/me/queue/join", limit(30, "1 minute"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
   const deckId = await ownDeckId(req, reply, user);
@@ -812,6 +825,7 @@ app.post("/api/me/queue/leave", async (req, reply) => {
 });
 
 app.get("/api/queue", async (req, reply) => {
+  if (!(await requireUser(req, reply))) return;
   const players = await getQueuedPlayers();
   return reply.send({ players });
 });
@@ -865,7 +879,8 @@ app.post("/api/me/queue/ready", async (req, reply) => {
 // Manual matchmaking tick — runs one pairing pass + expires no-shows. The same
 // work runs automatically every 5s (see setInterval below); this endpoint lets
 // the frontend (or curl/tests) force a pass without waiting for the timer.
-app.post("/api/queue/tick", async (req, reply) => {
+app.post("/api/queue/tick", limit(30, "1 minute"), async (req, reply) => {
+  if (!(await requireUser(req, reply))) return;
   const result = await runMatchmakingTick();
   return reply.send(result);
 });

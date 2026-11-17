@@ -3,10 +3,14 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { brotliDecompressSync, gunzipSync } from "node:zlib";
 import Fastify from "fastify";
 import { afterAll, describe, expect, it } from "vitest";
 import { loadConfig } from "../server/config.mjs";
+import rateLimit from "@fastify/rate-limit";
 import { registerStatic } from "../server/static.mjs";
+import { limit, registerSecurityHeaders } from "../server/security.mjs";
+import { pickEncoding, registerCompression } from "../server/compress.mjs";
 import { cardFaceSvg, wrap } from "../server/cardFace.mjs";
 
 const SECRET = "x".repeat(40);
@@ -16,6 +20,9 @@ mkdirSync(join(site, "assets"));
 mkdirSync(join(site, "cards"));
 writeFileSync(join(site, "index.html"), "<!doctype html><title>site</title>");
 writeFileSync(join(site, "assets", "app-abc123.js"), "console.log(1)");
+const BIG_SCRIPT = "console.log('a line of the site');\n".repeat(400);
+writeFileSync(join(site, "assets", "big-abc123.js"), BIG_SCRIPT);
+writeFileSync(join(site, "assets", "art-abc123.png"), Buffer.alloc(5000, 7));
 writeFileSync(join(site, "cards", "BACK.webp"), "back");
 writeFileSync(join(cards, "OP01-001.webp"), "card");
 writeFileSync(join(site, "..", "sn-outside.txt"), "outside the site");
@@ -52,6 +59,12 @@ describe("server settings (config.mjs)", () => {
     expect(() => loadConfig({ ...prod, SN_STATIC_DIR: join(site, "missing") })).toThrow(/npm run build/);
     expect(loadConfig({ ...prod, SN_STATIC_DIR: site }).staticDir).toBe(site);
     expect(() => loadConfig({ ...prod, SN_STATIC_DIR: site, SN_CARDS_DIR: join(cards, "missing") })).toThrow(/SN_CARDS_DIR/);
+  });
+
+  it("SN_RATE_LIMIT: 900 a minute in production, none in development, or the number given", () => {
+    const prod = { NODE_ENV: "production", COOKIE_SECRET: SECRET, SN_STATIC_DIR: "off" };
+    expect([loadConfig({}).rateLimit, loadConfig(prod).rateLimit, loadConfig({ ...prod, SN_RATE_LIMIT: "0" }).rateLimit, loadConfig({ SN_RATE_LIMIT: "50" }).rateLimit]).toEqual([0, 900, 0, 50]);
+    expect(() => loadConfig({ SN_RATE_LIMIT: "many" })).toThrow(/SN_RATE_LIMIT/);
   });
 
   it("TRUST_PROXY: off, on, a number of proxies, or their addresses", () => {
@@ -128,5 +141,91 @@ describe("the site served by the API (static.mjs)", () => {
       expect(res.body, url).not.toContain("outside the site");
       expect(res.statusCode, url).not.toBe(200);
     }
+  });
+});
+
+describe("what protects the server (security.mjs)", () => {
+  it("every answer carries the headers: the page, an API route, a 404", async () => {
+    const app = Fastify();
+    registerSecurityHeaders(app, { isProd: true });
+    app.get("/api/health", async () => ({ ok: true }));
+    registerStatic(app, { dir: site, cardsDir: cards });
+    for (const url of ["/", "/api/health", "/api/nowhere", "/missing.png"]) {
+      const res = await app.inject({ method: "GET", url });
+      expect(res.headers["content-security-policy"], url).toMatch(/default-src 'self'.*frame-ancestors 'none'/);
+      expect(res.headers["x-frame-options"], url).toBe("DENY");
+      expect(res.headers["x-content-type-options"], url).toBe("nosniff");
+      expect(res.headers["strict-transport-security"], url).toMatch(/max-age=\d+/);
+    }
+    const dev = Fastify();
+    registerSecurityHeaders(dev, { isProd: false });
+    dev.get("/api/health", async () => ({ ok: true }));
+    expect((await dev.inject({ method: "GET", url: "/api/health" })).headers["strict-transport-security"]).toBeUndefined(); // http in dev
+  });
+
+  it("the limit for everyone counts API routes together, a route's own limit apart, and never the site's files", async () => {
+    const app = Fastify();
+    await app.register(rateLimit, { global: true, max: 3, timeWindow: "1 minute" });
+    app.get("/api/a", async () => ({ ok: true }));
+    app.get("/api/b", async () => ({ ok: true }));
+    app.get("/api/own", limit(2, "1 minute"), async () => ({ ok: true }));
+    registerStatic(app, { dir: site, cardsDir: cards });
+    const status = async (url) => (await app.inject({ method: "GET", url })).statusCode;
+    expect([await status("/api/a"), await status("/api/b"), await status("/api/a"), await status("/api/b")]).toEqual([200, 200, 200, 429]);
+    expect([await status("/api/own"), await status("/api/own"), await status("/api/own")]).toEqual([200, 200, 429]);
+    for (let i = 0; i < 10; i++) expect(await status("/assets/app-abc123.js")).toBe(200);
+  });
+});
+
+describe("answers are sent compressed (compress.mjs)", () => {
+  it("the browser's Accept-Encoding picks brotli, then gzip, then nothing", () => {
+    expect([pickEncoding("gzip, deflate, br"), pickEncoding("gzip, deflate"), pickEncoding("br;q=0, gzip"), pickEncoding("identity"), pickEncoding(undefined)])
+      .toEqual(["br", "gzip", "gzip", null, null]);
+  });
+
+  it("a script of the site travels compressed and unpacks to the same file", async () => {
+    const app = Fastify();
+    registerStatic(app, { dir: site, cardsDir: cards });
+    const get = (url, encoding) => app.inject({ method: "GET", url, headers: encoding ? { "accept-encoding": encoding } : {} });
+
+    const br = await get("/assets/big-abc123.js", "gzip, br");
+    expect(br.headers["content-encoding"]).toBe("br");
+    expect(br.headers.vary).toBe("accept-encoding");
+    expect(br.rawPayload.length).toBeLessThan(BIG_SCRIPT.length / 10);
+    expect(Number(br.headers["content-length"])).toBe(br.rawPayload.length);
+    expect(brotliDecompressSync(br.rawPayload).toString()).toBe(BIG_SCRIPT);
+
+    const gz = await get("/assets/big-abc123.js", "gzip");
+    expect(gz.headers["content-encoding"]).toBe("gzip");
+    expect(gunzipSync(gz.rawPayload).toString()).toBe(BIG_SCRIPT);
+
+    const plain = await get("/assets/big-abc123.js");
+    expect(plain.headers["content-encoding"]).toBeUndefined();
+    expect(plain.body).toBe(BIG_SCRIPT);
+  });
+
+  it("a small file and an image are sent as they are", async () => {
+    const app = Fastify();
+    registerStatic(app, { dir: site, cardsDir: cards });
+    const get = (url) => app.inject({ method: "GET", url, headers: { "accept-encoding": "gzip, br" } });
+    const small = await get("/assets/app-abc123.js");
+    expect([small.headers["content-encoding"], small.body]).toEqual([undefined, "console.log(1)"]);
+    const image = await get("/assets/art-abc123.png");
+    expect([image.headers["content-encoding"], image.rawPayload.length]).toEqual([undefined, 5000]);
+  });
+
+  it("what a route answers is compressed too, when it is big enough", async () => {
+    const app = Fastify();
+    registerCompression(app);
+    const cardsList = { cards: Array.from({ length: 200 }, (_, i) => ({ id: `OP01-${i}`, name: "A card of the catalog" })) };
+    app.get("/api/cards", async () => cardsList);
+    app.get("/api/health", async () => ({ ok: true }));
+    const big = await app.inject({ method: "GET", url: "/api/cards", headers: { "accept-encoding": "br" } });
+    expect(big.headers["content-encoding"]).toBe("br");
+    expect(JSON.parse(brotliDecompressSync(big.rawPayload).toString())).toEqual(cardsList);
+    const small = await app.inject({ method: "GET", url: "/api/health", headers: { "accept-encoding": "br" } });
+    expect([small.headers["content-encoding"], small.json()]).toEqual([undefined, { ok: true }]);
+    const none = await app.inject({ method: "GET", url: "/api/cards" });
+    expect([none.headers["content-encoding"], none.json()]).toEqual([undefined, cardsList]);
   });
 });

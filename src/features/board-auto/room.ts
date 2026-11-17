@@ -13,6 +13,7 @@ import type { AutoGameState, PID } from "../../autosim/engine/state";
 import { currentRecord, getCardDb, setOnlineHooks, useAutoStore, type RoomChatLine, type SeatSetup } from "./autoStore";
 import type { DeckChoice } from "./decks";
 import { recordPlay, startRecording, type Recording } from "../replay/record";
+import { hasSavedRoom, rememberRoom as remember, savedCode } from "./savedRoom";
 
 interface RoomSeat { name: string; deck: { name: string; leaderId: string; main: string[]; deckId?: string } }
 interface RoomInfo {
@@ -34,7 +35,6 @@ interface RoomInfo {
 }
 
 const POLL_MS = 700;
-const SAVED_KEY = "sn-friend-game";
 
 let timer: ReturnType<typeof setInterval> | null = null;
 let polling = false;
@@ -52,15 +52,6 @@ async function call(path: string, init?: { method: string; body?: unknown }): Pr
   return { ...data, status: r.status };
 }
 
-function remember(code: string | null): void {
-  try {
-    if (code) localStorage.setItem(SAVED_KEY, code);
-    else localStorage.removeItem(SAVED_KEY);
-  } catch { /* storage off: a reload leaves the game */ }
-}
-function savedCode(): string | null {
-  try { return localStorage.getItem(SAVED_KEY); } catch { return null; }
-}
 
 /** The game from its first move: same result in both browsers. */
 function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; recording: Recording; seats: [SeatSetup, SeatSetup] } {
@@ -333,7 +324,7 @@ export async function resumeRoom(): Promise<void> {
   else if (useAutoStore.getState().game?.phase === "over") leaveRoom();
 }
 
-export const hasSavedRoom = (): boolean => savedCode() !== null;
+export { hasSavedRoom };
 
 /** "Rematch" at the end of a game: the new one starts when both have asked. */
 export async function askRematch(): Promise<void> {

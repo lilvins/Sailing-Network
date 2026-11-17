@@ -16,7 +16,6 @@ import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { NightSea } from "./NightSea";
 import { PixelBackdrop } from "./PixelBackdrop";
 import { formatBounty } from "../stats/format";
-import { useAutoStore } from "../board-auto/autoStore";
 import "./home.css";
 import "../profiles/profiles.css";
 import { Dock } from "../profiles/ProfilePages";
@@ -323,8 +322,12 @@ export function HomePage() {
             key={m.id}
             className={`hu-mode ${m.cls}`}
             onClick={() => {
-              if (m.view === "board-auto") useAutoStore.getState().newGame(m.id === "board-auto-ai");
-              setView(m.view);
+              if (m.view !== "board-auto") return setView(m.view);
+              // the rules engine and the cards' effects load now, not with the Home page
+              void import("../board-auto/autoStore").then(({ useAutoStore }) => {
+                useAutoStore.getState().newGame(m.id === "board-auto-ai");
+                setView(m.view);
+              });
             }}
           >
             <span className="hu-mode-badge">{m.badge}</span>

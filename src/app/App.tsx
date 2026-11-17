@@ -1,30 +1,37 @@
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect, type ComponentType } from "react";
 import { useUiStore, type View } from "./uiStore";
 import { useAuthStore } from "./authStore";
 import { usePresenceStore } from "../lib/presenceStore";
 import { LoginPage } from "../features/login/LoginPage";
 import { HomePage } from "../features/home/HomePage";
-import { DuelRoomPage } from "../features/duel-room/DuelRoomPage";
-import { MyProfile, DuelRecords } from "../features/profiles/ProfilePages";
-import { ProfileViewer } from "../features/profiles/ProfileViewer";
-import { Rankings } from "../features/profiles/Rankings";
-import { StatisticsPage } from "../features/social/StatisticsPage";
 import { MessagesLayer } from "../features/social/MessagesPopup";
-import { FriendsPage } from "../features/social/FriendsPage";
-import { DirectoryPage } from "../features/social/DirectoryPage";
-import { GlobalChatPage } from "../features/social/GlobalChatPage";
-import { MetaPage } from "../features/social/MetaPage";
-import { DeckBuilderPage } from "../features/deck-builder/DeckBuilderPage";
-import { MyDecksPage } from "../features/deck-builder/MyDecksPage";
-import { PopularDecklistsPage } from "../features/popular/PopularDecklistsPage";
-import { AdminPage } from "../features/admin/AdminPage";
-import { CreditsPage } from "../features/credits/CreditsPage";
-import { BoardPage } from "../features/board/BoardPage";
-import { BoardPage2 } from "../features/board/BoardPage2";
-import { BoardAutoPage } from "../features/board-auto/BoardAutoPage";
-import { hasSavedRoom } from "../features/board-auto/room";
-import { BoardBotPage } from "../features/board-bot/BoardBotPage";
-import { ReplayPage } from "../features/replay/ReplayPage";
+import { hasSavedRoom } from "../features/board-auto/savedRoom";
+
+/** A page that is its own piece of the site: its code is fetched the first time it opens.
+ *  Login and Home come with the first load; the tables bring the rules engine and the cards' effects. */
+function page<K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) {
+  return lazy(() => load().then((m) => ({ default: m[name] })));
+}
+const DuelRoomPage = page(() => import("../features/duel-room/DuelRoomPage"), "DuelRoomPage");
+const MyProfile = page(() => import("../features/profiles/ProfilePages"), "MyProfile");
+const DuelRecords = page(() => import("../features/profiles/ProfilePages"), "DuelRecords");
+const ProfileViewer = page(() => import("../features/profiles/ProfileViewer"), "ProfileViewer");
+const Rankings = page(() => import("../features/profiles/Rankings"), "Rankings");
+const StatisticsPage = page(() => import("../features/social/StatisticsPage"), "StatisticsPage");
+const FriendsPage = page(() => import("../features/social/FriendsPage"), "FriendsPage");
+const DirectoryPage = page(() => import("../features/social/DirectoryPage"), "DirectoryPage");
+const GlobalChatPage = page(() => import("../features/social/GlobalChatPage"), "GlobalChatPage");
+const MetaPage = page(() => import("../features/social/MetaPage"), "MetaPage");
+const DeckBuilderPage = page(() => import("../features/deck-builder/DeckBuilderPage"), "DeckBuilderPage");
+const MyDecksPage = page(() => import("../features/deck-builder/MyDecksPage"), "MyDecksPage");
+const PopularDecklistsPage = page(() => import("../features/popular/PopularDecklistsPage"), "PopularDecklistsPage");
+const AdminPage = page(() => import("../features/admin/AdminPage"), "AdminPage");
+const CreditsPage = page(() => import("../features/credits/CreditsPage"), "CreditsPage");
+const BoardPage = page(() => import("../features/board/BoardPage"), "BoardPage");
+const BoardPage2 = page(() => import("../features/board/BoardPage2"), "BoardPage2");
+const BoardAutoPage = page(() => import("../features/board-auto/BoardAutoPage"), "BoardAutoPage");
+const BoardBotPage = page(() => import("../features/board-bot/BoardBotPage"), "BoardBotPage");
+const ReplayPage = page(() => import("../features/replay/ReplayPage"), "ReplayPage");
 
 /**
  * App shell. Each ported page is full-screen (its own chrome), so there is no
@@ -182,7 +189,7 @@ export function App() {
   if (status === "loading") return <AppLoading />;
 
   // a visitor: the replay they have the link of, or the landing page
-  if (!user) return view === "replay" ? <ReplayPage /> : <LoginPage />;
+  if (!user) return view === "replay" ? <Suspense fallback={<AppLoading />}><ReplayPage /></Suspense> : <LoginPage />;
 
   // authenticated: bounce off login, and keep non-admins out of the admin area
   let effectiveView = view;
@@ -190,7 +197,9 @@ export function App() {
   if (view === "admin" && user.role !== "admin") effectiveView = "home";
   return (
     <>
-      <CurrentView view={effectiveView} />
+      <Suspense fallback={<AppLoading />}>
+        <CurrentView view={effectiveView} />
+      </Suspense>
       <MessagesLayer />
     </>
   );

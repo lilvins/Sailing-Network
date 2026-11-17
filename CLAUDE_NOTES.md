@@ -454,6 +454,36 @@ behaves was not seen live (the replay sits behind a human check).
 - Tests: `src/features/replay/record.test.ts` (every play of a recorded game
   equals the live state; take-backs; JSON round trip), `viewer.test.ts` (the
   controls on the store), the "replays" section of `tests/api-test.mjs`.
+- **What a replay may claim (2026-11-17)**: the server does not run the
+  engine, so it cannot tell a played game from a made-up record, and the link
+  is public. A record therefore never speaks for someone else. Friend game:
+  names, moves, chat and first player are the room's, and a record that ends
+  with another winner than both players reported is dropped (the result
+  still counts). Sent in by a browser (`POST /api/replays`, AI or one
+  screen): `sentInRecord` puts the sender's account name on the person's
+  seat ("<name>'s guest" on a second one), a bot name on an AI seat, and
+  keeps no chat. Still open: the events themselves are the browser's word;
+  only an engine on the server closes that (same work as ranked).
+
+## Release fixes — security and weight (2026-11-17)
+- **Security** (`server/security.mjs`): every answer carries the content
+  policy (this origin only; inline styles allowed because React writes style
+  attributes) and the other headers. `limit(max, window)` gives a route its
+  own rate limit; in production every other API route shares 900 requests a
+  minute per visitor (`SN_RATE_LIMIT`, 0 in dev so tests and the bot ladder
+  run). The site's files are never counted: a deck page asks for hundreds of
+  card images. A new page that loads anything from another origin must be
+  added to the policy, or the browser blocks it without a word in the UI.
+- **Weight**: `App.tsx` loads every page but Login and Home on demand
+  (`page(...)`); the first script went from 2,584 kB to 268 kB, and the
+  rules engine with the cards' effects (1.9 MB) arrives when a table opens.
+  Nothing the first load imports may import `autoStore` or `room.ts`
+  (`savedRoom.ts` exists for that). **Stylesheets stay in the first load**,
+  in the old order, through `src/app/pageStyles.ts`: one that arrived with
+  its page would land after the pixel UI and win over it. A new page adds
+  its stylesheet there. The server compresses what it sends
+  (`server/compress.mjs`: brotli or gzip; files once and kept, API answers
+  each time) and `/api/cards` carries an ETag, so a reload costs a 304.
 
 ## QA bot — automatic, repeatable bug hunter (`npm run qa:bot`)
 `scripts/qa-bot.mjs` (Playwright; dev server must be up). Two parts:

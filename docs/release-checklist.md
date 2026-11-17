@@ -1,55 +1,77 @@
 # Release checklist
 
-Audit of 2026-11-02 on branch `bot-ladder`. Typecheck, 556 unit tests, 51 API tests
-and the production build all pass; the problems below are ones those tests don't see.
-Load limits were not measured and legal exposure needs a lawyer.
+Audit of 2026-11-17 on `main` at `644e002` (the audit before it: 2026-11-02). Both type
+checks, 680 unit tests, 91 API checks and the production build pass; the problems below
+are ones those tests don't see. Load limits were not measured. CI on GitHub was not
+looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
-## Decisions needed first
+## Decisions (Vins, 2026-11-17)
 
-- [ ] **Bots at release.** Remove them (`npm run bots:purge -- --yes`) or show them
-      clearly as bots. They look like real people: they must not count as "captains
-      aboard", sit in the public ladder or feed the meta as if they were humans.
-- [ ] **Made-up seed games.** 7,406 rows with `source=''` in the dev DB (mostly
-      invented by `seed:ladder`) mix with real games in Meta and "Matches logged".
-- [ ] **Card art.** `CLAUDE.md:116` says to revisit it before any public release;
-      images come from dotgg through a proxy with a spoofed browser identity (`server/card-art.mjs`).
-- [ ] **Hosting target** (decides the deploy work and whether SQLite is enough).
+- [x] **Card art:** the card images stay (dotgg, `npm run art`). ST37-001 and ST38-001
+      have no image there yet: they stay drawn in SVG.
+- [x] **Ranked:** it must be a game both players share, run through the server. It may
+      stay locked during the beta (`RANKED_OPEN` in `DuelRoomPage.tsx`).
+- [x] **Database:** production starts from a clean one (`seed:cards` + `seed:admin`).
+      That also leaves out the 40 bots, the demo accounts and the made-up games.
+- [x] **Replays:** public by link; the players' names and the chat show to whoever has it.
+- [ ] **Hosting target:** chosen last. It needs one persistent disk.
+- [ ] **Bots online:** a clean database has none. If they are ever seeded in production
+      they must show as bots: today nothing in the API or the pages tells them apart.
 
 ## Blockers
 
-- [ ] **Two people cannot play ranked.** `DuelRoomPage.tsx:289-291` opens a local board
-      with no session; nothing in `src/` calls `/ready`, `/complete` or `/cancel`, and
-      there is no realtime game sync. Build it, or hide the pool and launch without ranked.
+- [ ] **Two people cannot play ranked.** The pool is closed (`RANKED_OPEN = false`).
+      `src/` only calls `/me/queue/join`, `/leave` and `/status`: nothing calls `/ready`,
+      `/complete` or `/cancel`, and a ranked game has no table of its own. Friend games
+      already share a table through `server/rooms.mjs`; ranked needs the same, with the
+      result written by the server.
 - [ ] **Colluding accounts can still farm rating.** A game counts when both players report
-      the same winner, so two accounts of one person can agree. Only a game run by the
-      server closes this; do it together with the ranked game sync above.
-- [ ] **Start production from a clean DB.** The dev DB holds demo accounts with the public
-      password `captain123`: the build and the seeds no longer ship them, but copying this
-      DB online would.
-- [ ] **Deploy path: the server side is ready, the host is not chosen.** Still to do: pick
-      the host (it needs one persistent disk), copy `public/cards` there (`SN_CARDS_DIR`),
-      set up database backups, and try the Docker image on the host (it was not built here).
+      the same winner. Only a game the server runs closes this; do it with the item above.
+- [ ] **Deploy.** Pick the host, copy `public/cards` there (2,973 files, 666 MB,
+      `SN_CARDS_DIR`), set up database backups, try the Docker image (never built: no
+      Docker here), and get CI running.
 - [ ] **Legal pages and account basics.** No privacy policy, terms, account deletion,
-      password reset or email verification.
+      password reset or email verification anywhere in `src/` or `server/`.
 
 ## Important
 
-- [ ] `/api/queue`, `/api/match-sessions/*` and `/api/queue/tick` work without login.
-- [ ] `registerBotGames` is never called: Play vs Bot records get a 404 and the learning
-      loop has no data. Add auth before wiring it (it allows anonymous writes).
-- [ ] Only signup, login and chat have a rate limit.
-- [ ] No CSP or security headers (static files send `nosniff` only).
-- [ ] The server does not compress responses: the host's proxy must (2.5 MB main script).
-- [ ] No block, report or delete for DMs and chat.
-- [ ] SQLite: no index on `matches.created_at`, one writer process only, the ladder replays the whole table after every new match, meta pages rescan it.
-- [ ] Duel Room shows invented tables; Join and Host Duel do nothing; the Messages badge is
-      a fixed "3"; format, region and type are not sent; the format list stops at OP16.
-- [ ] 2.5 MB main JS bundle (no code splitting); `/api/cards` is ~1.6 MB uncompressed, no cache.
-- [ ] The app has one URL: no deep links, and refresh returns to Home.
-- [ ] Home cards have no accessible name.
+- [ ] A replay's events are still the browser's word: the server does not run the
+      engine. A player can send in a made-up game of their own; closing it needs the
+      engine on the server, the same work as ranked.
+- [ ] No block, report or delete for DMs and chat (admins can ban an account).
+- [ ] SQLite: no index on `matches.created_at`; one writer process only; the ladder
+      reads every counted row again after each new match (`server/stats/index.mjs:30`).
+- [ ] The app has two links only, `?duel=CODE` and `?replay=ID`. Any other page has no
+      address, and a refresh returns to Home.
+- [ ] `registerBotGames` is still never called: Play vs Bot records get a 404. It allows
+      anonymous writes, so add a session before wiring it.
+- [ ] `/api/stats` (public) counts every account and every match row, bots and made-up
+      games included. Gone with a clean database.
+- [ ] Rules questions still open: three on OP18 cards and four older ones (`_Reports/`).
+- [ ] The meta decks are those of 2026-10-27 (optcgwebsim's `/api/meta` answered with one
+      Leader on 2026-11-15).
+- [ ] Never tried: a phone, a long game between two people, a replay after a reload.
 
 ## Done
 
+- [x] Weight (2026-11-17): the first script is 268 kB (72 kB on the wire), it was
+      2,584 kB: every page but Login and Home loads on demand, the rules engine with
+      the cards' effects when a table opens. The server compresses what it sends and
+      `/api/cards` answers 304 to a browser that already has the catalog.
+- [x] Replays cannot speak for someone else (2026-11-17): a record a browser sends in
+      carries the sender's account name, a bot's name and no chat; a friend game's
+      record must end with the winner both players reported.
+- [x] Security (2026-11-17): `/api/queue`, `/api/queue/tick` and `/api/match-sessions/*`
+      need a session; every answer carries a content policy and the other security
+      headers (`server/security.mjs`); in production one visitor gets 900 API requests
+      a minute (`SN_RATE_LIMIT`), and the writes that can be repeated without end (DMs,
+      friend requests, decks, duel tables, joining with a password) have their own limit.
+- [x] Home mode cards and tiles have their text as accessible name (2026-11-17 audit).
+- [x] Duel Room (2026-11-10/11): the tables are the real open duels, Host and Join work,
+      invitation code and link, formats up to OP18, the format is sent and checked.
+- [x] Friend games are recorded in Duel Records (`source='friend'`, out of ladder and meta).
+- [x] Finished games are kept as replays, public by link (2026-11-17).
+- [x] OP18: 119 cards, all automatic; 2,971 cards, none partial or unsupported.
 - [x] Deploy, server side (2026-11-10, `server/README.md` → Production): in production the
       server listens on every interface, serves the built site and the card images
       (`static.mjs`), refuses to start without a real `COOKIE_SECRET`, allows no other
