@@ -11,6 +11,7 @@ import "@fontsource/sora/600.css";
 import "@fontsource/sora/700.css";
 import "@fontsource/sora/800.css";
 import "./index.css";
+import "./app/pageStyles";
 import { App } from "./app/App.tsx";
 // after App (and every page's CSS): the site-wide pixel UI restyles them
 import "@fontsource/silkscreen/700.css";
@@ -19,6 +20,18 @@ import "./features/pixel/index.css";
 import "./features/pixel/percent-glyph.css";
 
 import { ErrorBoundary } from "./app/ErrorBoundary";
+
+// A page's code is fetched when the page opens. After a new release the old
+// file names are gone: load the site again, once, instead of showing an error.
+window.addEventListener("vite:preloadError", (event) => {
+  const KEY = "sn-reloaded-for-release";
+  try {
+    if (sessionStorage.getItem(KEY)) return; // already tried: let the error show
+    sessionStorage.setItem(KEY, "1");
+  } catch { return; }
+  event.preventDefault();
+  window.location.reload();
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

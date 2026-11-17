@@ -7,8 +7,9 @@
 // (a missing image must not come back as an HTML page).
 
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { extname, join, resolve, sep } from "node:path";
+import { MIN_BYTES, compressible, pack, pickEncoding } from "./compress.mjs";
 
 const TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -62,6 +63,22 @@ async function fileStat(path) {
 
 const CARD_IMAGE = /^\/cards\/([A-Z0-9]+-\d+)\.webp$/;
 
+/** A bigger text file than this is sent as it is (none of the build comes close). */
+const MAX_PACKED_BYTES = 8_000_000;
+/** The files of the site, compressed: each one once per version and encoding. */
+const packedFiles = new Map();
+
+function packedFile(path, s, encoding) {
+  const key = `${path}|${s.mtimeMs}|${s.size}|${encoding}`;
+  let packed = packedFiles.get(key);
+  if (!packed) {
+    packed = readFile(path).then((bytes) => pack(bytes, encoding, true));
+    packedFiles.set(key, packed);
+    packed.catch(() => packedFiles.delete(key));
+  }
+  return packed;
+}
+
 /**
  * Registers the site on `app`. `dir` is the build folder; `cardsDir`, when
  * given, is where /cards/<file> is read from instead of dir/cards.
@@ -78,7 +95,18 @@ export function registerStatic(app, { dir, cardsDir, cardFace }) {
     reply.header("last-modified", modified);
     reply.header("x-content-type-options", "nosniff");
     if (req.headers["if-modified-since"] === modified) return reply.code(304).send();
-    reply.type(TYPES[extname(path).toLowerCase()] ?? "application/octet-stream");
+    const type = TYPES[extname(path).toLowerCase()] ?? "application/octet-stream";
+    reply.type(type);
+    if (compressible(type) && s.size >= MIN_BYTES && s.size <= MAX_PACKED_BYTES) {
+      reply.header("vary", "accept-encoding");
+      const encoding = pickEncoding(req.headers["accept-encoding"]);
+      if (encoding) {
+        const packed = await packedFile(path, s, encoding);
+        reply.header("content-encoding", encoding);
+        reply.header("content-length", packed.length);
+        return req.method === "HEAD" ? reply.send() : reply.send(packed);
+      }
+    }
     reply.header("content-length", s.size);
     if (req.method === "HEAD") return reply.send();
     return reply.send(createReadStream(path));

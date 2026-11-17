@@ -2,6 +2,7 @@
 // Accounts, sessions (httpOnly cookie), roles (user/admin), admin user management.
 // In production it also serves the built site (static.mjs); settings in config.mjs.
 
+import { createHash } from "node:crypto";
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
 import cors from "@fastify/cors";
@@ -14,6 +15,7 @@ import { registerRooms } from "./rooms.mjs";
 import { registerReplays } from "./replays.mjs";
 import { registerStatic } from "./static.mjs";
 import { limit, registerSecurityHeaders } from "./security.mjs";
+import { registerCompression } from "./compress.mjs";
 import { cardFaceSvg } from "./cardFace.mjs";
 import { loadConfig } from "./config.mjs";
 import {
@@ -67,6 +69,7 @@ await app.register(cookie, {
 // every route with no limit of its own shares one count per visitor (config.rateLimit, 0 = off)
 await app.register(rateLimit, { global: config.rateLimit > 0, max: config.rateLimit || 900, timeWindow: "1 minute" });
 registerSecurityHeaders(app, { isProd });
+registerCompression(app);
 
 // ---- helpers ----
 function setSessionCookie(reply, token) {
@@ -684,9 +687,14 @@ app.get("/api/cards", async (req, reply) => {
       : Number(a.id.split("-")[1]) - Number(b.id.split("-")[1])
   );
   // revalidate every load: after `npm run seed:cards` the new sets must show up at once
-  // (an hour of max-age kept serving the old catalog — "unknown card OP17-089")
+  // (an hour of max-age kept serving the old catalog — "unknown card OP17-089").
+  // The tag names this exact catalog: a browser that already has it gets a 304, not 1.6 MB.
+  const body = JSON.stringify({ cards: rows.map(cardRowToClient) });
+  const tag = `W/"${createHash("sha1").update(body).digest("base64url")}"`;
   reply.header("Cache-Control", "no-cache");
-  return reply.send({ cards: rows.map(cardRowToClient) });
+  reply.header("ETag", tag);
+  if (req.headers["if-none-match"] === tag) return reply.code(304).send();
+  return reply.type("application/json; charset=utf-8").send(body);
 });
 
 app.get("/api/cards/:id", async (req, reply) => {

@@ -455,6 +455,13 @@ try {
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
 
+  section("Weight");
+  const catalog = await fetch(`${BASE}/api/cards`, { headers: { "accept-encoding": "identity" } });
+  const tag = catalog.headers.get("etag");
+  check("the card catalog carries a tag", catalog.status === 200 && !!tag);
+  const catalogAgain = await fetch(`${BASE}/api/cards`, { headers: { "if-none-match": tag ?? "" } });
+  check("a browser that already has it gets a 304 and no body", catalogAgain.status === 304 && (await catalogAgain.text()) === "");
+
   section("Security");
   for (const [method, path] of [["get", "/api/queue"], ["get", "/api/match-sessions/active"], ["get", "/api/match-sessions/nosuch"], ["post", "/api/queue/tick"]]) {
     r = await client()[method](path);
