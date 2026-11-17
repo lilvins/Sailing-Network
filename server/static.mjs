@@ -120,7 +120,9 @@ export function registerStatic(app, { dir, cardsDir, cardFace }) {
       return reply.code(400).send({ error: "Bad request" });
     }
     const isApi = urlPath === "/api" || urlPath.startsWith("/api/");
-    if (isApi || (req.method !== "GET" && req.method !== "HEAD") || urlPath.includes("\0")) {
+    // dist/_server is the server's own (the rules engine it runs): not a file of the site
+    const isServers = urlPath === "/_server" || urlPath.startsWith("/_server/");
+    if (isApi || isServers || (req.method !== "GET" && req.method !== "HEAD") || urlPath.includes("\0")) {
       return reply.code(404).send({ error: "Not found" });
     }
 
