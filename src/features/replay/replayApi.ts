@@ -8,14 +8,16 @@ export interface ReplaySummary {
   /** A friend game, a game against the AI, or two players at one screen. */
   source: "friend" | "ai" | "local";
   format: string;
-  /** Seat A then seat B; `userId` = the account that played it (null: the AI, or nobody's own seat). */
+  /** Seat A then seat B. */
   seats: [ReplaySeatSummary, ReplaySeatSummary];
+  /** The seat the person asking played, when exactly one was theirs (null: a guest, the AI's game, one screen). */
+  viewerSeat: PID | null;
   winner: PID | null;
   firstPlayer: PID;
   turns: number;
   plays: number;
 }
-export interface ReplaySeatSummary { pid: PID; name: string; leaderId: string; userId: string | null }
+export interface ReplaySeatSummary { pid: PID; name: string; leaderId: string }
 export interface SavedReplay extends ReplaySummary { record: ReplayRecord }
 
 /** Sends a finished game in; the replay's id, or null when it could not be kept. */
@@ -30,7 +32,7 @@ export async function sendReplay(record: ReplayRecord): Promise<string | null> {
   }
 }
 
-/** Throws with the reason when the replay cannot be opened. */
+/** Needs no account: whoever has the link watches. Throws with the reason when the replay cannot be opened. */
 export async function fetchReplay(id: string): Promise<SavedReplay> {
   const r = await fetch(`/api/replays/${encodeURIComponent(id)}`, { credentials: "include" });
   const data = (await r.json().catch(() => ({}))) as { replay?: SavedReplay; error?: string };

@@ -650,7 +650,7 @@ app.post(
 registerCardArt(app);
 await registerWelcome(app);
 registerRooms(app, requireUser);
-registerReplays(app, requireUser);
+registerReplays(app, requireUser, currentUser);
 
 // ---- card catalog (our own DB; seeded by server/seed-cards.mjs) ----
 // Maps a `cards` row to the frontend Card shape (parse JSON cols, set_code->set).

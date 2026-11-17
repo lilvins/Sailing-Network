@@ -637,11 +637,14 @@ function GameScreen() {
   // captain's avatar (favourite leader + colour); anyone else shows their
   // deck's Leader art
   const [captains, setCaptains] = useState<DirectoryUser[]>([]);
+  /** A visitor watching a replay from its link has no account: nothing of the signed-in site is asked for or shown. */
+  const signedIn = useAuthStore((s) => !!s.user);
   useEffect(() => {
+    if (!signedIn) return;
     let alive = true;
     api.directory().then(({ users }) => { if (alive) setCaptains(users); }).catch(() => {});
     return () => { alive = false; };
-  }, []);
+  }, [signedIn]);
   const avatarOf = (pid: PID) => {
     const name = seatName(pid).toLowerCase();
     const u = captains.find((c) => c.username.toLowerCase() === name || c.displayName.toLowerCase() === name);
@@ -2902,9 +2905,9 @@ function GameScreen() {
         >
           ↶ Take back last move
         </button>}
-        <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
+        {signedIn && <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
           Messages{unreadLetters > 0 ? ` (${unreadLetters})` : ""}
-        </button>
+        </button>}
         {!inOnlineGame && <button className="ba-btn ghost" data-act="exit" onClick={goBack}>← Back</button>}
       </div>
 

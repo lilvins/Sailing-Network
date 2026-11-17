@@ -31,6 +31,8 @@ import { ReplayPage } from "../features/replay/ReplayPage";
  * shared nav bar — navigation happens via the in-page controls + uiStore.
  * Auth gates everything: until /auth/me resolves we show a loader; logged-out
  * users only ever see the LoginPage; the admin area is admin-only.
+ * The one exception is a replay's link (`/?replay=<id>`): whoever has it
+ * watches, account or not.
  */
 
 const LABELS: Partial<Record<View, string>> = {
@@ -163,23 +165,24 @@ export function App() {
   // keep navigation in sync with auth once it resolves
   useEffect(() => {
     if (status !== "ready") return;
-    if (!user && view !== "login") setView("login");
+    if (!user && view !== "login" && view !== "replay") setView("login");
     else if (user && view === "login") setView("home");
   }, [status, user, view, setView]);
 
   // a friend game left by a reload leads straight back to the table
   const signedIn = status === "ready" && !!user;
   useEffect(() => {
-    if (!signedIn) return;
+    if (status !== "ready") return;
     const link = new URLSearchParams(window.location.search);
-    if (hasSavedRoom()) setView("board-auto");
-    else if (link.get("replay")) openReplay(link.get("replay")!); // a replay's link
-    else if (link.has("duel")) setView("duel-room"); // an invitation link
-  }, [signedIn, setView, openReplay]);
+    if (signedIn && hasSavedRoom()) setView("board-auto");
+    else if (link.get("replay")) openReplay(link.get("replay")!); // a replay's link: no account needed
+    else if (signedIn && link.has("duel")) setView("duel-room"); // an invitation link
+  }, [status, signedIn, setView, openReplay]);
 
   if (status === "loading") return <AppLoading />;
 
-  if (!user) return <LoginPage />;
+  // a visitor: the replay they have the link of, or the landing page
+  if (!user) return view === "replay" ? <ReplayPage /> : <LoginPage />;
 
   // authenticated: bounce off login, and keep non-admins out of the admin area
   let effectiveView = view;

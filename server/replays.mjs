@@ -3,7 +3,14 @@
 // A record is what happened on the table: the state after the opening hands,
 // every event after it, and where each play ends. The server does not run the
 // engine, so it stores the record as the browser sent it, after checking that
-// its parts line up. Anyone signed in who has the link can watch.
+// its parts line up.
+//
+// Watching needs no account: whoever has the link watches, as on Duelingbook.
+// So GET /api/replays/:id is the one route here that asks for no session. It
+// only reads, it answers with that one replay, and the id is the protection:
+// 10 random letters (about 49 bits), never a counter, with a limit on how fast
+// one address can try ids. No account id is ever in an answer. Sending a replay
+// in, and the list of one's own, still need the session.
 
 import { randomInt } from "node:crypto";
 import { z } from "zod";
@@ -19,6 +26,7 @@ const MAX_PLAYS = 20_000;
 const MAX_OWN_REPLAYS = 200;
 const ID_LETTERS = "abcdefghjkmnpqrstuvwxyz23456789"; // no 0/o or 1/i/l
 const ID_LENGTH = 10;
+const ID_SHAPE = new RegExp(`^[${ID_LETTERS}]{${ID_LENGTH}}$`);
 
 const seatSchema = z.object({
   pid: z.enum(SEATS),
@@ -77,15 +85,19 @@ export async function saveReplay({ source, format = "", savedBy = null, users = 
   return id;
 }
 
-const summary = (r) => ({
+/** What a list or a viewer is told about a replay. `viewerId`: the account asking, if any —
+ *  it only says which seat was theirs, so that no account id leaves the server. */
+const summary = (r, viewerId = null) => ({
   id: r.id,
   createdAt: r.created_at,
   source: r.source,
   format: r.format,
   seats: [
-    { pid: "seatA", name: r.name_a, leaderId: r.leader_a, userId: r.user_a },
-    { pid: "seatB", name: r.name_b, leaderId: r.leader_b, userId: r.user_b },
+    { pid: "seatA", name: r.name_a, leaderId: r.leader_a },
+    { pid: "seatB", name: r.name_b, leaderId: r.leader_b },
   ],
+  /** The seat the asker played, when exactly one was theirs. */
+  viewerSeat: !viewerId || (r.user_a === viewerId) === (r.user_b === viewerId) ? null : r.user_a === viewerId ? "seatA" : "seatB",
   winner: r.winner,
   firstPlayer: r.first_player,
   turns: r.turns,
@@ -93,7 +105,8 @@ const summary = (r) => ({
 });
 const SUMMARY_COLUMNS = "id, created_at, source, format, user_a, user_b, name_a, name_b, leader_a, leader_b, winner, first_player, turns, plays";
 
-export function registerReplays(app, requireUser) {
+/** `currentUser(req)`: the session's account, or null — for the one route that works without one. */
+export function registerReplays(app, requireUser, currentUser) {
   // a game against the AI or at one screen: the browser that played it sends it in
   app.post("/api/replays", { bodyLimit: RECORD_BODY_LIMIT, config: { rateLimit: { max: 30, timeWindow: "10 minutes" } } }, async (req, reply) => {
     const user = await requireUser(req, reply);
@@ -123,14 +136,15 @@ export function registerReplays(app, requireUser) {
       `SELECT ${SUMMARY_COLUMNS} FROM replays WHERE saved_by = ? OR user_a = ? OR user_b = ? ORDER BY created_at DESC LIMIT ?`,
       [user.id, user.id, user.id, limit],
     );
-    return reply.send({ replays: rows.map(summary) });
+    return reply.send({ replays: rows.map((r) => summary(r, user.id)) });
   });
 
-  app.get("/api/replays/:id", async (req, reply) => {
-    const user = await requireUser(req, reply);
-    if (!user) return;
-    const row = await get(`SELECT * FROM replays WHERE id = ?`, [String(req.params.id).toLowerCase()]);
+  // public: the link is the key (see the top of this file)
+  app.get("/api/replays/:id", { config: { rateLimit: { max: 60, timeWindow: "1 minute" } } }, async (req, reply) => {
+    const id = String(req.params.id).toLowerCase();
+    const row = ID_SHAPE.test(id) ? await get(`SELECT * FROM replays WHERE id = ?`, [id]) : null;
     if (!row) return reply.code(404).send({ error: "This replay does not exist" });
-    return reply.send({ replay: { ...summary(row), record: JSON.parse(row.record) } });
+    const viewer = await currentUser(req);
+    return reply.send({ replay: { ...summary(row, viewer?.id ?? null), record: JSON.parse(row.record) } });
   });
 }
