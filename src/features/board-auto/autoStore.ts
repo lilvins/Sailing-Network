@@ -23,7 +23,8 @@ import { agentStep, actorOf, type Agent } from "../../autosim/ai/agent";
 import { createProAgent, type ProAgent } from "../../autosim/ai/pro";
 import { makePlan, type AiPlan } from "./aiPlan";
 import { clearGame, loadGame, saveGame } from "./savedGame";
-import { playsIn, recordPlay, rewindRecording, startRecording, type Recording } from "../replay/record";
+import { finishRecording, playsIn, recordPlay, rewindRecording, startRecording, type Recording, type ReplayRecord, type ReplaySeat } from "../replay/record";
+import { sendReplay } from "../replay/replayApi";
 import { makeCardDb } from "./compile";
 import type { DeckChoice } from "./decks";
 
@@ -155,6 +156,8 @@ interface AutoStoreState {
   /** The game as it will be watched again (src/features/replay): one play per move.
    *  null = this game cannot be recorded whole (a reload cut its log). */
   recording: Recording | null;
+  /** The finished game's replay on the server, once it is saved there. */
+  replayId: string | null;
   /** A player asked to take back their last move; the opponent must answer. */
   /** `eventsLen`: friend games, where the move being taken back starts in `events`. */
   undoRequest: { by: PID; eventsLen?: number } | null;
@@ -203,6 +206,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   confirmPicks: readConfirmPicks(),
   history: [],
   recording: null,
+  replayId: null,
   undoRequest: null,
   aiPlan: null,
   online: null,
@@ -404,6 +408,30 @@ if (import.meta.env.DEV && typeof window !== "undefined") (window as unknown as 
 function makeAgents(seats: SeatSetup[], seed: string): Record<PID, ProAgent> {
   return Object.fromEntries(seats.filter((s) => s.controller === "ai").map((s) => [s.pid, createProAgent(`${seed}:${s.pid}`)]));
 }
+
+/** The game on the table as a replay record; null when it was not recorded whole. */
+export function currentRecord(): ReplayRecord | null {
+  const { recording, seats, events, online } = useAutoStore.getState();
+  if (!recording || !seats) return null;
+  const seat = (s: SeatSetup): ReplaySeat => ({
+    pid: s.pid, name: s.name, controller: s.controller === "ai" ? "ai" : "human", deckName: s.deck.name, leaderId: s.deck.leaderId,
+  });
+  return finishRecording(recording, [seat(seats[0]), seat(seats[1])], events, online?.chat ?? []);
+}
+
+// a game that ends is kept as a replay. A friend game is saved by its room
+// (room.ts sends the record with the result); any other is sent in from here.
+useAutoStore.subscribe((s, prev) => {
+  if (s.game === prev.game) return;
+  if (s.game?.phase !== "over") {
+    if (s.replayId) useAutoStore.setState({ replayId: null }); // another game, or a take-back
+    return;
+  }
+  if (prev.game?.phase === "over" || s.online) return;
+  const record = currentRecord();
+  const game = s.game;
+  if (record && playsIn(record) > 0) void sendReplay(record).then((id) => { if (id && useAutoStore.getState().game === game) useAutoStore.setState({ replayId: id }); });
+});
 
 // keep the game in progress across a page reload (savedGame.ts); a finished or abandoned one is dropped
 useAutoStore.subscribe((s, prev) => {

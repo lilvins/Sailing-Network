@@ -10,7 +10,7 @@ import type { PlayerIntent } from "../../autosim/engine/intents";
 import { takeBackStart } from "../../autosim/engine/takeBack";
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, PID } from "../../autosim/engine/state";
-import { getCardDb, setOnlineHooks, useAutoStore, type RoomChatLine, type SeatSetup } from "./autoStore";
+import { currentRecord, getCardDb, setOnlineHooks, useAutoStore, type RoomChatLine, type SeatSetup } from "./autoStore";
 import type { DeckChoice } from "./decks";
 import { recordPlay, startRecording, type Recording } from "../replay/record";
 
@@ -28,6 +28,7 @@ interface RoomInfo {
   rematchVotes: PID[];
   leftSeats: PID[];
   nextCode: string | null;
+  replayId: string | null;
   moves: PlayerIntent[];
   chat: RoomChatLine[];
 }
@@ -40,14 +41,14 @@ let polling = false;
 /** Moves go out one at a time, in the order they were played. */
 let sending: Promise<void> = Promise.resolve();
 
-async function call(path: string, init?: { method: string; body?: unknown }): Promise<{ room?: RoomInfo; status: number; error?: string }> {
+async function call(path: string, init?: { method: string; body?: unknown }): Promise<{ room?: RoomInfo; replayId?: string | null; status: number; error?: string }> {
   const r = await fetch(path, {
     method: init?.method ?? "GET",
     credentials: "include",
     headers: init?.body !== undefined ? { "Content-Type": "application/json" } : undefined,
     body: init?.body !== undefined ? JSON.stringify(init.body) : undefined,
   });
-  const data = (await r.json().catch(() => ({}))) as { room?: RoomInfo; error?: string };
+  const data = (await r.json().catch(() => ({}))) as { room?: RoomInfo; replayId?: string | null; error?: string };
   return { ...data, status: r.status };
 }
 
@@ -100,13 +101,22 @@ function startPlaying(room: RoomInfo): void {
   reportIfOver(room.code);
 }
 
-/** Tells the server who won, once per game: it records the game when both browsers agree. */
+/** Tells the server who won, once per game: it records the game when both browsers agree.
+ *  The game's record goes with it, and becomes the replay (server/replays.mjs). */
 const reported = new Set<string>();
 function reportIfOver(code: string): void {
   const winner = useAutoStore.getState().game?.winner;
   if (!winner || reported.has(code)) return;
   reported.add(code);
-  void call(`/api/rooms/${code}/result`, { method: "POST", body: { winner } }).catch(() => {});
+  void call(`/api/rooms/${code}/result`, { method: "POST", body: { winner, record: currentRecord() ?? undefined } })
+    .then((r) => { if (r.replayId) showReplay(code, r.replayId); })
+    .catch(() => {});
+}
+
+/** The room's game has a replay: the game-over panel can link to it. */
+function showReplay(code: string, replayId: string): void {
+  const { online, game, replayId: shown } = useAutoStore.getState();
+  if (online?.code === code && game?.phase === "over" && shown !== replayId) useAutoStore.setState({ replayId });
 }
 
 /** Works out where the take-back would return to, so the player who has to
@@ -208,6 +218,7 @@ async function pollOnce(code: string): Promise<void> {
       return;
     }
     if (!r.room) return; // a network hiccup: the next tick tries again
+    if (r.room.replayId) showReplay(code, r.room.replayId);
     if (followRematch(r.room)) return;
     if (r.room.status === "playing" && !now.game) {
       startPlaying(r.room); // someone took the seat: to the table, from wherever the host is
