@@ -3,9 +3,20 @@
 // and the ordered list of moves. Each browser replays them with AUTOSIM.
 // The server does not run the engine: it checks who sends a move and its
 // order, not whether it is legal. Rooms live in memory: a restart ends them.
+//
+// A RANKED table is a room too, so both browsers follow it the same way, but
+// the server made it (seats, decks, seed, who goes first: none of it comes
+// from a player) and plays it: each move goes through the rules engine
+// (engine.mjs), an illegal one is refused, and when the game ends the server
+// writes the result and the replay from its own events. No take-back, no
+// rematch, no result reported by a browser. A player who stops asking for
+// the table has left it and loses. Both browsers still hold the whole game
+// (both hands, both decks): the server stops a wrong move, not a look.
 import { randomBytes, randomInt } from "node:crypto";
 import { z } from "zod";
-import { createMatch, getDeck } from "./store.mjs";
+import { get } from "./db.mjs";
+import { cancelMatchSession, completeMatchSession, createMatch, getDeck, getMatchSession, setUserPresence } from "./store.mjs";
+import { cardDb, loadEngine, mainOf } from "./engine.mjs";
 import { RECORD_BODY_LIMIT, parseRecord, recordWinner, saveReplay } from "./replays.mjs";
 import { limit } from "./security.mjs";
 
@@ -39,6 +50,11 @@ const rematchSchema = z.object({ action: z.enum(["request", "leave"]) });
 const resultSchema = z.object({ winner: z.enum(SEATS) });
 
 const rooms = new Map();
+/** Ranked tables: match session id → room code; and the ones being set up right now. */
+const rankedCodes = new Map();
+const openingRanked = new Map();
+/** A ranked game that started before this is not in memory any more: a restart lost it. */
+const BOOTED_AT = Date.now();
 
 function newCode() {
   for (;;) {
@@ -72,6 +88,8 @@ function toClient(room, seat, after, chatAfter) {
     nextCode: room.next,
     /** The finished game, to watch again (null: not over, or no record was kept). */
     replayId: room.replayId,
+    /** A ranked table: the server plays it (no take-back, no rematch, no result to report). */
+    ranked: !!room.ranked,
     moves: room.moves.slice(after),
     chat: room.chat.slice(chatAfter),
   };
@@ -95,6 +113,10 @@ const seatName = (user) => user.display_name || user.username;
 function newRoom(now, fields) {
   return {
     code: newCode(), touchedAt: now, hostSeenAt: now,
+    /** When each seat last asked for the room (a ranked table: who is still there). */
+    seenAt: [now, now],
+    /** A ranked table: the game as the server plays it (openRankedTable). */
+    ranked: null,
     seed: `room-${randomBytes(9).toString("hex")}`,
     firstPlayer: SEATS[randomInt(2)],
     moves: [], chat: [], epoch: 0, undoBy: null,
@@ -147,6 +169,118 @@ async function recordFriendGame(room) {
   }));
 }
 
+// ---------------------------------------------------------------- ranked
+
+const accountName = async (userId) => seatName(await get(`SELECT username, display_name FROM users WHERE id=?`, [userId]));
+
+/** Sets up the table of a ranked match: the server deals the game. Throws when a deck is not legal. */
+async function openRankedTable(session) {
+  const [engine, db, decks, names] = await Promise.all([
+    loadEngine(), cardDb(),
+    Promise.all([getDeck(session.host_deck_id), getDeck(session.opponent_deck_id)]),
+    Promise.all([accountName(session.host_user_id), accountName(session.opponent_id)]),
+  ]);
+  const userIds = [session.host_user_id, session.opponent_id];
+  const seats = decks.map((deck, i) => ({
+    userId: userIds[i], name: names[i],
+    deck: { name: deck.name, leaderId: deck.leader_id, main: mainOf(deck), deckId: deck.id },
+  }));
+  const now = Date.now();
+  const room = newRoom(now, { format: decks[0].format || "", type: "Ranked", note: "", password: "", seats });
+  room.firstPlayer = session.host_on_play ? SEATS[0] : SEATS[1]; // decided when the two were paired
+  const made = engine.createGame(db, {
+    seed: room.seed, firstPlayer: room.firstPlayer,
+    players: seats.map((s, i) => ({ id: SEATS[i], leader: s.deck.leaderId, deck: s.deck.main })),
+  });
+  room.ranked = {
+    sessionId: session.id, applyIntent: engine.applyIntent, db, done: false,
+    state: made.state, initial: made.state, events: [...made.events], cuts: [made.events.length], pending: [made.state.pendingChoice],
+  };
+  rooms.set(room.code, room);
+  rankedCodes.set(session.id, room.code);
+  return room;
+}
+
+/** The room code of a ranked match's table, if it has one. */
+export const rankedCodeOf = (sessionId) => {
+  const code = rankedCodes.get(sessionId);
+  return code && rooms.has(code) ? code : null;
+};
+
+/** The table of an active ranked match, set up on the first call. Null: the game was lost in a restart. */
+export async function rankedTable(session) {
+  const code = rankedCodeOf(session.id);
+  if (code) return rooms.get(code);
+  if (session.started_at && session.started_at < BOOTED_AT) return null;
+  let opening = openingRanked.get(session.id);
+  if (!opening) {
+    opening = openRankedTable(session).finally(() => openingRanked.delete(session.id));
+    openingRanked.set(session.id, opening);
+  }
+  return opening;
+}
+
+/** One move of a ranked game, played by the server. Returns why it was refused, or null. */
+async function playRanked(room, intent) {
+  const g = room.ranked;
+  if (g.done) return "The game is over";
+  let played;
+  try {
+    played = g.applyIntent(g.db, g.state, intent);
+  } catch (err) {
+    return `Illegal move: ${String(err?.message ?? err)}`;
+  }
+  g.state = played.state;
+  g.events.push(...played.events);
+  g.cuts.push(g.events.length);
+  g.pending.push(played.state.pendingChoice);
+  room.moves.push(intent);
+  if (played.state.phase === "over") await finishRanked(room);
+  return null;
+}
+
+/** The game is over: the server writes the result (the ladder reads it) and the replay, from its own events. */
+async function finishRanked(room) {
+  const g = room.ranked;
+  if (g.done) return;
+  g.done = true;
+  room.recorded = true;
+  const winner = SEATS.indexOf(g.state.winner);
+  const session = await getMatchSession(g.sessionId);
+  if (session?.status === "active") {
+    if (winner < 0) {
+      await cancelMatchSession(session.id); // no winner: no result
+    } else {
+      const seats = SEATS.map((pid, i) => ({
+        pid, name: room.seats[i].name, controller: "human", deckName: room.seats[i].deck.name, leaderId: room.seats[i].deck.leaderId,
+      }));
+      const record = { v: 1, seats, initial: g.initial, events: g.events, cuts: g.cuts, pending: g.pending, moves: room.moves, chat: room.chat };
+      room.replayId = await saveReplay({
+        source: "ranked", format: room.format, users: room.seats.map((s) => s.userId), firstPlayer: room.firstPlayer, record,
+      });
+      await completeMatchSession(session.id, room.seats[winner].userId, room.replayId);
+    }
+  }
+  await Promise.all(room.seats.map((s) => setUserPresence(s.userId, "online")));
+  room.ranked = { sessionId: g.sessionId, done: true }; // the game itself is in the replay now
+}
+
+/** A player who has not asked for their ranked table for `goneMs` has left it: they lose.
+ *  When both are gone the game has no result. Called with the matchmaking pass. */
+export async function sweepRankedTables(goneMs, now = Date.now()) {
+  for (const room of [...rooms.values()]) {
+    if (!room.ranked || room.ranked.done) continue;
+    const gone = room.seenAt.map((t) => now - t > goneMs);
+    if (!gone[0] && !gone[1]) continue;
+    if (gone[0] && gone[1]) {
+      room.ranked.state = { ...room.ranked.state, winner: null };
+      await finishRanked(room);
+    } else {
+      await playRanked(room, { type: "concede", player: SEATS[gone[0] ? 0 : 1] });
+    }
+  }
+}
+
 export function registerRooms(app, requireUser) {
   app.get("/api/rooms", async (req, reply) => {
     const user = await requireUser(req, reply);
@@ -197,6 +331,7 @@ export function registerRooms(app, requireUser) {
     const seat = seatOf(room, user.id);
     if (seat < 0) return reply.code(403).send({ error: "You are not in this game" });
     if (seat === 0) room.hostSeenAt = Date.now();
+    room.seenAt[seat] = Date.now();
     const after = Math.max(0, Number(req.query.after) || 0);
     const chatAfter = Math.max(0, Number(req.query.chatAfter) || 0);
     return reply.send({ room: toClient(room, seat, after, chatAfter) });
@@ -215,7 +350,13 @@ export function registerRooms(app, requireUser) {
     if (parsed.data.intent.player !== SEATS[seat]) return reply.code(403).send({ error: "That move is not yours" });
     if (parsed.data.seq !== room.moves.length) return reply.code(409).send({ error: "Out of sync" });
     if (room.moves.length >= MAX_MOVES) return reply.code(409).send({ error: "This game is too long" });
-    room.moves.push(parsed.data.intent);
+    room.seenAt[seat] = Date.now();
+    if (room.ranked) {
+      const refused = await playRanked(room, parsed.data.intent);
+      if (refused) return reply.code(400).send({ error: refused });
+    } else {
+      room.moves.push(parsed.data.intent);
+    }
     room.undoBy = null;
     room.touchedAt = Date.now();
     return reply.send({ total: room.moves.length });
@@ -231,6 +372,7 @@ export function registerRooms(app, requireUser) {
     if (!room) return reply.code(404).send({ error: "This game no longer exists" });
     const seat = seatOf(room, user.id);
     if (seat < 0) return reply.code(403).send({ error: "You are not in this game" });
+    if (room.ranked) return reply.code(409).send({ error: "A ranked game has no take-backs" });
     const parsed = undoSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "Invalid request" });
     const { action } = parsed.data;
@@ -282,6 +424,7 @@ export function registerRooms(app, requireUser) {
       if (!room.next) { room.left[seat] = true; room.rematch[seat] = false; }
       return reply.send({ ok: true });
     }
+    if (room.ranked) return reply.code(409).send({ error: "A ranked game has no rematch: join the pool again" });
     if (room.left[1 - seat]) return reply.code(409).send({ error: "Your opponent has left" });
     room.rematch[seat] = true;
     room.touchedAt = Date.now();
@@ -304,6 +447,8 @@ export function registerRooms(app, requireUser) {
     const seat = seatOf(room, user.id);
     if (seat < 0) return reply.code(403).send({ error: "You are not in this game" });
     if (!room.seats[1]) return reply.code(409).send({ error: "The game has not started" });
+    // a ranked game is the server's to judge: a browser's word changes nothing
+    if (room.ranked) return reply.send({ recorded: room.recorded, replayId: room.replayId });
     const parsed = resultSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "Invalid result" });
     room.results[seat] ??= parsed.data.winner;

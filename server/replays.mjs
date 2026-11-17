@@ -7,6 +7,7 @@
 //
 // What a replay may claim. The server cannot tell whether a record was really
 // played, and its link is public, so a record never speaks for someone else:
+// - a ranked game: the whole record is the server's (it played the game);
 // - a friend game: names, moves, chat and who went first are the room's own,
 //   and the record must end with the winner both players reported;
 // - a game a browser sends in (against the AI, or two players at one screen):

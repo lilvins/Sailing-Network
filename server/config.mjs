@@ -68,6 +68,14 @@ export function loadConfig(env = process.env) {
   const rateLimit = Number(env.SN_RATE_LIMIT ?? (isProd ? 900 : 0));
   if (!Number.isInteger(rateLimit) || rateLimit < 0) problems.push(`SN_RATE_LIMIT must be a whole number, 0 or more: ${env.SN_RATE_LIMIT}`);
 
+  // Ranked: closed until SN_RANKED=open in production (the beta may run without it);
+  // open in dev. A player who stops asking for their ranked table for
+  // SN_RANKED_GONE_MS has left it, and loses.
+  const ranked = env.SN_RANKED ?? (isProd ? "closed" : "open");
+  if (ranked !== "open" && ranked !== "closed") problems.push(`SN_RANKED must be "open" or "closed": ${ranked}`);
+  const rankedGoneMs = Number(env.SN_RANKED_GONE_MS ?? 120000);
+  if (!Number.isInteger(rankedGoneMs) || rankedGoneMs < 1000) problems.push(`SN_RANKED_GONE_MS must be a whole number of milliseconds, 1000 or more: ${env.SN_RANKED_GONE_MS}`);
+
   if (problems.length > 0) throw new Error(`Configuration:\n- ${problems.join("\n- ")}`);
-  return { isProd, port, host, cookieSecret, corsOrigin, trustProxy: trustProxyOf(env.TRUST_PROXY), staticDir, cardsDir, rateLimit };
+  return { isProd, port, host, cookieSecret, corsOrigin, trustProxy: trustProxyOf(env.TRUST_PROXY), staticDir, cardsDir, rateLimit, rankedOpen: ranked === "open", rankedGoneMs };
 }

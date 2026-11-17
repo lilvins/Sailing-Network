@@ -108,6 +108,8 @@ meaning. In development none is needed.
 | `CORS_ORIGINS` | none in production | other sites allowed to call the API with the cookie, comma separated |
 | `TRUST_PROXY` | off | `1` behind one proxy: each visitor gets their own rate limit |
 | `SN_RATE_LIMIT` | 900 in production, 0 in dev | API requests a visitor may make in a minute, over the routes with no limit of their own; 0 = no limit |
+| `SN_RANKED` | `closed` in production, `open` in dev | whether the Duelist Pool takes players |
+| `SN_RANKED_GONE_MS` | 120000 | a player who has not asked for their ranked table for this long has left it, and loses |
 
 ## Production
 
