@@ -369,7 +369,7 @@ export function DuelRecords() {
     Promise.all([api.myMatches(), loadCardsById()])
       .then(([{ matches }, m]) => { setMatches(matches); setCards(m); setLoading(false); })
       .catch(() => setLoading(false));
-    myReplays().then((all) => setPractice(all.filter((r) => r.source !== "friend"))).catch(() => {});
+    myReplays().then((all) => setPractice(all.filter((r) => r.source === "ai" || r.source === "local"))).catch(() => {});
   }, []);
 
   const formats = useMemo(
