@@ -364,6 +364,65 @@ try {
   r = await host.post(`/api/rooms/${other.code}/rematch`, { action: "request" });
   check("no rematch once the other has left", r.status === 409);
 
+  // ============================ REPLAYS ============================
+  section("replays");
+  // the server does not run the engine: a record only has to line up (plays, prompts, log)
+  const recordOf = (moves, { names = ["A", "B"], ai = false, over = true } = {}) => {
+    const events = [{ type: "gameStarted" }, { type: "turnStarted", turn: 1, player: "seatA" }, { type: "turnStarted", turn: 2, player: "seatB" }];
+    if (over) events.push({ type: "gameEnded", winner: "seatB", reason: "concede" });
+    return {
+      v: 1,
+      seats: [
+        { pid: "seatA", name: names[0], controller: "human", deckName: "Deck A", leaderId: "OP01-001" },
+        { pid: "seatB", name: names[1], controller: ai ? "ai" : "human", deckName: "Deck B", leaderId: "OP01-002" },
+      ],
+      initial: { players: { seatA: {}, seatB: {} }, order: ["seatB", "seatA"] },
+      events,
+      cuts: [1, ...moves.map((_, i) => (i === moves.length - 1 ? events.length : 1))],
+      pending: [null, ...moves.map(() => null)],
+      moves,
+      chat: [],
+    };
+  };
+  const concede = { type: "concede", player: "seatA" };
+  const third = (await host.post("/api/rooms", { deck: deckFor("H"), format: "East Blue", type: "BO1" })).json.room;
+  await guest.post(`/api/rooms/${third.code}/join`, { deck: deckFor("G") });
+  await host.post(`/api/rooms/${third.code}/moves`, { seq: 0, intent: concede });
+  await guest.post(`/api/rooms/${third.code}/chat`, { text: "gg", at: 3 });
+  const before = (await recordsOf(host)).length;
+  r = await host.post(`/api/rooms/${third.code}/result`, { winner: "seatB", record: recordOf([concede, concede]) });
+  check("a record of another game does not stop the result", r.status === 200 && r.json.recorded === false);
+  r = await guest.post(`/api/rooms/${third.code}/result`, { winner: "seatB", record: recordOf([{ type: "endTurn", player: "seatB" }], { names: ["Mallory", "Mallory"] }) });
+  const replayId = r.json.replayId;
+  check("both agree, one good record → the game has a replay", r.json.recorded === true && /^[a-z2-9]{10}$/.test(replayId));
+  const hostRow = (await recordsOf(host))[0];
+  check("each player's record row links to it", (await recordsOf(host)).length === before + 1 && hostRow.replayId === replayId && (await recordsOf(guest))[0].replayId === replayId);
+  check("the room says where the replay is", (await host.get(`/api/rooms/${third.code}`)).json.room.replayId === replayId);
+  r = await u1.get(`/api/replays/${replayId}`);
+  const kept = r.json?.replay;
+  check("anyone signed in opens it by its link", r.status === 200 && kept.source === "friend" && kept.format === "East Blue" && kept.winner === "seatB" && kept.firstPlayer === "seatB" && kept.turns === 2 && kept.plays === 1);
+  check("names, moves and chat are the room's, not the browser's", kept.seats[0].name === "room_host" && kept.record.seats[1].name === "room_guest" && kept.record.moves[0].type === "concede" && kept.record.chat[0]?.text === "gg");
+  r = await client().get(`/api/replays/${replayId}`);
+  check("not signed in → 401", r.status === 401);
+  r = await u1.get("/api/replays/nosuchgame");
+  check("an unknown replay → 404", r.status === 404);
+  r = await guest.get("/api/me/replays");
+  check("it is in both players' lists", r.json.replays.some((x) => x.id === replayId) && (await host.get("/api/me/replays")).json.replays.some((x) => x.id === replayId));
+  check("and in nobody else's", !(await u1.get("/api/me/replays")).json.replays.some((x) => x.id === replayId));
+
+  r = await u1.post("/api/replays", { record: recordOf([concede], { names: ["tester_one", "Pro bot"], ai: true }) });
+  const aiReplay = r.json?.id;
+  check("a game against the AI is sent in by the browser", r.status === 201 && !!aiReplay);
+  r = await u1.get("/api/me/replays");
+  const mine = r.json.replays.find((x) => x.id === aiReplay);
+  check("it is listed as theirs: their seat, not the AI's", mine?.source === "ai" && !!mine.seats[0].userId && mine.seats[1].userId === null);
+  r = await u1.post("/api/replays", { record: recordOf([concede], { over: false }) });
+  check("a game that is not over → 400", r.status === 400);
+  r = await u1.post("/api/replays", { record: { ...recordOf([concede]), cuts: [1, 2] } });
+  check("a log that does not match its plays → 400", r.status === 400);
+  r = await client().post("/api/replays", { record: recordOf([concede]) });
+  check("sending one in needs an account", r.status === 401);
+
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
 } finally {

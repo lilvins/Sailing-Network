@@ -6,6 +6,7 @@
 import { randomBytes, randomInt } from "node:crypto";
 import { z } from "zod";
 import { createMatch, getDeck } from "./store.mjs";
+import { RECORD_BODY_LIMIT, parseRecord, saveReplay } from "./replays.mjs";
 
 const SEATS = ["seatA", "seatB"];
 const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O or 1/I/L
@@ -68,6 +69,8 @@ function toClient(room, seat, after, chatAfter) {
     rematchVotes: SEATS.filter((_, i) => room.rematch[i]),
     leftSeats: SEATS.filter((_, i) => room.left[i]),
     nextCode: room.next,
+    /** The finished game, to watch again (null: not over, or no record was kept). */
+    replayId: room.replayId,
     moves: room.moves.slice(after),
     chat: room.chat.slice(chatAfter),
   };
@@ -96,6 +99,8 @@ function newRoom(now, fields) {
     moves: [], chat: [], epoch: 0, undoBy: null,
     rematch: [false, false], left: [false, false], next: null,
     results: [null, null], recorded: false,
+    /** The game as a browser recorded it (src/features/replay), kept once both agree on the winner. */
+    record: null, replayId: null,
     ...fields,
   };
 }
@@ -107,17 +112,32 @@ async function ownDeckId(seat) {
   return deck?.user_id === seat.userId ? deck.id : null;
 }
 
+/** The record a browser sent, if it is this room's game: as many plays as the
+ *  room has moves. What the server knows itself replaces the browser's word for it. */
+function roomRecord(room, body) {
+  const record = parseRecord(body);
+  if (!record || record.moves.length !== room.moves.length) return null;
+  const seats = SEATS.map((pid, i) => ({
+    pid, name: room.seats[i].name, controller: "human", deckName: room.seats[i].deck.name, leaderId: room.seats[i].deck.leaderId,
+  }));
+  return { ...record, seats, moves: room.moves, chat: room.chat };
+}
+
 /** Both players said who won and agree: one row each in their records. Marked
  *  "friend", so it stays out of the ladder and the meta (server/stats). */
 async function recordFriendGame(room) {
   const winner = room.results[0];
+  if (room.record) {
+    room.replayId = await saveReplay({ source: "friend", format: room.format, users: room.seats.map((s) => s.userId), record: room.record });
+    room.record = null; // it is in the database now
+  }
   await Promise.all(room.seats.map(async (seat, i) => {
     const other = room.seats[1 - i];
     await createMatch({
       userId: seat.userId, oppUserId: other.userId, myDeckId: await ownDeckId(seat),
       myLeaderId: seat.deck.leaderId, oppLeaderId: other.deck.leaderId,
       result: winner === SEATS[i] ? "win" : "loss", onPlay: room.firstPlayer === SEATS[i],
-      format: room.format, source: "friend",
+      format: room.format, source: "friend", replayId: room.replayId,
     });
   }));
 }
@@ -270,7 +290,8 @@ export function registerRooms(app, requireUser) {
 
   // the end of a game, reported by each browser. The server does not run the
   // engine, so a game counts only if both say the same winner, and only once.
-  app.post("/api/rooms/:code/result", async (req, reply) => {
+  // Each report may carry the game's record: the first good one becomes the replay.
+  app.post("/api/rooms/:code/result", { bodyLimit: RECORD_BODY_LIMIT }, async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
     const room = rooms.get(roomCode(req));
@@ -281,12 +302,13 @@ export function registerRooms(app, requireUser) {
     const parsed = resultSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: "Invalid result" });
     room.results[seat] ??= parsed.data.winner;
+    if (!room.recorded && !room.record && req.body?.record) room.record = roomRecord(room, req.body.record);
     const agreed = room.results[0] !== null && room.results[0] === room.results[1];
     if (agreed && !room.recorded) {
       room.recorded = true;
       await recordFriendGame(room);
     }
-    return reply.send({ recorded: room.recorded });
+    return reply.send({ recorded: room.recorded, replayId: room.replayId });
   });
 
   // only the host, and only before anyone joined: a started game stays for both

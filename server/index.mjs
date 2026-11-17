@@ -11,6 +11,7 @@ import { initDb, all, run, get } from "./db.mjs";
 import { registerCardArt } from "./card-art.mjs";
 import { registerWelcome } from "./welcome.mjs";
 import { registerRooms } from "./rooms.mjs";
+import { registerReplays } from "./replays.mjs";
 import { registerStatic } from "./static.mjs";
 import { cardFaceSvg } from "./cardFace.mjs";
 import { loadConfig } from "./config.mjs";
@@ -649,6 +650,7 @@ app.post(
 registerCardArt(app);
 await registerWelcome(app);
 registerRooms(app, requireUser);
+registerReplays(app, requireUser);
 
 // ---- card catalog (our own DB; seeded by server/seed-cards.mjs) ----
 // Maps a `cards` row to the frontend Card shape (parse JSON cols, set_code->set).

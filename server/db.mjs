@@ -327,6 +327,40 @@ async function runMigrations() {
     await db.execute(`ALTER TABLE match_sessions ADD COLUMN host_report TEXT`);
     await db.execute(`ALTER TABLE match_sessions ADD COLUMN opponent_report TEXT`);
   }
+
+  // M7: replays — a finished game kept to be watched again (server/replays.mjs).
+  //   source      'friend' (a friend game: the room saved it), 'ai' (against the AI), 'local' (two players at one screen).
+  //   saved_by    the player whose browser sent it in (NULL: the room did).
+  //   user_a/b    the accounts in seat A and seat B (NULL: the AI, or nobody's own seat).
+  //   record      the game itself, as JSON (ReplayRecord in src/features/replay/record.ts).
+  //   matches.replay_id  the replay of the game that row is about (NULL: none was kept).
+  await db.executeMultiple(`
+    CREATE TABLE IF NOT EXISTS replays (
+      id           TEXT PRIMARY KEY,
+      created_at   INTEGER NOT NULL,
+      source       TEXT NOT NULL,
+      format       TEXT NOT NULL DEFAULT '',
+      saved_by     TEXT REFERENCES users(id) ON DELETE SET NULL,
+      user_a       TEXT REFERENCES users(id) ON DELETE SET NULL,
+      user_b       TEXT REFERENCES users(id) ON DELETE SET NULL,
+      name_a       TEXT NOT NULL,
+      name_b       TEXT NOT NULL,
+      leader_a     TEXT NOT NULL,
+      leader_b     TEXT NOT NULL,
+      winner       TEXT,
+      first_player TEXT NOT NULL,
+      turns        INTEGER NOT NULL DEFAULT 0,
+      plays        INTEGER NOT NULL DEFAULT 0,
+      record       TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_replays_saved_by ON replays(saved_by, created_at);
+    CREATE INDEX IF NOT EXISTS idx_replays_user_a ON replays(user_a, created_at);
+    CREATE INDEX IF NOT EXISTS idx_replays_user_b ON replays(user_b, created_at);
+  `);
+  const matchCols2 = await db.execute(`PRAGMA table_info(matches)`);
+  if (!matchCols2.rows.some((c) => c.name === "replay_id")) {
+    await db.execute(`ALTER TABLE matches ADD COLUMN replay_id TEXT`);
+  }
 }
 
 // thin query helpers
