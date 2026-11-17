@@ -12,6 +12,7 @@ import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, PID } from "../../autosim/engine/state";
 import { getCardDb, setOnlineHooks, useAutoStore, type RoomChatLine, type SeatSetup } from "./autoStore";
 import type { DeckChoice } from "./decks";
+import { recordPlay, startRecording, type Recording } from "../replay/record";
 
 interface RoomSeat { name: string; deck: { name: string; leaderId: string; main: string[]; deckId?: string } }
 interface RoomInfo {
@@ -61,7 +62,7 @@ function savedCode(): string | null {
 }
 
 /** The game from its first move: same result in both browsers. */
-function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; seats: [SeatSetup, SeatSetup] } {
+function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; recording: Recording; seats: [SeatSetup, SeatSetup] } {
   const db = getCardDb()!;
   const [a, b] = [room.seats[0], room.seats[1]!];
   const seat = (pid: PID, s: RoomSeat): SeatSetup => ({
@@ -77,17 +78,19 @@ function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; 
   });
   let game = made.state;
   let events = made.events;
+  let recording = startRecording(game, events.length);
   for (const move of room.moves) {
     const r = applyIntent(db, game, move);
     game = r.state;
     events = [...events, ...r.events];
+    recording = recordPlay(recording, move, game, events.length);
   }
-  return { game, events, seats };
+  return { game, events, recording, seats };
 }
 
 function startPlaying(room: RoomInfo): void {
-  const { game, events, seats } = buildGame(room);
-  useAutoStore.getState().loadOnlineGame({ seats, game, events, online: {
+  const { game, events, recording, seats } = buildGame(room);
+  useAutoStore.getState().loadOnlineGame({ seats, game, events, recording, online: {
     code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch,
   } });
   const auto = takeBack && takeBack.code === room.code && room.undoBy === takeBack.by; // a step of a take-back in progress
@@ -130,6 +133,7 @@ async function resync(code: string, message = "Game re-synced with the server.")
 function applyRemote(room: RoomInfo): void {
   const store = useAutoStore.getState();
   const { online, game, events, undoRequest } = store;
+  let { recording } = store;
   if (!online || !game) return;
   // a take-back being completed step by step: no panel for each step
   const auto = takeBack && takeBack.code === online.code && room.undoBy === takeBack.by;
@@ -147,6 +151,7 @@ function applyRemote(room: RoomInfo): void {
       const r = applyIntent(db, g, move);
       g = r.state;
       ev = [...ev, ...r.events];
+      recording = recording && recordPlay(recording, move, g, ev.length);
     }
   } catch {
     void resync(online.code);
@@ -154,7 +159,7 @@ function applyRemote(room: RoomInfo): void {
   }
   const chat = room.chat.length > 0 ? [...online.chat, ...room.chat] : online.chat;
   if (room.moves.length === 0 && chat === online.chat) return;
-  useAutoStore.setState({ game: g, events: ev, online: { ...online, applied: online.applied + room.moves.length, chat } });
+  useAutoStore.setState({ game: g, events: ev, recording, online: { ...online, applied: online.applied + room.moves.length, chat } });
   if (g.phase === "over") { remember(null); reportIfOver(online.code); }
 }
 
@@ -222,7 +227,7 @@ function startPolling(code: string): void {
 }
 
 function enterRoom(room: RoomInfo): void {
-  useAutoStore.setState({ game: null, events: [], online: { code: room.code, mySeat: room.mySeat, status: room.status, applied: 0, chat: [], epoch: room.epoch } });
+  useAutoStore.setState({ game: null, events: [], recording: null, online: { code: room.code, mySeat: room.mySeat, status: room.status, applied: 0, chat: [], epoch: room.epoch } });
   remember(room.code);
   if (room.status === "playing") startPlaying(room);
   startPolling(room.code);

@@ -23,6 +23,7 @@ import { agentStep, actorOf, type Agent } from "../../autosim/ai/agent";
 import { createProAgent, type ProAgent } from "../../autosim/ai/pro";
 import { makePlan, type AiPlan } from "./aiPlan";
 import { clearGame, loadGame, saveGame } from "./savedGame";
+import { playsIn, recordPlay, rewindRecording, startRecording, type Recording } from "../replay/record";
 import { makeCardDb } from "./compile";
 import type { DeckChoice } from "./decks";
 
@@ -78,6 +79,8 @@ export interface HistoryEntry {
   eventsLen: number;
   /** Who made the move. */
   actor: PID;
+  /** How many plays the recording had before the move. */
+  plays: number;
 }
 
 /** Moves kept for take-backs. */
@@ -149,6 +152,9 @@ interface AutoStoreState {
   confirmPicks: boolean;
   /** Every move of this game, oldest first (take-backs). */
   history: HistoryEntry[];
+  /** The game as it will be watched again (src/features/replay): one play per move.
+   *  null = this game cannot be recorded whole (a reload cut its log). */
+  recording: Recording | null;
   /** A player asked to take back their last move; the opponent must answer. */
   /** `eventsLen`: friend games, where the move being taken back starts in `events`. */
   undoRequest: { by: PID; eventsLen?: number } | null;
@@ -157,7 +163,7 @@ interface AutoStoreState {
   online: OnlineState | null;
 
   init: () => Promise<void>;
-  loadOnlineGame: (g: { seats: [SeatSetup, SeatSetup]; game: AutoGameState; events: GameEvent[]; online: OnlineState }) => void;
+  loadOnlineGame: (g: { seats: [SeatSetup, SeatSetup]; game: AutoGameState; events: GameEvent[]; recording: Recording; online: OnlineState }) => void;
   /** pick → roll */
   confirmSeats: (seats: [SeatSetup, SeatSetup]) => void;
   doRoll: () => void;
@@ -196,13 +202,14 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   aiDelay: 700,
   confirmPicks: readConfirmPicks(),
   history: [],
+  recording: null,
   undoRequest: null,
   aiPlan: null,
   online: null,
 
-  loadOnlineGame: ({ seats, game, events, online }) => {
+  loadOnlineGame: ({ seats, game, events, recording, online }) => {
     agents = {};
-    set({ stage: "play", seats, game, events, online, banner: null, aiPaused: false, history: [], undoRequest: null, aiPlan: null });
+    set({ stage: "play", seats, game, events, recording, online, banner: null, aiPaused: false, history: [], undoRequest: null, aiPlan: null });
   },
 
   init: async () => {
@@ -218,7 +225,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
       const saved = loadGame();
       if (saved && saved.game.phase !== "over") {
         agents = makeAgents(saved.seats, `${saved.game.seed}:resumed`);
-        set({ stage: "play", seats: saved.seats, game: saved.game, events: saved.events, aiDelay: saved.aiDelay, aiPaused: true, aiPlan: null });
+        set({ stage: "play", seats: saved.seats, game: saved.game, events: saved.events, recording: saved.recording ?? null, aiDelay: saved.aiDelay, aiPaused: true, aiPlan: null });
       }
     } catch (e) {
       set({ catalogError: e instanceof Error ? e.message : "failed to load the card catalog" });
@@ -255,7 +262,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
         firstPlayer: seats[firstIdx].pid,
       });
       agents = makeAgents(seats, state.seed);
-      set({ game: state, events, stage: "play", banner: null, aiPaused: false, history: [], undoRequest: null, aiPlan: null });
+      set({ game: state, events, recording: startRecording(state, events.length), stage: "play", banner: null, aiPaused: false, history: [], undoRequest: null, aiPlan: null });
     } catch (e) {
       // deck construction failed (user decks can be illegal) → back to pick
       const msg = e instanceof Error ? e.message : String(e);
@@ -267,7 +274,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   dispatch: (intent) => {
-    const { game, events, seats, online } = get();
+    const { game, events, seats, online, recording } = get();
     if (!game || !cardDb) return false;
     if (online && intent.player !== online.mySeat) {
       set({ banner: { id: bannerSeq++, text: "It's your friend's move.", hint: "Wait for them to answer.", tone: "info" } });
@@ -280,7 +287,11 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     try {
       const r = applyIntent(cardDb, game, intent);
       const actor = actorOf(cardDb, game);
-      set({ game: r.state, events: [...events, ...r.events], undoRequest: null, aiPlan: null, history: remember(get().history, { game, eventsLen: events.length, actor }) });
+      set({
+        game: r.state, events: [...events, ...r.events], undoRequest: null, aiPlan: null,
+        recording: recording && recordPlay(recording, intent, r.state, events.length + r.events.length),
+        history: remember(get().history, { game, eventsLen: events.length, actor, plays: recording ? playsIn(recording) : 0 }),
+      });
       if (online) {
         set({ online: { ...online, applied: online.applied + 1 } });
         onlineHooks?.send(online.code, online.applied, intent);
@@ -297,7 +308,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   aiStep: () => {
-    const { game, events, aiPaused, aiPlan } = get();
+    const { game, events, aiPaused, aiPlan, recording } = get();
     if (!game || !cardDb || game.phase === "over") return;
     if (get().undoRequest) return; // a take-back is being decided
     const actor = actorOf(cardDb, game);
@@ -311,7 +322,11 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
         return;
       }
       const r = aiPlan ? playPlanned(cardDb, game, aiPlan, agent) : agentStep(cardDb, game, agent);
-      set({ game: r.state, events: [...events, ...r.events], aiPlan: null, history: remember(get().history, { game, eventsLen: events.length, actor }) });
+      set({
+        game: r.state, events: [...events, ...r.events], aiPlan: null,
+        recording: recording && recordPlay(recording, r.intent, r.state, events.length + r.events.length),
+        history: remember(get().history, { game, eventsLen: events.length, actor, plays: recording ? playsIn(recording) : 0 }),
+      });
     } catch (e) {
       // the agent and every fallback were refused: stop and say so
       set({ aiPaused: true, banner: { id: bannerSeq++, text: `AI stuck: ${e instanceof Error ? e.message : String(e)}`, hint: "The AI is paused. Concede for that seat, or change decks." } });
@@ -332,7 +347,7 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   },
 
   answerUndo: (accept) => {
-    const { history, seats, undoRequest, events, online } = get();
+    const { history, seats, undoRequest, events, online, recording } = get();
     if (!undoRequest) return;
     if (online) {
       set({ undoRequest: null });
@@ -350,11 +365,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     const h = history[at];
     set({
       game: h.game, events: events.slice(0, h.eventsLen), history: history.slice(0, at), undoRequest: null, aiPlan: null,
+      recording: recording && rewindRecording(recording, h.plays),
       banner: { id: bannerSeq++, text: "Move taken back.", tone: "info" },
     });
   },
 
-  newGame: (aiOpponent) => { onlineHooks?.leave(); set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], banner: null }); },
+  newGame: (aiOpponent) => { onlineHooks?.leave(); set({ aiOpponent, stage: "pick", seats: null, roll: null, game: null, events: [], recording: null, banner: null }); },
   setAiPaused: (aiPaused) => set({ aiPaused }),
   setAiDelay: (aiDelay) => set({ aiDelay }),
   setConfirmPicks: (confirmPicks) => {
@@ -365,8 +381,8 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
   explain: (text, hint, tone) => set({ banner: { id: bannerSeq++, text, hint, tone } }),
   dismissBanner: () => set({ banner: null }),
 
-  rematch: () => set({ stage: "roll", roll: null, game: null, events: [], banner: null, history: [], undoRequest: null, aiPlan: null }),
-  reset: () => { onlineHooks?.leave(); set({ stage: "pick", seats: null, roll: null, game: null, events: [], banner: null, history: [], undoRequest: null, aiPlan: null }); },
+  rematch: () => set({ stage: "roll", roll: null, game: null, events: [], recording: null, banner: null, history: [], undoRequest: null, aiPlan: null }),
+  reset: () => { onlineHooks?.leave(); set({ stage: "pick", seats: null, roll: null, game: null, events: [], recording: null, banner: null, history: [], undoRequest: null, aiPlan: null }); },
 }));
 
 const remember = (history: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] =>
@@ -375,7 +391,7 @@ const remember = (history: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] 
 /** The move shown in coach mode; if the engine refuses it, the agent's usual step (with its fallback). */
 function playPlanned(db: CardDb, game: AutoGameState, plan: AiPlan, agent: Agent) {
   try {
-    return applyIntent(db, game, plan.intent);
+    return { ...applyIntent(db, game, plan.intent), intent: plan.intent };
   } catch {
     return agentStep(db, game, agent);
   }
@@ -393,7 +409,7 @@ function makeAgents(seats: SeatSetup[], seed: string): Record<PID, ProAgent> {
 useAutoStore.subscribe((s, prev) => {
   if (s.game === prev.game && s.stage === prev.stage) return;
   if (s.online) return; // a friend game comes back from the server (room.ts)
-  if (s.stage === "play" && s.game && s.seats && s.game.phase !== "over") saveGame({ seats: s.seats, game: s.game, events: s.events, aiDelay: s.aiDelay });
+  if (s.stage === "play" && s.game && s.seats && s.game.phase !== "over") saveGame({ seats: s.seats, game: s.game, events: s.events, recording: s.recording ?? undefined, aiDelay: s.aiDelay });
   else clearGame();
 });
 
