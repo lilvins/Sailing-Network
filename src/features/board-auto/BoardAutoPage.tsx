@@ -580,6 +580,9 @@ function GameScreen() {
   /** Human against AI: the AI's hand stays face down (AI vs AI shows both to the spectator). */
   // a replay on the table (src/features/replay): watched, never played
   const replay = useAutoStore((s) => s.replay);
+  /** The replay of the game that just ended here, once the server has it. */
+  const replayId = useAutoStore((s) => s.replayId);
+  const openReplay = useUiStore((s) => s.openReplay);
   const replayNext = useAutoStore((s) => s.replayNext);
   const setReplayPlaying = useAutoStore((s) => s.setReplayPlaying);
   const setReplayFast = useAutoStore((s) => s.setReplayFast);
@@ -2704,6 +2707,8 @@ function GameScreen() {
               : <button className="ba-btn" data-act="newdecks" onClick={reset}>Change decks</button>}
             <button className="ba-btn" data-act="gohome" onClick={() => (online ? leaveTo("home") : setView("home"))}>Home</button>
             <button className="ba-btn" data-act="copy-log" onClick={copyLog}>Copy log</button>
+            {replayId && <button className="ba-btn" data-act="watch-replay" onClick={() => openReplay(replayId)}>Watch replay</button>}
+            {replayId && <button className="ba-btn" data-act="copy-replay-link" onClick={() => void copyReplayLink(replayId).then((ok) => explain(ok ? "Replay link copied." : "Could not copy the link.", undefined, "info"))}>Copy replay link</button>}
           </div>
         </div>
       </div>

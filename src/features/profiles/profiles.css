@@ -192,6 +192,14 @@
 .rec-date{font-size:13px;color:var(--muted);}
 .rec-replay{display:inline-flex;align-items:center;gap:6px;justify-self:end;background:rgba(255,255,255,0.05);border:1px solid var(--edge2);border-radius:0;padding:7px 12px;font-family:var(--display);font-weight:600;font-size:12.5px;color:#d6d0c2;cursor:pointer;text-decoration:none;transition:border-color .1s,color .1s;}
 .rec-replay:hover{border-color:var(--acc2);color:var(--acc2);}
+/* Duel Records: one more column, the game's replay; and the games kept only as replays */
+.rec-duels{grid-template-columns:56px 1.5fr 1fr 0.9fr 0.7fr 0.6fr 1fr 0.9fr 56px 96px;}
+.rec-practice{grid-template-columns:56px 2fr 1.1fr 0.9fr 70px 1fr 96px;}
+.rec-tabs{display:inline-flex;border:1px solid var(--edge2);}
+.rec-tab{background:rgba(255,255,255,0.05);border:0;padding:9px 14px;font-family:var(--display);font-weight:700;font-size:12.5px;letter-spacing:.3px;color:#d6d0c2;cursor:pointer;}
+.rec-tab+.rec-tab{border-left:1px solid var(--edge2);}
+.rec-tab:hover{color:var(--acc2);}
+.rec-tab.on{background:var(--acc2);color:#14100c;}
 
 .rec-foot{display:flex;align-items:center;justify-content:space-between;margin-top:18px;}
 .rec-exit{display:inline-flex;align-items:center;gap:9px;background:var(--acc);border:1px solid rgba(255,255,255,0.16);border-radius:0;padding:12px 22px;font-family:var(--display);font-weight:700;font-size:14px;color:#fff;cursor:pointer;text-decoration:none;transition:filter .1s;}
