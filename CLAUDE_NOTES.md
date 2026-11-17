@@ -432,15 +432,25 @@ behaves was not seen live (the replay sits behind a human check).
   refuses everything, and the rail shows Play / Pause / Next Play / Fast
   Forward and Hide Hands / Show Hand / Show Both (`data-replay-controls`).
   It starts playing by itself (900 ms a play, 120 ms with Fast Forward). A
-  player watches from their own side. Login is required, like every page;
-  whoever has the link sees both hands and both decks. Opening a replay
+  player watches from their own side. Opening a replay
   leaves a friend room (waiting or finished); a game in progress against the
   AI stays saved and comes back when the replay is closed.
+- **The link is public (user decision, 2026-11-17: "i replay pubblici col
+  link")**: `/?replay=<id>` opens with no account, the only page that does
+  besides the login. `GET /api/replays/:id` is the only replay route with no
+  session: read-only, one replay, 60 requests a minute per address, and the
+  id (10 random letters, about 49 bits, never a counter) is the protection.
+  Its answer carries no account id: `viewerSeat` says which seat was the
+  asker's. Whoever has the link sees both players' names, both hands, both
+  decks and the chat of the game. `App.tsx` shows `ReplayPage` to a visitor;
+  the table then asks for nothing of the signed-in site (no directory, no
+  Messages button). Sending a replay in and `GET /api/me/replays` still need
+  the session.
 - **Reached from**: Duel Records (Replay button per row; second tab for the
   games against the AI / at one screen, which have no `matches` row) and the
   game-over panel (Watch replay, Copy replay link).
 - Not built: seek bar or step back (Duelingbook has neither), Next Game for
-  best-of-three, likes / Popular Replays, replays without login.
+  best-of-three, likes / Popular Replays.
 - Tests: `src/features/replay/record.test.ts` (every play of a recorded game
   equals the live state; take-backs; JSON round trip), `viewer.test.ts` (the
   controls on the store), the "replays" section of `tests/api-test.mjs`.
