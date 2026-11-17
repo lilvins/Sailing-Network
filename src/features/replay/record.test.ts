@@ -6,50 +6,13 @@ import type { AutoGameState } from "../../autosim/engine/state";
 import { randomIntent } from "../../autosim/ai/random";
 import { metaGameConfig, realDb } from "../../autosim/__bench__/metaGames";
 import { seededRng } from "../../lib/rng";
-import {
-  finishRecording, nextPlay, playsIn, recordPlay, recordProblem, rewindRecording, startRecording, stateAfter,
-  type Recording, type ReplayRecord, type ReplaySeat,
-} from "./record";
+import { finishRecording, nextPlay, playsIn, recordPlay, recordProblem, rewindRecording, startRecording, stateAfter, type ReplayRecord } from "./record";
+import { TEST_SEATS, playAndRecord, shown } from "./testGames";
 
 /**
  * A recorded game played back must be the game that was played: the same
- * state after every play, down to the last one. Real meta decks, moves by the
- * seeded random player (it reaches every kind of prompt).
+ * state after every play, down to the last one.
  */
-
-const SEATS: [ReplaySeat, ReplaySeat] = [
-  { pid: "p1", name: "Ann", controller: "human", deckName: "Deck A", leaderId: "x" },
-  { pid: "p2", name: "Bo", controller: "ai", deckName: "Deck B", leaderId: "y" },
-];
-
-interface Played { record: ReplayRecord; states: AutoGameState[] }
-
-/** One whole game, recorded the way the table records it; `states[n]` = the live game after play n. */
-function playAndRecord(game: number, maxPlays = Infinity): Played {
-  const config = metaGameConfig(game);
-  const rng = seededRng(`replay-test:${config.seed}`);
-  const made = createGame(realDb, config);
-  let state = made.state;
-  let events: GameEvent[] = made.events;
-  let rec: Recording = startRecording(state, events.length);
-  const states = [state];
-  while (state.phase !== "over" && playsIn(rec) < maxPlays) {
-    const intent = randomIntent(realDb, state, rng);
-    const r = applyIntent(realDb, state, intent);
-    state = r.state;
-    events = [...events, ...r.events];
-    rec = recordPlay(rec, intent, state, events.length);
-    states.push(state);
-  }
-  return { record: finishRecording(rec, SEATS, events, []), states };
-}
-
-/** What a replay shows of a live state. `exec`, `rngUses` and two notes the damage step keeps on the
- *  battle are the engine's own bookkeeping: no event carries them, and nothing on the table reads them. */
-const shown = (live: AutoGameState, replayed: AutoGameState): AutoGameState => ({
-  ...live, exec: replayed.exec, rngUses: replayed.rngUses,
-  battle: live.battle && { ...live.battle, damageReacted: replayed.battle?.damageReacted, damageDeclined: replayed.battle?.damageDeclined },
-});
 
 describe("a recorded game played back", () => {
   const { record, states } = playAndRecord(0);
@@ -99,8 +62,20 @@ describe("a recorded game played back", () => {
   }, 120_000);
 
   it("fits in what the server accepts", () => {
-    expect(JSON.stringify(record).length).toBeLessThan(3_000_000);
+    expect(JSON.stringify(record).length).toBeLessThan(2_000_000);
   });
+});
+
+describe("every meta deck's game plays back to the same end", () => {
+  it("the last state of the replay is the last state of the game", () => {
+    for (let game = 1; game < 8; game++) {
+      const { record, states } = playAndRecord(game);
+      const last = playsIn(record);
+      const state = stateAfter(record, last);
+      expect(state).toEqual(shown(states[last], state));
+      expect(state.phase).toBe("over");
+    }
+  }, 120_000);
 });
 
 describe("a take-back while recording", () => {
@@ -131,7 +106,7 @@ describe("a take-back while recording", () => {
     const rngB = seededRng("second-try");
     for (let i = 0; i < 10; i++) play(rngB);
 
-    const record = finishRecording(rec, SEATS, events, []);
+    const record = finishRecording(rec, TEST_SEATS, events, []);
     expect(recordProblem(record)).toBeNull();
     expect(playsIn(record)).toBe(keep + 10);
     const replayed = stateAfter(record, playsIn(record));
