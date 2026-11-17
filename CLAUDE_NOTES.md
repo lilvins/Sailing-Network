@@ -402,6 +402,49 @@ explained red banner (EngineError message + actionable hint), never a flat no.
   storageState and mutes the HMR websocket so live edits by other agents
   can't reload the page mid-game.
 
+## Replays — a finished game watched again (2026-11-17)
+User request: "same way as yugioh replays on duelingbook, identical". The
+control set was read from duelingbook.com's replay page; how its playback
+behaves was not seen live (the replay sits behind a human check).
+- **A record is what happened, not what to re-run** (`src/features/replay/
+  record.ts`, `ReplayRecord`): the state `createGame` returned, every event
+  after it, where each play ends (`cuts`: one play = one move and all that
+  followed), the prompt left open after each play (`pending`, not
+  event-derived), the moves, the chat. Playback folds the events with
+  `applyEvent` and never calls the rules engine, so a card effect fixed later
+  cannot change or break an old replay. Not carried by events, and not shown:
+  `exec`, `rngUses`, `battle.damageReacted` / `damageDeclined`.
+- **Recording**: `autoStore.recording` grows by one play in `dispatch`,
+  `aiStep` and room.ts (`buildGame`, `applyRemote`); a take-back rewinds it.
+  A reload keeps it only when the whole log fits in sessionStorage
+  (savedGame.ts), otherwise that game has no replay.
+- **Saving**: table `replays` + `matches.replay_id` (db.mjs M7), routes in
+  `server/replays.mjs` (`POST /api/replays`, `GET /api/replays/:id`,
+  `GET /api/me/replays`). A friend game: each browser sends its record with
+  `/api/rooms/:code/result`; when both agree on the winner the room keeps the
+  first record with as many plays as it has moves, with its own names, moves
+  and chat in place of the browser's. Any other game (AI, one screen): the
+  browser sends it in when it ends; 200 kept per player. The server does not
+  run the engine, so it only checks that a record's parts line up.
+- **Watching**: link `/?replay=<id>` (App.tsx) → view `replay` →
+  `ReplayPage` fetches the record and calls `autoStore.openReplay`; the Play
+  Auto table (`GameScreen`) draws it with both seats `remote`, `dispatch`
+  refuses everything, and the rail shows Play / Pause / Next Play / Fast
+  Forward and Hide Hands / Show Hand / Show Both (`data-replay-controls`).
+  It starts playing by itself (900 ms a play, 120 ms with Fast Forward). A
+  player watches from their own side. Login is required, like every page;
+  whoever has the link sees both hands and both decks. Opening a replay
+  leaves a friend room (waiting or finished); a game in progress against the
+  AI stays saved and comes back when the replay is closed.
+- **Reached from**: Duel Records (Replay button per row; second tab for the
+  games against the AI / at one screen, which have no `matches` row) and the
+  game-over panel (Watch replay, Copy replay link).
+- Not built: seek bar or step back (Duelingbook has neither), Next Game for
+  best-of-three, likes / Popular Replays, replays without login.
+- Tests: `src/features/replay/record.test.ts` (every play of a recorded game
+  equals the live state; take-backs; JSON round trip), `viewer.test.ts` (the
+  controls on the store), the "replays" section of `tests/api-test.mjs`.
+
 ## QA bot — automatic, repeatable bug hunter (`npm run qa:bot`)
 `scripts/qa-bot.mjs` (Playwright; dev server must be up). Two parts:
 - **Player**: plays complete board-auto games with seeded random LEGAL moves
