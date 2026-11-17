@@ -24,6 +24,7 @@ import { BoardPage2 } from "../features/board/BoardPage2";
 import { BoardAutoPage } from "../features/board-auto/BoardAutoPage";
 import { hasSavedRoom } from "../features/board-auto/room";
 import { BoardBotPage } from "../features/board-bot/BoardBotPage";
+import { ReplayPage } from "../features/replay/ReplayPage";
 
 /**
  * App shell. Each ported page is full-screen (its own chrome), so there is no
@@ -127,6 +128,8 @@ function CurrentView({ view }: { view: View }) {
       return <BoardAutoPage />;
     case "board-bot":
       return <BoardBotPage />;
+    case "replay":
+      return <ReplayPage />;
     default:
       return <ComingSoon view={view} />;
   }
@@ -135,6 +138,7 @@ function CurrentView({ view }: { view: View }) {
 export function App() {
   const view = useUiStore((s) => s.view);
   const setView = useUiStore((s) => s.setView);
+  const openReplay = useUiStore((s) => s.openReplay);
   const status = useAuthStore((s) => s.status);
   const user = useAuthStore((s) => s.user);
   const init = useAuthStore((s) => s.init);
@@ -166,9 +170,12 @@ export function App() {
   // a friend game left by a reload leads straight back to the table
   const signedIn = status === "ready" && !!user;
   useEffect(() => {
-    if (signedIn && hasSavedRoom()) setView("board-auto");
-    else if (signedIn && new URLSearchParams(window.location.search).has("duel")) setView("duel-room"); // an invitation link
-  }, [signedIn, setView]);
+    if (!signedIn) return;
+    const link = new URLSearchParams(window.location.search);
+    if (hasSavedRoom()) setView("board-auto");
+    else if (link.get("replay")) openReplay(link.get("replay")!); // a replay's link
+    else if (link.has("duel")) setView("duel-room"); // an invitation link
+  }, [signedIn, setView, openReplay]);
 
   if (status === "loading") return <AppLoading />;
 

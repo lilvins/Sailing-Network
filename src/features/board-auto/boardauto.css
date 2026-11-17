@@ -1051,6 +1051,12 @@
 .ba-aictl-tag { font: 700 10.5px var(--hud); letter-spacing: 0.12em; color: var(--brass-hi); }
 .ba-aictl-row { display: flex; gap: 6px; }
 .ba-aictl-row .ba-btn { flex: 1 1 0; padding: 6px 4px; font-size: 11px; }
+/* a replay's rail panel: which hands are shown at the left, the playback at the right */
+.ba-replaygrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: start; }
+.ba-replayhands, .ba-replaybtns { display: flex; flex-direction: column; gap: 6px; }
+.ba-replayradio { display: flex; align-items: center; gap: 6px; min-height: 28px; font: 600 12px var(--serif); color: var(--ivory); cursor: pointer; }
+.ba-replayradio input { accent-color: var(--brass-hi); margin: 0; width: 15px; height: 15px; cursor: pointer; }
+.ba-replaybtns .ba-btn { padding: 6px 4px; font-size: 11px; }
 /* coach mode: the AI's next move and the candidates it weighed (value · rollouts) */
 .ba-aiplan { display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 1px solid var(--brass-dim); background: var(--night-0, #05080d); font-size: 12px; color: #e8dcc0; }
 .ba-aiplan-next b { color: var(--brass-hi); }

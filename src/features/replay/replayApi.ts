@@ -45,3 +45,13 @@ export async function myReplays(): Promise<ReplaySummary[]> {
 
 /** The address that opens a replay (App.tsx reads `?replay=`). */
 export const replayLink = (id: string): string => `${window.location.origin}/?replay=${id}`;
+
+/** Puts a replay's link on the clipboard; false when the browser refused. */
+export async function copyReplayLink(id: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(replayLink(id));
+    return true;
+  } catch {
+    return false;
+  }
+}

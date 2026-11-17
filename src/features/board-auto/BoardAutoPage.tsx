@@ -9,7 +9,9 @@ import { fitChoice } from "../../autosim/engine/effects";
 import { effectivePower, keywordsOf, type AutoGameState, type Iid, type PID } from "../../autosim/engine/state";
 import type { Keyword } from "../../autosim/ir/types";
 import type { PlayerIntent } from "../../autosim/engine/intents";
-import { getCardDb, getCardsById, notHere, useAutoStore, type SeatSetup } from "./autoStore";
+import { getCardDb, getCardsById, notHere, useAutoStore, type ReplayHands, type SeatSetup } from "./autoStore";
+import { playsIn } from "../replay/record";
+import { copyReplayLink } from "../replay/replayApi";
 import { automationInfo } from "./compile";
 import { restSplitOf } from "./restSplit";
 import { LAYOUT, layoutTuning, layoutVars, useLayoutVersion } from "./layout";
@@ -124,6 +126,12 @@ const GIVE_DON_OPTION = /^Give (no DON!!|\d+ rested DON!!)$/;
 /** An AI answer inside a battle never comes faster than this (ms), and the
  *  outcome of a battle stays on screen this long before play goes on. */
 const BATTLE_BEAT = 900;
+/** A replay playing by itself: the pause after each play, and with Fast Forward on. */
+const REPLAY_MS = 900;
+const REPLAY_FAST_MS = 120;
+const REPLAY_HANDS: { value: ReplayHands; label: string }[] = [
+  { value: "hide", label: "Hide Hands" }, { value: "one", label: "Show Hand" }, { value: "both", label: "Show Both" },
+];
 const RECAP_MS = 1600;
 /** How far a split DON!! group rises per level (visual thinking aid). */
 const DON_RAISE = 26;
@@ -570,14 +578,39 @@ function GameScreen() {
   const lastHumanMove = [...history].reverse().find((h) => !notHere(seats, h.actor)) ?? null;
   const aiActing = game.phase !== "over" && notHere(seats, lm.actor);
   /** Human against AI: the AI's hand stays face down (AI vs AI shows both to the spectator). */
-  const hiddenHand = (pid: PID) => game.phase !== "over" && notHere(seats, pid) && !seats.every((s) => s.controller === "ai");
+  // a replay on the table (src/features/replay): watched, never played
+  const replay = useAutoStore((s) => s.replay);
+  const replayNext = useAutoStore((s) => s.replayNext);
+  const setReplayPlaying = useAutoStore((s) => s.setReplayPlaying);
+  const setReplayFast = useAutoStore((s) => s.setReplayFast);
+  const setReplayHands = useAutoStore((s) => s.setReplayHands);
+  const restartReplay = useAutoStore((s) => s.restartReplay);
+  const watching = !!replay;
+  const replayPlays = replay ? playsIn(replay.record) : 0;
+  const replayAtEnd = !!replay && replay.step >= replayPlays;
+  /** The end-of-replay panel put aside, to look at the table as the game left it. */
+  const [replayOverSeen, setReplayOverSeen] = useState(false);
+  useEffect(() => { if (!replayAtEnd) setReplayOverSeen(false); }, [replayAtEnd]);
+  const replayPlaying = !!replay?.playing;
+  const replayFast = !!replay?.fast;
   useEffect(() => {
-    if (!aiActing || aiPaused) return;
+    if (!replayPlaying) return;
+    // one play per beat; the outcome of a battle stays up long enough to be read
+    const delay = replayFast ? REPLAY_FAST_MS : recap ? Math.max(REPLAY_MS, RECAP_MS) : REPLAY_MS;
+    const t = setTimeout(replayNext, delay);
+    return () => clearTimeout(t);
+  }, [game, replayPlaying, replayFast, replayNext, recap]);
+  /** Human against AI: the AI's hand stays face down. A replay shows the hands its switch says. */
+  const hiddenHand = (pid: PID) => replay
+    ? replay.hands === "hide" || (replay.hands === "one" && pid !== replay.bottom)
+    : game.phase !== "over" && notHere(seats, pid) && !seats.every((s) => s.controller === "ai");
+  useEffect(() => {
+    if (!aiActing || aiPaused || watching) return;
     // a battle is followed step by step: the AI never answers faster than you can read
     const delay = game.battle ? Math.max(aiDelay, BATTLE_BEAT) : recap ? Math.max(aiDelay, RECAP_MS) : aiDelay;
     const t = setTimeout(aiStep, delay);
     return () => clearTimeout(t);
-  }, [game, aiActing, aiPaused, aiDelay, aiStep, recap]);
+  }, [game, aiActing, aiPaused, aiDelay, aiStep, recap, watching]);
 
   const online = useAutoStore((s) => s.online);
   // a friend game in progress has no way out but the game itself (a concede or
@@ -589,7 +622,7 @@ function GameScreen() {
     return () => useUiStore.getState().lockView(null);
   }, [inOnlineGame]);
   // a friend game: each player sits at the bottom of their own screen
-  const BOTTOM: PID = online?.mySeat ?? SEAT_A;
+  const BOTTOM: PID = replay?.bottom ?? online?.mySeat ?? SEAT_A;
   const TOP: PID = BOTTOM === SEAT_A ? SEAT_B : SEAT_A;
   const seatName = (pid: PID) => seats.find((s) => s.pid === pid)?.name ?? pid;
   const leaderHex = (pid: PID) => {
@@ -2167,7 +2200,8 @@ function GameScreen() {
           <b className="ba-lifenum">{life}</b>
         </div>
         {" " /* keeps "LIFE 5" and the clock apart in the panel's text */}
-        <span className="ba-clock">{mm}:{String(ss).padStart(2, "0")}</span>
+        {/* the time a player took was not recorded: a replay shows no clock rather than its own */}
+        {!watching && <span className="ba-clock">{mm}:{String(ss).padStart(2, "0")}</span>}
         {ConcedeButton({ pid })}
       </div>
     );
@@ -2197,7 +2231,7 @@ function GameScreen() {
   }
 
   function ConcedeButton({ pid }: { pid: PID }) {
-    if (game.phase === "over" || (online && pid !== online.mySeat)) return null;
+    if (watching || game.phase === "over" || (online && pid !== online.mySeat)) return null;
     return (
           <button
             className="ba-concede"
@@ -2218,7 +2252,7 @@ function GameScreen() {
   const logRef = useRef<HTMLDivElement | null>(null);
   // ONE feed: duel log lines and table chat interleaved in time order (a chat
   // message sent after event N-1 shows right after that line)
-  const feedChat = online ? online.chat : chat;
+  const feedChat = replay ? replay.record.chat : online ? online.chat : chat;
   type FeedLine = { kind: string; text: string; cards?: { name: string; cardId: string }[] } | { seat: PID; text: string };
   const logLines = useMemo(() => {
     const out: FeedLine[] = [];
@@ -2621,6 +2655,22 @@ function GameScreen() {
         </div>
       </div>
     );
+  } else if (game.phase === "over" && replay) {
+    overlay = replayOverSeen ? null : (
+      <div className="ba-overlay">
+        <div className="ba-panel ba-ov" data-replay-over>
+          <span className="ba-ovtag">REPLAY OVER</span>
+          <b className="ba-ovname big">{game.winner ? seatName(game.winner) : "?"} WINS</b>
+          <p className="ba-ovtext">{WIN_REASON[game.winReason ?? ""] ?? game.winReason}</p>
+          <div className="ba-ovbtns">
+            <button className="ba-btn primary" data-act="replay-again" onClick={restartReplay}>Watch again</button>
+            <button className="ba-btn" data-act="replay-see-table" onClick={() => setReplayOverSeen(true)}>See the table</button>
+            <button className="ba-btn" data-act="replay-copy-link" onClick={() => void copyReplayLink(replay.id).then((ok) => explain(ok ? "Replay link copied." : "Could not copy the link.", undefined, "info"))}>Copy link</button>
+            <button className="ba-btn" data-act="gohome" onClick={() => setView("home")}>Home</button>
+          </div>
+        </div>
+      </div>
+    );
   } else if (game.phase === "over") {
     const opponent = online ? seats.find((s) => s.pid !== online.mySeat) : undefined;
     const iAsked = !!online?.rematchVotes?.includes(online.mySeat);
@@ -2738,7 +2788,7 @@ function GameScreen() {
     <button
       className="ba-btn primary big ba-endturn"
       data-act="endturn"
-      disabled={!lm.canEndTurn || aiActing}
+      disabled={!lm.canEndTurn || aiActing || watching}
       title={`${seatName(game.turnPlayer)}'s turn — end it (E)`}
       style={{ ["--lc" as string]: leaderHex(game.turnPlayer) }}
       onClick={() => dispatch({ type: "endTurn", player: game.turnPlayer })}
@@ -2776,6 +2826,27 @@ function GameScreen() {
         {/* turn toast sits IN the rail flow (never over the table or rail) */}
         {toast && <div className="ba-toast">{toast}</div>}
         <div className="ba-preview">{previewPanel}</div>
+        {replay && (
+          <div className="ba-aictl" data-replay-controls>
+            <span className="ba-aictl-tag" data-replay-progress>REPLAY · PLAY {replay.step} / {replayPlays}</span>
+            <div className="ba-replaygrid">
+              <div className="ba-replayhands" role="radiogroup" aria-label="Hands shown">
+                {REPLAY_HANDS.map((h) => (
+                  <label key={h.value} className="ba-replayradio" title={h.value === "one" ? `${seatName(BOTTOM)}'s hand only` : undefined}>
+                    <input type="radio" name="replay-hands" data-act={`replay-hands-${h.value}`} checked={replay.hands === h.value} onChange={() => setReplayHands(h.value)} />
+                    {h.label}
+                  </label>
+                ))}
+              </div>
+              <div className="ba-replaybtns">
+                <button className="ba-btn" data-act="replay-play" disabled={replay.playing || replayAtEnd} onClick={() => setReplayPlaying(true)}>Play</button>
+                <button className="ba-btn" data-act="replay-pause" disabled={!replay.playing} onClick={() => setReplayPlaying(false)}>Pause</button>
+                <button className="ba-btn" data-act="replay-next" disabled={replayAtEnd} onClick={replayNext}>Next Play</button>
+                <button className={`ba-btn${replay.fast ? " primary" : ""}`} data-act="replay-fast" aria-pressed={replay.fast} onClick={() => setReplayFast(!replay.fast)}>Fast Forward</button>
+              </div>
+            </div>
+          </div>
+        )}
         {hasAi && (
           <div className="ba-aictl" data-ai-controls>
             <span className="ba-aictl-tag">AI · Pro</span>
@@ -2809,15 +2880,15 @@ function GameScreen() {
         <div className="ba-railfill" />
         {/* the night sea behind the table is OGA-BY 3.0: credited on screen */}
         <span className="ba-credit">Night sky: <a href="https://opengameart.org/content/moon-and-sea-pixel-art-background" target="_blank" rel="noopener noreferrer">“Moon and Sea”</a> by CraftPix.net (OGA-BY 3.0)</span>
-        <button
+        {!watching && <button
           className={`ba-btn${confirmPicks ? " primary" : ""}`}
           data-act="confirm-picks"
           title={confirmPicks ? "Every choice waits for a Confirm" : "Complete choices resolve at once; nothing-to-do windows are skipped"}
           onClick={() => setConfirmPicks(!confirmPicks)}
         >
           Confirm every choice: {confirmPicks ? "on" : "off"}
-        </button>
-        <button
+        </button>}
+        {!watching && <button
           className="ba-btn ba-undo"
           data-act="undo"
           disabled={online ? game.phase === "over" || !!undoRequest : !lastHumanMove || !!undoRequest}
@@ -2825,7 +2896,7 @@ function GameScreen() {
           onClick={requestUndo}
         >
           ↶ Take back last move
-        </button>
+        </button>}
         <button className={`ba-btn ghost${unreadLetters > 0 ? " msg-alert" : ""}`} data-act="messages" onClick={() => setMessagesOpen(!messagesOpen)}>
           Messages{unreadLetters > 0 ? ` (${unreadLetters})` : ""}
         </button>
@@ -2849,7 +2920,8 @@ function GameScreen() {
             </div>
             {/* reserved slot: prompts overlay here, the table never reflows */}
             <div className="ba-promptslot">
-              {aiActing ? <div className="ba-aithinking" data-ai-thinking>{online ? `Waiting for ${seatName(lm.actor)}…` : `${seatName(lm.actor)} ${aiPaused ? "— paused" : "is thinking…"}`}</div> : actionBar}
+              {replay ? <div className="ba-aithinking" data-replay-status>{game.phase === "over" ? "Replay over" : `Replay${replay.playing ? "" : " (paused)"} · ${seatName(lm.actor)} to act`}</div>
+                : aiActing ? <div className="ba-aithinking" data-ai-thinking>{online ? `Waiting for ${seatName(lm.actor)}…` : `${seatName(lm.actor)} ${aiPaused ? "— paused" : "is thinking…"}`}</div> : actionBar}
             </div>
             {endTurnButton}
           </div>
@@ -2915,7 +2987,7 @@ function GameScreen() {
                 : <p key={i} className={`ba-logline ${l.kind}`}>{withCardNames(l.text, l.cards)}</p>,
             )}
           </div>
-          <form
+          {!watching && <form
             className="ba-chat-input"
             onSubmit={(e) => {
               e.preventDefault();
@@ -2933,7 +3005,7 @@ function GameScreen() {
             )}
             <input value={chatDraft} onChange={(e) => setChatDraft(e.target.value)} placeholder="Say something…" maxLength={200} data-chat-input />
             <button type="submit" data-act="chat-send" disabled={!chatDraft.trim()}>Send</button>
-          </form>
+          </form>}
         </div>
         {SeatPanel({ pid: BOTTOM })}
       </div>
