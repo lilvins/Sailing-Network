@@ -5,6 +5,14 @@
 // engine, so it stores the record as the browser sent it, after checking that
 // its parts line up.
 //
+// What a replay may claim. The server cannot tell whether a record was really
+// played, and its link is public, so a record never speaks for someone else:
+// - a friend game: names, moves, chat and who went first are the room's own,
+//   and the record must end with the winner both players reported;
+// - a game a browser sends in (against the AI, or two players at one screen):
+//   the person's seat carries the sender's account name, an AI seat carries a
+//   bot's name, and no chat is kept. It can only say "this account played this".
+//
 // Watching needs no account: whoever has the link watches, as on Duelingbook.
 // So GET /api/replays/:id is the one route here that asks for no session. It
 // only reads, it answers with that one replay, and the id is the protection:
@@ -60,6 +68,27 @@ export function parseRecord(body) {
   return parsed.success && linesUp(parsed.data) ? parsed.data : null;
 }
 
+/** The seat the record says won, or null. */
+export function recordWinner(record) {
+  const ended = record.events.findLast((e) => e.type === "gameEnded");
+  return SEATS.includes(ended?.winner) ? ended.winner : null;
+}
+
+/** A name an AI seat may carry: "Bot", "Bot Pro", "Bot Pro 2". */
+const BOT_NAME = /^Bot( [A-Za-z0-9]{1,12}){0,2}$/;
+
+/** A record a browser sent in, with the names the server answers for (see the top of this file). */
+export function sentInRecord(record, user) {
+  const sender = user.display_name || user.username;
+  let people = 0;
+  const seats = record.seats.map((s) => {
+    if (s.controller === "ai") return { ...s, name: BOT_NAME.test(s.name) ? s.name : "Bot" };
+    people += 1;
+    return { ...s, name: people === 1 ? sender : `${sender}'s guest` };
+  });
+  return { ...record, seats, chat: [] };
+}
+
 function newId() {
   let id = "";
   for (let i = 0; i < ID_LENGTH; i++) id += ID_LETTERS[randomInt(ID_LETTERS.length)];
@@ -67,12 +96,12 @@ function newId() {
 }
 
 /** Stores a record; `users` = the accounts in seat A and seat B (null: the AI, or nobody's own seat).
+ *  `firstPlayer`: who went first, when the server knows it itself (a room).
  *  Returns the replay's id, or null when the record is too big to keep. */
-export async function saveReplay({ source, format = "", savedBy = null, users = [null, null], record }) {
+export async function saveReplay({ source, format = "", savedBy = null, users = [null, null], firstPlayer = null, record }) {
   const json = JSON.stringify(record);
   if (json.length > MAX_RECORD_BYTES) return null;
-  const ended = record.events.findLast((e) => e.type === "gameEnded");
-  const winner = SEATS.includes(ended?.winner) ? ended.winner : null;
+  const winner = recordWinner(record);
   const turns = record.events.reduce((max, e) => (e.type === "turnStarted" && Number.isInteger(e.turn) ? Math.max(max, e.turn) : max), 0);
   const seat = (pid) => record.seats.find((s) => s.pid === pid);
   const id = newId();
@@ -80,7 +109,7 @@ export async function saveReplay({ source, format = "", savedBy = null, users = 
     `INSERT INTO replays (id, created_at, source, format, saved_by, user_a, user_b, name_a, name_b, leader_a, leader_b, winner, first_player, turns, plays, record)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [id, Date.now(), source, format, savedBy, users[0], users[1], seat("seatA").name, seat("seatB").name, seat("seatA").leaderId, seat("seatB").leaderId,
-      winner, record.initial.order[0], turns, record.moves.length, json],
+      winner, firstPlayer ?? record.initial.order[0], turns, record.moves.length, json],
   );
   return id;
 }
@@ -111,9 +140,10 @@ export function registerReplays(app, requireUser, currentUser) {
   app.post("/api/replays", { bodyLimit: RECORD_BODY_LIMIT, config: { rateLimit: { max: 30, timeWindow: "10 minutes" } } }, async (req, reply) => {
     const user = await requireUser(req, reply);
     if (!user) return;
-    const record = parseRecord(req.body?.record);
-    if (!record) return reply.code(400).send({ error: "Invalid replay" });
-    if (!record.events.some((e) => e.type === "gameEnded")) return reply.code(400).send({ error: "The game is not over" });
+    const sent = parseRecord(req.body?.record);
+    if (!sent) return reply.code(400).send({ error: "Invalid replay" });
+    if (!sent.events.some((e) => e.type === "gameEnded")) return reply.code(400).send({ error: "The game is not over" });
+    const record = sentInRecord(sent, user);
     const ai = record.seats.some((s) => s.controller === "ai");
     // against the AI the person's seat is theirs; at one screen both seats are whoever sat there
     const users = record.seats.map((s) => (ai && s.controller === "human" ? user.id : null));

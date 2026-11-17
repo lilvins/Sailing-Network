@@ -6,7 +6,7 @@
 import { randomBytes, randomInt } from "node:crypto";
 import { z } from "zod";
 import { createMatch, getDeck } from "./store.mjs";
-import { RECORD_BODY_LIMIT, parseRecord, saveReplay } from "./replays.mjs";
+import { RECORD_BODY_LIMIT, parseRecord, recordWinner, saveReplay } from "./replays.mjs";
 import { limit } from "./security.mjs";
 
 const SEATS = ["seatA", "seatB"];
@@ -128,8 +128,12 @@ function roomRecord(room, body) {
  *  "friend", so it stays out of the ladder and the meta (server/stats). */
 async function recordFriendGame(room) {
   const winner = room.results[0];
+  // a record that ends another way than both players said is not this game: the result counts, with no replay
+  if (room.record && recordWinner(room.record) !== winner) room.record = null;
   if (room.record) {
-    room.replayId = await saveReplay({ source: "friend", format: room.format, users: room.seats.map((s) => s.userId), record: room.record });
+    room.replayId = await saveReplay({
+      source: "friend", format: room.format, users: room.seats.map((s) => s.userId), firstPlayer: room.firstPlayer, record: room.record,
+    });
     room.record = null; // it is in the database now
   }
   await Promise.all(room.seats.map(async (seat, i) => {
