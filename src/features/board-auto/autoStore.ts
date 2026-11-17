@@ -253,11 +253,13 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
       pid: s.pid, name: s.name, controller: "remote",
       deck: { key: `replay:${s.pid}`, name: s.deckName, sub: "", leaderId: s.leaderId, main: [], source: "mine" },
     });
+    // a line said after the last event that was kept (a take-back removed the rest) still belongs to the game
+    const chat = record.chat.map((line) => (line.at > record.events.length ? { ...line, at: record.events.length } : line));
     set({
       stage: "play", seats: [seat(record.seats[0]), seat(record.seats[1])], roll: null,
       game: stateAfter(record, 0), events: record.events.slice(0, record.cuts[0]),
       recording: null, replayId: null, history: [], undoRequest: null, aiPlan: null, banner: null, online: null,
-      replay: { id, record, step: 0, playing: playsIn(record) > 0, fast: false, hands: "both", bottom },
+      replay: { id, record: { ...record, chat }, step: 0, playing: playsIn(record) > 0, fast: false, hands: "both", bottom },
     });
   },
 
