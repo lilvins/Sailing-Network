@@ -23,6 +23,7 @@ export type View =
   | "popular-decklists"
   | "admin"
   | "credits" // artists, fonts and data sources
+  | "replay" // a finished game watched again on the Play Auto table (src/features/replay)
   | "board" // the playmat (current layout)
   | "board2" // layout lab — OPTCGSim-style table
   | "board-auto" // AUTOSIM full-rules board (engine-driven)
@@ -51,6 +52,9 @@ interface UiState {
   /** Username Messages should auto-open the thread with (null = none). */
   openThreadWith: string | null;
   openMessagesWith: (username: string | null) => void;
+  /** The replay the "replay" page shows (its id, as in the link `/?replay=<id>`). */
+  replayId: string | null;
+  openReplay: (replayId: string) => void;
   /** The Messages window, floating over whatever page is open. */
   messagesOpen: boolean;
   setMessagesOpen: (open: boolean) => void;
@@ -88,6 +92,9 @@ export const useUiStore = create<UiState>((set) => ({
     set((s) => (locked(s, "profile-viewer") ? s : { viewingUsername, view: "profile-viewer", navStack: pushed(s, "profile-viewer") })),
   openThreadWith: null,
   openMessagesWith: (openThreadWith) => set({ openThreadWith, messagesOpen: true }),
+  replayId: null,
+  openReplay: (replayId) =>
+    set((s) => (locked(s, "replay") ? s : { replayId, view: "replay", navStack: pushed(s, "replay") })),
   messagesOpen: false,
   setMessagesOpen: (messagesOpen) => set(messagesOpen ? { messagesOpen } : { messagesOpen, openThreadWith: null }),
   tableRotated: false,

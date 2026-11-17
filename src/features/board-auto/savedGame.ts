@@ -1,5 +1,6 @@
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState } from "../../autosim/engine/state";
+import type { Recording } from "../replay/record";
 import type { SeatSetup } from "./autoStore";
 
 /**
@@ -12,17 +13,24 @@ export interface SavedGame {
   seats: [SeatSetup, SeatSetup];
   game: AutoGameState;
   events: GameEvent[];
+  /** The game's replay so far. It needs the whole log, so it is only there when the whole log was kept. */
+  recording?: Recording;
   aiDelay: number;
 }
 
 const KEY = "boardauto:game:v1";
-/** The log keeps only its tail across a reload: the state itself is complete. */
+/** When the whole game does not fit, the log keeps only its tail: the state itself is complete. */
 const MAX_EVENTS = 600;
 
 export function saveGame(g: SavedGame): void {
   try {
-    sessionStorage.setItem(KEY, JSON.stringify({ ...g, events: g.events.slice(-MAX_EVENTS) }));
-  } catch { /* no storage, or full: the game just will not survive a reload */ }
+    sessionStorage.setItem(KEY, JSON.stringify(g));
+  } catch {
+    // too big with its whole log: the game resumes, but it will have no replay
+    try {
+      sessionStorage.setItem(KEY, JSON.stringify({ ...g, recording: undefined, events: g.events.slice(-MAX_EVENTS) }));
+    } catch { /* no storage, or full: the game just will not survive a reload */ }
+  }
 }
 
 export function loadGame(): SavedGame | null {

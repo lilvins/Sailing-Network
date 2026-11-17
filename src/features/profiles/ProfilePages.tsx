@@ -10,6 +10,7 @@ import "./profiles.css";
 import { PixelScene } from "../pixel/PixelScene";
 import { PixelIcon, type PixelIconName } from "../pixel/PixelIcon";
 import { selectUnread, useInboxStore } from "../social/inboxStore";
+import { myReplays, type ReplaySummary } from "../replay/replayApi";
 
 /* Ported from Claude design (profiles.jsx → MyProfile, DuelRecords; the
    Profile Viewer and Rankings live in ProfileViewer.tsx / Rankings.tsx). Root is `.sn snp` so the design palette vars and
@@ -354,7 +355,11 @@ export function MyProfile() {
 /* ================= DUEL RECORDS (real match history) ================= */
 export function DuelRecords() {
   const setView = useUiStore((s) => s.setView);
+  const openReplay = useUiStore((s) => s.openReplay);
   const [matches, setMatches] = useState<Match[]>([]);
+  /** Games with no row above (against the AI, two players at one screen): kept only as replays. */
+  const [practice, setPractice] = useState<ReplaySummary[]>([]);
+  const [tab, setTab] = useState<"duels" | "practice">("duels");
   const [cards, setCards] = useState<Map<string, Card> | null>(null);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
@@ -364,6 +369,7 @@ export function DuelRecords() {
     Promise.all([api.myMatches(), loadCardsById()])
       .then(([{ matches }, m]) => { setMatches(matches); setCards(m); setLoading(false); })
       .catch(() => setLoading(false));
+    myReplays().then((all) => setPractice(all.filter((r) => r.source !== "friend"))).catch(() => {});
   }, []);
 
   const formats = useMemo(
@@ -397,16 +403,20 @@ export function DuelRecords() {
       <div className="snp-body">
         <div className="snp-wrap">
           <div className="rec-toolbar">
-            <Select value={fmt} onChange={setFmt} options={formats} />
+            <div className="rec-tabs" role="tablist" aria-label="Which games">
+              <button role="tab" aria-selected={tab === "duels"} className={"rec-tab" + (tab === "duels" ? " on" : "")} data-act="records-duels" onClick={() => setTab("duels")}>Duels</button>
+              <button role="tab" aria-selected={tab === "practice"} className={"rec-tab" + (tab === "practice" ? " on" : "")} data-act="records-practice" onClick={() => setTab("practice")}>Against the AI · One screen</button>
+            </div>
+            {tab === "duels" && <Select value={fmt} onChange={setFmt} options={formats} />}
             <div className="spacer" />
-            <div className="rec-search">
+            {tab === "duels" && <div className="rec-search">
               <Ico n="search" size={16} />
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter opponents…" />
-            </div>
+            </div>}
           </div>
 
-          <div className="rec-table">
-            <div className="rec-head">
+          {tab === "duels" && <div className="rec-table">
+            <div className="rec-head rec-duels">
               <span />
               <span>Opponent</span>
               <span>Your Deck</span>
@@ -416,10 +426,11 @@ export function DuelRecords() {
               <span>Opp. Leader</span>
               <span>Date</span>
               <span className="ar">Play</span>
+              <span className="ar">Replay</span>
             </div>
             {loading && <div style={{ padding: 40, textAlign: "center", color: "var(--muted)" }}>Loading matches…</div>}
             {!loading && rows.map((r) => (
-              <div className="rec-row" key={r.id}>
+              <div className="rec-row rec-duels" key={r.id}>
                 <LeaderAvatar name={r.opponent.displayName} color={lcolor(r.oppLeaderId)} image={r.oppLeaderId ? cards?.get(r.oppLeaderId)?.image : null} size={44} />
                 <div className="rec-opp">
                   <span className="name">{r.opponent.displayName}</span>
@@ -434,16 +445,52 @@ export function DuelRecords() {
                 <span className="rk-lead"><span className="rk-leaddot" style={{ background: lcolor(r.oppLeaderId) }} />{lname(r.oppLeaderId)}</span>
                 <span className="rec-date">{fmtDate(r.createdAt)}</span>
                 <span className="rec-new">{r.onPlay ? "1st" : "2nd"}</span>
+                {r.replayId
+                  ? <button className="rec-replay" data-act="watch-replay" data-replay={r.replayId} onClick={() => openReplay(r.replayId!)}>Replay</button>
+                  : <span className="rec-new" title="This game was not recorded">—</span>}
               </div>
             ))}
             {!loading && rows.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>No duels match your filter.</div>}
-          </div>
+          </div>}
+
+          {tab === "practice" && (
+            <>
+              <div className="rec-table" data-practice-replays>
+                <div className="rec-head rec-practice">
+                  <span />
+                  <span>Players</span>
+                  <span>Winner</span>
+                  <span>Game</span>
+                  <span className="ar">Turns</span>
+                  <span>Date</span>
+                  <span className="ar">Replay</span>
+                </div>
+                {practice.map((p) => {
+                  const [a, b] = p.seats;
+                  return (
+                    <div className="rec-row rec-practice" key={p.id}>
+                      <LeaderAvatar name={a.name} color={lcolor(a.leaderId)} image={cards?.get(a.leaderId)?.image} size={44} />
+                      <div className="rec-opp">
+                        <span className="name">{a.name} vs {b.name}</span>
+                      </div>
+                      <span className="rec-val">{p.seats.find((s) => s.pid === p.winner)?.name ?? "—"}</span>
+                      <span><span className="rec-fmt-pill">{p.source === "ai" ? "vs AI" : "One screen"}</span></span>
+                      <span className="rec-new">{p.turns}</span>
+                      <span className="rec-date">{fmtDate(p.createdAt)}</span>
+                      <button className="rec-replay" data-act="watch-replay" data-replay={p.id} onClick={() => openReplay(p.id)}>Replay</button>
+                    </div>
+                  );
+                })}
+                {practice.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "var(--muted)" }}>No game kept yet: finish one in Play Auto and it shows up here.</div>}
+              </div>
+            </>
+          )}
 
           <div className="rec-foot">
             <button className="rec-exit" onClick={() => setView("home")}>
               <Ico n="exit" size={16} /> Exit to Main Menu
             </button>
-            <span className="mp-charcount">Showing {rows.length} of your {matches.length} most recent duels</span>
+            <span className="mp-charcount">{tab === "duels" ? `Showing ${rows.length} of your ${matches.length} most recent duels` : `${practice.length} game${practice.length === 1 ? "" : "s"} kept as replays`}</span>
           </div>
         </div>
       </div>

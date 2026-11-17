@@ -102,6 +102,8 @@ export interface Match {
   onPlay: boolean;
   points: number;
   format: string;
+  /** The game itself, to watch again (null: only its result was kept). */
+  replayId: string | null;
   createdAt: number;
 }
 

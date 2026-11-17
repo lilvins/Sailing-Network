@@ -116,14 +116,14 @@ export async function createMatchesBatch(rows) {
   }
 }
 
-export async function createMatch({ userId, oppUserId, myDeckId, myLeaderId, oppLeaderId, result, onPlay, format, source = "manual" }) {
+export async function createMatch({ userId, oppUserId, myDeckId, myLeaderId, oppLeaderId, result, onPlay, format, source = "manual", replayId = null }) {
   const id = randomUUID();
   const now = Date.now();
   const win = result === "win";
   await run(
-    `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,source,created_at)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [id, userId, oppUserId ?? null, myDeckId ?? null, myLeaderId ?? null, oppLeaderId ?? null, result, onPlay ? 1 : 0, win ? 10 : -5, format ?? "", source, now],
+    `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,source,replay_id,created_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [id, userId, oppUserId ?? null, myDeckId ?? null, myLeaderId ?? null, oppLeaderId ?? null, result, onPlay ? 1 : 0, win ? 10 : -5, format ?? "", source, replayId, now],
   );
   // keep deck + profile win/loss totals in sync
   if (myDeckId) await run(`UPDATE decks SET ${win ? "wins=wins+1" : "losses=losses+1"} WHERE id=?`, [myDeckId]);
@@ -162,6 +162,8 @@ export const matchToClient = (m) => ({
   onPlay: !!m.on_play,
   points: m.points,
   format: m.format,
+  /** The game itself, to watch again (null: only its result was kept). */
+  replayId: m.replay_id ?? null,
   createdAt: m.created_at,
 });
 

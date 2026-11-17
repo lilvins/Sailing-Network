@@ -1,0 +1,132 @@
+import { describe, expect, it } from "vitest";
+import { applyIntent, createGame } from "../../autosim/engine/engine";
+import type { GameEvent } from "../../autosim/engine/events";
+import { legalMoves } from "../../autosim/engine/legality";
+import type { AutoGameState } from "../../autosim/engine/state";
+import { randomIntent } from "../../autosim/ai/random";
+import { metaGameConfig, realDb } from "../../autosim/__bench__/metaGames";
+import { seededRng } from "../../lib/rng";
+import { finishRecording, nextPlay, playsIn, recordPlay, recordProblem, rewindRecording, startRecording, stateAfter, type ReplayRecord } from "./record";
+import { TEST_SEATS, playAndRecord, shown } from "./testGames";
+
+/**
+ * A recorded game played back must be the game that was played: the same
+ * state after every play, down to the last one.
+ */
+
+describe("a recorded game played back", () => {
+  const { record, states } = playAndRecord(0);
+
+  it("the game was played to its end", () => {
+    expect(states[states.length - 1].phase).toBe("over");
+    expect(playsIn(record)).toBe(states.length - 1);
+    expect(recordProblem(record)).toBeNull();
+  });
+
+  it("Next Play after Next Play, every state is the live one", () => {
+    let state = stateAfter(record, 0);
+    expect(state).toEqual(shown(states[0], state));
+    for (let n = 0; n < playsIn(record); n++) {
+      const before = JSON.stringify(state);
+      const next = nextPlay(record, state, n);
+      expect(JSON.stringify(state)).toBe(before); // the state on screen is never changed in place
+      state = next;
+      expect(state).toEqual(shown(states[n + 1], state));
+    }
+    expect(state.phase).toBe("over");
+    expect(state.winner).toBe(states[states.length - 1].winner);
+  }, 120_000);
+
+  it("jumping to a play gives the same state as stepping there", () => {
+    const last = playsIn(record);
+    for (const n of [0, 1, Math.floor(last / 2), last]) {
+      const state = stateAfter(record, n);
+      expect(state).toEqual(shown(states[n], state));
+    }
+  });
+
+  it("survives the trip to the server and back (JSON)", () => {
+    const back = JSON.parse(JSON.stringify(record)) as ReplayRecord;
+    expect(recordProblem(back)).toBeNull();
+    const last = playsIn(back);
+    const state = stateAfter(back, last);
+    expect(state).toEqual(shown(states[last], state));
+  });
+
+  it("the table can draw every state (who must act, what is legal)", () => {
+    let state = stateAfter(record, 0);
+    for (let n = 0; n < playsIn(record); n++) {
+      state = nextPlay(record, state, n);
+      expect(legalMoves(realDb, state).actor).toBe(legalMoves(realDb, states[n + 1]).actor);
+    }
+  }, 120_000);
+
+  it("fits in what the server accepts", () => {
+    expect(JSON.stringify(record).length).toBeLessThan(2_000_000);
+  });
+});
+
+describe("every meta deck's game plays back to the same end", () => {
+  it("the last state of the replay is the last state of the game", () => {
+    for (let game = 1; game < 8; game++) {
+      const { record, states } = playAndRecord(game);
+      const last = playsIn(record);
+      const state = stateAfter(record, last);
+      expect(state).toEqual(shown(states[last], state));
+      expect(state.phase).toBe("over");
+    }
+  }, 120_000);
+});
+
+describe("a take-back while recording", () => {
+  it("the record forgets the plays taken back, and the game goes on from there", () => {
+    const config = metaGameConfig(1);
+    const made = createGame(realDb, config);
+    const rngA = seededRng("first-try");
+    let state = made.state;
+    let events: GameEvent[] = made.events;
+    let rec = startRecording(state, events.length);
+    const history: { state: AutoGameState; eventsLen: number }[] = [];
+    const play = (rng: ReturnType<typeof seededRng>) => {
+      history.push({ state, eventsLen: events.length });
+      const intent = randomIntent(realDb, state, rng);
+      const r = applyIntent(realDb, state, intent);
+      state = r.state;
+      events = [...events, ...r.events];
+      rec = recordPlay(rec, intent, state, events.length);
+    };
+    for (let i = 0; i < 12; i++) play(rngA);
+    // back to before play 8 (the table does this with its own history)
+    const keep = 7;
+    state = history[keep].state;
+    events = events.slice(0, history[keep].eventsLen);
+    rec = rewindRecording(rec, keep);
+    history.length = keep;
+    expect(playsIn(rec)).toBe(keep);
+    const rngB = seededRng("second-try");
+    for (let i = 0; i < 10; i++) play(rngB);
+
+    const record = finishRecording(rec, TEST_SEATS, events, []);
+    expect(recordProblem(record)).toBeNull();
+    expect(playsIn(record)).toBe(keep + 10);
+    const replayed = stateAfter(record, playsIn(record));
+    expect(replayed).toEqual(shown(state, replayed));
+  });
+});
+
+describe("a record that cannot be played back says why", () => {
+  const { record } = playAndRecord(2, 6);
+
+  it("an unfinished game is still a valid record", () => {
+    expect(recordProblem(record)).toBeNull();
+  });
+  it("a log shorter than its plays", () => {
+    expect(recordProblem({ ...record, events: record.events.slice(0, -1) })).toMatch(/incomplete/);
+  });
+  it("plays and prompts that do not line up", () => {
+    expect(recordProblem({ ...record, pending: record.pending.slice(1) })).toMatch(/line up/);
+  });
+  it("a format from another version", () => {
+    expect(recordProblem({ ...record, v: 2 as unknown as 1 })).toMatch(/version/);
+  });
+});
