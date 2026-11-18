@@ -86,4 +86,6 @@ export const publicUser = (u) =>
     role: u.role,
     displayName: u.display_name,
     createdAt: u.created_at,
+    /** The owner proved the email address is theirs (account.mjs). */
+    emailVerified: !!u.email_verified_at,
   };

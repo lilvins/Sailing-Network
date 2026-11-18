@@ -78,6 +78,19 @@ describe("server settings (config.mjs)", () => {
     expect(() => loadConfig({ SN_RANKED_GONE_MS: "5" })).toThrow(/SN_RANKED_GONE_MS/);
   });
 
+  it("email: both settings or neither, and in production the site's own https address for the links", () => {
+    const prod = { NODE_ENV: "production", COOKIE_SECRET: SECRET, SN_STATIC_DIR: "off" };
+    expect(loadConfig(prod).mail).toEqual({ from: "", resendKey: "", outbox: "" });
+    expect(() => loadConfig({ SN_MAIL_FROM: "Sailing Network <a@b.c>" })).toThrow(/RESEND_API_KEY/);
+    const mail = { SN_MAIL_FROM: "Sailing Network <a@b.c>", RESEND_API_KEY: "re_test" };
+    expect(() => loadConfig({ ...prod, ...mail })).toThrow(/SN_PUBLIC_URL/);
+    expect(() => loadConfig({ ...prod, ...mail, SN_PUBLIC_URL: "http://sailing.example" })).toThrow(/SN_PUBLIC_URL/);
+    expect(loadConfig({ ...prod, ...mail, SN_PUBLIC_URL: "https://sailing.example/" }).publicUrl).toBe("https://sailing.example");
+    expect(loadConfig({}).publicUrl).toBe("http://localhost:5173");
+    expect(() => loadConfig({ ...prod, SN_MAIL_OUTBOX: "mails.txt" })).toThrow(/SN_MAIL_OUTBOX/);
+    expect(loadConfig({ SN_OPERATOR: " Vins ", SN_CONTACT_EMAIL: "a@b.c" })).toMatchObject({ operator: "Vins", contactEmail: "a@b.c" });
+  });
+
   it("TRUST_PROXY: off, on, a number of proxies, or their addresses", () => {
     const of = (v) => loadConfig({ TRUST_PROXY: v }).trustProxy;
     expect([of(undefined), of("false"), of("true"), of("1"), of("10.0.0.0/8")]).toEqual([false, false, true, 1, "10.0.0.0/8"]);

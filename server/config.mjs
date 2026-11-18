@@ -76,6 +76,22 @@ export function loadConfig(env = process.env) {
   const rankedGoneMs = Number(env.SN_RANKED_GONE_MS ?? 120000);
   if (!Number.isInteger(rankedGoneMs) || rankedGoneMs < 1000) problems.push(`SN_RANKED_GONE_MS must be a whole number of milliseconds, 1000 or more: ${env.SN_RANKED_GONE_MS}`);
 
+  // Who runs the site and how to reach them: shown on the Privacy and Terms pages.
+  const operator = (env.SN_OPERATOR ?? "").trim();
+  const contactEmail = (env.SN_CONTACT_EMAIL ?? "").trim();
+
+  // Email (password reset, address check). Sent through Resend's HTTP API when
+  // RESEND_API_KEY and SN_MAIL_FROM are set; with neither, no mail goes out and an
+  // admin hands out reset links. SN_MAIL_OUTBOX (never in production) writes each
+  // mail to a file instead of sending it: the tests read their links there.
+  const mail = { from: (env.SN_MAIL_FROM ?? "").trim(), resendKey: (env.RESEND_API_KEY ?? "").trim(), outbox: (env.SN_MAIL_OUTBOX ?? "").trim() };
+  if (!!mail.from !== !!mail.resendKey) problems.push("SN_MAIL_FROM and RESEND_API_KEY go together: set both, or neither.");
+  if (isProd && mail.outbox) problems.push("SN_MAIL_OUTBOX is for development and tests only.");
+  // The site's own address, for the links inside emails. Never taken from a request
+  // in production: a forged Host header would put someone else's site in the mail.
+  const publicUrl = (env.SN_PUBLIC_URL ?? (isProd ? "" : "http://localhost:5173")).replace(/\/+$/, "");
+  if (isProd && mail.resendKey && !/^https:\/\//.test(publicUrl)) problems.push("SN_PUBLIC_URL must be the site's https address when email is on (the links in the mails use it).");
+
   if (problems.length > 0) throw new Error(`Configuration:\n- ${problems.join("\n- ")}`);
-  return { isProd, port, host, cookieSecret, corsOrigin, trustProxy: trustProxyOf(env.TRUST_PROXY), staticDir, cardsDir, rateLimit, rankedOpen: ranked === "open", rankedGoneMs };
+  return { isProd, port, host, cookieSecret, corsOrigin, trustProxy: trustProxyOf(env.TRUST_PROXY), staticDir, cardsDir, rateLimit, rankedOpen: ranked === "open", rankedGoneMs, operator, contactEmail, mail, publicUrl };
 }

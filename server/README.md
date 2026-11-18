@@ -110,6 +110,9 @@ meaning. In development none is needed.
 | `SN_RATE_LIMIT` | 900 in production, 0 in dev | API requests a visitor may make in a minute, over the routes with no limit of their own; 0 = no limit |
 | `SN_RANKED` | `closed` in production, `open` in dev | whether the Duelist Pool takes players |
 | `SN_RANKED_GONE_MS` | 120000 | a player who has not asked for their ranked table for this long has left it, and loses |
+| `SN_OPERATOR`, `SN_CONTACT_EMAIL` | empty | who runs the site and how to reach them, shown on the Privacy and Terms pages |
+| `RESEND_API_KEY`, `SN_MAIL_FROM` | none | both or neither: with them the site sends the reset and confirmation links by email (Resend); without, an admin hands out reset links |
+| `SN_PUBLIC_URL` | none in production | the site's https address, for the links inside emails; required when email is on |
 
 ## Production
 

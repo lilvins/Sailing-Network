@@ -7,7 +7,7 @@
 // Exit code 0 = all green, 1 = failures (suitable for CI).
 
 import { spawn } from "node:child_process";
-import { rmSync, existsSync } from "node:fs";
+import { rmSync, existsSync, readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createClient } from "@libsql/client";
 import { dirname, join } from "node:path";
@@ -17,6 +17,8 @@ const ROOT = join(__dirname, "..");
 const PORT = 8791;
 const BASE = `http://127.0.0.1:${PORT}`;
 const DB = join(__dirname, "api-test.db");
+/** Every mail the test server "sends" lands here, one JSON object per line (SN_MAIL_OUTBOX). */
+const OUTBOX = join(__dirname, "api-test.outbox");
 
 // ---------- tiny test harness ----------
 let passed = 0, failed = 0;
@@ -52,7 +54,7 @@ function client() {
     get: (p) => call("GET", p),
     post: (p, b) => call("POST", p, b ?? {}),
     patch: (p, b) => call("PATCH", p, b),
-    del: (p) => call("DELETE", p),
+    del: (p, b) => call("DELETE", p, b),
   };
 }
 
@@ -63,6 +65,7 @@ function cleanupDb() {
     // Windows keeps the file locked for a moment after the server exits: retry
     if (existsSync(f)) rmSync(f, { force: true, maxRetries: 20, retryDelay: 100 });
   }
+  rmSync(OUTBOX, { force: true });
 }
 
 async function waitForHealth(timeoutMs = 10000) {
@@ -81,7 +84,7 @@ cleanupDb();
 
 // seed the first admin into the temp DB, then boot the server on the test port
 // SN_RANKED_GONE_MS: how long a player may stop asking for a ranked table before they have left it
-const env = { ...process.env, SN_API_PORT: String(PORT), SN_DB_PATH: DB, SN_RANKED: "open", SN_RANKED_GONE_MS: "2000" };
+const env = { ...process.env, SN_API_PORT: String(PORT), SN_DB_PATH: DB, SN_RANKED: "open", SN_RANKED_GONE_MS: "2000", SN_MAIL_OUTBOX: OUTBOX, SN_PUBLIC_URL: "http://site.test" };
 await new Promise((resolve, reject) => {
   const p = spawn(process.execPath, [join(ROOT, "server", "seed-admin.mjs")], { env, stdio: "ignore" });
   p.on("exit", (c) => (c === 0 ? resolve() : reject(new Error("seed-admin failed"))));
@@ -571,6 +574,121 @@ try {
   const left = (await tc.get(`/api/match-sessions/${t2.sessionId}`)).json.session;
   const leftRows = (await td.get("/api/me/matches")).json.matches;
   check("a player who left the table loses", left?.status === "completed" && left.winnerId === utc.id && leftRows.length === leftBefore + 1 && leftRows[0].result === "loss", JSON.stringify(left));
+
+  // ============================ THE ACCOUNT ITSELF ============================
+  section("account");
+  const mails = () => (existsSync(OUTBOX) ? readFileSync(OUTBOX, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)) : []);
+  const tokenIn = (mail, param) => new RegExp(`http://site\\.test/\\?${param}=([0-9a-f]{64})`).exec(mail?.text ?? "")?.[1];
+  const meOf = async (c) => (await c.get("/api/auth/me")).json.user;
+
+  const verifyMail = mails().find((m) => m.to === "u2@test.local" && /confirm/.test(m.subject));
+  const verifyToken = tokenIn(verifyMail, "verify");
+  check("signing up sends a link to confirm the address", !!verifyToken);
+  check("the address is not confirmed before the link is opened", (await meOf(u2)).emailVerified === false);
+  r = await client().post("/api/auth/verify", { token: verifyToken });
+  check("the link confirms it", r.status === 200 && (await meOf(u2)).emailVerified === true);
+  r = await client().post("/api/auth/verify", { token: verifyToken });
+  check("a link works once", r.status === 400);
+
+  const sentBefore = mails().length;
+  r = await client().post("/api/auth/forgot", { identifier: "nobody@test.local" });
+  check("forgot password: an unknown account gets the same answer, and no mail", r.status === 200 && r.json.ok === true && mails().length === sentBefore);
+  r = await client().post("/api/auth/forgot", { identifier: "tester_two" });
+  const resetToken = tokenIn(mails().at(-1), "reset");
+  check("forgot password: a link goes to the account's address", r.status === 200 && mails().at(-1).to === "u2@test.local" && !!resetToken);
+  r = await client().post("/api/auth/reset", { token: resetToken, password: "short" });
+  check("a new password too short → 400, and the link is still good", r.status === 400);
+  r = await client().post("/api/auth/reset", { token: resetToken, password: "newpassword456" });
+  check("the link sets a new password", r.status === 200);
+  check("every session of the account is over", (await meOf(u2)) === null);
+  r = await client().post("/api/auth/reset", { token: resetToken, password: "another-one-789" });
+  check("the link works once", r.status === 400);
+  r = await client().post("/api/auth/login", { identifier: "tester_two", password: "password123" });
+  check("the old password no longer opens the account", r.status === 401);
+  r = await u2.post("/api/auth/login", { identifier: "tester_two", password: "newpassword456" });
+  check("the new one does", r.status === 200);
+
+  const u2Id = (await meOf(u2)).id;
+  r = await u1.post(`/api/admin/users/${u2Id}/reset-link`);
+  check("only an admin makes a reset link by hand", r.status === 403);
+  r = await admin.post(`/api/admin/users/${u2Id}/reset-link`);
+  check("an admin gets a link to pass on", r.status === 200 && /^\/\?reset=[0-9a-f]{64}$/.test(r.json.path ?? ""));
+
+  r = await u2.post("/api/me/password", { current: "wrong-password", next: "anotherpass789" });
+  check("changing the password needs the current one", r.status === 403);
+  r = await u2.post("/api/me/password", { current: "newpassword456", next: "anotherpass789" });
+  check("a new password while signed in: this device stays in", r.status === 200 && (await meOf(u2))?.username === "tester_two");
+
+  r = await client().get("/api/site");
+  check("the site says who runs it and what it can do, to anyone", r.status === 200 && r.json.mail === true && typeof r.json.operator === "string");
+
+  // ============================ MODERATION ============================
+  section("moderation");
+  await u2.post("/api/chat", { body: "a line from tester two" });
+  const chatOf = async (c) => (await c.get("/api/chat")).json.messages;
+  const twoLine = (await chatOf(u1)).find((m) => m.username === "tester_two" && m.body === "a line from tester two");
+  check("a chat line can be found by its id", !!twoLine?.id);
+
+  r = await u1.post("/api/me/blocks/tester_two");
+  check("a player blocks another", r.status === 200 && (await u1.get("/api/me/blocks")).json.blocks.some((b) => b.username === "tester_two"));
+  r = await u2.post("/api/threads/tester_one", { body: "hello?" });
+  check("the blocked player's DM is refused, with no word of the block", r.status === 403 && !/block/i.test(r.json.error));
+  r = await u1.post("/api/threads/tester_two", { body: "hi" });
+  check("the blocker cannot write either, and is told why", r.status === 403 && /blocked/.test(r.json.error));
+  r = await u2.post("/api/me/friends/tester_one");
+  check("nor a friend request", r.status === 403);
+  check("their friendship is over", !(await u1.get("/api/me/friends")).json.friends.some((f) => f.user?.username === "tester_two"));
+  check("their chat lines leave the blocker's chat, not everyone's", !(await chatOf(u1)).some((m) => m.username === "tester_two") && (await chatOf(host)).some((m) => m.username === "tester_two"));
+  r = await u1.post("/api/me/blocks/tester_one");
+  check("nobody blocks themselves", r.status === 400);
+
+  r = await u1.post("/api/reports", { username: "tester_two", kind: "chat", reason: "spam in the chat", messageId: twoLine.id });
+  check("a player reports a chat line", r.status === 201);
+  r = await u1.post("/api/reports", { username: "tester_two", kind: "dm", reason: "words never said", messageId: "no-such-message" });
+  check("a report about a message that does not exist → 404", r.status === 404);
+  r = await u1.get("/api/admin/reports");
+  check("reports are for admins", r.status === 403);
+  r = await admin.get("/api/admin/reports");
+  const report = r.json.reports?.[0];
+  check("the admins read it with the words it is about", r.json.open === 1 && report?.excerpt === "a line from tester two" && report.reporter?.username === "tester_one" && report.target.username === "tester_two" && report.reason === "spam in the chat");
+  r = await admin.patch(`/api/admin/reports/${report.id}`, { status: "closed" });
+  check("and close it", r.status === 200 && (await admin.get("/api/admin/reports")).json.open === 0 && (await admin.get("/api/admin/reports?status=closed")).json.reports.length === 1);
+
+  r = await host.del(`/api/chat/${twoLine.id}`);
+  check("nobody deletes someone else's chat line", r.status === 403);
+  r = await u2.del(`/api/chat/${twoLine.id}`);
+  check("its writer does", r.status === 200 && !(await chatOf(host)).some((m) => m.id === twoLine.id));
+  await u2.post("/api/chat", { body: "another line" });
+  const another = (await chatOf(host)).find((m) => m.body === "another line");
+  r = await admin.del(`/api/chat/${another.id}`);
+  check("an admin deletes any line", r.status === 200 && !(await chatOf(host)).some((m) => m.id === another.id));
+
+  await u1.del("/api/me/blocks/tester_two");
+  r = await u1.post("/api/threads/tester_two", { body: "sent by mistake" });
+  check("unblocked: messages go through again", r.status === 201);
+  const mistake = r.json.message.id;
+  r = await u2.del(`/api/messages/${mistake}`);
+  check("a private message is deleted only by who wrote it", r.status === 403);
+  r = await u1.del(`/api/messages/${mistake}`);
+  check("and then it is gone for both", r.status === 200 && !(await u2.get("/api/threads/tester_one")).json.messages.some((m) => m.id === mistake));
+
+  // ============================ THE WAY OUT ============================
+  section("deleting an account");
+  await guest.post("/api/chat", { body: "the guest was here" });
+  r = await guest.del("/api/me/account", { password: "not-the-password" });
+  check("deleting an account needs its password", r.status === 403 && (await meOf(guest))?.username === "room_guest");
+  r = await guest.del("/api/me/account", { password: "password123" });
+  check("the account is deleted", r.status === 200 && (await meOf(guest)) === null);
+  r = await client().post("/api/auth/login", { identifier: "room_guest", password: "password123" });
+  check("it cannot be opened again", r.status === 401);
+  check("its profile and its chat lines are gone", (await host.get("/api/profiles/room_guest")).status === 404 && !(await chatOf(host)).some((m) => m.body === "the guest was here"));
+  const afterLeaving = (await client().get(`/api/replays/${replayId}`)).json.replay;
+  check("the other player keeps the replay, without the deleted account's name or words",
+    afterLeaving?.seats[1].name === "Deleted captain" && afterLeaving.record.seats[1].name === "Deleted captain" && afterLeaving.record.chat.length === 0
+      && afterLeaving.seats[0].name === "room_host" && !JSON.stringify(afterLeaving.seats).includes("room_guest"));
+  check("and their own record of the game", (await recordsOf(host)).some((m) => m.replayId === replayId));
+  r = await admin.del("/api/me/account", { password: "admin12345" });
+  check("the last admin cannot delete their account", r.status === 400);
 
   section("Weight");
   const catalog = await fetch(`${BASE}/api/cards`, { headers: { "accept-encoding": "identity" } });
