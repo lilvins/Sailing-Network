@@ -8,6 +8,7 @@ import { LeaderAvatar } from "../cards/LeaderAvatar";
 import { PresenceBadge } from "../profiles/PresenceBadge";
 import { loadCardsById, type Card } from "../cards/cardsDb";
 import { useInboxStore } from "./inboxStore";
+import { ReportDialog, type ReportTarget } from "../account/ReportDialog";
 import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
@@ -92,6 +93,26 @@ function MessagesPopup() {
   const [cards, setCards] = useState<Map<string, Card> | null>(null);
   const [activeUsername, setActiveUsername] = useState<string | null>(openThreadWith);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  /** The captains this player blocked (by username), and the report being written. */
+  const [blocked, setBlocked] = useState<Set<string>>(new Set());
+  const [reporting, setReporting] = useState<ReportTarget | null>(null);
+  useEffect(() => {
+    api.myBlocks().then((r) => setBlocked(new Set(r.blocks.map((b) => b.username)))).catch(() => {});
+  }, []);
+  const toggleBlock = async (username: string) => {
+    const was = blocked.has(username);
+    try {
+      await (was ? api.unblock(username) : api.block(username));
+      setBlocked((s) => { const next = new Set(s); if (was) next.delete(username); else next.add(username); return next; });
+    } catch { /* unchanged */ }
+  };
+  /** A message of one's own, deleted for both. */
+  const removeMessage = async (id: string) => {
+    try {
+      await api.deleteMessage(id);
+      setMessages((list) => list.filter((m) => m.id !== id));
+    } catch { /* still there */ }
+  };
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -264,7 +285,13 @@ function MessagesPopup() {
               <LeaderAvatar name={active.displayName} color={active.color} image={active.image} size={32} />
               <div>
                 <div className="msg-thread-name"><PresenceBadge userId={dir.find((d) => d.username === active.username)?.id || ""} /> {active.displayName}</div>
-                <div className="msg-thread-status">@{active.username}</div>
+                <div className="msg-thread-status">@{active.username}{blocked.has(active.username) ? " · blocked" : ""}</div>
+              </div>
+              <div className="msg-thread-acts">
+                <button className="mini-act" data-act="dm-block" title={blocked.has(active.username) ? "Let this captain write to you again" : "This captain can no longer write to you"}
+                  onClick={() => void toggleBlock(active.username)}>{blocked.has(active.username) ? "Unblock" : "Block"}</button>
+                <button className="mini-act" data-act="dm-report"
+                  onClick={() => setReporting({ username: active.username, displayName: active.displayName, kind: "profile" })}>Report</button>
               </div>
             </div>
             <div className="msg-scroll" ref={scrollRef}>
@@ -275,7 +302,16 @@ function MessagesPopup() {
                 </div>
               )}
               {messages.map((m) => (
-                <div key={m.id} className={"msg-bubble " + (m.fromMe ? "me" : "them")}>{m.body}</div>
+                <div key={m.id} className={"msg-row " + (m.fromMe ? "me" : "them")}>
+                  {m.fromMe && !m.id.startsWith("local-") && (
+                    <button className="mini-act danger" data-act="dm-delete" title="Delete this message for both of you" onClick={() => void removeMessage(m.id)}>Delete</button>
+                  )}
+                  <div className={"msg-bubble " + (m.fromMe ? "me" : "them")}>{m.body}</div>
+                  {!m.fromMe && (
+                    <button className="mini-act" data-act="dm-report-message" title="Report this message to the admins"
+                      onClick={() => setReporting({ username: active.username, displayName: active.displayName, kind: "dm", messageId: m.id, quote: m.body })}>Report</button>
+                  )}
+                </div>
               ))}
             </div>
             <div className="msg-input-bar">
@@ -291,6 +327,7 @@ function MessagesPopup() {
                 <Ico n="send" size={15} /> Send
               </button>
             </div>
+            {reporting && <ReportDialog target={reporting} onClose={() => setReporting(null)} />}
           </div>
         )}
       </div>

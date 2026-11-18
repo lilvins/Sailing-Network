@@ -31,3 +31,4 @@ import "../features/board-auto/boardauto.css";
 import "@fontsource/pixelify-sans/400.css";
 import "@fontsource/pixelify-sans/600.css";
 import "../features/board-bot/boardbot.css";
+import "../features/account/account.css";

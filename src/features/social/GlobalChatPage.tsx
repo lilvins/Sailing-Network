@@ -7,6 +7,8 @@ import "../home/home.css";
 import "../profiles/profiles.css";
 import "./social.css";
 import { PixelScene } from "../pixel/PixelScene";
+import { useAuthStore } from "../../app/authStore";
+import { ReportDialog, type ReportTarget } from "../account/ReportDialog";
 
 /* Global chat — one shared room, every message persisted server-side, polled. */
 
@@ -24,6 +26,16 @@ export function GlobalChatPage() {
   const [cards, setCards] = useState<Map<string, Card> | null>(null);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const isAdmin = useAuthStore((s) => s.user?.role === "admin");
+  const [reporting, setReporting] = useState<ReportTarget | null>(null);
+
+  /** One's own line, or any line for an admin. */
+  const remove = async (id: string) => {
+    try {
+      await api.deleteChatLine(id);
+      setMessages((list) => list.filter((m) => m.id !== id));
+    } catch { /* still there: the next poll shows the truth */ }
+  };
   const scrollRef = useRef<HTMLDivElement>(null);
   const atBottomRef = useRef(true);
 
@@ -97,6 +109,13 @@ export function GlobalChatPage() {
                       <span className="gc-name">{m.displayName}</span>
                       <span className="gc-handle">@{m.username}</span>
                       <span className="gc-time">{relTime(m.createdAt)}</span>
+                      {(m.fromMe || isAdmin) && <button className="mini-act danger" data-act="chat-delete" onClick={() => void remove(m.id)}>Delete</button>}
+                      {!m.fromMe && (
+                        <button className="mini-act" data-act="chat-report"
+                          onClick={() => setReporting({ username: m.username, displayName: m.displayName, kind: "chat", messageId: m.id, quote: m.body })}>
+                          Report
+                        </button>
+                      )}
                     </div>
                     <div className="gc-text">{m.body}</div>
                   </div>
@@ -119,6 +138,7 @@ export function GlobalChatPage() {
           </div>
         </div>
       </div>
+      {reporting && <ReportDialog target={reporting} onClose={() => setReporting(null)} />}
       <Dock />
     </div>
   );

@@ -25,6 +25,8 @@ const SNP_ICON = {
 
 export type IconName = keyof typeof SNP_ICON;
 
+import { AccountSettings } from "../account/AccountSettings";
+
 export function Ico({ n, size = 20 }: { n: IconName; size?: number; sw?: number }) {
   return <PixelIcon name={SNP_ICON[n]} size={size} />;
 }
@@ -344,6 +346,7 @@ export function MyProfile() {
             <div className="mp-help">
               <Ico n="help" size={16} /> Changes save to your account
             </div>
+            <AccountSettings />
           </div>
         </div>
       </div>

@@ -23,6 +23,9 @@ export type View =
   | "popular-decklists"
   | "admin"
   | "credits" // artists, fonts and data sources
+  | "privacy" // what the site knows about you (open to anyone)
+  | "terms" // the rules of the site (open to anyone)
+  | "account-link" // where a link from an email lands: new password, confirm the address
   | "replay" // a finished game watched again on the Play Auto table (src/features/replay)
   | "board" // the playmat (current layout)
   | "board2" // layout lab — OPTCGSim-style table
@@ -55,6 +58,9 @@ interface UiState {
   /** The replay the "replay" page shows (its id, as in the link `/?replay=<id>`). */
   replayId: string | null;
   openReplay: (replayId: string) => void;
+  /** The link from an email that opened the site (`/?reset=` or `/?verify=`), for the "account-link" page. */
+  accountLink: { kind: "reset" | "verify"; token: string } | null;
+  openAccountLink: (kind: "reset" | "verify", token: string) => void;
   /** The Messages window, floating over whatever page is open. */
   messagesOpen: boolean;
   setMessagesOpen: (open: boolean) => void;
@@ -68,6 +74,9 @@ const pushed = (s: { view: View; navStack: View[] }, next: View): View[] =>
 /** Leaving a locked page is refused; the login screen (a lost session) is not a leave. */
 const locked = (s: { lockedView: View | null }, next: View): boolean =>
   s.lockedView !== null && next !== s.lockedView && next !== "login";
+
+/** The pages a visitor with no account may open; every other one leads to the login. */
+export const PUBLIC_VIEWS: ReadonlySet<View> = new Set<View>(["login", "replay", "privacy", "terms", "account-link"]);
 
 export const useUiStore = create<UiState>((set) => ({
   view: "login", // the landing/login is the entry screen
@@ -95,6 +104,8 @@ export const useUiStore = create<UiState>((set) => ({
   replayId: null,
   openReplay: (replayId) =>
     set((s) => (locked(s, "replay") ? s : { replayId, view: "replay", navStack: pushed(s, "replay") })),
+  accountLink: null,
+  openAccountLink: (kind, token) => set({ accountLink: { kind, token }, view: "account-link" }),
   messagesOpen: false,
   setMessagesOpen: (messagesOpen) => set(messagesOpen ? { messagesOpen } : { messagesOpen, openThreadWith: null }),
   tableRotated: false,

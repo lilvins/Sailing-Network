@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, type ComponentType } from "react";
-import { useUiStore, type View } from "./uiStore";
+import { PUBLIC_VIEWS, useUiStore, type View } from "./uiStore";
 import { useAuthStore } from "./authStore";
 import { usePresenceStore } from "../lib/presenceStore";
 import { LoginPage } from "../features/login/LoginPage";
@@ -32,14 +32,18 @@ const BoardPage2 = page(() => import("../features/board/BoardPage2"), "BoardPage
 const BoardAutoPage = page(() => import("../features/board-auto/BoardAutoPage"), "BoardAutoPage");
 const BoardBotPage = page(() => import("../features/board-bot/BoardBotPage"), "BoardBotPage");
 const ReplayPage = page(() => import("../features/replay/ReplayPage"), "ReplayPage");
+const PrivacyPage = page(() => import("../features/legal/LegalPages"), "PrivacyPage");
+const TermsPage = page(() => import("../features/legal/LegalPages"), "TermsPage");
+const AccountLinkPage = page(() => import("../features/account/AccountLinkPage"), "AccountLinkPage");
 
 /**
  * App shell. Each ported page is full-screen (its own chrome), so there is no
  * shared nav bar — navigation happens via the in-page controls + uiStore.
  * Auth gates everything: until /auth/me resolves we show a loader; logged-out
  * users only ever see the LoginPage; the admin area is admin-only.
- * The one exception is a replay's link (`/?replay=<id>`): whoever has it
- * watches, account or not.
+ * The exceptions (uiStore PUBLIC_VIEWS): a replay's link (`/?replay=<id>`), which
+ * whoever has it watches; the Privacy and Terms pages; and the page a link from an
+ * email opens (`/?reset=`, `/?verify=`).
  */
 
 const LABELS: Partial<Record<View, string>> = {
@@ -139,6 +143,12 @@ function CurrentView({ view }: { view: View }) {
       return <BoardBotPage />;
     case "replay":
       return <ReplayPage />;
+    case "privacy":
+      return <PrivacyPage />;
+    case "terms":
+      return <TermsPage />;
+    case "account-link":
+      return <AccountLinkPage />;
     default:
       return <ComingSoon view={view} />;
   }
@@ -148,6 +158,7 @@ export function App() {
   const view = useUiStore((s) => s.view);
   const setView = useUiStore((s) => s.setView);
   const openReplay = useUiStore((s) => s.openReplay);
+  const openAccountLink = useUiStore((s) => s.openAccountLink);
   const status = useAuthStore((s) => s.status);
   const user = useAuthStore((s) => s.user);
   const init = useAuthStore((s) => s.init);
@@ -172,7 +183,7 @@ export function App() {
   // keep navigation in sync with auth once it resolves
   useEffect(() => {
     if (status !== "ready") return;
-    if (!user && view !== "login" && view !== "replay") setView("login");
+    if (!user && !PUBLIC_VIEWS.has(view)) setView("login");
     else if (user && view === "login") setView("home");
   }, [status, user, view, setView]);
 
@@ -181,15 +192,19 @@ export function App() {
   useEffect(() => {
     if (status !== "ready") return;
     const link = new URLSearchParams(window.location.search);
-    if (signedIn && hasSavedRoom()) setView("board-auto");
+    const mailed = link.get("reset") ? "reset" : link.get("verify") ? "verify" : null;
+    const legal = link.get("page");
+    if (mailed) openAccountLink(mailed, link.get(mailed)!); // a link from an email: before anything else
+    else if (legal === "privacy" || legal === "terms") setView(legal);
+    else if (signedIn && hasSavedRoom()) setView("board-auto");
     else if (link.get("replay")) openReplay(link.get("replay")!); // a replay's link: no account needed
     else if (signedIn && link.has("duel")) setView("duel-room"); // an invitation link
-  }, [status, signedIn, setView, openReplay]);
+  }, [status, signedIn, setView, openReplay, openAccountLink]);
 
   if (status === "loading") return <AppLoading />;
 
   // a visitor: the replay they have the link of, or the landing page
-  if (!user) return view === "replay" ? <Suspense fallback={<AppLoading />}><ReplayPage /></Suspense> : <LoginPage />;
+  if (!user) return PUBLIC_VIEWS.has(view) && view !== "login" ? <Suspense fallback={<AppLoading />}><CurrentView view={view} /></Suspense> : <LoginPage />;
 
   // authenticated: bounce off login, and keep non-admins out of the admin area
   let effectiveView = view;

@@ -13,6 +13,8 @@ export interface AuthUser {
   role: Role;
   displayName: string;
   createdAt: number;
+  /** The owner proved the email address is theirs (absent in lists of other accounts). */
+  emailVerified?: boolean;
 }
 
 export class ApiError extends Error {
@@ -153,6 +155,32 @@ export interface ThreadSummary {
   unread: number;
 }
 
+export interface SiteInfo {
+  /** Who runs the site and how to reach them ("" = not set on this server). */
+  operator: string;
+  contactEmail: string;
+  /** This server sends email (password reset, address check). */
+  mail: boolean;
+  rankedOpen: boolean;
+}
+
+export interface BlockedUser { username: string; displayName: string; createdAt: number }
+
+export type ReportKind = "dm" | "chat" | "profile" | "game";
+
+export interface Report {
+  id: string;
+  kind: ReportKind;
+  reason: string;
+  /** The words the report is about, copied when it was made. */
+  excerpt: string;
+  status: "open" | "closed";
+  createdAt: number;
+  closedAt: number | null;
+  reporter: { username: string; displayName: string } | null;
+  target: { id: string; username: string; displayName: string };
+}
+
 export interface ChatMessage {
   id: string;
   fromMe: boolean;
@@ -289,6 +317,32 @@ export const api = {
   // ---- notifications ----
   notifications: () => request<{ notifications: Notification[]; unread: number }>("/me/notifications"),
   markNotificationsRead: () => request<{ ok: true }>("/me/notifications/read", { method: "POST" }),
+
+  // ---- the account itself (server/account.mjs) ----
+  /** Who runs the site, and what this server can do. Needs no account. */
+  site: () => request<SiteInfo>("/site"),
+  /** `mail: false` = this server sends no email: an admin hands out the link. */
+  forgotPassword: (identifier: string) =>
+    request<{ ok: true; mail: boolean }>("/auth/forgot", { method: "POST", body: JSON.stringify({ identifier }) }),
+  resetPassword: (token: string, password: string) =>
+    request<{ ok: true }>("/auth/reset", { method: "POST", body: JSON.stringify({ token, password }) }),
+  verifyEmail: (token: string) => request<{ ok: true }>("/auth/verify", { method: "POST", body: JSON.stringify({ token }) }),
+  sendVerification: () => request<{ sent: boolean; mail?: boolean; verified?: boolean }>("/me/verify/send", { method: "POST" }),
+  changePassword: (current: string, next: string) =>
+    request<{ ok: true }>("/me/password", { method: "POST", body: JSON.stringify({ current, next }) }),
+  deleteAccount: (password: string) => request<{ ok: true }>("/me/account", { method: "DELETE", body: JSON.stringify({ password }) }),
+  adminResetLink: (id: string) => request<{ path: string; expiresInMinutes: number }>(`/admin/users/${id}/reset-link`, { method: "POST" }),
+
+  // ---- safety between players (server/moderation.mjs) ----
+  myBlocks: () => request<{ blocks: BlockedUser[] }>("/me/blocks"),
+  block: (username: string) => request<{ ok: true }>(`/me/blocks/${encodeURIComponent(username)}`, { method: "POST" }),
+  unblock: (username: string) => request<{ ok: true }>(`/me/blocks/${encodeURIComponent(username)}`, { method: "DELETE" }),
+  report: (r: { username: string; kind: ReportKind; reason: string; messageId?: string }) =>
+    request<{ ok: true }>("/reports", { method: "POST", body: JSON.stringify(r) }),
+  adminReports: (status: "open" | "closed" = "open") => request<{ reports: Report[]; open: number }>(`/admin/reports?status=${status}`),
+  adminCloseReport: (id: string) => request<{ ok: true }>(`/admin/reports/${id}`, { method: "PATCH", body: JSON.stringify({ status: "closed" }) }),
+  deleteChatLine: (id: string) => request<{ ok: true }>(`/chat/${id}`, { method: "DELETE" }),
+  deleteMessage: (id: string) => request<{ ok: true }>(`/messages/${id}`, { method: "DELETE" }),
 
   // ---- meta analytics ----
   meta: (days = 0) => request<MetaReport>(`/meta${days ? `?days=${days}` : ""}`),

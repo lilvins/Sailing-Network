@@ -1,0 +1,64 @@
+/* Account, legal and safety pieces: the reset / confirm page, the account box of
+   Edit Profile, the report window and the small actions next to a message. */
+
+/* --- the page a link from an email opens (same frame as the login) --- */
+.acl-title{font-family:"Silkscreen",var(--display);font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--txt);margin-bottom:6px;}
+.acl-text{font-size:13px;line-height:1.55;color:#c9ccd2;margin-bottom:12px;}
+.acl-ok{font-size:13px;line-height:1.5;color:#9fe0b4;border:2px solid rgba(120,220,160,0.35);background:rgba(40,90,60,0.25);padding:9px 11px;margin-bottom:12px;}
+.snlogin-links{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin-top:14px;font-size:12px;color:var(--muted);}
+.snlogin-links a,.snlogin-forgot{color:var(--muted);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;background:none;border:0;font:inherit;padding:0;}
+.snlogin-links a:hover,.snlogin-forgot:hover{color:#fff;}
+.snlogin-forgot{font-size:12px;align-self:flex-end;margin-top:-4px;}
+.snlogin-consent{font-size:11.5px;line-height:1.5;color:var(--muted);}
+.snlogin-consent a{color:var(--txt);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
+
+/* --- the account box of Edit Profile --- */
+.acc{display:flex;flex-direction:column;gap:12px;margin-top:14px;background:rgba(12,16,28,0.88);border:2px solid rgba(242,243,245,0.18);box-shadow:4px 4px 0 rgba(0,0,0,0.55);padding:12px 14px;}
+.acc h3{font-family:"Silkscreen",var(--display);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--txt);}
+.acc-sec{display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:2px solid rgba(255,255,255,0.07);}
+.acc-sec:first-of-type{border-top:0;padding-top:0;}
+.acc-line{font-size:12.5px;line-height:1.5;color:#c9ccd2;overflow-wrap:anywhere;}
+.acc-line b{color:var(--txt);}
+.acc-input{width:100%;box-sizing:border-box;background:rgba(0,0,0,0.35);border:2px solid rgba(242,243,245,0.2);color:var(--txt);font:inherit;font-size:13px;padding:7px 9px;}
+.acc-input:focus{outline:none;border-color:#fff;}
+.acc-btn{align-self:flex-start;background:rgba(255,255,255,0.06);border:2px solid rgba(242,243,245,0.25);color:var(--txt);font:inherit;font-size:12.5px;padding:6px 10px;cursor:pointer;}
+.acc-btn:hover:not(:disabled){border-color:#fff;}
+.acc-btn:disabled{opacity:0.5;cursor:default;}
+.acc-btn.danger{border-color:rgba(226,59,50,0.6);color:#ff9a92;}
+.acc-btn.danger:hover:not(:disabled){border-color:#ff6b61;color:#fff;background:rgba(226,59,50,0.25);}
+.acc-msg{font-size:12px;line-height:1.45;color:#9fe0b4;}
+.acc-msg.bad{color:#ff9a92;}
+.acc-blocked{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:#c9ccd2;}
+
+/* --- the report window --- */
+.rep-veil{position:fixed;inset:0;z-index:4000;display:grid;place-items:center;padding:16px;background:rgba(4,6,12,0.72);}
+.rep{width:min(440px,100%);display:flex;flex-direction:column;gap:10px;background:#0f1422;border:2px solid rgba(242,243,245,0.3);box-shadow:6px 6px 0 rgba(0,0,0,0.6);padding:16px;color:var(--txt,#f2f3f5);font-family:var(--font,inherit);}
+.rep h3{font-family:"Silkscreen",var(--display);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;}
+.rep-quote{font-size:12.5px;line-height:1.5;color:#c9ccd2;border-left:3px solid rgba(242,243,245,0.3);padding:4px 0 4px 9px;max-height:90px;overflow:auto;overflow-wrap:anywhere;}
+.rep textarea{min-height:84px;resize:vertical;}
+.rep-btns{display:flex;gap:8px;justify-content:flex-end;}
+
+/* --- small actions next to a message --- */
+.mini-act{background:none;border:0;padding:0 2px;margin-left:8px;font:inherit;font-size:11px;color:var(--muted,#8a90a0);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
+.mini-act:hover{color:#fff;}
+.mini-act.danger:hover{color:#ff9a92;}
+.msg-thread-acts{margin-left:auto;display:flex;align-items:center;gap:4px;}
+.msg-row{display:flex;align-items:center;gap:2px;}
+.msg-row.me{justify-content:flex-end;}
+.msg-row .msg-bubble{margin:0;}
+
+/* --- admin: reports --- */
+.adm-reports{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.adm-reports h2{font-family:"Silkscreen",var(--display);font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--txt);}
+.adm-report{display:flex;flex-direction:column;gap:5px;background:rgba(12,16,28,0.88);border:2px solid rgba(242,243,245,0.18);padding:10px 12px;font-size:12.5px;color:#c9ccd2;}
+.adm-report b{color:var(--txt);}
+.adm-report-acts{display:flex;gap:8px;margin-top:4px;}
+.adm-link{font-size:12px;color:#9fe0b4;overflow-wrap:anywhere;margin-top:4px;}
+
+/* --- legal pages --- */
+.legal h2{margin-bottom:8px;}
+.legal p,.legal li{font-size:13px;line-height:1.6;color:#c9ccd2;}
+.legal ul{list-style:disc;padding-left:20px;display:flex;flex-direction:column;gap:4px;}
+.legal p + p,.legal p + ul,.legal ul + p{margin-top:8px;}
+.legal a{color:var(--txt);text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
+.legal-updated{font-size:12px;color:var(--muted);}
