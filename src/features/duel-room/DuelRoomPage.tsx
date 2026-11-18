@@ -8,7 +8,7 @@ import { Dock } from "../profiles/ProfilePages";
 import { useAutoStore } from "../board-auto/autoStore";
 import { userDeckChoices, type DeckChoice } from "../board-auto/decks";
 import { presetDeckChoices } from "../board-auto/presetDecks";
-import { hostDuel, joinDuel, leaveRoom, listOpenDuels, type OpenDuel } from "../board-auto/room";
+import { enterRankedTable, hostDuel, joinDuel, leaveRoom, listOpenDuels, type OpenDuel } from "../board-auto/room";
 import { rememberDuelDeck, rememberedDuelDeck } from "./duelDeck";
 import "@fontsource/silkscreen/400.css"; // pixel HUD labels (--hud in duelroom.css)
 import "@fontsource/silkscreen/700.css";
@@ -219,10 +219,6 @@ function DuelRow({ d, leaderName, disabled, onJoin }: { d: OpenDuel; leaderName:
   );
 }
 
-/** The Duelist Pool (ranked) stays closed until two players can share a ranked game:
- *  today a match would open a table with no opponent (docs/release-checklist.md). */
-const RANKED_OPEN = false;
-
 export function DuelRoomPage() {
   const setView = useUiStore((s) => s.setView);
   const goBack = useUiStore((s) => s.goBack);
@@ -248,8 +244,10 @@ export function DuelRoomPage() {
   const [showLogResult, setShowLogResult] = useState(false);
   // a real number in the header (registered captains), never an invented "online" count
   const [captains, setCaptains] = useState<number | null>(null);
+  /** The Duelist Pool (ranked) is opened by the server: closed until it says otherwise. */
+  const [rankedOpen, setRankedOpen] = useState(false);
   useEffect(() => {
-    api.siteStats().then((s) => setCaptains(s.captains)).catch(() => {});
+    api.siteStats().then((s) => { setCaptains(s.captains); setRankedOpen(!!s.rankedOpen); }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -264,44 +262,62 @@ export function DuelRoomPage() {
       .catch(() => {});
   }, []);
 
-  const [poolFormat, setPoolFormat] = useState("Standard · OP16 (Rated)");
-  const [poolRules, setPoolRules] = useState("EN");
-  const [poolType, setPoolType] = useState("BO3");
   const [inPool, setInPool] = useState(false);
   const [queueStatus, setQueueStatus] = useState<QueueStatus | null>(null);
+  const [poolError, setPoolError] = useState<string | null>(null);
 
-  // poll queue status while in pool
+  // back on this page while still queued or matched (a reload, another page): keep following it
+  useEffect(() => {
+    api.queueStatus().then((s) => { if (s.status !== "idle") setInPool(true); }).catch(() => {});
+  }, []);
+
+  // In the pool: ask where we stand. Matched: say "I am here"; once both have,
+  // the server names the table it set up and we sit at it.
   useEffect(() => {
     if (!inPool) { setQueueStatus(null); return; }
+    let alive = true;
+    let busy = false;
     const poll = async () => {
+      if (busy) return;
+      busy = true;
       try {
         const s = await api.queueStatus();
+        if (!alive) return;
         setQueueStatus(s);
-        if (s.status === "matched") {
-          setInPool(false);
-          setView("board"); // navigate to board when matched
-        }
-      } catch { /* silent */ }
+        if (s.status === "idle") { setInPool(false); return; }
+        if (s.status !== "matched" || !s.sessionId) return;
+        const roomCode = s.roomCode ?? (await api.queueReady(s.sessionId)).roomCode;
+        if (!alive || !roomCode) return; // the opponent has not confirmed yet
+        setInPool(false);
+        const failed = await enterRankedTable(roomCode);
+        if (failed && alive) setPoolError(failed);
+      } catch (e) {
+        // the match could not start (a deck no longer legal, a restart): back out of the pool
+        if (alive) { setInPool(false); setPoolError(e instanceof Error ? e.message : "The match could not start"); }
+      } finally {
+        busy = false;
+      }
     };
-    poll();
-    const id = window.setInterval(poll, 3000);
-    return () => window.clearInterval(id);
-  }, [inPool, setView]);
+    void poll();
+    const id = window.setInterval(() => void poll(), 2000);
+    return () => { alive = false; window.clearInterval(id); };
+  }, [inPool]);
 
   const togglePool = async () => {
+    setPoolError(null);
     if (inPool) {
       try { await api.leaveQueue(); } catch { /* silent */ }
       setInPool(false);
     } else {
       if (!myDecks.some((d) => d.id === deckId)) {
-        setDuelError("The Duelist Pool needs one of your own decks.");
+        setPoolError("The Duelist Pool needs one of your own decks.");
         return;
       }
       try {
         await api.joinQueue(deckId);
         setInPool(true);
       } catch (e) {
-        console.error("Join queue failed", e);
+        setPoolError(e instanceof Error ? e.message : "Could not join the pool");
       }
     }
   };
@@ -404,39 +420,30 @@ export function DuelRoomPage() {
             <Icon name="duel" size={17} stroke="#e3b24c" />
             <span>Duelist Pool</span>
           </div>
-          {!RANKED_OPEN && (
+          {!rankedOpen && (
             <p className="dr-pool-desc" data-pool-closed>
-              Ranked is not open yet: two players cannot share a ranked game. To play a friend,
-              use <b>Host a Duel</b> below or <b>Join with a code</b>.
+              Ranked is not open yet. To play a friend, use <b>Host a Duel</b> below or <b>Join with a code</b>.
             </p>
           )}
-          {RANKED_OPEN && (<>
+          {rankedOpen && (<>
           <p className="dr-pool-desc">
-            Join the pool and we'll find a duelist near your skill level, given your constraints.
+            Join the pool and we'll find a duelist near your rating. You play the deck picked on the right;
+            the game is played on a table the server judges: no take-backs, and leaving the table is a loss.
           </p>
-          <div className="dr-field">
-            <label>Format</label>
-            <Select value={poolFormat} onChange={setPoolFormat} options={["Standard · OP16 (Rated)", "Standard · OP16", "Standard · OP15", "East Blue"]} />
-          </div>
-          <div className="dr-field">
-            <label>Region</label>
-            <Select value={poolRules} onChange={setPoolRules} options={["EN", "JP", "EN + JP"]} />
-          </div>
-          <div className="dr-field">
-            <label>Type</label>
-            <Select value={poolType} onChange={setPoolType} options={["BO3", "BO1", "BO5"]} />
-          </div>
-          <button className={"dr-pool-btn" + (inPool ? " active" : "")} onClick={togglePool}>
+          <button className={"dr-pool-btn" + (inPool ? " active" : "")} data-act="pool" onClick={() => void togglePool()}>
             {inPool ? "Searching… cancel" : "Join Pool"}
           </button>
           {inPool && (
-            <div className="dr-pool-status">
+            <div className="dr-pool-status" data-pool-status>
               <span className="dr-spinner" />
-              {queueStatus?.status === "waiting"
-                ? `Position ${queueStatus.position} · ${queueStatus.estimatedWait ?? "wait unknown"}`
-                : "Finding a worthy opponent…"}
+              {queueStatus?.status === "matched"
+                ? `Opponent found: ${queueStatus.opponentUsername ?? "a duelist"}. Setting the table…`
+                : queueStatus?.status === "waiting"
+                  ? `Position ${queueStatus.position} · ${queueStatus.estimatedWait ?? "wait unknown"}`
+                  : "Finding a worthy opponent…"}
             </div>
           )}
+          {poolError && <p className="dr-host-msg" role="alert" data-pool-error>{poolError}</p>}
           </>)}
         </div>
 

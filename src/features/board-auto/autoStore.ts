@@ -63,6 +63,8 @@ export interface OnlineState {
   /** After the game: who asked to play again, who has left the table. */
   rematchVotes?: PID[];
   leftSeats?: PID[];
+  /** A ranked table: the server plays the game too. No take-back, no rematch, and the result is its word. */
+  ranked?: boolean;
 }
 
 /** A finished game being watched again on the table (src/features/replay). */

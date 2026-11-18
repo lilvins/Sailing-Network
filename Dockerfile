@@ -26,6 +26,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY server ./server
 # the seeds read the card list from here (npm run seed:cards)
 COPY public/data ./public/data
+# the site, and inside it dist/_server/engine.mjs: the rules engine the server runs for ranked
 COPY --from=build /app/dist ./dist
 
 RUN mkdir -p /data && chown -R node:node /data /app

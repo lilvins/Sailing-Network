@@ -1,10 +1,20 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
+/** After the site, the rules engine as the server runs it: dist/_server/engine.mjs (server/engineBuild.mjs). */
+const serverEngine = (): Plugin => ({
+  name: "sn-server-engine",
+  apply: "build",
+  async closeBundle() {
+    const { BUILT_ENGINE, buildEngine } = await import("./server/engineBuild.mjs");
+    await buildEngine(BUILT_ENGINE);
+  },
+});
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), serverEngine()],
   server: {
     host: true, // expose on LAN so a phone can connect for touch testing
     // let a temporary `cloudflared tunnel` reach the dev server from outside

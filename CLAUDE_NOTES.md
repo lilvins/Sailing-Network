@@ -465,6 +465,45 @@ behaves was not seen live (the replay sits behind a human check).
   keeps no chat. Still open: the events themselves are the browser's word;
   only an engine on the server closes that (same work as ranked).
 
+## Ranked — a table the server sets and judges (2026-11-17)
+User decision: "ranked ovviamente devono essere sincronizzate, magari bloccate
+in beta".
+- **The engine on the server**: `src/autosim/serverEngine.ts` is the entry
+  point (createGame, applyIntent, makeCardDb); `server/engineBuild.mjs` bundles
+  it with esbuild into one module. `npm run build` writes it to
+  `dist/_server/engine.mjs` (a Vite plugin in `vite.config.ts`; `static.mjs`
+  never serves `/_server/`), which production loads. In dev and in the tests
+  `server/engine.mjs` builds it at first use, from the sources of the checkout
+  (about half a second), so server and page run the same rules. esbuild is a
+  dev dependency: production has only the built file. The catalog is the
+  `cards` table, the one `/api/cards` sends.
+- **The table is a room** (`server/rooms.mjs`, `room.ranked`), so the browser
+  follows it with the friend-game code (`room.ts`). Differences: the server
+  makes it when both players confirmed the match (`POST /api/me/queue/ready`
+  answers `roomCode`, and so does the queue status); seats, decks (the saved
+  decks of the queue), seed and first player are the server's; every move goes
+  through `applyIntent` and an illegal one gets a 400; `/undo`, a rematch and
+  `/result` do nothing; at the end `finishRanked` saves the replay from the
+  server's events (`source: "ranked"`) and completes the match session, which
+  writes the two `matches` rows the ladder reads.
+- **Leaving is losing**: each `GET /api/rooms/:code` and each move stamps
+  `seenAt`; the matchmaking pass (`sweepRankedTables`) concedes for a seat
+  silent for `SN_RANKED_GONE_MS` (2 minutes). Both silent: no result. A cancel
+  is refused once the table exists.
+- **Who reports results**: only bot accounts (`/complete`), for
+  `scripts/bot-ladder`, which plays their games itself. A person's deck must
+  pass the engine's deck rules to join the pool; a bot's is not checked.
+- **The switch**: `SN_RANKED` (`closed` in production by default). `/api/stats`
+  says `rankedOpen` and the Duel Room shows the pool or the closed notice.
+- **Not done**: hidden information (both browsers hold the whole game, as in a
+  friend game); a turn clock; games survive no restart (memory only); friend
+  games are not judged by the engine yet, though they could be now.
+- Tests: "ranked table" in `tests/api-test.mjs` (the suite seeds the catalog
+  and opens ranked; its older "ranked queue" section turns its accounts into
+  bots, because it reports results), engine and settings in
+  `tests/deploy.test.ts`. The signup route allows ten accounts per ten
+  minutes and the suite makes nine: reuse accounts in new sections.
+
 ## Release fixes — security and weight (2026-11-17)
 - **Security** (`server/security.mjs`): every answer carries the content
   policy (this origin only; inline styles allowed because React writes style

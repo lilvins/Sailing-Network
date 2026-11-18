@@ -421,19 +421,19 @@ export async function reportMatchResult(session, userId, winnerId) {
 // which is what the ladder reads. Session and rows are written in one batch: all
 // or nothing, so a failed write can be retried. The row ids come from the session
 // id, so two players reporting the same game can't count it twice.
-export async function completeMatchSession(sessionId, winnerId) {
+export async function completeMatchSession(sessionId, winnerId, replayId = null) {
   const now = Date.now();
   const s = await getMatchSession(sessionId);
   const stmts = [{
     sql: `UPDATE match_sessions SET status='completed', winner_id=?, completed_at=? WHERE id=? AND status='active'`,
     args: [winnerId, now, sessionId],
   }];
-  if (s.matched_at) stmts.push(...(await rankedResultStatements(s, winnerId, now)));
+  if (s.matched_at) stmts.push(...(await rankedResultStatements(s, winnerId, now, replayId)));
   await db.batch(stmts, "write");
   return getMatchSession(sessionId);
 }
 
-async function rankedResultStatements(s, winnerId, now) {
+async function rankedResultStatements(s, winnerId, now, replayId) {
   const hostDeck = s.host_deck_id ? await get(`SELECT * FROM decks WHERE id=?`, [s.host_deck_id]) : null;
   const oppDeck = s.opponent_deck_id ? await get(`SELECT * FROM decks WHERE id=?`, [s.opponent_deck_id]) : null;
   const row = (seat, userId, oppUserId, deck, theirDeck, onPlay) => {
@@ -441,10 +441,10 @@ async function rankedResultStatements(s, winnerId, now) {
     const counter = win ? "wins=wins+1" : "losses=losses+1";
     return [
       {
-        sql: `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,source,created_at)
-              VALUES (?,?,?,?,?,?,?,?,?,?,'ranked',?)`,
+        sql: `INSERT INTO matches (id,user_id,opp_user_id,my_deck_id,my_leader_id,opp_leader_id,result,on_play,points,format,source,replay_id,created_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,'ranked',?,?)`,
         args: [`${s.id}:${seat}`, userId, oppUserId, deck?.id ?? null, deck?.leader_id ?? null, theirDeck?.leader_id ?? null,
-          win ? "win" : "loss", onPlay ? 1 : 0, win ? 10 : -5, deck?.format ?? "", now],
+          win ? "win" : "loss", onPlay ? 1 : 0, win ? 10 : -5, deck?.format ?? "", replayId, now],
       },
       ...(deck ? [{ sql: `UPDATE decks SET ${counter} WHERE id=?`, args: [deck.id] }] : []),
       { sql: `UPDATE profiles SET ${counter}, updated_at=? WHERE user_id=?`, args: [now, userId] },

@@ -80,10 +80,16 @@ async function waitForHealth(timeoutMs = 10000) {
 cleanupDb();
 
 // seed the first admin into the temp DB, then boot the server on the test port
-const env = { ...process.env, SN_API_PORT: String(PORT), SN_DB_PATH: DB };
+// SN_RANKED_GONE_MS: how long a player may stop asking for a ranked table before they have left it
+const env = { ...process.env, SN_API_PORT: String(PORT), SN_DB_PATH: DB, SN_RANKED: "open", SN_RANKED_GONE_MS: "2000" };
 await new Promise((resolve, reject) => {
   const p = spawn(process.execPath, [join(ROOT, "server", "seed-admin.mjs")], { env, stdio: "ignore" });
   p.on("exit", (c) => (c === 0 ? resolve() : reject(new Error("seed-admin failed"))));
+});
+// the card catalog: the server deals ranked games with the rules engine, which reads it
+await new Promise((resolve, reject) => {
+  const p = spawn(process.execPath, [join(ROOT, "server", "seed-cards.mjs")], { env, stdio: "ignore" });
+  p.on("exit", (c) => (c === 0 ? resolve() : reject(new Error("seed-cards failed"))));
 });
 
 const server = spawn(process.execPath, [join(ROOT, "server", "index.mjs")], { env, stdio: "ignore" });
@@ -235,6 +241,14 @@ try {
   const rankedA = client(), rankedB = client();
   const signup = async (c, name) => (await c.post("/api/auth/signup", { email: `${name}@test.local`, username: name, password: "password123" })).json.user;
   const ua = await signup(rankedA, "ranked_a"), ub = await signup(rankedB, "ranked_b");
+  // The players of this section say themselves who won: only the bots of the ladder script
+  // may (people play on a table the server judges, see "ranked table" below).
+  const asBots = async (...names) => {
+    const direct = createClient({ url: pathToFileURL(DB).href });
+    await direct.execute({ sql: `UPDATE users SET is_bot=1 WHERE username IN (${names.map(() => "?").join(",")})`, args: names });
+    direct.close();
+  };
+  await asBots("ranked_a", "ranked_b");
   const deckOf = async (c, leaderId) => (await c.post("/api/me/decks", { name: leaderId, leaderId, cards: [], format: "OP17" })).json.deck.id;
   const da = await deckOf(rankedA, "OP14-020"), db = await deckOf(rankedB, "OP15-058");
   await rankedA.post("/api/me/queue/join", { deckId: da });
@@ -267,6 +281,7 @@ try {
   await rankedB.post("/api/me/queue/leave");
   const rankedC = client();
   await signup(rankedC, "ranked_c");
+  await asBots("ranked_c");
   await rankedC.post("/api/me/queue/join", { deckId: await deckOf(rankedC, "OP13-004") });
   await rankedA.post("/api/queue/tick");
   const sid2 = (await rankedA.get("/api/me/queue/status")).json?.sessionId;
@@ -472,6 +487,90 @@ try {
 
   r = await client().get("/api/stats");
   check("public stats reachable without auth", r.status === 200 && typeof r.json?.captains === "number");
+  check("and say whether the pool is open", r.json.rankedOpen === true);
+
+  // ============================ RANKED TABLE ============================
+  section("ranked table");
+  // two people: the server sets the table, plays every move through the rules engine and writes the result
+  // (accounts made earlier: the signup route allows ten new ones per ten minutes)
+  const ta = u1, tb = u2;
+  const uta = (await ta.get("/api/auth/me")).json.user;
+  const rowsBefore = [(await ta.get("/api/me/matches")).json.matches.length, (await tb.get("/api/me/matches")).json.matches.length];
+  const redCards = ["004", "005", "006", "007", "008", "009", "010", "011", "012", "013", "014", "015"].map((n) => ({ id: `OP01-${n}`, count: 4 }));
+  const legalList = [...redCards, { id: "OP01-016", count: 2 }]; // 50 red cards under a red Leader
+  const legalDeck = async (c, name) => (await c.post("/api/me/decks", { name, leaderId: "OP01-001", cards: legalList, format: "Standard · OP17" })).json.deck.id;
+  const dta = await legalDeck(ta, "Table deck A"), dtb = await legalDeck(tb, "Table deck B");
+  r = await ta.post("/api/me/queue/join", { deckId: await deckOf(ta, "OP01-001") });
+  check("a deck the rules refuse cannot join the pool", r.status === 400 && /50 cards/.test(r.json?.error ?? ""), JSON.stringify(r.json));
+  // `a` joins the pool first: the host of the match, seat A at the table
+  const pairUp = async (a, b, deckA, deckB) => {
+    await a.post("/api/me/queue/join", { deckId: deckA });
+    await b.post("/api/me/queue/join", { deckId: deckB });
+    await a.post("/api/queue/tick");
+    const status = (await a.get("/api/me/queue/status")).json;
+    const first = (await a.post("/api/me/queue/ready", { sessionId: status.sessionId })).json;
+    const second = (await b.post("/api/me/queue/ready", { sessionId: status.sessionId })).json;
+    return { status, first, second, sessionId: status.sessionId, code: second.roomCode };
+  };
+  const t1 = await pairUp(ta, tb, dta, dtb);
+  check("matched: no table until both confirmed", t1.status.status === "matched" && t1.status.roomCode === null && t1.first.roomCode === null);
+  check("both confirmed → the server sets the table", /^[A-Z2-9]{6}$/.test(t1.code ?? ""), JSON.stringify(t1.second));
+  check("the queue names the table to each player", (await ta.get("/api/me/queue/status")).json.roomCode === t1.code);
+  const tableOf = async (c, code) => (await c.get(`/api/rooms/${code}`)).json.room;
+  const table = await tableOf(ta, t1.code);
+  check("seats, decks and first player are the server's", table.ranked === true && table.status === "playing" && table.mySeat === "seatA"
+    && (await tableOf(tb, t1.code)).mySeat === "seatB" && table.seats[0].name === "tester_one" && table.seats[1].deck.main.length === 50
+    && ["seatA", "seatB"].includes(table.firstPlayer));
+  r = await host.get(`/api/rooms/${t1.code}`);
+  check("nobody else sits at it", r.status === 403);
+  const move = (c, code, seq, intent) => c.post(`/api/rooms/${code}/moves`, { seq, intent });
+  r = await move(ta, t1.code, 0, { type: "endTurn", player: "seatA" }); // the opening hands are still being kept or redrawn
+  check("an illegal move is refused and leaves no trace", r.status === 400 && /^Illegal move/.test(r.json?.error ?? "") && (await tableOf(ta, t1.code)).total === 0, JSON.stringify(r.json));
+  r = await move(ta, t1.code, 0, { type: "concede", player: "seatB" });
+  check("a move for the other seat → 403", r.status === 403);
+  r = await ta.post(`/api/rooms/${t1.code}/undo`, { action: "request" });
+  check("no take-backs at a ranked table", r.status === 409);
+  r = await ta.post(`/api/match-sessions/${t1.sessionId}/complete`, { winnerId: uta.id });
+  check("a player cannot report who won", r.status === 403 && (await ta.get(`/api/match-sessions/${t1.sessionId}`)).json.session.status === "active");
+  r = await ta.post(`/api/match-sessions/${t1.sessionId}/cancel`);
+  check("nor cancel a game that has started", r.status === 409);
+  const firstSeat = table.firstPlayer, firstClient = firstSeat === "seatA" ? ta : tb;
+  r = await move(firstClient, t1.code, 0, { type: "respondMulligan", player: firstSeat, take: false });
+  check("a legal move is played", r.status === 200 && r.json.total === 1, JSON.stringify(r.json));
+  r = await move(tb, t1.code, 1, { type: "concede", player: "seatB" });
+  check("conceding ends the game", r.status === 200);
+  r = await tb.post(`/api/rooms/${t1.code}/result`, { winner: "seatB" });
+  check("a browser's word about the winner changes nothing", r.status === 200 && r.json.recorded === true);
+  const ended = (await ta.get(`/api/match-sessions/${t1.sessionId}`)).json.session;
+  check("the server wrote the result: the other player won", ended.status === "completed" && ended.winnerId === uta.id, JSON.stringify(ended));
+  const rowsA = (await ta.get("/api/me/matches")).json.matches, rowsB = (await tb.get("/api/me/matches")).json.matches;
+  const tableReplay = (await tableOf(ta, t1.code)).replayId;
+  check("a row each, linked to the replay", rowsA.length === rowsBefore[0] + 1 && rowsB.length === rowsBefore[1] + 1 && rowsA[0].result === "win" && rowsB[0].result === "loss"
+    && !!tableReplay && rowsA[0].replayId === tableReplay && rowsB[0].replayId === tableReplay, JSON.stringify([rowsA, rowsB]));
+  const rankedReplay = (await client().get(`/api/replays/${tableReplay}`)).json?.replay;
+  check("the replay is the server's own record of the game", rankedReplay?.source === "ranked" && rankedReplay.winner === "seatA" && rankedReplay.plays === 2
+    && rankedReplay.firstPlayer === firstSeat && rankedReplay.seats[1].name === "tester_two"
+    && rankedReplay.record.moves.map((m) => m.type).join() === "respondMulligan,concede"
+    && rankedReplay.record.events.at(-1)?.type === "gameEnded");
+  await ta.post("/api/me/queue/join", { deckId: dta });
+  const ratingOfA = (await ta.get("/api/queue")).json.players.find((p) => p.user_id === uta.id)?.rating;
+  await ta.post("/api/me/queue/leave");
+  check("the game moved the ladder", ratingOfA > 1500, String(ratingOfA));
+  r = await move(ta, t1.code, 2, { type: "concede", player: "seatA" });
+  check("no move after the end", r.status === 400);
+  check("both players are free again", (await ta.get("/api/me/queue/status")).json.status === "idle" && (await tb.get("/api/me/queue/status")).json.status === "idle");
+
+  // a player who stops asking for the table has left it
+  const tc = host, td = guest;
+  const utc = (await tc.get("/api/auth/me")).json.user;
+  const leftBefore = (await td.get("/api/me/matches")).json.matches.length;
+  const t2 = await pairUp(tc, td, await legalDeck(tc, "Table deck C"), await legalDeck(td, "Table deck D"));
+  const stopAsking = Date.now() + 2600; // longer than SN_RANKED_GONE_MS; only seat A keeps asking
+  while (Date.now() < stopAsking) { await tableOf(tc, t2.code); await new Promise((res) => setTimeout(res, 150)); }
+  await tc.post("/api/queue/tick");
+  const left = (await tc.get(`/api/match-sessions/${t2.sessionId}`)).json.session;
+  const leftRows = (await td.get("/api/me/matches")).json.matches;
+  check("a player who left the table loses", left?.status === "completed" && left.winnerId === utc.id && leftRows.length === leftBefore + 1 && leftRows[0].result === "loss", JSON.stringify(left));
 
   section("Weight");
   const catalog = await fetch(`${BASE}/api/cards`, { headers: { "accept-encoding": "identity" } });

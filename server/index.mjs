@@ -11,7 +11,8 @@ import { z } from "zod";
 import { initDb, all, run, get } from "./db.mjs";
 import { registerCardArt } from "./card-art.mjs";
 import { registerWelcome } from "./welcome.mjs";
-import { registerRooms } from "./rooms.mjs";
+import { rankedCodeOf, rankedTable, registerRooms, sweepRankedTables } from "./rooms.mjs";
+import { deckProblem } from "./engine.mjs";
 import { registerReplays } from "./replays.mjs";
 import { registerStatic } from "./static.mjs";
 import { limit, registerSecurityHeaders } from "./security.mjs";
@@ -108,6 +109,7 @@ async function requireAdmin(req, reply) {
 // transient DB error can't kill the interval.
 async function runMatchmakingTick() {
   try {
+    await sweepRankedTables(config.rankedGoneMs); // a player who left their table loses
     const expired = await expireStaleMatches();
     const created = await findAndPairMatches();
     return {
@@ -634,7 +636,7 @@ app.get("/api/stats", async () => {
   const u = await get(`SELECT COUNT(*) AS c FROM users`);
   const d = await get(`SELECT COUNT(*) AS c FROM decks`);
   const m = await get(`SELECT COUNT(*) AS c FROM matches`);
-  return { captains: Number(u.c), decks: Number(d.c), matches: Number(m.c) };
+  return { captains: Number(u.c), decks: Number(d.c), matches: Number(m.c), rankedOpen: config.rankedOpen };
 });
 
 app.get("/api/health", async () => ({ ok: true }));
@@ -777,6 +779,9 @@ app.post("/api/match-sessions/:sessionId/complete", async (req, reply) => {
   if (winnerId !== session.host_user_id && winnerId !== session.opponent_id) {
     return reply.code(400).send({ error: "Winner is not in this match" });
   }
+  // people play ranked on a table the server judges; only the bots of the ladder
+  // script, which plays their games itself, report who won
+  if (!(await bothBots(session))) return reply.code(403).send({ error: "The server decides a ranked game" });
 
   const updated = await reportMatchResult(session, user.id, winnerId);
   if (updated.status !== "active") {
@@ -796,6 +801,9 @@ app.post("/api/match-sessions/:sessionId/cancel", async (req, reply) => {
     return reply.code(403).send({ error: "Not in this match" });
   }
 
+  // once the table is set, leaving it is conceding: a cancel would erase a lost game
+  if (rankedCodeOf(session.id)) return reply.code(409).send({ error: "The game has started: concede at the table" });
+
   const updated = await cancelMatchSession(req.params.sessionId);
   await setUserPresence(session.host_user_id, "online");
   if (session.opponent_id) await setUserPresence(session.opponent_id, "online");
@@ -804,11 +812,30 @@ app.post("/api/match-sessions/:sessionId/cancel", async (req, reply) => {
 });
 
 // ---- ranked queue ----
+/** Both players of a session are bot accounts (scripts/bot-ladder). */
+async function bothBots(session) {
+  const rows = await all(`SELECT is_bot FROM users WHERE id IN (?, ?)`, [session.host_user_id, session.opponent_id]);
+  return rows.length === 2 && rows.every((r) => r.is_bot);
+}
+
 app.post("/api/me/queue/join", limit(30, "1 minute"), async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
+  if (!config.rankedOpen) return reply.code(403).send({ error: "Ranked is not open yet" });
   const deckId = await ownDeckId(req, reply, user);
   if (!deckId) return;
+  // a person's game is dealt by the rules engine: the deck must be one it accepts
+  // (a bot's game is played by the ladder script, with its own list)
+  if (!user.is_bot) {
+    let problem;
+    try {
+      problem = await deckProblem(await getDeck(deckId));
+    } catch (err) {
+      console.error("[ranked] the rules engine did not load:", err);
+      return reply.code(503).send({ error: "Ranked is not available right now" });
+    }
+    if (problem) return reply.code(400).send({ error: `Deck not legal: ${problem}` });
+  }
 
   await joinQueue(user.id, deckId, await ladderRating(user.id));
   await setUserPresence(user.id, "online");
@@ -848,6 +875,8 @@ app.get("/api/me/queue/status", async (req, reply) => {
       sessionId: ms.id,
       opponentUsername: opponentUsername || null,
       startNow: true,
+      /** The table to sit at, once both players confirmed (POST /api/me/queue/ready). */
+      roomCode: rankedCodeOf(ms.id),
     });
   }
 
@@ -873,7 +902,23 @@ app.post("/api/me/queue/ready", async (req, reply) => {
   const session = await markMatchReady(sessionId, user.id);
   if (!session) return reply.code(404).send({ error: "Match not found" });
   await setUserPresence(user.id, "in_duel");
-  return reply.send({ session: matchSessionToClient(session) });
+  // both are here: the server sets the table (people only; bots have none)
+  let roomCode = null;
+  if (session.status === "active" && !(await bothBots(session))) {
+    let room;
+    try {
+      room = await rankedTable(session);
+    } catch (err) {
+      await cancelMatchSession(session.id);
+      return reply.code(409).send({ error: `This match could not start: ${String(err?.message ?? err)}` });
+    }
+    if (!room) {
+      await cancelMatchSession(session.id);
+      return reply.code(410).send({ error: "This game was lost when the server restarted. It has no result." });
+    }
+    roomCode = room.code;
+  }
+  return reply.send({ session: matchSessionToClient(session), roomCode });
 });
 
 // Manual matchmaking tick — runs one pairing pass + expires no-shows. The same

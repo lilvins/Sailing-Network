@@ -2695,14 +2695,15 @@ function GameScreen() {
           <span className="ba-ovtag">GAME OVER</span>
           <b className="ba-ovname big">{game.winner ? seatName(game.winner) : "?"} WINS</b>
           <p className="ba-ovtext">{WIN_REASON[game.winReason ?? ""] ?? game.winReason}</p>
-          {online && <p className="ba-ovtext" data-rematch-state>
+          {online && !online.ranked && <p className="ba-ovtext" data-rematch-state>
             {theyLeft ? `${opponent?.name} has left the table.`
               : iAsked ? `Waiting for ${opponent?.name}…`
               : theyAsked ? `${opponent?.name} wants a rematch.`
               : "This game is in your Duel Records."}
           </p>}
+          {online?.ranked && <p className="ba-ovtext" data-ranked-result>Ranked: the server recorded this result on the ladder.</p>}
           <div className="ba-ovbtns">
-            {online
+            {online?.ranked ? null : online
               ? <button className="ba-btn primary" data-act="rematch" disabled={iAsked || theyLeft} onClick={() => void askRematch()}>{iAsked ? "Rematch asked" : "Rematch"}</button>
               : <button className="ba-btn primary" data-act="rematch" onClick={rematch}>Rematch</button>}
             {online
@@ -2896,7 +2897,7 @@ function GameScreen() {
         >
           Confirm every choice: {confirmPicks ? "on" : "off"}
         </button>}
-        {!watching && <button
+        {!watching && !online?.ranked && <button
           className="ba-btn ba-undo"
           data-act="undo"
           disabled={online ? game.phase === "over" || !!undoRequest : !lastHumanMove || !!undoRequest}

@@ -129,6 +129,8 @@ export interface SiteStats {
   captains: number;
   decks: number;
   matches: number;
+  /** The Duelist Pool takes players (the server's SN_RANKED setting). */
+  rankedOpen?: boolean;
 }
 
 export type FriendStatus = "pending" | "accepted";
@@ -327,6 +329,10 @@ export const api = {
 
   queueStatus: () =>
     request<QueueStatus>("/me/queue/status"),
+
+  /** "I am here" for a match the queue found. Once both said it, the answer names the table. */
+  queueReady: (sessionId: string) =>
+    request<{ roomCode: string | null }>("/me/queue/ready", { method: "POST", body: JSON.stringify({ sessionId }) }),
 };
 
 export interface GlobalMessage {
@@ -546,6 +552,8 @@ export interface QueueStatus {
   sessionId?: string;
   opponentUsername?: string | null;
   startNow?: boolean;
+  /** The ranked table to sit at, once both players confirmed. */
+  roomCode?: string | null;
 }
 
 export interface DeckSummary {

@@ -5,8 +5,8 @@ import type { ReplayRecord } from "./record";
 export interface ReplaySummary {
   id: string;
   createdAt: number;
-  /** A friend game, a game against the AI, or two players at one screen. */
-  source: "friend" | "ai" | "local";
+  /** A ranked game, a friend game, a game against the AI, or two players at one screen. */
+  source: "ranked" | "friend" | "ai" | "local";
   format: string;
   /** Seat A then seat B. */
   seats: [ReplaySeatSummary, ReplaySeatSummary];

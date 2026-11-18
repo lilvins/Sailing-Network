@@ -3,6 +3,7 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { brotliDecompressSync, gunzipSync } from "node:zlib";
 import Fastify from "fastify";
 import { afterAll, describe, expect, it } from "vitest";
@@ -11,6 +12,7 @@ import rateLimit from "@fastify/rate-limit";
 import { registerStatic } from "../server/static.mjs";
 import { limit, registerSecurityHeaders } from "../server/security.mjs";
 import { pickEncoding, registerCompression } from "../server/compress.mjs";
+import { buildEngine } from "../server/engineBuild.mjs";
 import { cardFaceSvg, wrap } from "../server/cardFace.mjs";
 
 const SECRET = "x".repeat(40);
@@ -65,6 +67,15 @@ describe("server settings (config.mjs)", () => {
     const prod = { NODE_ENV: "production", COOKIE_SECRET: SECRET, SN_STATIC_DIR: "off" };
     expect([loadConfig({}).rateLimit, loadConfig(prod).rateLimit, loadConfig({ ...prod, SN_RATE_LIMIT: "0" }).rateLimit, loadConfig({ SN_RATE_LIMIT: "50" }).rateLimit]).toEqual([0, 900, 0, 50]);
     expect(() => loadConfig({ SN_RATE_LIMIT: "many" })).toThrow(/SN_RATE_LIMIT/);
+  });
+
+  it("SN_RANKED: closed in production until it says open, open in development", () => {
+    const prod = { NODE_ENV: "production", COOKIE_SECRET: SECRET, SN_STATIC_DIR: "off" };
+    expect([loadConfig(prod).rankedOpen, loadConfig({ ...prod, SN_RANKED: "open" }).rankedOpen, loadConfig({}).rankedOpen, loadConfig({ SN_RANKED: "closed" }).rankedOpen])
+      .toEqual([false, true, true, false]);
+    expect(() => loadConfig({ SN_RANKED: "yes" })).toThrow(/SN_RANKED/);
+    expect(loadConfig({}).rankedGoneMs).toBe(120000);
+    expect(() => loadConfig({ SN_RANKED_GONE_MS: "5" })).toThrow(/SN_RANKED_GONE_MS/);
   });
 
   it("TRUST_PROXY: off, on, a number of proxies, or their addresses", () => {
@@ -227,5 +238,34 @@ describe("answers are sent compressed (compress.mjs)", () => {
     expect([small.headers["content-encoding"], small.json()]).toEqual([undefined, { ok: true }]);
     const none = await app.inject({ method: "GET", url: "/api/cards" });
     expect([none.headers["content-encoding"], none.json()]).toEqual([undefined, cardsList]);
+  });
+});
+
+describe("the rules engine as the server runs it (engineBuild.mjs)", () => {
+  it("builds into one module that deals a game and refuses an illegal move", async () => {
+    const out = await buildEngine(join(site, "..", `sn-engine-test-${process.pid}`, "engine.mjs"));
+    const engine = await import(/* @vite-ignore */ pathToFileURL(out).href);
+    const card = (id: string, category: string) => ({
+      id, name: id, category, colors: ["Red"], cost: category === "Leader" ? 5 : 1, power: 5000, counter: null,
+      types: [], attributes: [], effect: "-", trigger: null, rarity: "C", set: "TST",
+    });
+    const cardsById = new Map([card("TST-001", "Leader"), ...Array.from({ length: 13 }, (_, i) => card(`TST-${100 + i}`, "Character"))].map((c) => [c.id, c]));
+    const db = engine.makeCardDb(cardsById);
+    const deck = Array.from({ length: 50 }, (_, i) => `TST-${100 + (i % 13)}`);
+    const player = (id: string) => ({ id, leader: "TST-001", deck });
+    const game = engine.createGame(db, { seed: "test", firstPlayer: "seatA", players: [player("seatA"), player("seatB")] });
+    expect(game.state.pendingChoice).toMatchObject({ kind: "mulligan", player: "seatA" });
+    expect(() => engine.applyIntent(db, game.state, { type: "endTurn", player: "seatA" })).toThrow();
+    const over = engine.applyIntent(db, game.state, { type: "concede", player: "seatA" });
+    expect([over.state.phase, over.state.winner]).toEqual(["over", "seatB"]);
+    rmSync(join(site, "..", `sn-engine-test-${process.pid}`), { recursive: true, force: true });
+  });
+
+  it("the bundle inside the build is the server's, not a file of the site", async () => {
+    mkdirSync(join(site, "_server"), { recursive: true });
+    writeFileSync(join(site, "_server", "engine.mjs"), "export {}");
+    const app = Fastify();
+    registerStatic(app, { dir: site, cardsDir: cards });
+    expect((await app.inject({ method: "GET", url: "/_server/engine.mjs" })).statusCode).toBe(404);
   });
 });

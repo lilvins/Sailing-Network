@@ -30,6 +30,8 @@ interface RoomInfo {
   leftSeats: PID[];
   nextCode: string | null;
   replayId: string | null;
+  /** A ranked table (server/rooms.mjs): the server plays the game and writes its result. */
+  ranked?: boolean;
   moves: PlayerIntent[];
   chat: RoomChatLine[];
 }
@@ -83,7 +85,7 @@ function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; 
 function startPlaying(room: RoomInfo): void {
   const { game, events, recording, seats } = buildGame(room);
   useAutoStore.getState().loadOnlineGame({ seats, game, events, recording, online: {
-    code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch,
+    code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch, ranked: !!room.ranked,
   } });
   const auto = takeBack && takeBack.code === room.code && room.undoBy === takeBack.by; // a step of a take-back in progress
   useAutoStore.setState({ undoRequest: !auto && room.undoBy ? { by: room.undoBy } : null });
@@ -96,8 +98,10 @@ function startPlaying(room: RoomInfo): void {
  *  The game's record goes with it, and becomes the replay (server/replays.mjs). */
 const reported = new Set<string>();
 function reportIfOver(code: string): void {
-  const winner = useAutoStore.getState().game?.winner;
+  const { game, online } = useAutoStore.getState();
+  const winner = game?.winner;
   if (!winner || reported.has(code)) return;
+  if (online?.code === code && online.ranked) return; // the server played the game: it needs nobody's word
   reported.add(code);
   void call(`/api/rooms/${code}/result`, { method: "POST", body: { winner, record: currentRecord() ?? undefined } })
     .then((r) => { if (r.replayId) showReplay(code, r.replayId); })
@@ -229,7 +233,7 @@ function startPolling(code: string): void {
 }
 
 function enterRoom(room: RoomInfo): void {
-  useAutoStore.setState({ game: null, events: [], recording: null, online: { code: room.code, mySeat: room.mySeat, status: room.status, applied: 0, chat: [], epoch: room.epoch } });
+  useAutoStore.setState({ game: null, events: [], recording: null, online: { code: room.code, mySeat: room.mySeat, status: room.status, applied: 0, chat: [], epoch: room.epoch, ranked: !!room.ranked } });
   remember(room.code);
   if (room.status === "playing") startPlaying(room);
   startPolling(room.code);
@@ -301,6 +305,18 @@ export async function joinDuel(id: string, deck: DeckChoice, password: string, f
   return null;
 }
 
+/** Sits at the table of a ranked match (the Duel Room's pool leads here). The server set it:
+ *  seats, decks, seed and who goes first. Returns why it could not, or null. */
+export async function enterRankedTable(code: string): Promise<string | null> {
+  await useAutoStore.getState().init();
+  if (!getCardDb()) return "The card catalog is not available";
+  const r = await call(`/api/rooms/${encodeURIComponent(code)}`).catch(() => null);
+  if (!r?.room) return r?.error ?? "Could not reach the ranked table";
+  enterRoom(r.room);
+  useUiStore.getState().setView("board-auto");
+  return null;
+}
+
 /** Stop following the room. A started game stays on the server for the other player. */
 export function leaveRoom(): void {
   const { online } = useAutoStore.getState();
@@ -309,7 +325,7 @@ export function leaveRoom(): void {
   timer = null;
   remember(null);
   if (online.status === "waiting") void call(`/api/rooms/${online.code}`, { method: "DELETE" }).catch(() => {});
-  else void call(`/api/rooms/${online.code}/rematch`, { method: "POST", body: { action: "leave" } }).catch(() => {});
+  else if (!online.ranked) void call(`/api/rooms/${online.code}/rematch`, { method: "POST", body: { action: "leave" } }).catch(() => {});
   useAutoStore.setState({ online: null });
 }
 
