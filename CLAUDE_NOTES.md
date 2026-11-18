@@ -504,6 +504,38 @@ in beta".
   `tests/deploy.test.ts`. The signup route allows ten accounts per ten
   minutes and the suite makes nine: reuse accounts in new sections.
 
+## Account, legal pages, safety between players (2026-11-18)
+- **Tokens** (`server/account.mjs`, table `account_tokens`): the links in emails
+  carry a random token, stored as its SHA-256, one use, 1 hour (reset) or 1 day
+  (verify). `/api/auth/forgot` answers the same for an unknown account. A reset
+  ends every session of the account. The page a link opens (`AccountLinkPage`,
+  view `account-link`) takes the token out of the address bar at once.
+- **Mail** (`server/mail.mjs`): one fetch to Resend, no dependency; off unless
+  `RESEND_API_KEY` + `SN_MAIL_FROM`. The links use `SN_PUBLIC_URL`, never the
+  request's Host (a forged Host would put another site in the mail): required
+  in production when mail is on. `SN_MAIL_OUTBOX` (dev and tests only) writes
+  the mails to a file; the API tests read their tokens there. With no mail an
+  admin makes a reset link on the Admin page.
+- **Deleting an account**: the row goes and the tables cascade. Before that,
+  the replays the account shares with another player lose its name
+  ("Deleted captain", in the columns and inside the record) and its chat lines;
+  the ones it sent in alone (AI, one screen) are deleted. The last admin cannot.
+- **Public pages**: `PUBLIC_VIEWS` in `uiStore.ts` (login, replay, privacy,
+  terms, account-link). Everything else sends a visitor to the login.
+  `/?page=privacy`, `/?page=terms`, `/?reset=`, `/?verify=` are read in `App.tsx`.
+- **Privacy page = what the code does.** Each line of `LegalPages.tsx` has code
+  behind it; storing, sending or sharing something new changes the page in the
+  same commit. Operator and contact come from `/api/site` (`SN_OPERATOR`,
+  `SN_CONTACT_EMAIL`). Not stated, to decide: minimum age, governing law.
+- **Blocks** (`server/moderation.mjs`): one-way and silent. `contactRefusal`
+  guards DMs and friend requests; the blocked side reads "not taking
+  messages", never "blocked". Chat lines of blocked captains are filtered per
+  reader. A block ends friendship and follows both ways.
+- **Reports**: the excerpt is read from the message row by the server, never
+  taken from the reporter. Admin page lists the open ones.
+- Not done: email required for anything, a ban button in the Admin page,
+  blocking inside a game room's chat, export of one's data.
+
 ## Release fixes — security and weight (2026-11-17)
 - **Security** (`server/security.mjs`): every answer carries the content
   policy (this origin only; inline styles allowed because React writes style

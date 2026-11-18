@@ -27,8 +27,14 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 - [ ] **Deploy.** Pick the host, copy `public/cards` there (2,973 files, 666 MB,
       `SN_CARDS_DIR`), set up database backups, try the Docker image (never built: no
       Docker here), and get CI running.
-- [ ] **Legal pages and account basics.** No privacy policy, terms, account deletion,
-      password reset or email verification anywhere in `src/` or `server/`.
+- [ ] **Legal pages: read them, and fill in who runs the site.** Privacy and Terms are
+      written from what the code does, not by a lawyer. Set `SN_OPERATOR` and
+      `SN_CONTACT_EMAIL`; decide the minimum age and the governing law, which they do
+      not state.
+- [ ] **Email is off until a provider is set.** Reset and confirmation links go out
+      through Resend when `RESEND_API_KEY`, `SN_MAIL_FROM` and `SN_PUBLIC_URL` are set;
+      until then an admin hands out reset links and no address can be confirmed.
+      Never sent a real mail: the tests write them to a file.
 
 ## Important
 
@@ -40,7 +46,10 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
       can still trade wins by conceding, when the queue pairs them.
 - [ ] A ranked game lives in the server's memory: a restart loses the games in progress
       (they end with no result, and the players are told).
-- [ ] No block, report or delete for DMs and chat (admins can ban an account).
+- [ ] Reports reach the Admin page, but an admin can only close them or make a reset
+      link there: banning is still API only (`POST /api/admin/bans`).
+- [ ] A confirmed email address is shown but asked of nobody: an account with an
+      address that is not theirs can do everything.
 - [ ] SQLite: no index on `matches.created_at`; one writer process only; the ladder
       reads every counted row again after each new match (`server/stats/index.mjs:30`).
 - [ ] The app has two links only, `?duel=CODE` and `?replay=ID`. Any other page has no
@@ -56,6 +65,16 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
 ## Done
 
+- [x] Account basics (2026-11-18): a new password by a one-use link (by email, or made
+      by an admin), the email address confirmed by a link, a new password while signed
+      in, and deleting the account with its data (`server/account.mjs`). Other players
+      keep their games, with the deleted name and chat lines taken out of the replays.
+- [x] Privacy and Terms pages (2026-11-18), open without an account, linked from the
+      login, the signup and the Home.
+- [x] Safety between players (2026-11-18): block a captain (their DMs and friend
+      requests are refused, their chat lines hidden), report a player or a message to
+      the admins with the words copied by the server, delete one's own chat line or
+      private message; an admin deletes any chat line (`server/moderation.mjs`).
 - [x] Two people play ranked (2026-11-17): the queue leads both to a table the server
       sets (seats, decks, seed, first player) and plays with the rules engine
       (`server/engine.mjs`). An illegal move is refused; the result and the replay are
