@@ -9,6 +9,7 @@ import { BountyChart } from "../stats/BountyChart";
 import { TierBadge, CountryTag, WinRate, WinRateBar } from "../stats/StatBits";
 import { formatBounty, formatBountyDelta, seasonLabel, showPct, countryName, timeAgo } from "../stats/format";
 import { PixelScene } from "../pixel/PixelScene";
+import { ReportDialog, type ReportTarget } from "../account/ReportDialog";
 import "../home/home.css";
 import "./profiles.css";
 import "../social/social.css";
@@ -42,6 +43,12 @@ export function ProfileViewer() {
   const [season, setSeason] = useState<string>("current");
   const [openLeader, setOpenLeader] = useState<string | null>(null);
   const [followBusy, setFollowBusy] = useState(false);
+  /** Has this player blocked the captain shown, and the report being written. */
+  const [blockedNames, setBlockedNames] = useState<Set<string>>(new Set());
+  const [reporting, setReporting] = useState<ReportTarget | null>(null);
+  useEffect(() => {
+    api.myBlocks().then((r) => setBlockedNames(new Set(r.blocks.map((b) => b.username)))).catch(() => {});
+  }, []);
 
   useEffect(() => {
     Promise.all([api.directory(), loadCardsById()])
@@ -78,6 +85,17 @@ export function ProfileViewer() {
     const s = ladder.pastSeasons.find((x) => x.season === season);
     return { label: s ? seasonLabel(s.season) : "", points: s?.history || [] };
   }, [ladder, season, stats]);
+
+  const isBlocked = !!data && blockedNames.has(data.user.username);
+  /** Blocking is silent: the other captain is not told, and can no longer write. */
+  const toggleBlock = async () => {
+    if (!data) return;
+    const username = data.user.username;
+    try {
+      await (isBlocked ? api.unblock(username) : api.block(username));
+      setBlockedNames((s) => { const next = new Set(s); if (isBlocked) next.delete(username); else next.add(username); return next; });
+    } catch { /* unchanged */ }
+  };
 
   const toggleFollow = async () => {
     if (!data || followBusy) return;
@@ -154,6 +172,9 @@ export function ProfileViewer() {
                     <button className="sn-btn-ghost" onClick={() => openMessagesWith(data.user.username)}>
                       <Ico n="chat" size={16} /> Message
                     </button>
+                    <button className="sn-btn-ghost" data-act="profile-block" onClick={() => void toggleBlock()}>{isBlocked ? "Unblock" : "Block"}</button>
+                    <button className="sn-btn-ghost" data-act="profile-report"
+                      onClick={() => setReporting({ username: data.user.username, displayName: data.user.displayName, kind: "profile" })}>Report</button>
                   </>
                 )}
                 <button className="sn-btn-ghost" onClick={() => setView("rankings")}>
@@ -362,6 +383,7 @@ export function ProfileViewer() {
           </div>
         )}
       </div>
+      {reporting && <ReportDialog target={reporting} onClose={() => setReporting(null)} />}
       <Dock />
     </div>
   );

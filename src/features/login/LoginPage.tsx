@@ -4,6 +4,7 @@ import { useAuthStore } from "../../app/authStore";
 import { api, type SiteStats } from "../../lib/api";
 import "../home/home.css"; // for the shared .sn vars/atoms
 import "./login.css";
+import "../account/account.css";
 
 /* The landing/login — the right side is the REAL "Moon and Sea" pixel art
    (public/assets/bg/night-sea, CraftPix via OpenGameArt, OGA-BY 3.0): the
@@ -17,7 +18,8 @@ export function LoginPage() {
   const login = useAuthStore((s) => s.login);
   const signup = useAuthStore((s) => s.signup);
 
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const [notice, setNotice] = useState("");
   const [identifier, setIdentifier] = useState(""); // login: email or username
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -30,9 +32,10 @@ export function LoginPage() {
     api.siteStats().then(setStats).catch(() => {});
   }, []);
 
-  const switchMode = (m: "login" | "signup") => {
+  const switchMode = (m: "login" | "signup" | "forgot") => {
     setMode(m);
     setErr("");
+    setNotice("");
   };
 
   // dev only: the production build must not contain this password
@@ -58,6 +61,13 @@ export function LoginPage() {
     setErr("");
     setBusy(true);
     try {
+      if (mode === "forgot") {
+        const { mail } = await api.forgotPassword(identifier.trim());
+        setNotice(mail
+          ? "If that account exists, a link to choose a new password is on its way to its email address. It works for one hour."
+          : "This server sends no email yet. Ask an admin for a link to choose a new password.");
+        return;
+      }
       if (mode === "login") {
         await login(identifier.trim(), password);
       } else {
@@ -85,7 +95,7 @@ export function LoginPage() {
           </div>
 
           <form className="snlogin-form" onSubmit={submit}>
-            {mode === "login" ? (
+            {mode !== "signup" ? (
               <div className="snlogin-group">
                 <label className="snlogin-label" htmlFor="navid">
                   Navigator ID
@@ -132,7 +142,7 @@ export function LoginPage() {
                 </div>
               </>
             )}
-            <div className="snlogin-group">
+            {mode !== "forgot" && <div className="snlogin-group">
               <label className="snlogin-label" htmlFor="secret">
                 Secret Log
               </label>
@@ -145,17 +155,26 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-            </div>
+            </div>}
+            {mode === "login" && (
+              <button type="button" className="snlogin-forgot" data-act="forgot" onClick={() => switchMode("forgot")}>Forgot your password?</button>
+            )}
+            {mode === "signup" && (
+              <p className="snlogin-consent">
+                By joining you accept the <a onClick={() => setView("terms")}>Terms</a> and the <a onClick={() => setView("privacy")}>Privacy</a> page.
+              </p>
+            )}
+            {notice && <div className="acl-ok" data-forgot-notice>{notice}</div>}
 
             {err && <div className="snlogin-error">{err}</div>}
 
             <button className="snlogin-btn" type="submit" disabled={busy}>
               <PixelIcon name="arrow" size={12} />
-              {busy ? "…" : mode === "login" ? "Set Sail" : "Join the Crew"}
+              {busy ? "…" : mode === "login" ? "Set Sail" : mode === "signup" ? "Join the Crew" : "Send me a link"}
             </button>
           </form>
 
-          <div className="snlogin-divider">{mode === "login" ? "new here?" : "already aboard?"}</div>
+          <div className="snlogin-divider">{mode === "login" ? "new here?" : mode === "signup" ? "already aboard?" : "remembered it?"}</div>
 
           <div className="snlogin-cta">
             {mode === "login" ? (
@@ -178,7 +197,7 @@ export function LoginPage() {
           </div>
 
           <p className="snlogin-foot">
-            {mode === "login" ? (
+            {mode !== "signup" ? (
               <>
                 No account? <a onClick={() => switchMode("signup")}>Join the crew →</a>
               </>
@@ -188,6 +207,10 @@ export function LoginPage() {
               </>
             )}
           </p>
+          <div className="snlogin-links">
+            <a data-act="privacy" onClick={() => setView("privacy")}>Privacy</a>
+            <a data-act="terms" onClick={() => setView("terms")}>Terms</a>
+          </div>
         </div>
       </aside>
 

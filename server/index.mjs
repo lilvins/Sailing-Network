@@ -13,6 +13,9 @@ import { registerCardArt } from "./card-art.mjs";
 import { registerWelcome } from "./welcome.mjs";
 import { rankedCodeOf, rankedTable, registerRooms, sweepRankedTables } from "./rooms.mjs";
 import { deckProblem } from "./engine.mjs";
+import { makeMailer } from "./mail.mjs";
+import { registerAccount } from "./account.mjs";
+import { blockedIds, contactRefusal, registerModeration } from "./moderation.mjs";
 import { registerReplays } from "./replays.mjs";
 import { registerStatic } from "./static.mjs";
 import { limit, registerSecurityHeaders } from "./security.mjs";
@@ -152,6 +155,17 @@ const toClient = (r) => ({
   createdAt: r.created_at,
 });
 
+// ---- the account itself, and safety between players ----
+const mailer = makeMailer(config.mail);
+const { sendVerification } = registerAccount(app, {
+  requireUser, requireAdmin, mailer, publicUrl: config.publicUrl,
+  sessions: { set: setSessionCookie, clear: (reply) => reply.clearCookie(COOKIE, { path: "/" }) },
+});
+registerModeration(app, { requireUser, requireAdmin });
+
+// who runs the site (the Privacy and Terms pages), and what this server can do
+app.get("/api/site", async () => ({ operator: config.operator, contactEmail: config.contactEmail, mail: mailer.configured, rankedOpen: config.rankedOpen }));
+
 // ---- auth routes ----
 app.post(
   "/api/auth/signup",
@@ -168,6 +182,7 @@ app.post(
     const sessionToken = await createSession(user.id);
     await setUserPresence(user.id, "online", sessionToken);
     setSessionCookie(reply, sessionToken);
+    void sendVerification(user).catch(() => {}); // a link to prove the address, when this server sends email
     return reply.code(201).send({ user: publicUser(user) });
   }
 );
@@ -524,6 +539,8 @@ app.post("/api/me/friends/:username", limit(30, "10 minutes"), async (req, reply
   const target = await getUserByUsername(req.params.username);
   if (!target) return reply.code(404).send({ error: "User not found" });
   if (target.id === user.id) return reply.code(400).send({ error: "Cannot friend yourself" });
+  const refused = await contactRefusal(user.id, target.id);
+  if (refused) return reply.code(403).send({ error: refused });
   try {
     const f = await sendFriendRequest(user.id, target.id);
     // notify the addressee (unless this call auto-accepted a reciprocal request)
@@ -593,6 +610,8 @@ app.post("/api/threads/:username", limit(30, "1 minute"), async (req, reply) => 
   const peer = await getUserByUsername(req.params.username);
   if (!peer) return reply.code(404).send({ error: "User not found" });
   if (peer.id === user.id) return reply.code(400).send({ error: "Cannot message yourself" });
+  const refused = await contactRefusal(user.id, peer.id);
+  if (refused) return reply.code(403).send({ error: refused });
   const m = await sendMessage(user.id, peer.id, p.data.body);
   await createNotification({ userId: peer.id, type: "message", actorId: user.id, body: `${user.display_name}: ${p.data.body.slice(0, 60)}`, ref: user.username });
   return reply.code(201).send({ message: messageToClient(m, user.id) });
@@ -945,7 +964,8 @@ const chatSchema = z.object({ body: z.string().min(1).max(500) });
 app.get("/api/chat", async (req, reply) => {
   const user = await requireUser(req, reply);
   if (!user) return;
-  const rows = await listGlobalMessages(80);
+  const hidden = await blockedIds(user.id);
+  const rows = (await listGlobalMessages(80)).filter((m) => !hidden.has(m.user_id));
   return reply.send({ messages: rows.map((m) => globalMessageToClient(m, user.id)) });
 });
 

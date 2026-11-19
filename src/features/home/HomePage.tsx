@@ -488,7 +488,9 @@ export function HomePage() {
           <footer className="hu-credits">
             Night sky: <a href="https://opengameart.org/content/moon-and-sea-pixel-art-background" target="_blank" rel="noopener noreferrer">“Moon and Sea”</a> by
             CraftPix.net (OGA-BY 3.0) ·{" "}
-            <button className="hu-credits-link" onClick={() => setView("credits")}>All credits</button>
+            <button className="hu-credits-link" onClick={() => setView("credits")}>All credits</button> ·{" "}
+            <button className="hu-credits-link" onClick={() => setView("privacy")}>Privacy</button> ·{" "}
+            <button className="hu-credits-link" onClick={() => setView("terms")}>Terms</button>
           </footer>
         </main>
 

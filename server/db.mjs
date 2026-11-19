@@ -361,6 +361,48 @@ async function runMigrations() {
   if (!matchCols2.rows.some((c) => c.name === "replay_id")) {
     await db.execute(`ALTER TABLE matches ADD COLUMN replay_id TEXT`);
   }
+
+  // M8: what an account needs to be someone's own, and what keeps people safe from each other.
+  //   users.email_verified_at  when the owner proved the email is theirs (NULL: not yet).
+  //   account_tokens           one-use links sent by email: 'reset' (a new password) and 'verify'.
+  //                            Only the SHA-256 of a token is stored, like sessions.
+  //   blocks                   user_id no longer hears from blocked_id (DMs, friend requests, chat).
+  //   reports                  a player tells the admins about another: the text is copied in,
+  //                            so the report still reads after the message is deleted.
+  const userCols2 = await db.execute(`PRAGMA table_info(users)`);
+  if (!userCols2.rows.some((c) => c.name === "email_verified_at")) {
+    await db.execute(`ALTER TABLE users ADD COLUMN email_verified_at INTEGER`);
+  }
+  await db.executeMultiple(`
+    CREATE TABLE IF NOT EXISTS account_tokens (
+      token_hash TEXT PRIMARY KEY,
+      user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind       TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      expires_at INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_account_tokens_user ON account_tokens(user_id, kind);
+    CREATE TABLE IF NOT EXISTS blocks (
+      user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      blocked_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at INTEGER NOT NULL,
+      PRIMARY KEY (user_id, blocked_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_blocks_blocked ON blocks(blocked_id);
+    CREATE TABLE IF NOT EXISTS reports (
+      id          TEXT PRIMARY KEY,
+      reporter_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+      target_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind        TEXT NOT NULL,
+      reason      TEXT NOT NULL,
+      excerpt     TEXT NOT NULL DEFAULT '',
+      status      TEXT NOT NULL DEFAULT 'open',
+      created_at  INTEGER NOT NULL,
+      closed_at   INTEGER,
+      closed_by   TEXT REFERENCES users(id) ON DELETE SET NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, created_at);
+  `);
 }
 
 // thin query helpers
