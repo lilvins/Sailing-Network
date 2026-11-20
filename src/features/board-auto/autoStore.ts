@@ -63,8 +63,11 @@ export interface OnlineState {
   /** After the game: who asked to play again, who has left the table. */
   rematchVotes?: PID[];
   leftSeats?: PID[];
-  /** A ranked table: the server plays the game too. No take-back, no rematch, and the result is its word. */
+  /** A ranked table: the server plays the game, and `game` is this player's view of it (src/autosim/view.ts),
+   *  with stand-ins for the cards they may not see. No take-back, no rematch, and the result is the server's word. */
   ranked?: boolean;
+  /** A ranked table: moves of this player on their way to the server, not answered yet. */
+  waiting?: number;
 }
 
 /** A finished game being watched again on the table (src/features/replay). */
@@ -132,6 +135,8 @@ export function getCardDb(): CardDb | null {
 }
 
 let bannerSeq = 1;
+/** The last move sent to a ranked table, as text: a second click on the same button is not a second move. */
+let lastRankedMove = "";
 
 /** The "confirm every choice" table setting, remembered per browser. */
 const CONFIRM_KEY = "sn-auto-confirm-picks";
@@ -202,7 +207,11 @@ interface AutoStoreState {
   closeReplay: () => void;
 
   init: () => Promise<void>;
-  loadOnlineGame: (g: { seats: [SeatSetup, SeatSetup]; game: AutoGameState; events: GameEvent[]; recording: Recording; online: OnlineState }) => void;
+  /** `recording`: null at a ranked table, where the server keeps the record. */
+  loadOnlineGame: (g: { seats: [SeatSetup, SeatSetup]; game: AutoGameState; events: GameEvent[]; recording: Recording | null; online: OnlineState }) => void;
+  /** A ranked table answered a move of this player: one fewer on its way. `refusal`: why the server
+   *  would not play it, shown like any refused move. */
+  rankedAnswered: (refusal?: string) => void;
   /** pick → roll */
   confirmSeats: (seats: [SeatSetup, SeatSetup]) => void;
   doRoll: () => void;
@@ -305,6 +314,12 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     set({ stage: "play", seats, game, events, recording, online, replay: null, banner: null, aiPaused: false, history: [], undoRequest: null, aiPlan: null });
   },
 
+  rankedAnswered: (refusal) => {
+    const { online } = get();
+    if (online) set({ online: { ...online, waiting: Math.max(0, (online.waiting ?? 0) - 1) } });
+    if (refusal) set({ banner: { id: bannerSeq++, text: refusal, hint: hintFor(refusal) } });
+  },
+
   init: async () => {
     if (cardsById) {
       set({ catalogReady: true });
@@ -365,8 +380,20 @@ export const useAutoStore = create<AutoStoreState>((set, get) => ({
     const { game, events, seats, online, recording } = get();
     if (!game || !cardDb || get().replay) return false; // a replay is watched, not played
     if (online && intent.player !== online.mySeat) {
-      set({ banner: { id: bannerSeq++, text: "It's your friend's move.", hint: "Wait for them to answer.", tone: "info" } });
+      set({ banner: { id: bannerSeq++, text: online.ranked ? "It's your opponent's move." : "It's your friend's move.", hint: "Wait for them to answer.", tone: "info" } });
       return false;
+    }
+    if (online?.ranked) {
+      // the server plays a ranked game, and this browser holds only its own player's view of it:
+      // the move goes there and the table shows what comes back (room.ts). Moves made while one
+      // is on its way follow it in order; the same click twice is one move.
+      if (game.phase === "over") return false;
+      const sent = JSON.stringify(intent);
+      if (online.waiting && sent === lastRankedMove && intent.type !== "giveDon") return false;
+      lastRankedMove = sent;
+      set({ online: { ...online, waiting: (online.waiting ?? 0) + 1 }, undoRequest: null, aiPlan: null });
+      onlineHooks?.send(online.code, online.applied, intent);
+      return true;
     }
     if (intent.type !== "concede" && game.phase !== "over" && isAiSeat(seats, actorOf(cardDb, game))) {
       set({ banner: { id: bannerSeq++, text: "The AI is playing this move.", hint: "Wait for it — or concede for that seat.", tone: "info" } });

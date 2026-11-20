@@ -2,7 +2,13 @@
  * Friend games, the browser's side of server/rooms.mjs. Lockstep: both
  * browsers build the same game from the room's seed and decks, then apply the
  * same moves in the same order. The engine is deterministic, so they stay equal.
- * The whole game state is in both browsers: fine between friends, not for ranked.
+ * The whole game state is in both browsers: fine between friends.
+ *
+ * A ranked table is followed another way. The server plays the game and sends
+ * this browser only its own player's view of it (src/autosim/view.ts): the
+ * state as that player may see it, and the events as they may read them. The
+ * table shows that view; nothing here runs the engine on a ranked game. A move
+ * goes to the server and the answer carries what it led to.
  */
 import { useUiStore } from "../../app/uiStore";
 import { applyIntent, createGame } from "../../autosim/engine/engine";
@@ -34,6 +40,11 @@ interface RoomInfo {
   ranked?: boolean;
   moves: PlayerIntent[];
   chat: RoomChatLine[];
+  /** A ranked table: the game as this player may see it now. null: nothing new since what the request said it had. */
+  view?: AutoGameState | null;
+  /** A ranked table: `events` are this player's events from this one on. */
+  eventsFrom?: number;
+  events?: GameEvent[];
 }
 
 const POLL_MS = 700;
@@ -55,16 +66,20 @@ async function call(path: string, init?: { method: string; body?: unknown }): Pr
 }
 
 
+/** The two seats of a room: this browser's player, and the one in another browser. */
+function seatsOf(room: RoomInfo): [SeatSetup, SeatSetup] {
+  const seat = (pid: PID, s: RoomSeat): SeatSetup => ({
+    pid, name: s.name, controller: pid === room.mySeat ? "human" : "remote",
+    deck: { key: `room:${pid}`, name: s.deck.name, sub: "", leaderId: s.deck.leaderId, main: s.deck.main, source: "mine" },
+  });
+  return [seat("seatA", room.seats[0]), seat("seatB", room.seats[1]!)];
+}
+
 /** The game from its first move: same result in both browsers. */
 function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; recording: Recording; seats: [SeatSetup, SeatSetup] } {
   const db = getCardDb()!;
   const [a, b] = [room.seats[0], room.seats[1]!];
-  const seat = (pid: PID, s: RoomSeat): SeatSetup => ({
-    pid, name: s.name, controller: "remote",
-    deck: { key: `room:${pid}`, name: s.deck.name, sub: "", leaderId: s.deck.leaderId, main: s.deck.main, source: "mine" },
-  });
-  const seats: [SeatSetup, SeatSetup] = [seat("seatA", a), seat("seatB", b)];
-  for (const s of seats) if (s.pid === room.mySeat) s.controller = "human";
+  const seats = seatsOf(room);
   const made = createGame(db, {
     seed: room.seed,
     firstPlayer: room.firstPlayer,
@@ -82,7 +97,31 @@ function buildGame(room: RoomInfo): { game: AutoGameState; events: GameEvent[]; 
   return { game, events, recording, seats };
 }
 
+/** A ranked table as the server sent it whole (the first answer, a reload, a re-sync). */
+function startRanked(room: RoomInfo): void {
+  if (!room.view) return;
+  rankedLine += 1; // moves still waiting to be sent were made on a table that is not this one any more
+  useAutoStore.getState().loadOnlineGame({ seats: seatsOf(room), game: room.view, events: room.events ?? [], recording: null, online: {
+    code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch, ranked: true,
+  } });
+  remember(room.view.phase === "over" ? null : room.code);
+}
+
+/** What a ranked table sent since the last answer: the view now, and the events that led to it.
+ *  An answer continues exactly where this browser stands; one overtaken on the way is dropped. */
+function applyRanked(room: RoomInfo): void {
+  const { online, events, game } = useAutoStore.getState();
+  if (!online || !game || online.code !== room.code) return;
+  const chat = room.chat.length > 0 ? [...online.chat, ...room.chat] : online.chat;
+  const news = !!room.view && room.eventsFrom === events.length && room.total >= online.applied;
+  if (!news && chat === online.chat) return;
+  if (!news) { useAutoStore.setState({ online: { ...online, chat } }); return; }
+  useAutoStore.setState({ game: room.view!, events: [...events, ...(room.events ?? [])], online: { ...online, applied: room.total, chat } });
+  if (room.view!.phase === "over") remember(null);
+}
+
 function startPlaying(room: RoomInfo): void {
+  if (room.ranked) { startRanked(room); return; }
   const { game, events, recording, seats } = buildGame(room);
   useAutoStore.getState().loadOnlineGame({ seats, game, events, recording, online: {
     code: room.code, mySeat: room.mySeat, status: "playing", applied: room.total, chat: room.chat, epoch: room.epoch, ranked: !!room.ranked,
@@ -136,6 +175,7 @@ async function resync(code: string, message = "Game re-synced with the server.")
 }
 
 function applyRemote(room: RoomInfo): void {
+  if (room.ranked) { applyRanked(room); return; }
   const store = useAutoStore.getState();
   const { online, game, events, undoRequest } = store;
   let { recording } = store;
@@ -194,10 +234,12 @@ async function pollOnce(code: string): Promise<void> {
   if (polling) return;
   polling = true;
   try {
-    const { online, game } = useAutoStore.getState();
+    const { online, game, events } = useAutoStore.getState();
     if (online?.code !== code) return;
     const after = game ? online.applied : 0;
-    const r = await call(`/api/rooms/${code}?after=${after}&chatAfter=${game ? online.chat.length : 0}`);
+    // a ranked table sends events, not moves: how many of them this browser has
+    const eventsAfter = online.ranked && game ? `&eventsAfter=${events.length}` : "";
+    const r = await call(`/api/rooms/${code}?after=${after}&chatAfter=${game ? online.chat.length : 0}${eventsAfter}`);
     const now = useAutoStore.getState();
     if (now.online?.code !== code) return;
     if (r.status === 401) {
@@ -356,8 +398,34 @@ export async function sendRoomChat(text: string, at: number): Promise<void> {
   if (online) await call(`/api/rooms/${online.code}/chat`, { method: "POST", body: { text, at } }).catch(() => {});
 }
 
+/** Goes up when a ranked table is loaded again or refuses a move: the moves that were waiting behind are dropped. */
+let rankedLine = 0;
+
+/** One move to a ranked table. The answer carries what the move led to, so this player's table
+ *  shows it after one trip to the server, without waiting for the next poll. */
+async function sendRanked(code: string, intent: PlayerIntent, line: number): Promise<void> {
+  const store = useAutoStore.getState();
+  if (store.online?.code !== code) return;
+  if (line !== rankedLine) { store.rankedAnswered(); return; }
+  const r = await call(`/api/rooms/${code}/moves`, { method: "POST", body: { seq: store.online.applied, intent, eventsAfter: store.events.length } }).catch(() => null);
+  if (useAutoStore.getState().online?.code !== code) return;
+  if (r?.status === 400) {
+    rankedLine += 1;
+    useAutoStore.getState().rankedAnswered((r.error ?? "The server refused that move.").replace(/^Illegal move: /, ""));
+    return;
+  }
+  useAutoStore.getState().rankedAnswered();
+  if (r?.room) applyRanked(r.room);
+  else await resync(code); // out of step with the server, or no answer: the table again, as the server has it
+}
+
 setOnlineHooks({
   send: (code, seq, intent) => {
+    if (useAutoStore.getState().online?.ranked) {
+      const line = rankedLine;
+      sending = sending.then(() => sendRanked(code, intent, line));
+      return;
+    }
     sending = sending.then(async () => {
       const r = await call(`/api/rooms/${code}/moves`, { method: "POST", body: { seq, intent } }).catch(() => null);
       if (!r || r.status >= 400) await resync(code);
