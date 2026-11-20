@@ -20,10 +20,6 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
 ## Blockers
 
-- [ ] **Ranked shows both hands to both browsers.** The server judges the game, but each
-      browser still holds the whole of it (both hands, both decks), as in a friend game:
-      a player who opens the developer tools can read the opponent's hand. Before ranked
-      opens to strangers the server must send each player only what they may see.
 - [ ] **Deploy.** Pick the host, copy `public/cards` there (2,973 files, 666 MB,
       `SN_CARDS_DIR`), set up database backups, try the Docker image (never built: no
       Docker here), and get CI running.
@@ -46,6 +42,14 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
       can still trade wins by conceding, when the queue pairs them.
 - [ ] A ranked game lives in the server's memory: a restart loses the games in progress
       (they end with no result, and the players are told).
+- [ ] A ranked table still tells three things a careful player can read, as other
+      simulators do: which place in the hand a played card left; that a Life card taken
+      has a [Trigger] its owner could use (the game stops for their decision, even if
+      they decline); that a player has nothing to counter with, when their "Confirm
+      every choice" is off and the window closes at once. Hiding them means changing
+      how the game flows, not what is sent.
+- [ ] Hidden information at a ranked table was tried with OP01 lists and by the tests
+      on the 17 meta decks, not by people looking for a way around it.
 - [ ] Reports reach the Admin page, but an admin can only close them or make a reset
       link there: banning is still API only (`POST /api/admin/bans`).
 - [ ] A confirmed email address is shown but asked of nobody: an account with an
@@ -65,6 +69,16 @@ looked at today (no `gh` here; on 2026-11-11 it did not start: account billing).
 
 ## Done
 
+- [x] A ranked table shows each player only what they may see (2026-11-20). It was a
+      blocker: both browsers held the whole game, and the developer tools showed the
+      other hand. Now only the server holds a ranked game: a browser gets no seed, no
+      list of the other player and no moves, but its own player's view, with stand-ins
+      for the other hand, both decks and the face-down Life cards, and the events as
+      that player may read them (`src/autosim/view.ts`). A move names a hidden card by
+      its stand-in, and guessing a real id is refused. The replay is still the server's
+      whole record. Tests play the 17 meta games from the views alone, and the API test
+      searches every answer for the other player's hidden cards. Tried with two
+      accounts in two tabs, to the end. Friend games are as before.
 - [x] Account basics (2026-11-18): a new password by a one-use link (by email, or made
       by an admin), the email address confirmed by a link, a new password while signed
       in, and deleting the account with its data (`server/account.mjs`). Other players

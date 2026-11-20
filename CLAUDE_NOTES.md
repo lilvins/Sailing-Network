@@ -477,8 +477,9 @@ in beta".
   (about half a second), so server and page run the same rules. esbuild is a
   dev dependency: production has only the built file. The catalog is the
   `cards` table, the one `/api/cards` sends.
-- **The table is a room** (`server/rooms.mjs`, `room.ranked`), so the browser
-  follows it with the friend-game code (`room.ts`). Differences: the server
+- **The table is a room** (`server/rooms.mjs`, `room.ranked`), reached with the
+  friend-game routes; what it sends is another thing since 2026-11-20 (next
+  section). Differences from a friend room: the server
   makes it when both players confirmed the match (`POST /api/me/queue/ready`
   answers `roomCode`, and so does the queue status); seats, decks (the saved
   decks of the queue), seed and first player are the server's; every move goes
@@ -495,14 +496,102 @@ in beta".
   pass the engine's deck rules to join the pool; a bot's is not checked.
 - **The switch**: `SN_RANKED` (`closed` in production by default). `/api/stats`
   says `rankedOpen` and the Duel Room shows the pool or the closed notice.
-- **Not done**: hidden information (both browsers hold the whole game, as in a
-  friend game); a turn clock; games survive no restart (memory only); friend
+- **Not done**: a turn clock; games survive no restart (memory only); friend
   games are not judged by the engine yet, though they could be now.
 - Tests: "ranked table" in `tests/api-test.mjs` (the suite seeds the catalog
   and opens ranked; its older "ranked queue" section turns its accounts into
   bots, because it reports results), engine and settings in
   `tests/deploy.test.ts`. The signup route allows ten accounts per ten
-  minutes and the suite makes nine: reuse accounts in new sections.
+  minutes and the suite makes nine: reuse accounts in new sections. Two
+  accounts that just played each other are too far apart in rating to be
+  paired again at once: a second ranked game in the suite needs other accounts.
+
+## Ranked — each player gets only their own view (2026-11-20)
+Before this, a ranked room sent both browsers the seed, both decklists and
+every move, and each rebuilt the whole game: the developer tools showed the
+other hand. Now only the server holds a ranked game. Friend games are
+unchanged (lockstep, the whole game in both browsers).
+- **`src/autosim/view.ts`** makes everything that leaves the server, and is in
+  the server's engine bundle (`serverEngine.ts`). Secret for a viewer: the
+  other hand, both decks (the viewer's own order too), every face-down Life
+  card. `viewOf(state, viewer, known)` is a normal `AutoGameState` with those
+  cards replaced by stand-ins: instance id `seatB~hand~2` (whose, zone,
+  place), card id `HIDDEN_CARD` ("HIDDEN"). Zones keep their sizes, so the
+  table and the engine's read-only helpers work on a view as on a game: the
+  unit test checks that `legalMoves` on the view equals `legalMoves` on the
+  game for the player who must act. `seed` is "" and `rngUses` 0.
+- **Instance ids are secrets too.** `createGame` names them `p1#17`: "p1" is
+  whoever plays FIRST (not seat A, not the player's id) and 17 the card's place
+  in the decklist, where the copies of one card sit side by side. A hidden card
+  never shows its real id; anything that names a card outside a zone (an
+  event, a modifier, `exec`) gets `seatB~?` instead. `scrub` walks every string
+  and key of what is sent, so a new field cannot carry a real id out by
+  being forgotten; a `cardId`/`sourceCardId` next to a swapped id goes too.
+- **Events** (`redactSetup`, `redactPlay`): one for each real event, so counts
+  and the chat's `at` still line up. An event names a card only if the viewer
+  saw it by its zone right before or right after that event (played from the
+  hand: yes; drawn, dealt to Life, shuffled: no), or if the event shows it: a
+  [Trigger] card until it lands, `cardsRevealed` until that deck is shuffled,
+  the viewer's own `deckPeeked` / `lifePeeked` / `peekResolved`. A search
+  shows the other player the card added to the hand only when it was taken
+  for what it is (rule 11-2-1: a filter on `addToHand`, or `reveal`).
+- **What a viewer has been shown stays nameable**: `known` (per seat, kept by
+  the room) lists those cards; `viewOf` keeps their card ids in `instances`,
+  so the log names a card that went back to a hand or a deck. Its place there
+  is a stand-in like any other. A card known by id and drawn again is NOT
+  named by the draw (the unit tests pin this with deliberate breaks).
+- **Prompts**: the one who answers gets the prompt whole, with stand-ins for
+  hidden candidates (a blind pick from the other hand) and real cards for
+  what it lets them look at (`peekSelect`, `arrangeLife`, `triggerDecision`, a
+  search of their own deck: those cards are listed first in the deck, so where
+  they lay stays unknown). The other player gets the kind and the player, and
+  only what is public in it (`choiceOfOther`).
+- **Moves** (`resolveIntent`): stand-ins are turned back into cards by their
+  place; a move that names a card the player cannot see by its real id is
+  refused ("that card is not one you can name"), or guessing ids would be a
+  way to look. The reason a move was refused goes through `redactText`.
+- **The room** (`server/rooms.mjs`): `room.ranked.seats[i]` = `{ known,
+  events, view, viewAt }`. `toClient` for a ranked room sends `seed: ""`, no
+  moves, the other seat as name + Leader only, and `rankedNews`: `eventsFrom`,
+  the events after it and, when the asker lacks anything, `view`. The browser
+  says what it has with `?after=&eventsAfter=`. `POST …/moves` answers with the
+  same for the mover (`eventsAfter` in the body). When the game ends the room
+  keeps each seat's events and last view (the state itself goes to the
+  replay). A finished game is sent whole: its replay is public anyway.
+- **The browser** (`room.ts`): `startRanked` / `applyRanked` put the view in
+  the store as `game`; nothing runs the engine on a ranked game. `dispatch`
+  (`autoStore.ts`) sends the move and returns; `online.waiting` counts moves on
+  their way; the answer to the POST carries the new view, so the mover waits
+  one trip to the server, not a poll. Moves made meanwhile follow in order
+  (several DON!! at once); the same click twice is one move; after a refusal
+  the ones waiting behind are dropped (`rankedLine`). An answer is applied only
+  if it continues exactly where the browser stands (`eventsFrom` equals the
+  events it has), so one overtaken on the way is dropped. A reload asks with
+  nothing and gets the view and the whole log. No recording in the browser:
+  the replay is the server's.
+- **The hidden card on the page**: both card databases answer `HIDDEN_CARD`
+  with a blank card (`makeCardDb`, `compile.ts`); the log writes "a card"
+  (`log.ts`); the table already drew backs for the other hand, the decks and
+  face-down Life, and `cards.get()` is read with `?.` everywhere it matters.
+- **What a view still tells**, as at other simulators: the place in the hand
+  a played card left; that a Life card taken has a usable [Trigger] (the game
+  stops for its owner's decision, even when they decline); that a player has
+  nothing to counter with, when "Confirm every choice" is off and the window
+  closes at once. Closing these means changing the game's flow, not the view.
+- **Smaller things**: a card played from the other hand appears on the field
+  without flying from the hand (its id changes from stand-in to real); the
+  shortcut that answers a split rest cost in one click asks its second
+  question separately at a ranked table (it read the next prompt at once).
+- Tests: `src/autosim/view.test.ts` plays the 17 meta games from the views
+  alone (each move chosen on the mover's view, turned back by `resolveIntent`)
+  and checks both players' views and events after every move; its seats are
+  named seatA/seatB on purpose (with p1/p2 a wrong id pattern passed). The
+  "ranked table" section of `tests/api-test.mjs` plays a few turns with two
+  lists that share no card and searches every answer for the other player's
+  hidden cards and ids. Tried by hand on 2026-11-20: two accounts in two tabs
+  (`localhost` and `127.0.0.1` keep separate sessions), both mulligans, cards
+  from both hands, an attack, a counter, a refused move, a reload, a concede,
+  the replay; then a friend game to its end.
 
 ## Account, legal pages, safety between players (2026-11-18)
 - **Tokens** (`server/account.mjs`, table `account_tokens`): the links in emails
