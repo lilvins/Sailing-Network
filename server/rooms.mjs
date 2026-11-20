@@ -4,14 +4,16 @@
 // The server does not run the engine: it checks who sends a move and its
 // order, not whether it is legal. Rooms live in memory: a restart ends them.
 //
-// A RANKED table is a room too, so both browsers follow it the same way, but
-// the server made it (seats, decks, seed, who goes first: none of it comes
-// from a player) and plays it: each move goes through the rules engine
-// (engine.mjs), an illegal one is refused, and when the game ends the server
-// writes the result and the replay from its own events. No take-back, no
-// rematch, no result reported by a browser. A player who stops asking for
-// the table has left it and loses. Both browsers still hold the whole game
-// (both hands, both decks): the server stops a wrong move, not a look.
+// A RANKED table is a room too, but the server made it (seats, decks, seed,
+// who goes first: none of it comes from a player) and plays it: each move goes
+// through the rules engine (engine.mjs), an illegal one is refused, and when
+// the game ends the server writes the result and the replay from its own
+// events. No take-back, no rematch, no result reported by a browser. A player
+// who stops asking for the table has left it and loses.
+// Only the server holds a ranked game. A browser gets no seed, no decklist of
+// the other player and no moves: it gets its own player's view of the game
+// and the events as that player may read them (src/autosim/view.ts), so the
+// other hand, both decks and the face-down Life cards never leave the server.
 import { randomBytes, randomInt } from "node:crypto";
 import { z } from "zod";
 import { get } from "./db.mjs";
@@ -71,14 +73,36 @@ function dropExpired(now) {
 const seatOf = (room, userId) => room.seats.findIndex((s) => s?.userId === userId);
 const publicSeat = (s) => (s ? { name: s.name, deck: s.deck } : null);
 
-function toClient(room, seat, after, chatAfter) {
+/** The other player at a ranked table: who they are and their Leader, not their list. */
+const rankedOpponent = (s) => ({ name: s.name, deck: { name: "", leaderId: s.deck.leaderId, main: [] } });
+
+/** The game of a ranked table as the player in `seat` may see it now (src/autosim/view.ts). */
+function rankedView(room, seat) {
+  const g = room.ranked, mine = g.seats[seat];
+  if (g.state && mine.viewAt !== room.moves.length) {
+    mine.view = g.engine.viewOf(g.state, SEATS[seat], mine.known);
+    mine.viewAt = room.moves.length;
+  }
+  return mine.view;
+}
+
+/** What a ranked table adds for the player in `seat`, who has `after` moves and `eventsAfter` events of it:
+ *  the events they lack and, when they lack anything, the game as it stands for them. */
+function rankedNews(room, seat, after, eventsAfter) {
+  const mine = room.ranked.seats[seat];
+  const eventsFrom = Math.min(eventsAfter, mine.events.length);
+  const behind = after !== room.moves.length || eventsFrom !== mine.events.length;
+  return { view: behind ? rankedView(room, seat) : null, eventsFrom, events: mine.events.slice(eventsFrom) };
+}
+
+function toClient(room, seat, after, chatAfter, eventsAfter = 0) {
   return {
     code: room.code,
     mySeat: SEATS[seat],
     status: room.seats[1] ? "playing" : "waiting",
-    seed: room.seed,
+    seed: room.ranked ? "" : room.seed,
     firstPlayer: room.firstPlayer,
-    seats: room.seats.map(publicSeat),
+    seats: room.ranked ? room.seats.map((s, i) => (i === seat ? publicSeat(s) : rankedOpponent(s))) : room.seats.map(publicSeat),
     total: room.moves.length,
     /** Goes up when moves are taken back: every browser rebuilds the game. */
     epoch: room.epoch,
@@ -90,8 +114,9 @@ function toClient(room, seat, after, chatAfter) {
     replayId: room.replayId,
     /** A ranked table: the server plays it (no take-back, no rematch, no result to report). */
     ranked: !!room.ranked,
-    moves: room.moves.slice(after),
+    moves: room.ranked ? [] : room.moves.slice(after),
     chat: room.chat.slice(chatAfter),
+    ...(room.ranked ? rankedNews(room, seat, after, eventsAfter) : {}),
   };
 }
 
@@ -193,8 +218,13 @@ async function openRankedTable(session) {
     players: seats.map((s, i) => ({ id: SEATS[i], leader: s.deck.leaderId, deck: s.deck.main })),
   });
   room.ranked = {
-    sessionId: session.id, applyIntent: engine.applyIntent, db, done: false,
+    sessionId: session.id, engine, db, done: false,
     state: made.state, initial: made.state, events: [...made.events], cuts: [made.events.length], pending: [made.state.pendingChoice],
+    /** Per seat: the cards that player has been shown, the events as they may read them, their view when last asked. */
+    seats: SEATS.map((pid) => {
+      const known = new Set();
+      return { known, events: engine.redactSetup(made.state, made.events, pid, known), view: null, viewAt: -1 };
+    }),
   };
   rooms.set(room.code, room);
   rankedCodes.set(session.id, room.code);
@@ -220,16 +250,21 @@ export async function rankedTable(session) {
   return opening;
 }
 
-/** One move of a ranked game, played by the server. Returns why it was refused, or null. */
-async function playRanked(room, intent) {
+/** One move of a ranked game, played by the server. `seat`: the player who sent it, as they name the
+ *  cards (a hidden one by its stand-in); none when the move is the server's own. Returns why it was
+ *  refused, in words that player may read, or null. */
+async function playRanked(room, intent, seat = -1) {
   const g = room.ranked;
   if (g.done) return "The game is over";
   let played;
   try {
-    played = g.applyIntent(g.db, g.state, intent);
+    if (seat >= 0) intent = g.engine.resolveIntent(g.state, SEATS[seat], intent);
+    played = g.engine.applyIntent(g.db, g.state, intent);
   } catch (err) {
-    return `Illegal move: ${String(err?.message ?? err)}`;
+    const why = String(err?.message ?? err);
+    return `Illegal move: ${seat >= 0 ? g.engine.redactText(g.state, SEATS[seat], why) : why}`;
   }
+  SEATS.forEach((pid, i) => g.seats[i].events.push(...g.engine.redactPlay(g.state, played.events, played.state, pid, g.seats[i].known)));
   g.state = played.state;
   g.events.push(...played.events);
   g.cuts.push(g.events.length);
@@ -262,7 +297,9 @@ async function finishRanked(room) {
     }
   }
   await Promise.all(room.seats.map((s) => setUserPresence(s.userId, "online")));
-  room.ranked = { sessionId: g.sessionId, done: true }; // the game itself is in the replay now
+  // the game itself is in the replay now: the room keeps what each player may still ask for
+  const seats = SEATS.map((_, i) => ({ events: g.seats[i].events, view: rankedView(room, i), viewAt: room.moves.length }));
+  room.ranked = { sessionId: g.sessionId, done: true, seats };
 }
 
 /** A player who has not asked for their ranked table for `goneMs` has left it: they lose.
@@ -334,7 +371,8 @@ export function registerRooms(app, requireUser) {
     room.seenAt[seat] = Date.now();
     const after = Math.max(0, Number(req.query.after) || 0);
     const chatAfter = Math.max(0, Number(req.query.chatAfter) || 0);
-    return reply.send({ room: toClient(room, seat, after, chatAfter) });
+    const eventsAfter = Math.max(0, Number(req.query.eventsAfter) || 0);
+    return reply.send({ room: toClient(room, seat, after, chatAfter, eventsAfter) });
   });
 
   app.post("/api/rooms/:code/moves", limit(300, "1 minute"), async (req, reply) => {
@@ -352,14 +390,17 @@ export function registerRooms(app, requireUser) {
     if (room.moves.length >= MAX_MOVES) return reply.code(409).send({ error: "This game is too long" });
     room.seenAt[seat] = Date.now();
     if (room.ranked) {
-      const refused = await playRanked(room, parsed.data.intent);
+      const refused = await playRanked(room, parsed.data.intent, seat);
       if (refused) return reply.code(400).send({ error: refused });
     } else {
       room.moves.push(parsed.data.intent);
     }
     room.undoBy = null;
     room.touchedAt = Date.now();
-    return reply.send({ total: room.moves.length });
+    if (!room.ranked) return reply.send({ total: room.moves.length });
+    // the answer carries what the move led to, for the one who made it: their table shows it without waiting for the next poll
+    const eventsAfter = Math.max(0, Number(req.body?.eventsAfter) || 0);
+    return reply.send({ total: room.moves.length, room: toClient(room, seat, parsed.data.seq, room.chat.length, eventsAfter) });
   });
 
   // a take-back: one player asks, the other accepts and says how far back the

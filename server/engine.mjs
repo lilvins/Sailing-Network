@@ -31,7 +31,8 @@ async function load() {
   return import(pathToFileURL(file).href);
 }
 
-/** The engine: { createGame, applyIntent, makeCardDb }. Loaded once; a failed load is tried again. */
+/** The engine: everything src/autosim/serverEngine.ts exports (createGame, applyIntent, makeCardDb, and a
+ *  player's view of a game). Loaded once; a failed load is tried again. */
 export function loadEngine() {
   loading ??= load().catch((err) => { loading = null; throw err; });
   return loading;

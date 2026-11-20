@@ -501,8 +501,10 @@ try {
   const rowsBefore = [(await ta.get("/api/me/matches")).json.matches.length, (await tb.get("/api/me/matches")).json.matches.length];
   const redCards = ["004", "005", "006", "007", "008", "009", "010", "011", "012", "013", "014", "015"].map((n) => ({ id: `OP01-${n}`, count: 4 }));
   const legalList = [...redCards, { id: "OP01-016", count: 2 }]; // 50 red cards under a red Leader
-  const legalDeck = async (c, name) => (await c.post("/api/me/decks", { name, leaderId: "OP01-001", cards: legalList, format: "Standard · OP17" })).json.deck.id;
-  const dta = await legalDeck(ta, "Table deck A"), dtb = await legalDeck(tb, "Table deck B");
+  const legalDeck = async (c, name, leaderId = "OP01-001", cards = legalList) => (await c.post("/api/me/decks", { name, leaderId, cards, format: "Standard · OP17" })).json.deck.id;
+  // the second list has no card in common with the first, so a card id in an answer says whose card it is
+  const greenList = [...["032", "033", "034", "035", "036", "037", "038", "039", "041", "042", "048", "053"].map((n) => ({ id: `OP01-${n}`, count: 4 })), { id: "OP01-043", count: 2 }];
+  const dta = await legalDeck(ta, "Table deck A"), dtb = await legalDeck(tb, "Table deck B", "OP01-031", greenList);
   r = await ta.post("/api/me/queue/join", { deckId: await deckOf(ta, "OP01-001") });
   check("a deck the rules refuse cannot join the pool", r.status === 400 && /50 cards/.test(r.json?.error ?? ""), JSON.stringify(r.json));
   // `a` joins the pool first: the host of the match, seat A at the table
@@ -522,7 +524,7 @@ try {
   const tableOf = async (c, code) => (await c.get(`/api/rooms/${code}`)).json.room;
   const table = await tableOf(ta, t1.code);
   check("seats, decks and first player are the server's", table.ranked === true && table.status === "playing" && table.mySeat === "seatA"
-    && (await tableOf(tb, t1.code)).mySeat === "seatB" && table.seats[0].name === "tester_one" && table.seats[1].deck.main.length === 50
+    && (await tableOf(tb, t1.code)).mySeat === "seatB" && table.seats[0].name === "tester_one" && table.seats[0].deck.main.length === 50
     && ["seatA", "seatB"].includes(table.firstPlayer));
   r = await host.get(`/api/rooms/${t1.code}`);
   check("nobody else sits at it", r.status === 403);
@@ -540,8 +542,151 @@ try {
   const firstSeat = table.firstPlayer, firstClient = firstSeat === "seatA" ? ta : tb;
   r = await move(firstClient, t1.code, 0, { type: "respondMulligan", player: firstSeat, take: false });
   check("a legal move is played", r.status === 200 && r.json.total === 1, JSON.stringify(r.json));
-  r = await move(tb, t1.code, 1, { type: "concede", player: "seatB" });
-  check("conceding ends the game", r.status === 200);
+
+  // ---- each player gets only what they may see: the other hand, both decks and the face-down Life never leave the server ----
+  const cardFacts = new Map(JSON.parse(readFileSync(join(ROOT, "public", "data", "cards.json"), "utf8")).map((c) => [c.id, c]));
+  const otherSeat = (seat) => (seat === "seatA" ? "seatB" : "seatA");
+  /** One player at the table: every answer the server gave them (as text), their view and their events so far. */
+  const sitter = (c, seat, list) => ({ c, seat, list: new Set(list.map((x) => x.id)), heard: [], unchecked: [], view: null, events: [], total: 0, shown: new Set(), shownIids: new Set() });
+  const sitters = { seatA: sitter(ta, "seatA", legalList), seatB: sitter(tb, "seatB", greenList) };
+  const hear = (p, room) => {
+    const text = JSON.stringify(room);
+    p.heard.push(text);
+    p.unchecked.push(text);
+    if (room.view) p.view = room.view;
+    if (room.eventsFrom === p.events.length) p.events.push(...room.events);
+    p.total = room.total;
+    return room;
+  };
+  const ask = async (p) => hear(p, (await p.c.get(`/api/rooms/${t1.code}?after=${p.total}&eventsAfter=${p.events.length}`)).json.room);
+  const play = async (p, intent) => {
+    const res = await p.c.post(`/api/rooms/${t1.code}/moves`, { seq: p.total, intent: { ...intent, player: p.seat }, eventsAfter: p.events.length });
+    if (res.status === 200) hear(p, res.json.room);
+    else { const text = JSON.stringify(res.json); p.heard.push(text); p.unchecked.push(text); }
+    return res;
+  };
+  /** A player's own cards that lie in the open (Leader, Characters, Stage, trash, face-up Life), read from their own view. */
+  const noteShown = (p) => {
+    const me = p.view.players[p.seat];
+    for (const iid of [me.leaderIid, ...me.zones.characterArea, ...me.zones.stage, ...me.zones.trash, ...me.zones.life.filter((x) => me.instances[x].faceUp)]) {
+      p.shown.add(me.instances[iid].cardId);
+      p.shownIids.add(iid);
+    }
+  };
+  /** Checks the answers not looked at yet: the other player's cards that never lay in the open must not be in them, by card or by instance id. */
+  const leaked = [];
+  let answersChecked = 0;
+  const checkAnswers = () => {
+    for (const p of Object.values(sitters)) noteShown(p);
+    for (const p of Object.values(sitters)) {
+      const them = sitters[otherSeat(p.seat)];
+      const secretCards = [...them.list].filter((id) => !them.shown.has(id));
+      const secretIids = them.view.players[them.seat].zones.hand.filter((iid) => !them.shownIids.has(iid));
+      for (const text of p.unchecked.splice(0)) {
+        answersChecked += 1;
+        for (const id of [...secretCards, ...secretIids]) if (text.includes(`"${id}"`)) leaked.push(`${p.seat} was sent ${id}`);
+      }
+    }
+  };
+  const opening = { seatA: await ask(sitters.seatA), seatB: await ask(sitters.seatB) };
+  check("the table sends no seed, no moves and no list of the other player", Object.values(opening).every((room) => room.seed === "" && room.moves.length === 0
+    && room.seats[room.mySeat === "seatA" ? 1 : 0].deck.main.length === 0 && room.seats[room.mySeat === "seatA" ? 0 : 1].deck.main.length === 50 && !!room.view),
+  JSON.stringify(opening.seatA).slice(0, 300));
+  const standIn = (view, iid, owner) => iid.includes("~") && view.players[owner].instances[iid]?.cardId === "HIDDEN";
+  const viewA = sitters.seatA.view;
+  check("a view holds the player's own hand, and stand-ins for the other hand, both decks and the Life cards",
+    viewA.players.seatA.zones.hand.length === 5 && viewA.players.seatA.zones.hand.every((iid) => sitters.seatA.list.has(viewA.players.seatA.instances[iid].cardId))
+    && viewA.players.seatB.zones.hand.length === 5 && viewA.players.seatB.zones.hand.every((iid) => standIn(viewA, iid, "seatB"))
+    && ["seatA", "seatB"].every((pid) => viewA.players[pid].zones.deck.length === 45 && [...viewA.players[pid].zones.deck, ...viewA.players[pid].zones.life].every((iid) => standIn(viewA, iid, pid))),
+    JSON.stringify(viewA.players.seatB.zones).slice(0, 300));
+  checkAnswers();
+
+  /** The answer to an open prompt that changes least: keep, pass, decline, take nothing. */
+  const answerTo = (pc, view) => {
+    switch (pc.kind) {
+      case "mulligan": return { type: "respondMulligan", take: false };
+      case "blockWindow": return { type: "respondBlock", blockerIid: null };
+      case "counterWindow": return { type: "passCounter" };
+      case "triggerDecision": return { type: "respondTrigger", activate: false };
+      case "mayActivate": return { type: "respondMay", activate: false };
+      case "mayReplace": return { type: "respondReplace", use: false };
+      case "manualResolve": return { type: "ackManual" };
+      case "selectTargets": return { type: "respondTargets", iids: pc.upTo ? [] : pc.candidates.slice(0, pc.count).map((c) => c.iid) };
+      case "peekSelect": return {
+        type: "respondPeek", take: [],
+        restTop: pc.rest === "topAnyOrder" || pc.rest === "topOrBottomAnyOrder" ? pc.cards : [], restBottom: pc.rest === "bottomAnyOrder" ? pc.cards : [],
+      };
+      case "chooseNumber": return { type: "respondNumber", value: pc.min };
+      case "chooseOption": return { type: "respondOption", index: pc.enabled.indexOf(true) };
+      case "arrangeLife": return { type: "respondArrangeLife", order: pc.cards.slice(pc.toDeckTop), toDeck: pc.cards.slice(0, pc.toDeckTop) };
+      case "payDon": {
+        const don = view.players[pc.player].don;
+        const fromRested = Math.min(pc.amount, don.rested);
+        return { type: "respondPayDon", fromRested, fromActive: pc.amount - fromRested, fromGiven: {} };
+      }
+      default: return null;
+    }
+  };
+  // a few turns: each player plays a Character from the hand when one is affordable, then attacks with the Leader
+  const did = { played: new Set(), attacks: 0, moverSawAtOnce: true, refused: [], doneOnTurn: {} };
+  for (let n = 0; n < 150 && !(did.played.size === 2 && did.attacks > 0); n++) {
+    const view = sitters.seatA.view;
+    if (view.phase === "over") break;
+    const pc = view.pendingChoice;
+    const actor = sitters[pc ? pc.player : view.turnPlayer];
+    const mine = actor.view, me = mine.players[actor.seat], them = mine.players[otherSeat(actor.seat)];
+    const done = (did.doneOnTurn[mine.turn] ??= new Set());
+    let intent;
+    if (mine.pendingChoice) intent = answerTo(mine.pendingChoice, mine);
+    else {
+      const affordable = me.zones.hand.find((iid) => { const card = cardFacts.get(me.instances[iid].cardId); return card?.category === "Character" && card.cost <= me.don.active; });
+      if (!done.has("play") && affordable && me.zones.characterArea.length < 5) { intent = { type: "playCard", iid: affordable }; done.add("play"); }
+      else if (!done.has("attack") && mine.turn >= 3 && !me.instances[me.leaderIid].rested) { intent = { type: "attack", attackerIid: me.leaderIid, targetIid: them.leaderIid }; done.add("attack"); }
+      else intent = { type: "endTurn" };
+    }
+    if (!intent) { did.refused.push(`no answer to ${mine.pendingChoice?.kind}`); break; }
+    const res = await play(actor, intent);
+    if (res.status !== 200) { did.refused.push(`${intent.type}: ${res.json?.error}`); if (intent.type === "endTurn" || mine.pendingChoice) break; continue; }
+    if (!res.json.room.view || res.json.room.total !== actor.total) did.moverSawAtOnce = false;
+    await ask(sitters[otherSeat(actor.seat)]);
+    checkAnswers();
+    if (intent.type === "playCard") did.played.add(actor.seat);
+    if (intent.type === "attack") did.attacks += 1;
+  }
+  check("the game is played through the server: a card from each hand, an attack", did.played.size === 2 && did.attacks > 0 && did.refused.length === 0, JSON.stringify({ played: [...did.played], attacks: did.attacks, refused: did.refused }));
+  check("the answer to a move already carries what it led to", did.moverSawAtOnce);
+  // what a player was told about the other side's plays: the card played from the hand, by its face
+  const playedByB = sitters.seatA.events.filter((e) => e.type === "cardPlayed" && e.player === "seatB");
+  check("a card played from the hand shows its face to the other player",
+    playedByB.length > 0 && playedByB.every((e) => /^p[12]#\d+$/.test(e.iid) && sitters.seatB.list.has(sitters.seatA.view.players.seatB.instances[e.iid]?.cardId)), JSON.stringify(playedByB));
+  const drawnByB = sitters.seatA.events.filter((e) => e.type === "cardsDrawn" && e.player === "seatB").flatMap((e) => e.iids);
+  check("a card the other player draws does not", drawnByB.length >= 5 && drawnByB.every((iid) => iid === "seatB~?"), JSON.stringify(drawnByB));
+  check("each player still reads their own hand", ["seatA", "seatB"].every((seat) => {
+    const me = sitters[seat].view.players[seat];
+    return me.zones.hand.length > 0 && me.zones.hand.every((iid) => sitters[seat].list.has(me.instances[iid].cardId));
+  }));
+  check("no answer of the server names a hidden card of the other player", leaked.length === 0 && answersChecked >= 12, `${answersChecked} answers; ${leaked.slice(0, 5).join("; ")}`);
+  // guessing: the real id of a card in the other hand is not a name the player may use
+  const theirHand = sitters.seatB.view.players.seatB.zones.hand;
+  const guesser = sitters[sitters.seatA.view.pendingChoice?.player ?? sitters.seatA.view.turnPlayer];
+  {
+    const secretIid = sitters[otherSeat(guesser.seat)].view.players[otherSeat(guesser.seat)].zones.hand[0];
+    r = await play(guesser, { type: "attack", attackerIid: guesser.view.players[guesser.seat].leaderIid, targetIid: secretIid });
+    check("a move that names a hidden card by its real id is refused", r.status === 400 && /not one you can name/.test(r.json?.error ?? ""), JSON.stringify(r.json));
+  }
+  check("the other hand is still there to guess at", theirHand.length > 0);
+  // a reload: the table again from nothing
+  const reloaded = (await ta.get(`/api/rooms/${t1.code}`)).json.room;
+  sitters.seatA.unchecked.push(JSON.stringify(reloaded));
+  checkAnswers();
+  check("a reload gets the same view and the whole log back", JSON.stringify(reloaded.view) === JSON.stringify(sitters.seatA.view)
+    && reloaded.eventsFrom === 0 && JSON.stringify(reloaded.events) === JSON.stringify(sitters.seatA.events) && reloaded.events.length > 20, `${reloaded.events.length} events`);
+  check("still nothing hidden in what was sent", leaked.length === 0, leaked.slice(0, 5).join("; "));
+  r = await play(sitters.seatB, { type: "concede" });
+  await ask(sitters.seatA);
+  const endView = sitters.seatA.view;
+  check("conceding ends the game, and a finished game hides nothing", r.status === 200 && endView.phase === "over" && endView.winner === "seatA"
+    && endView.players.seatB.zones.hand.every((iid) => sitters.seatB.list.has(endView.players.seatB.instances[iid].cardId)));
   r = await tb.post(`/api/rooms/${t1.code}/result`, { winner: "seatB" });
   check("a browser's word about the winner changes nothing", r.status === 200 && r.json.recorded === true);
   const ended = (await ta.get(`/api/match-sessions/${t1.sessionId}`)).json.session;
@@ -551,15 +696,18 @@ try {
   check("a row each, linked to the replay", rowsA.length === rowsBefore[0] + 1 && rowsB.length === rowsBefore[1] + 1 && rowsA[0].result === "win" && rowsB[0].result === "loss"
     && !!tableReplay && rowsA[0].replayId === tableReplay && rowsB[0].replayId === tableReplay, JSON.stringify([rowsA, rowsB]));
   const rankedReplay = (await client().get(`/api/replays/${tableReplay}`)).json?.replay;
-  check("the replay is the server's own record of the game", rankedReplay?.source === "ranked" && rankedReplay.winner === "seatA" && rankedReplay.plays === 2
+  check("the replay is the server's own record of the game", rankedReplay?.source === "ranked" && rankedReplay.winner === "seatA" && rankedReplay.plays === sitters.seatA.total
     && rankedReplay.firstPlayer === firstSeat && rankedReplay.seats[1].name === "tester_two"
-    && rankedReplay.record.moves.map((m) => m.type).join() === "respondMulligan,concede"
+    && rankedReplay.record.moves[0].type === "respondMulligan" && rankedReplay.record.moves.at(-1).type === "concede"
     && rankedReplay.record.events.at(-1)?.type === "gameEnded");
+  check("and the whole of it: the seed, both hands, every move and event", rankedReplay?.record.initial.seed.length > 0
+    && rankedReplay.record.initial.players.seatB.zones.hand.every((iid) => /^p[12]#\d+$/.test(iid))
+    && rankedReplay.record.moves.length === sitters.seatA.total && rankedReplay.record.events.length === sitters.seatA.events.length);
   await ta.post("/api/me/queue/join", { deckId: dta });
   const ratingOfA = (await ta.get("/api/queue")).json.players.find((p) => p.user_id === uta.id)?.rating;
   await ta.post("/api/me/queue/leave");
   check("the game moved the ladder", ratingOfA > 1500, String(ratingOfA));
-  r = await move(ta, t1.code, 2, { type: "concede", player: "seatA" });
+  r = await move(ta, t1.code, sitters.seatA.total, { type: "concede", player: "seatA" });
   check("no move after the end", r.status === 400);
   check("both players are free again", (await ta.get("/api/me/queue/status")).json.status === "idle" && (await tb.get("/api/me/queue/status")).json.status === "idle");
 
