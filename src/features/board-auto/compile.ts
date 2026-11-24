@@ -33,6 +33,7 @@ import type { Action, CompiledCard, CostItem, Effect, Keyword, Selector } from "
 import type { CardDb, EngineCard } from "../../autosim/engine/state";
 import { allCompiledCards, getCompiledCard, getGeneratedCard } from "../../autosim/data/compiled";
 import { isAutomaticStatic } from "../../autosim/engine/continuous";
+import { HIDDEN_CARD } from "../../autosim/view";
 
 /** Keyword tags in match order ([Rush: Character] before [Rush]). */
 const KEYWORD_TAGS: [string, Keyword][] = [
@@ -308,10 +309,14 @@ export function uncompiledSetsOf(cardIds: Iterable<string>): string[] {
   return [...missing].sort();
 }
 
+/** A card the viewer may not see (a ranked table, src/autosim/view.ts): no cost, no power, no effect. */
+const HIDDEN_ENGINE_CARD: EngineCard = { id: HIDDEN_CARD, category: "Character", cost: null, power: null, counter: null, colors: [], types: [] };
+
 /** Build the engine CardDb over the loaded catalog. Compilation is cached. */
 export function makeCardDb(cardsById: Map<string, Card>): CardDb {
   const cache = new Map<string, EngineCard>();
   return (cardId: string): EngineCard => {
+    if (cardId === HIDDEN_CARD) return HIDDEN_ENGINE_CARD;
     const hit = cache.get(cardId);
     if (hit) return hit;
     const card = cardsById.get(cardId);

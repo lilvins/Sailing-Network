@@ -11,3 +11,5 @@
  */
 export { createGame, applyIntent } from "./engine/engine";
 export { makeCardDb } from "../features/board-auto/compile";
+// a ranked table shows each player their own view of the game
+export { viewOf, redactSetup, redactPlay, resolveIntent, redactText } from "./view";

@@ -8,6 +8,7 @@
 import type { GameEvent } from "../../autosim/engine/events";
 import type { AutoGameState, Iid, PID } from "../../autosim/engine/state";
 import type { Card } from "../cards/cardsDb";
+import { HIDDEN_CARD } from "../../autosim/view";
 
 export interface LogLine {
   text: string;
@@ -24,6 +25,7 @@ function makeNamer(game: AutoGameState | null, cards: Map<string, Card> | null, 
     if (!game) return iid;
     for (const p of Object.values(game.players)) {
       const inst = p.instances[iid];
+      if (inst?.cardId === HIDDEN_CARD) return "a card"; // a ranked table: this player may not see which
       if (inst) {
         const name = plain(cards?.get(inst.cardId)?.name ?? inst.cardId);
         if (!named.some((c) => c.cardId === inst.cardId)) named.push({ name, cardId: inst.cardId });
